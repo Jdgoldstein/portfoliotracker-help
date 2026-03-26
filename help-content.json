@@ -154,7 +154,7 @@
         {
           "icon": "⚙️",
           "heading": "How it functions",
-          "text": "Each row is one token/wallet/chain combination. Average cost updates automatically using weighted average when you buy more. The Group button clusters holdings by wallet for a cleaner view."
+          "text": "Each row is one token/wallet/chain combination. Average cost updates automatically using weighted average when you buy more. The Group button clusters holdings by wallet for a cleaner view. [img:2]"
         },
         {
           "icon": "✏️",
@@ -164,7 +164,7 @@
         {
           "icon": "➡️",
           "heading": "Further actions",
-          "text": "Use the 🔔 alert button on any row to set price alerts (buy trigger, stop loss, TP1/2/3). Use Swap to record token-to-token trades. Use Transfer to move between wallets while preserving cost basis."
+          "text": "Use the 🔔 alert button on any row to set price alerts (buy trigger, stop loss, TP1/2/3). Use Swap to record token-to-token trades. Use Transfer to move between wallets while preserving cost basis.[img:4]"
         },
         {
           "icon": "📊",
