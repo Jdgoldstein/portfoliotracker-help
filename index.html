@@ -247,6 +247,7 @@
     </div>
     <div class="sidebar-section">
       <div class="sidebar-heading">Tabs</div>
+      <a class="nav-item" href="#overview"><span class="nav-icon">⛁</span>Overview</a>
       <a class="nav-item" href="#summary"><span class="nav-icon">📊</span>Summary</a>
       <a class="nav-item" href="#pools"><span class="nav-icon">🔁</span>LP Pools</a>
       <a class="nav-item" href="#vaults"><span class="nav-icon">🏦</span>Vaults</a>
@@ -257,6 +258,7 @@
     </div>
     <div class="sidebar-section">
       <div class="sidebar-heading">Reference</div>
+      <a class="nav-item" href="#whats-new" style="color:var(--warn);"><span class="nav-icon">✦</span>What's New</a>
       <a class="nav-item" href="#faq"><span class="nav-icon">❓</span>FAQ</a>
       <a class="nav-item" href="#changelog"><span class="nav-icon">📋</span>Changelog</a>
     </div>
@@ -343,6 +345,14 @@
     <!-- TAB SECTIONS — rendered by JS from JSON -->
     <div id="tab-sections"></div>
 
+    <!-- WHAT'S NEW -->
+    <div class="help-section" id="whats-new">
+      <div class="section-header">
+        <div class="section-title">✦ What's New</div>
+      </div>
+      <div id="whats-new-list"></div>
+    </div>
+
     <!-- FAQ -->
     <div class="help-section" id="faq">
       <div class="section-header">
@@ -421,9 +431,32 @@ function renderAll() {
   if (!helpData) return;
   document.getElementById('version-badge').textContent = helpData.version;
   renderTabs();
+  renderWhatsNew();
   renderFAQ();
   renderChangelog();
   updateNavHighlight();
+}
+
+function renderWhatsNew() {
+  const container = document.getElementById('whats-new-list');
+  if (!container || !helpData.whatsNew) return;
+  const entries = Object.entries(helpData.whatsNew).reverse();
+  container.innerHTML = entries.map(([ver, data]) => `
+    <div class="changelog-entry" style="margin-bottom:16px;">
+      <div style="background:rgba(10,124,74,.06);border:1px solid rgba(10,124,74,.2);border-radius:var(--border-radius-md,6px);padding:10px 16px;margin-bottom:12px;">
+        <div class="changelog-ver">v${ver} — ${data.headline}</div>
+        <div class="changelog-date">${data.summary}</div>
+      </div>
+      ${(data.items||[]).map(item => `
+        <div style="display:flex;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius,6px);margin-bottom:8px;background:var(--color-background-primary,#fff);">
+          <div style="font-size:20px;flex-shrink:0;">${item.icon}</div>
+          <div>
+            <div style="font-weight:600;font-size:14px;color:var(--color-text-primary);margin-bottom:4px;">${item.title}</div>
+            <div style="font-size:13px;color:var(--color-text-secondary,#555);line-height:1.7;">${item.text}</div>
+          </div>
+        </div>`).join('')}
+    </div>
+  `).join('');
 }
 
 function renderTabs() {

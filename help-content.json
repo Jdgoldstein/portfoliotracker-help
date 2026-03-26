@@ -1,8 +1,43 @@
 {
-  "version": "1.0",
+  "version": "1.1",
   "updatedAt": "2026-03-26",
   "appName": "Portfolio Tracker",
   "tabs": {
+    "overview": {
+      "title": "⛁ Portfolio Tracker — Overview",
+      "sections": [
+        {
+          "icon": "🎯",
+          "heading": "What this tracker does",
+          "text": "The Portfolio Tracker is a single self-contained HTML file that runs entirely in your browser — no server, no installation, no account required. It solves the core challenge of managing a complex digital asset portfolio across multiple wallets, liquidity pools, staking vaults, perpetual hedge positions, and a speculative watchlist — all in one place with live prices from CoinGecko.<br><br>Your data never leaves your machine. Everything is stored in your browser's local storage and a linked .json backup file on your own drive. The only external calls made are to CoinGecko (prices), Deribit (implied volatility), Hyperliquid (funding rates), and this help server (content sync only — no portfolio data transmitted)."
+        },
+        {
+          "icon": "📂",
+          "heading": "The seven tabs — what each does",
+          "text": "<strong>📊 Summary</strong> — Portfolio command center. Total value, deployed capital, overall P&L across all areas, and the IL Break-Even Calculator for modeling new positions before committing capital.<br><br><strong>🔁 LP Pools</strong> — Tracks concentrated liquidity positions (Uniswap v3, Aerodrome, Orca, Beefy vaults). Live pricing, impermanent loss calculation using platform-appropriate math, yield logging, and the Beat HODL? scorecard — the definitive answer to whether LP yield has overcome impermanent loss.<br><br><strong>🏦 Vaults</strong> — Single-asset yield positions: staking, lending vaults, LSTs. Tracks APY, yield earned, days active, and net result vs entry value.<br><br><strong>💼 Holdings</strong> — Spot tokens across all wallets and chains. Average cost basis, P&L, allocation %, and per-holding price alerts (buy trigger, stop loss, T1/T2/T3 take-profit ladder).<br><br><strong>⚡ Hedge</strong> — Calculates optimal perpetual short positions on Hyperliquid to protect BTC, ETH, and SOL exposure at minimum funding cost. IV from Deribit, funding rates from Hyperliquid, and a 5-step formula produce a regime-based hedge ratio. The Performance Chart builds price history across sessions.<br><br><strong>📁 History</strong> — Archives all closed pools, rebalances, yield logs, and transactions. Full editing capability. Tax-ready CSV export.<br><br><strong>💎 GEMs</strong> — Watchlist for speculative tokens with buy triggers, stop losses, three take-profit tiers, Vol/MC momentum signals (1hr/24hr/48hr), and 7-day sparklines."
+        },
+        {
+          "icon": "🔑",
+          "heading": "Key concepts to understand",
+          "text": "<strong>Beat HODL?</strong> — The fundamental LP question: has the yield earned by providing liquidity outweighed the impermanent loss vs simply holding the tokens? Shown as ✓ YES / ✗ NO on every pool.<br><br><strong>Hedge ratio</strong> — The percentage of your crypto exposure protected by a short position. Hard capped at 60% — you always retain meaningful upside exposure. The 5-step formula uses implied volatility, 7-day trend, funding rate, and pool yield to recommend the optimal ratio.<br><br><strong>Net carry</strong> — Pool yield earned minus annual funding cost on the hedge. Positive carry means the hedge is net profitable. This is the key metric for deciding whether to hedge at all.<br><br><strong>Funded From Holdings</strong> — When adding capital to a pool or vault, this feature auto-deducts source tokens from Holdings and logs Transfer transactions automatically — keeping all balances correct without manual editing.<br><br><strong>Backup envelope</strong> — Your .json backup file contains everything: portfolio data, hedge chart history, activation token, Pushover keys, and settings. Linking the backup file on any machine restores the complete tracker instantly."
+        },
+        {
+          "icon": "🚀",
+          "heading": "Getting started — four steps",
+          "text": "<strong>1. Open in Chrome or Edge</strong> — double-click the HTML file. Firefox is not recommended (File System API limitations).<br><br><strong>2. Link your backup file</strong> — click ⛁ Data ▾ → Link / Change File → select or create a .json file in the same folder. Auto-save activates immediately (every 7 minutes, silently). The status dot turns green when active.<br><br><strong>3. Add your first position</strong> — go to the tab that matches what you want to track. Click the + button. For LP Pools: enter both token symbols, current quantities, entry value, and your price range.<br><br><strong>4. Refresh prices</strong> — click ↻ Refresh in the header. Prices update from CoinGecko and the live header bar populates. From here, everything is live and auto-refreshes every 5 minutes."
+        },
+        {
+          "icon": "⛁",
+          "heading": "Data protection",
+          "text": "<strong>Auto-save</strong> — every 7 minutes when a backup file is linked. Also saves automatically when you switch away from the browser tab. Silent — no notification on every save.<br><br><strong>Manual save</strong> — ⛁ Data ▾ → Save / Export Backup downloads a dated .json backup. The file uses a versioned envelope format containing both your portfolio data and hedge chart history.<br><br><strong>After a cache clear</strong> — if your browser cache is cleared, localStorage is wiped. Re-open the tracker and link your .json backup file — all data restores immediately including hedge chart history.<br><br><strong>Moving to a new machine</strong> — copy the entire tracker folder (HTML file + backup .json + help_img/ folder). Open the HTML in Chrome, link the backup file. Activation, settings, Pushover keys, and all data restore automatically."
+        },
+        {
+          "icon": "❓",
+          "heading": "Common first-time questions",
+          "text": "<strong>Why isn't a token price loading?</strong> CoinGecko may be rate-limited — wait 60 seconds and click ↻ Refresh. If a specific token always shows — , its CoinGecko ID may be wrong — edit the entry and search for the correct ID.<br><br><strong>How do I activate the tracker?</strong> Your Install ID is shown on the activation screen. Contact the author with your ID to receive a machine-specific activation code. The code is stored in your backup file and restores automatically on any future import.<br><br><strong>What is the Hedge tab for?</strong> If you hold BTC, ETH, or SOL in pools or vaults, the Hedge tab helps you size a protective short position on Hyperliquid that offsets downside risk while keeping upside exposure. It is entirely optional — all other tabs function independently.<br><br><strong>Is my data safe?</strong> Yes — no data ever leaves your machine. The only external calls are to CoinGecko (prices), Deribit (IV), Hyperliquid (funding rates), and the Cloudflare Worker (help content — activation verified, no portfolio data transmitted)."
+        }
+      ]
+    },
     "summary": {
       "title": "📊 Summary Tab",
       "sections": [
@@ -285,6 +320,15 @@
   ],
   "changelog": [
     {
+      "version": "v1.1",
+      "date": "2026-03-26",
+      "notes": [
+        "Added Overview tab — full introduction to the tracker",
+        "Added What's New section for version 46.99",
+        "Help site now receives Overview and What's New content via sync"
+      ]
+    },
+    {
       "version": "v46.99",
       "date": "2026-03-26",
       "notes": [
@@ -295,5 +339,48 @@
         "Security hardening on activation system"
       ]
     }
-  ]
+  ],
+  "whatsNew": {
+    "46.99": {
+      "headline": "Version 46.99 — What's New",
+      "summary": "Hedge chart persistence, GitHub help site, security hardening, and backup improvements.",
+      "items": [
+        {
+          "icon": "📈",
+          "title": "Hedge chart now builds history across sessions",
+          "text": "The Hedge Performance Chart accumulates price history between sessions using IV-adaptive sampling — 1, 2, 5, or 10 minute intervals based on current implied volatility, plus a 0.5% spot-move trigger that forces a sample regardless of interval. The 1H / 6H / 1D / 7D / All time windows are now meaningful as history accumulates over days and weeks. History is stored in a dedicated key (HPC_hist_v1) — never mixed with portfolio data — and travels with your backup file."
+        },
+        {
+          "icon": "📖",
+          "title": "Live help documentation site",
+          "text": "A full help site is now live at jdgoldstein.github.io/portfoliotracker-help — searchable, dark mode, sidebar navigation, tab-by-tab documentation, FAQ, and changelog. The tracker fetches help content in the background on startup via an activation-gated Cloudflare Worker. Edit help locally using the ✏ Edit button in the help modal, then click ⬆ Export to GitHub and upload help-content.json to the repo — all users receive updates within one hour."
+        },
+        {
+          "icon": "🔒",
+          "title": "Security hardening",
+          "text": "Activation secrets are no longer stored as plain text string literals — assembled at runtime from split arrays. The Demo's universal bypass key (ACT_MASTER) has been completely removed — only machine-specific derived codes accepted. The Demo trial is now triple-stamped (localStorage + IndexedDB + backup file field) to prevent reset via cache clear. demoRestoreTrialStamp() recovers the trial start from any surviving store on activation."
+        },
+        {
+          "icon": "🔑",
+          "title": "Per-recipient activation code generator",
+          "text": "Settings → 🔑 Generate User Code. Enter a recipient's Install ID (shown on their activation screen) to generate the unique machine-specific activation code for their machine. Code is copied to clipboard automatically. Keep a record of issued Install IDs — future versions can revoke access by rotating the application secret."
+        },
+        {
+          "icon": "⛁",
+          "title": "Versioned backup envelope (schema v2)",
+          "text": "Backup files now use a structured envelope: { schemaVersion: 2, db: {...}, hpcHistory: {...}, _lic, savedAt }. Hedge chart history travels with your backup and restores automatically on import. HedgeCache feed data (IV, funding rates, trend signals) is no longer written to backup files — only user overrides (ratio_*, limitBuy_*, ivSpreadBaseline) are preserved. Legacy v1 flat-format backups fully supported on import."
+        },
+        {
+          "icon": "⏱",
+          "title": "Auto-save every 7 minutes, silently",
+          "text": "Auto-save interval reduced from 10 to 7 minutes. No more toast notification on every auto-save tick — the last-saved timestamp is visible in the ⛁ Data menu. Auto-save also correctly strips feed data before writing, matching the clean output of a manual export."
+        },
+        {
+          "icon": "✦",
+          "title": "Overview tab and What's New modal",
+          "text": "The ? Help modal now has a tab navigation bar at the top. The first tab (⛁ Overview) provides a full introduction to the tracker — what each tab does, key concepts, getting started steps, and data protection. On each new version, a What's New modal appears automatically after activation (once per version), summarising the new features with a link to the full changelog."
+        }
+      ]
+    }
+  }
 }
