@@ -459,6 +459,27 @@ function renderWhatsNew() {
   `).join('');
 }
 
+function renderImg(text, tabKey) {
+  return text.replace(/\[img:(\d+)\]/g, (match, n) => {
+    const src = 'help_img/' + tabKey + '/image' + n + '.png';
+    return `<div style="margin:12px 0;">
+      <img src="${src}" alt="Help image ${n}"
+        style="max-width:100%;border-radius:6px;border:1px solid var(--border);cursor:zoom-in;box-shadow:0 2px 8px rgba(0,0,0,0.08);"
+        onclick="zoomImg('${src}')"
+        onerror="this.style.display='none'">
+    </div>`;
+  });
+}
+
+function zoomImg(src) {
+  const overlay = document.getElementById('imgZoomOverlay');
+  const img = document.getElementById('imgZoomImg');
+  if (overlay && img) {
+    img.src = src;
+    overlay.style.display = 'flex';
+  }
+}
+
 function renderTabs() {
   const container = document.getElementById('tab-sections');
   if (!container || !helpData.tabs) return;
@@ -473,7 +494,7 @@ function renderTabs() {
             <span class="card-icon">${s.icon}</span>
             ${s.heading}
           </div>
-          <div class="card-body">${s.text}</div>
+          <div class="card-body">${renderImg(s.text, key)}</div>
         </div>
       `).join('')}
     </div>
@@ -584,5 +605,13 @@ const BUNDLED_FALLBACK = {
 // ── Boot ──────────────────────────────────────────────────────────────────────
 loadContent();
 </script>
+
+<div id="imgZoomOverlay" onclick="this.style.display='none'"
+  style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99999;align-items:center;justify-content:center;cursor:zoom-out;">
+  <img id="imgZoomImg" src="" style="max-width:95vw;max-height:95vh;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,0.6);object-fit:contain;">
+  <div onclick="document.getElementById('imgZoomOverlay').style.display='none'"
+    style="position:absolute;top:16px;right:20px;color:white;font-size:24px;cursor:pointer;opacity:0.7;">✕</div>
+</div>
+
 </body>
 </html>
