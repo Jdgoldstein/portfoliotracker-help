@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beta Tester Survey — Crypto Portfolio Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f5f4f0; --surface: #ffffff; --border: #e0ddd5; --border-hover: #c5c2b8;
+    --accent: #1a6b4a; --accent-hover: #155a3d; --accent-light: #eaf4ef; --accent-mid: #b8dece;
+    --text: #181816; --text-muted: #666360; --text-faint: #9e9b94;
+    --danger: #b83232;
+    --warn-bg: #fef8ec; --warn-border: #f0c84a; --warn-text: #7a5a0a;
+    --ok-bg: #eaf4ef; --ok-border: #7ec8a4; --ok-text: #1a6b4a;
+    --info-bg: #eef4fc; --info-border: #a8c8ef; --info-text: #1a4a7a;
+    --radius: 10px; --radius-lg: 14px;
+    --font: 'DM Sans', sans-serif; --mono: 'DM Mono', monospace;
+  }
+  body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  .page-header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1rem 1.5rem; display: flex; align-items: center; gap: 10px; }
+  .logo-mark { width: 32px; height: 32px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .logo-label { font-size: 13px; color: var(--text-muted); font-family: var(--mono); }
+  .logo-label strong { color: var(--text); font-weight: 500; }
+
+  .container { max-width: 640px; margin: 0 auto; padding: 2.5rem 1.25rem 5rem; }
+
+  .badge { display: inline-flex; align-items: center; gap: 6px; background: var(--accent-light); border: 1px solid var(--accent-mid); border-radius: 20px; padding: 4px 11px; font-size: 11px; font-weight: 500; color: var(--accent); margin-bottom: 1rem; font-family: var(--mono); }
+  .badge-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  h1 { font-size: 26px; font-weight: 500; color: var(--text); line-height: 1.25; margin-bottom: 10px; letter-spacing: -0.01em; }
+  .subtitle { font-size: 15px; color: var(--text-muted); line-height: 1.7; margin-bottom: 2rem; }
+
+  .prog-wrap { display: flex; align-items: center; gap: 12px; margin-bottom: 2.25rem; }
+  .prog-track { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .prog-fill { height: 100%; background: var(--accent); border-radius: 2px; width: 0%; transition: width 0.4s ease; }
+  .prog-pct { font-size: 12px; font-family: var(--mono); color: var(--text-faint); min-width: 34px; text-align: right; }
+
+  .sec-label { font-size: 10px; font-weight: 500; color: var(--text-faint); letter-spacing: 0.12em; text-transform: uppercase; font-family: var(--mono); margin-bottom: 1.1rem; display: flex; align-items: center; gap: 10px; }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .divider { height: 1px; background: var(--border); margin: 2rem 0; }
+  .question { margin-bottom: 1.75rem; }
+  .q-label { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 4px; line-height: 1.4; }
+  .q-hint { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.55; }
+  .req { color: var(--danger); margin-left: 2px; }
+
+  .agenda-card { border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; cursor: pointer; transition: border-color .15s, background .15s, transform .1s; margin-bottom: 8px; background: var(--surface); }
+  .agenda-card:hover { border-color: var(--border-hover); background: #fafaf8; transform: translateY(-1px); }
+  .agenda-card.sel { border-color: var(--accent); background: var(--accent-light); transform: none; }
+  .agenda-top { display: flex; align-items: flex-start; gap: 12px; }
+  .acheck { width: 20px; height: 20px; min-width: 20px; border: 1.5px solid var(--border-hover); border-radius: 5px; margin-top: 1px; display: flex; align-items: center; justify-content: center; background: var(--surface); transition: background .15s, border-color .15s; }
+  .agenda-card.sel .acheck { background: var(--accent); border-color: var(--accent); }
+  .acheck svg { display: none; }
+  .agenda-card.sel .acheck svg { display: block; }
+  .atitle { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 4px; line-height: 1.4; }
+  .adesc { font-size: 13px; color: var(--text-muted); line-height: 1.55; }
+
+  .rlist { display: flex; flex-direction: column; gap: 8px; }
+  .ritem { display: flex; align-items: center; gap: 11px; padding: 11px 14px; border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; transition: border-color .15s, background .15s; background: var(--surface); font-size: 14px; color: var(--text); }
+  .ritem:hover { border-color: var(--border-hover); background: #fafaf8; }
+  .ritem.sel { border-color: var(--accent); background: var(--accent-light); }
+  .rdot { width: 18px; height: 18px; min-width: 18px; border: 1.5px solid var(--border-hover); border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--surface); transition: border-color .15s, background .15s; }
+  .ritem.sel .rdot { border-color: var(--accent); background: var(--accent); }
+  .rinner { width: 6px; height: 6px; border-radius: 50%; background: white; display: none; }
+  .ritem.sel .rinner { display: block; }
+
+  textarea, input[type=text], input[type=email], input[type=tel] { width: 100%; padding: 11px 14px; font-size: 14px; font-family: var(--font); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); transition: border-color .15s, box-shadow .15s; line-height: 1.6; -webkit-appearance: none; }
+  textarea { min-height: 108px; resize: vertical; }
+  textarea:focus, input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,107,74,0.08); }
+  textarea::placeholder, input::placeholder { color: var(--text-faint); }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  .submit-btn { width: 100%; padding: 13px 28px; background: var(--accent); color: white; border: none; border-radius: var(--radius); font-size: 15px; font-weight: 500; cursor: pointer; font-family: var(--font); transition: background .15s, transform .1s; letter-spacing: 0.01em; margin-top: 2rem; }
+  .submit-btn:hover { background: var(--accent-hover); }
+  .submit-btn:active { transform: scale(0.99); }
+  .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  .err-msg { margin-top: 10px; font-size: 13px; color: var(--danger); display: none; }
+  .sending-msg { margin-top: 10px; font-size: 13px; color: var(--text-muted); font-family: var(--mono); display: none; }
+  .privacy-note { margin-top: 1rem; font-size: 12px; color: var(--text-faint); text-align: center; line-height: 1.6; }
+
+  .success-box { background: var(--ok-bg); border: 1px solid var(--ok-border); border-radius: var(--radius-lg); padding: 3rem 2rem; text-align: center; display: none; }
+  .tick-circle { width: 56px; height: 56px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; }
+  .success-title { font-size: 20px; font-weight: 500; color: var(--ok-text); margin-bottom: 10px; }
+  .success-sub { font-size: 14px; color: var(--text-muted); line-height: 1.7; max-width: 400px; margin: 0 auto; }
+
+  .admin-section { margin-top: 3rem; border-top: 1px solid var(--border); padding-top: 2rem; }
+  .admin-toggle-btn { display: flex; align-items: center; gap: 8px; background: none; border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 16px; font-size: 13px; color: var(--text-muted); cursor: pointer; font-family: var(--font); transition: border-color .15s, color .15s, background .15s; }
+  .admin-toggle-btn:hover { border-color: var(--border-hover); color: var(--text); background: var(--surface); }
+  .admin-panel { display: none; margin-top: 1.5rem; }
+  .admin-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.25rem; gap: 12px; flex-wrap: wrap; }
+  .admin-title { font-size: 16px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+  .admin-sub { font-size: 12px; color: var(--text-faint); font-family: var(--mono); }
+  .export-btn { padding: 8px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); font-size: 13px; font-weight: 500; color: var(--text-muted); cursor: pointer; font-family: var(--font); transition: background .15s, border-color .15s; white-space: nowrap; }
+  .export-btn:hover { background: var(--bg); border-color: var(--border-hover); color: var(--text); }
+  .empty-state { text-align: center; padding: 2.5rem 1.5rem; color: var(--text-faint); font-size: 14px; border: 1px dashed var(--border); border-radius: var(--radius-lg); line-height: 1.6; }
+
+  .user-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.1rem 1.25rem; margin-bottom: 12px; }
+  .card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+  .user-name { font-size: 15px; font-weight: 500; color: var(--text); }
+  .user-time { font-size: 11px; color: var(--text-faint); font-family: var(--mono); margin-top: 2px; }
+  .resp-num { font-size: 11px; font-family: var(--mono); color: var(--text-faint); background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 2px 9px; }
+  .contact-row { display: flex; flex-wrap: wrap; gap: 6px 20px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .ci { font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 5px; }
+  .ci a { color: var(--accent); text-decoration: none; }
+  .ci a:hover { text-decoration: underline; }
+  .tags-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .tag { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 500; white-space: nowrap; }
+  .t-agenda { background: var(--info-bg); color: var(--info-text); border: 1px solid var(--info-border); }
+  .t-priority { background: var(--warn-bg); color: var(--warn-text); border: 1px solid var(--warn-border); }
+  .t-platform { background: var(--ok-bg); color: var(--ok-text); border: 1px solid var(--ok-border); }
+  .detail { margin-bottom: 10px; }
+  .detail:last-child { margin-bottom: 0; }
+  .d-label { font-size: 10px; font-weight: 500; color: var(--text-faint); letter-spacing: 0.1em; text-transform: uppercase; font-family: var(--mono); margin-bottom: 3px; }
+  .d-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+  .footer-note { margin-top: 3rem; text-align: center; font-size: 11px; color: var(--text-faint); font-family: var(--mono); line-height: 1.8; }
+
+  @media (max-width: 520px) { .two-col { grid-template-columns: 1fr; } h1 { font-size: 22px; } .container { padding: 1.75rem 1rem 4rem; } }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="logo-mark">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+  </div>
+  <div class="logo-label"><strong>Crypto Portfolio Tracker</strong> &nbsp;·&nbsp; Beta Programme</div>
+</div>
+
+<div class="container">
+
+  <div class="badge"><div class="badge-dot"></div>Beta · First meeting</div>
+  <h1>Your input matters</h1>
+  <p class="subtitle">We want our first session to be genuinely useful for you. Please take 2 minutes to tell us what matters most and share any questions you'd like answered.</p>
+
+  <div class="prog-wrap">
+    <div class="prog-track"><div class="prog-fill" id="prog"></div></div>
+    <div class="prog-pct" id="prog-lbl">0%</div>
+  </div>
+
+  <div id="survey-form">
+
+    <p class="sec-label">Section 1 — Meeting agenda</p>
+
+    <div class="question">
+      <p class="q-label">We plan to cover these four topics. Which are most important to you?<span class="req">*</span></p>
+      <p class="q-hint">Select all that apply — this helps us know where to spend the most time.</p>
+      <div id="agenda">
+        <div class="agenda-card" onclick="tog(this)">
+          <div class="agenda-top"><div class="acheck"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><polyline points="1,4.5 4,7.5 10,1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><p class="atitle">What the software does — and what it doesn't</p><p class="adesc">A clear walkthrough of the tracker's scope: what it tracks, calculates, and where its boundaries are — so there are no surprises.</p></div></div>
+        </div>
+        <div class="agenda-card" onclick="tog(this)">
+          <div class="agenda-top"><div class="acheck"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><polyline points="1,4.5 4,7.5 10,1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><p class="atitle">How it helps you manage your portfolio</p><p class="adesc">Live pricing, LP pool tracking, yield, impermanent loss, vaults, and holdings — all in one place, giving you a real-time picture of where you stand.</p></div></div>
+        </div>
+        <div class="agenda-card" onclick="tog(this)">
+          <div class="agenda-top"><div class="acheck"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><polyline points="1,4.5 4,7.5 10,1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><p class="atitle">Full integration including cost basis</p><p class="adesc">How the tracker connects holdings, transactions, yield history, and average cost basis into one unified view — no more piecing it together manually.</p></div></div>
+        </div>
+        <div class="agenda-card" onclick="tog(this)">
+          <div class="agenda-top"><div class="acheck"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><polyline points="1,4.5 4,7.5 10,1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><p class="atitle">Why this is not tax software — and why that's a good thing</p><p class="adesc">Understanding the distinction: this tool gives you clarity and control without the complexity and constraints of tax reporting software.</p></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="question">
+      <p class="q-label">Which topic would you like the most time spent on?<span class="req">*</span></p>
+      <div class="rlist" id="priority">
+        <div class="ritem" onclick="sel(this,'priority')"><div class="rdot"><div class="rinner"></div></div>What the software does and doesn't do</div>
+        <div class="ritem" onclick="sel(this,'priority')"><div class="rdot"><div class="rinner"></div></div>How it helps me manage my portfolio day-to-day</div>
+        <div class="ritem" onclick="sel(this,'priority')"><div class="rdot"><div class="rinner"></div></div>Cost basis and full integration</div>
+        <div class="ritem" onclick="sel(this,'priority')"><div class="rdot"><div class="rinner"></div></div>The tax software distinction</div>
+        <div class="ritem" onclick="sel(this,'priority')"><div class="rdot"><div class="rinner"></div></div>Equal time on all four topics</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <p class="sec-label">Section 2 — Your questions</p>
+
+    <div class="question">
+      <p class="q-label">What specific questions do you want answered at the meeting?<span class="req">*</span></p>
+      <p class="q-hint">No question is too basic — the more detail you give us, the better prepared we'll be.</p>
+      <textarea id="questions" placeholder="e.g. How does the tracker handle impermanent loss on my SOL/JLP pool? Can I import existing transaction history?" oninput="upd()"></textarea>
+    </div>
+
+    <div class="question">
+      <p class="q-label">Have you noticed any bugs or unexpected behaviour?</p>
+      <p class="q-hint">Optional, but very useful for us to know before the meeting.</p>
+      <textarea id="bugs" placeholder="e.g. Pool data reverts to old values after closing the app..." style="min-height:80px" oninput="upd()"></textarea>
+    </div>
+
+    <div class="divider"></div>
+    <p class="sec-label">Section 3 — Logistics</p>
+
+    <div class="question">
+      <p class="q-label">Our meeting will be held online. Which platform do you prefer?<span class="req">*</span></p>
+      <p class="q-hint">We will send a joining link in advance — just let us know what works best for you.</p>
+      <div class="rlist" id="platform">
+        <div class="ritem" onclick="sel(this,'platform')"><div class="rdot"><div class="rinner"></div></div>Zoom</div>
+        <div class="ritem" onclick="sel(this,'platform')"><div class="rdot"><div class="rinner"></div></div>Microsoft Teams</div>
+        <div class="ritem" onclick="sel(this,'platform')"><div class="rdot"><div class="rinner"></div></div>Either works for me</div>
+      </div>
+    </div>
+
+    <div class="question">
+      <p class="q-label">What time of day suits you best?<span class="req">*</span></p>
+      <p class="q-hint">We will do our best to find a slot that works across all timezones.</p>
+      <div class="rlist" id="time">
+        <div class="ritem" onclick="sel(this,'time')"><div class="rdot"><div class="rinner"></div></div>Morning (before 12pm your local time)</div>
+        <div class="ritem" onclick="sel(this,'time')"><div class="rdot"><div class="rinner"></div></div>Afternoon (12pm – 5pm your local time)</div>
+        <div class="ritem" onclick="sel(this,'time')"><div class="rdot"><div class="rinner"></div></div>Evening (after 5pm your local time)</div>
+        <div class="ritem" onclick="sel(this,'time')"><div class="rdot"><div class="rinner"></div></div>Flexible / no preference</div>
+      </div>
+    </div>
+
+    <div class="question">
+      <p class="q-label">Your timezone</p>
+      <p class="q-hint">Helps us find a time that works across different locations.</p>
+      <input type="text" id="timezone" placeholder="e.g. EST, GMT+2, AEST, PST..." oninput="upd()">
+    </div>
+
+    <div class="divider"></div>
+    <p class="sec-label">Section 4 — Your details</p>
+
+    <div class="question">
+      <p class="q-label">Your name<span class="req">*</span></p>
+      <input type="text" id="name" placeholder="First and last name" oninput="upd()">
+    </div>
+
+    <div class="two-col question">
+      <div>
+        <p class="q-label">Email address<span class="req">*</span></p>
+        <p class="q-hint">We'll send your meeting invite here.</p>
+        <input type="email" id="email" placeholder="your@email.com" oninput="upd()">
+      </div>
+      <div>
+        <p class="q-label">Phone number</p>
+        <p class="q-hint">Optional — for quick follow-up.</p>
+        <input type="tel" id="phone" placeholder="+1 555 000 0000">
+      </div>
+    </div>
+
+    <button class="submit-btn" id="submit-btn" onclick="submitForm()">Submit my responses</button>
+    <p class="err-msg" id="err-msg">Please complete all required fields marked with *</p>
+    <p class="sending-msg" id="sending-msg">Sending your responses...</p>
+    <p class="privacy-note">Your details are only used to contact you about this meeting and the beta programme. They will not be shared with any third parties.</p>
+
+  </div>
+
+  <div class="success-box" id="success-box">
+    <div class="tick-circle">
+      <svg width="24" height="20" viewBox="0 0 24 20" fill="none"><polyline points="2,10 8.5,16.5 22,2" stroke="white" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <p class="success-title">Thank you — we've got your responses!</p>
+    <p class="success-sub">We'll review everything before the meeting and make sure your questions and priorities are covered. A calendar invite with the meeting link will follow shortly.</p>
+  </div>
+
+  <div class="admin-section">
+    <button class="admin-toggle-btn" onclick="toggleAdmin()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      View responses
+    </button>
+    <div class="admin-panel" id="admin-panel">
+      <div class="admin-header">
+        <div>
+          <div class="admin-title">Beta tester responses</div>
+          <div class="admin-sub" id="resp-count">0 responses collected</div>
+        </div>
+        <button class="export-btn" onclick="exportCSV()">↓ Export CSV</button>
+      </div>
+      <div id="response-list">
+        <div class="empty-state">No responses yet.<br>Share the link with your WhatsApp group to start collecting.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    Crypto Portfolio Tracker &nbsp;·&nbsp; Beta Programme<br>
+    Responses delivered via Formspree &nbsp;·&nbsp; Stored locally in this browser session
+  </div>
+
+</div>
+
+<script>
+  // ─────────────────────────────────────────────────────────────
+  //  SETUP STEP: Replace YOUR_FORM_ID with your Formspree form ID
+  //  1. Go to formspree.io and sign up free
+  //  2. Create a new form called "Beta Tester Survey"
+  //  3. Copy the ID from your endpoint URL (the part after /f/)
+  //  4. Paste it below replacing YOUR_FORM_ID
+  // ─────────────────────────────────────────────────────────────
+  var FORMSPREE_URL = 'https://formspree.io/f/mykbpdop';
+
+  var responses = [];
+
+  function tog(el) { el.classList.toggle('sel'); upd(); }
+  function sel(el, g) { document.querySelectorAll('#'+g+' .ritem').forEach(function(r){r.classList.remove('sel');}); el.classList.add('sel'); upd(); }
+
+  function upd() {
+    var s = 0;
+    if (document.querySelectorAll('#agenda .agenda-card.sel').length) s += 17;
+    if (document.querySelectorAll('#priority .ritem.sel').length) s += 17;
+    if (document.getElementById('questions').value.trim()) s += 17;
+    if (document.querySelectorAll('#platform .ritem.sel').length) s += 16;
+    if (document.querySelectorAll('#time .ritem.sel').length) s += 16;
+    if (document.getElementById('name').value.trim() && document.getElementById('email').value.trim()) s += 17;
+    s = Math.min(s, 100);
+    document.getElementById('prog').style.width = s + '%';
+    document.getElementById('prog-lbl').textContent = s + '%';
+  }
+
+  function submitForm() {
+    var agendaSel = document.querySelectorAll('#agenda .agenda-card.sel');
+    var prioritySel = document.querySelectorAll('#priority .ritem.sel');
+    var platformSel = document.querySelectorAll('#platform .ritem.sel');
+    var timeSel = document.querySelectorAll('#time .ritem.sel');
+    var name = document.getElementById('name').value.trim();
+    var email = document.getElementById('email').value.trim();
+    var questions = document.getElementById('questions').value.trim();
+    var errMsg = document.getElementById('err-msg');
+
+    if (!agendaSel.length || !prioritySel.length || !questions || !platformSel.length || !timeSel.length || !name || !email) {
+      errMsg.style.display = 'block'; return;
+    }
+    errMsg.style.display = 'none';
+
+    var agendaArr = Array.from(agendaSel).map(function(el){ return el.querySelector('.atitle').textContent.trim(); });
+
+    var data = {
+      name: name, email: email,
+      phone: document.getElementById('phone').value.trim() || '—',
+      timezone: document.getElementById('timezone').value.trim() || '—',
+      agenda_topics: agendaArr.join(' | '),
+      priority_topic: prioritySel[0].textContent.trim(),
+      platform: platformSel[0].textContent.trim(),
+      preferred_time: timeSel[0].textContent.trim(),
+      questions: questions,
+      bugs: document.getElementById('bugs').value.trim() || 'None reported'
+    };
+
+    var btn = document.getElementById('submit-btn');
+    var sendMsg = document.getElementById('sending-msg');
+    btn.disabled = true;
+    sendMsg.style.display = 'block';
+
+    fetch(FORMSPREE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(data)
+    })
+    .then(function(res){ return res.json(); })
+    .then(function(json){
+      sendMsg.style.display = 'none';
+      saveResponse(data, agendaArr);
+    })
+    .catch(function(){
+      sendMsg.style.display = 'none';
+      saveResponse(data, agendaArr);
+    });
+  }
+
+  function saveResponse(data, agendaArr) {
+    var entry = Object.assign({}, data, { id: responses.length + 1, timestamp: new Date().toLocaleString(), agendaArr: agendaArr });
+    responses.push(entry);
+    try { localStorage.setItem('cptBeta', JSON.stringify(responses)); } catch(e) {}
+    document.getElementById('survey-form').style.display = 'none';
+    document.getElementById('success-box').style.display = 'block';
+    document.getElementById('prog').style.width = '100%';
+    document.getElementById('prog-lbl').textContent = '100%';
+    renderResponses();
+  }
+
+  function toggleAdmin() {
+    var p = document.getElementById('admin-panel');
+    p.style.display = p.style.display === 'block' ? 'none' : 'block';
+    renderResponses();
+  }
+
+  function renderResponses() {
+    var list = document.getElementById('response-list');
+    document.getElementById('resp-count').textContent = responses.length + ' response' + (responses.length === 1 ? '' : 's') + ' collected';
+    if (!responses.length) {
+      list.innerHTML = '<div class="empty-state">No responses yet.<br>Share the link with your WhatsApp group to start collecting.</div>';
+      return;
+    }
+    list.innerHTML = responses.map(function(r) {
+      var agendaTags = (r.agendaArr || []).map(function(t){ return '<span class="tag t-agenda">'+t+'</span>'; }).join('');
+      return '<div class="user-card">' +
+        '<div class="card-top"><div><div class="user-name">'+r.name+'</div><div class="user-time">'+r.timestamp+'</div></div><span class="resp-num">#'+r.id+'</span></div>' +
+        '<div class="contact-row">' +
+          '<div class="ci">✉ <a href="mailto:'+r.email+'">'+r.email+'</a></div>' +
+          '<div class="ci">✆ '+r.phone+'</div>' +
+          '<div class="ci">⏱ '+r.timezone+'</div>' +
+        '</div>' +
+        '<div class="tags-row"><span class="tag t-platform">'+r.platform+'</span><span class="tag t-platform">'+r.preferred_time+'</span><span class="tag t-priority">Priority: '+r.priority_topic+'</span>'+agendaTags+'</div>' +
+        '<div class="detail"><div class="d-label">Questions for the meeting</div><div class="d-text">'+r.questions+'</div></div>' +
+        '<div class="detail"><div class="d-label">Bugs reported</div><div class="d-text">'+r.bugs+'</div></div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function exportCSV() {
+    if (!responses.length) { alert('No responses to export yet.'); return; }
+    var headers = ['#','Name','Email','Phone','Timezone','Platform','Preferred time','Priority topic','Agenda topics','Questions','Bugs reported','Submitted'];
+    var rows = responses.map(function(r){ return [r.id,r.name,r.email,r.phone,r.timezone,r.platform,r.preferred_time,r.priority_topic,r.agenda_topics,r.questions,r.bugs,r.timestamp]; });
+    var csv = [headers].concat(rows).map(function(row){ return row.map(function(c){ return '"'+(c+'').replace(/"/g,'""')+'"'; }).join(','); }).join('\n');
+    var a = document.createElement('a');
+    a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+    a.download = 'beta-survey-responses.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  }
+
+  try { var s = localStorage.getItem('cptBeta'); if (s) { responses = JSON.parse(s); renderResponses(); } } catch(e) {}
+</script>
+</body>
+</html>
