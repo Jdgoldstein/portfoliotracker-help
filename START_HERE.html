@@ -291,6 +291,48 @@
 
   <div class="divider"></div>
 
+  <!-- Mac section -->
+  <div class="steps-title">🍎 Mac users — one extra setup step</div>
+
+  <div class="step">
+    <div class="step-num" style="background:#2563eb;">1</div>
+    <div class="step-body">
+      <div class="step-title">Point Chrome's download folder to your working folder</div>
+      <div class="step-desc">
+        On Mac, the tracker saves your data automatically by downloading a file called <code>portfolio_autosave.json</code> to Chrome's download folder every 7 minutes. To make sure it lands in the right place:<br><br>
+        <strong>1.</strong> Open Chrome → top-left menu <strong>Chrome → Settings</strong><br>
+        <strong>2.</strong> Click <strong>Downloads</strong> in the left sidebar<br>
+        <strong>3.</strong> Next to <strong>Location</strong>, click <strong>Change…</strong><br>
+        <strong>4.</strong> Navigate to your <strong>PortfolioTracker</strong> working folder and select it<br>
+        <strong>5.</strong> Make sure <strong>"Ask where to save each file before downloading"</strong> is <strong>turned OFF</strong><br><br>
+        From now on, every auto-save lands silently in your working folder as <code>portfolio_autosave.json</code> — overwriting the previous version so files don't accumulate.
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num" style="background:#2563eb;">2</div>
+    <div class="step-body">
+      <div class="step-title">Allow downloads when Chrome asks</div>
+      <div class="step-desc">
+        The first time the tracker auto-saves, Chrome will show a bar at the top asking <strong>"Allow this site to download multiple files?"</strong><br><br>
+        Click <strong>Allow</strong> — this only appears once. After that, every 7-minute auto-save happens silently with no prompts.
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num" style="background:#2563eb;">3</div>
+    <div class="step-body">
+      <div class="step-title">Restoring your data after closing</div>
+      <div class="step-desc">
+        When you reopen the tracker, your data reloads automatically from the browser cache. If you ever clear your cache or switch machines, use <strong>⛁ Data ▾ → Import Backup</strong> and select <code>portfolio_autosave.json</code> from your working folder to restore everything instantly.
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
   <!-- Quick tips -->
   <div class="steps-title">Quick tips to know before you start</div>
 
