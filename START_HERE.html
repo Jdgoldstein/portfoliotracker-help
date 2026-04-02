@@ -194,24 +194,32 @@
     <p>A self-contained crypto portfolio tracker that runs entirely in your browser — no installation, no account, no cloud. Follow the four steps below to get set up properly from the start.</p>
   </div>
 
-  <div class="launch-wrap">
-    <a class="launch-btn" href="Portfolio_Tracker_Demo.html" target="_blank">
-      ▶ &nbsp;Open Portfolio Tracker Demo
-    </a>
-    <div class="launch-note">Opens in a new tab &nbsp;·&nbsp; Chrome or Edge recommended &nbsp;·&nbsp; Firefox not supported</div>
+  <!-- ── CRITICAL FIRST STEP ── -->
+  <div style="background:rgba(245,158,11,0.08);border:2px solid rgba(245,158,11,0.4);border-radius:12px;padding:20px 24px;margin-bottom:28px;">
+    <div style="font-size:13px;font-weight:700;color:#f59e0b;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">⚠ Before anything else — save the file to your computer</div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.75;">
+      You are currently viewing this page from a web link. The Portfolio Tracker will <strong style="color:var(--text);">not save your data</strong> if you run it directly from a browser link — it must be saved to a folder on your computer first.<br><br>
+      <strong style="color:var(--text);">Right-click the button below → Save link as…</strong> and save <code>Portfolio_Tracker_Demo.html</code> into a folder on your computer. Then open that saved file in Chrome or Edge. Do not just click Open — save it first.
+    </div>
+    <div style="margin-top:14px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+      <a class="launch-btn" href="Crypto_Tracker_Demo.html" download style="font-size:14px;padding:12px 24px;">
+        ↓ &nbsp;Download Portfolio Tracker
+      </a>
+      <span style="font-size:12px;color:var(--muted);">Right-click → Save link as… if the file opens instead of downloading</span>
+    </div>
   </div>
 
   <div class="divider"></div>
-  <div class="steps-title">Setup — four steps for best experience</div>
+  <div class="steps-title">Setup — four steps after saving the file</div>
 
   <!-- Step 1 -->
   <div class="step">
     <div class="step-num">1</div>
     <div class="step-body">
-      <div class="step-title">Create a dedicated working folder</div>
+      <div class="step-title">Create a dedicated working folder and move files in</div>
       <div class="step-desc">
         Create a folder somewhere permanent on your computer — for example <code>C:\PortfolioTracker\</code> or inside your Documents folder.<br><br>
-        <strong>Move both files into this folder:</strong> the demo HTML file and this START_HERE guide. This folder will also hold your data backup file — keep it in one place and don't move it later.
+        <strong>Move both files into this folder:</strong> <code>Portfolio_Tracker_Demo.html</code> and this <code>START_HERE.html</code>. This folder will also hold your data backup file — keep everything in one place and don't move it later.
       </div>
     </div>
   </div>
@@ -220,10 +228,10 @@
   <div class="step">
     <div class="step-num">2</div>
     <div class="step-body">
-      <div class="step-title">Open the tracker and create your data file</div>
+      <div class="step-title">Open the tracker from your folder and create your data file</div>
       <div class="step-desc">
-        Double-click <strong>Portfolio_Tracker_Demo.html</strong> to open it in Chrome or Edge.<br><br>
-        On first open, click <strong>▶ Start Free Trial</strong>. The tracker will ask you to create a backup data file — click <strong>⛁ Data ▾ → Link / Change File</strong>, then choose <strong>Save</strong> and save a file called <code>portfolio_data.json</code> <strong>inside your working folder</strong>.<br><br>
+        <strong>Double-click</strong> <code>Portfolio_Tracker_Demo.html</code> from inside your working folder to open it in Chrome or Edge. Do not open it from Downloads — always open from your working folder.<br><br>
+        On first open, click <strong>▶ Start Free Trial</strong>. Then click <strong>⛁ Data ▾ → Link / Change File</strong>, choose <strong>Save</strong>, and save a file called <code>portfolio_data.json</code> <strong>inside your working folder</strong>.<br><br>
         The status dot in the header will turn <strong style="color:#3df5a0;">green</strong> — auto-save is now active and your data is protected.
       </div>
     </div>
