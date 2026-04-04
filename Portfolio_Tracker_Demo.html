@@ -2564,6 +2564,37 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
       <div style="font-size:10px;color:var(--text3);margin-top:6px;line-height:1.5;">
         Add one row per token received. Leave blank to log as external withdrawal only.
       </div>
+      <!-- Partial withdrawal: new position value after withdrawal -->
+      <div id="cl-partial-section" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
+        <div style="font-size:10px;font-weight:700;color:#4a9eff;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">
+          📤 Partial Withdrawal — pool stays open
+        </div>
+        <div class="form-grid col2" style="gap:8px;">
+          <div class="field" style="margin-bottom:0;">
+            <label style="font-size:10px;">Amount Withdrawn $</label>
+            <input id="cl-partial-amount" type="number" step="any" placeholder="e.g. 5000"
+              oninput="updatePartialNewVal()" style="font-size:12px;">
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label style="font-size:10px;">New Position Value $</label>
+            <input id="cl-partial-newval" type="number" step="any" placeholder="auto-calculated"
+              oninput="updatePartialAmount()" style="font-size:12px;opacity:0.8;">
+          </div>
+        </div>
+        <div class="form-grid col2" style="gap:8px;margin-top:8px;">
+          <div class="field" style="margin-bottom:0;">
+            <label style="font-size:10px;">New Token Qty (Token A) <span style="font-weight:400;opacity:0.7;">— from platform after withdrawal</span></label>
+            <input id="cl-partial-tokqty" type="number" step="any" placeholder="e.g. 2.6393055"
+              style="font-size:12px;font-family:var(--mono);">
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label style="font-size:10px;">New Token Qty (Token B) <span style="font-weight:400;opacity:0.7;">— if applicable</span></label>
+            <input id="cl-partial-tokqtyB" type="number" step="any" placeholder="leave blank if none"
+              style="font-size:12px;font-family:var(--mono);">
+          </div>
+        </div>
+        <div id="cl-partial-hint" style="font-size:10px;color:var(--text3);margin-top:5px;line-height:1.5;"></div>
+      </div>
     </div>
 
     <div class="form-grid col1">
@@ -2572,6 +2603,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     <div class="modal-actions">
       <button class="btn" onclick="closeModal('closeModal2')">Cancel</button>
       <button class="btn warn" id="cl-rebalance-btn" onclick="doRebalance()">Rebalance (keep pool, reset entry)</button>
+      <button class="btn primary" id="cl-partial-btn" onclick="doPartialWithdrawal()" style="display:none;" title="Withdraw some funds and reduce position value — keeps pool open">↓ Partial Withdrawal</button>
       <button class="btn danger" onclick="doClose()">Close Position</button>
     </div>
   </div>
@@ -2581,6 +2613,10 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 <div class="overlay" id="vaultModal">
   <div class="modal">
     <div class="modal-title" id="vaultModalTitle">ADD VAULT</div>
+    <div id="vm-subtitle" style="font-size:11px;color:var(--text3);margin:-8px 0 10px;line-height:1.5;">
+      For single-asset yield positions — lending vaults, staking, LSTs (e.g. Scallop, Drift, Marinade).<br>
+      <span style="color:var(--text3);opacity:0.8;">For Beefy-style LP pools, use the <strong style="color:var(--text2);">LP Pools tab</strong> with <strong style="color:var(--text2);">Vault Mode</strong> enabled instead.</span>
+    </div>
     <div class="form-grid">
       <div class="field"><label>Vault Name</label><input id="vm-name" placeholder="e.g. USDY"></div>
       <div class="field"><label>Platform</label><input id="vm-platform" placeholder="e.g. Scallop"></div>
@@ -2604,6 +2640,10 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
       <div class="field" id="vm-curval-row" style="display:none;">
         <label>Current Value $ <span style="font-weight:400;color:var(--text3);font-size:calc(var(--fs-base) - 2px);">(read from platform — yield back-calculated automatically)</span></label>
         <input id="vm-curval" type="number" placeholder="e.g. 10250" step="any">
+        <div style="font-size:11px;color:var(--accent);background:rgba(10,124,74,0.07);border:1px solid rgba(10,124,74,0.2);border-radius:5px;padding:7px 10px;margin-top:5px;line-height:1.6;">
+          💡 <strong>How to update yield:</strong> Open your platform (e.g. Scallop, Drift) and find the <em>total current value</em> of this vault position. Enter that amount here — the tracker calculates yield automatically as <strong>Current Value − Entry Value</strong>.<br>
+          <span style="opacity:0.8;">This is different from LP Pools — the Vault tab tracks single-asset yield positions like lending vaults and staking, not Beefy-style LP pools.</span>
+        </div>
         <div id="vm-curval-hint" style="font-size:10px;color:var(--text3);margin-top:3px;line-height:1.5;"></div>
       </div>
     </div>
@@ -6912,6 +6952,20 @@ function openCloseModal(poolId) {
   document.getElementById('cl-lp-dest').style.display    = isVault ? 'none' : '';
   document.getElementById('cl-vault-dest').style.display = isVault ? '' : 'none';
   document.getElementById('cl-rebalance-btn').style.display = isVault ? 'none' : ''; // rebalance N/A for vault
+  document.getElementById('cl-partial-btn').style.display = isVault ? '' : 'none'; // partial withdrawal for vault only
+  document.getElementById('cl-partial-section').style.display = isVault ? '' : 'none';
+  // Pre-fill new position value with current value
+  if(isVault) {
+    const curVal = p.manualCurrentValue || p.entryValue || 0;
+    document.getElementById('cl-partial-newval').value = '';
+    document.getElementById('cl-partial-amount').value = '';
+    const curTokA = p.tokAQty || 0;
+    const curTokB = p.tokBQty || 0;
+    document.getElementById('cl-partial-tokqty').value = '';
+    document.getElementById('cl-partial-tokqtyB').value = '';
+    document.getElementById('cl-partial-hint').textContent =
+      `Current: $${$f(curVal)}${curTokA ? ` | Token A: ${curTokA}` : ''}${curTokB ? ` | Token B: ${curTokB}` : ''}. Enter withdrawn amount or new values — token qty optional but recommended.`;
+  }
 
   // Clear vault return rows and add one default row
   document.getElementById('cl-returns').innerHTML = '';
@@ -6997,6 +7051,99 @@ function archivePool(type) {
   });
   return p;
 }
+function updatePartialNewVal() {
+  const p = DB.pools.find(x => x.id === document.getElementById('cl-idx').value);
+  if(!p) return;
+  const curVal = p.manualCurrentValue || p.entryValue || 0;
+  const withdrawn = parseFloat(document.getElementById('cl-partial-amount').value) || 0;
+  const newVal = Math.max(0, curVal - withdrawn);
+  document.getElementById('cl-partial-newval').value = newVal ? newVal.toFixed(2) : '';
+  document.getElementById('cl-partial-hint').textContent =
+    withdrawn ? `New position value will be: $${$f(newVal)} (was $${$f(curVal)})` :
+    `Current position value: $${$f(curVal)}`;
+}
+
+function updatePartialAmount() {
+  const p = DB.pools.find(x => x.id === document.getElementById('cl-idx').value);
+  if(!p) return;
+  const curVal = p.manualCurrentValue || p.entryValue || 0;
+  const newVal = parseFloat(document.getElementById('cl-partial-newval').value) || 0;
+  const withdrawn = Math.max(0, curVal - newVal);
+  document.getElementById('cl-partial-amount').value = withdrawn ? withdrawn.toFixed(2) : '';
+  document.getElementById('cl-partial-hint').textContent =
+    newVal ? `Amount withdrawn: $${$f(withdrawn)} (was $${$f(curVal)})` :
+    `Current position value: $${$f(curVal)}`;
+}
+
+function doPartialWithdrawal() {
+  const poolId = document.getElementById('cl-idx').value;
+  const p = DB.pools.find(x => x.id === poolId);
+  if(!p || !p.vaultMode) return;
+
+  const curVal     = p.manualCurrentValue || p.entryValue || 0;
+  const withdrawn  = parseFloat(document.getElementById('cl-partial-amount').value) || 0;
+  const newVal     = parseFloat(document.getElementById('cl-partial-newval').value) ||
+                     Math.max(0, curVal - withdrawn);
+  const wallet     = document.getElementById('cl-vault-wallet')?.value.trim() || '';
+  const notes      = document.getElementById('cl-notes').value.trim();
+
+  if(!withdrawn && !newVal) {
+    toast('Enter withdrawal amount or new position value', true); return;
+  }
+  if(newVal < 0) { toast('New position value cannot be negative', true); return; }
+
+  // Update pool's manualCurrentValue to reflect reduced position
+  // Also reduce entryValue proportionally so Net Result stays meaningful
+  const prevCurVal = p.manualCurrentValue || p.entryValue || 0;
+  if(prevCurVal > 0 && newVal >= 0) {
+    const ratio = newVal / prevCurVal;
+    p.entryValue = (p.entryValue || 0) * ratio;
+  }
+  p.manualCurrentValue = newVal;
+
+  // Update token quantities if provided
+  const newTokQtyA = parseFloat(document.getElementById('cl-partial-tokqty')?.value);
+  const newTokQtyB = parseFloat(document.getElementById('cl-partial-tokqtyB')?.value);
+  if(!isNaN(newTokQtyA) && newTokQtyA >= 0) p.tokAQty = newTokQtyA;
+  if(!isNaN(newTokQtyB) && newTokQtyB >= 0) p.tokBQty = newTokQtyB;
+
+  // Process any token return rows into Holdings
+  const returnRows = document.querySelectorAll('#cl-returns > div');
+  const returned = [];
+  returnRows.forEach(row => {
+    const sym = (row.querySelector('.cl-ret-sym')?.value||'').trim().toUpperCase();
+    const qty = +row.querySelector('.cl-ret-qty')?.value || 0;
+    if(!sym || !qty) return;
+    const known    = KNOWN_TOKENS.find(t => t.sym.toLowerCase() === sym.toLowerCase());
+    const existing = DB.holdings.find(h => h.sym.toUpperCase() === sym);
+    const geckoId  = known?.id || existing?.geckoId || '';
+    const price    = getPrice(geckoId) || 0;
+    mergeYieldIntoHoldings(sym, geckoId, qty, price * qty, wallet);
+    returned.push(`${qty} ${sym}`);
+    logTransaction({
+      date: today(), type: 'Transfer', sym,
+      qty, price, total: price * qty,
+      from: `Pool: ${p.name}`, to: wallet || 'Holdings',
+      notes: notes || `Partial withdrawal — ${qty} ${sym} returned`,
+    });
+  });
+
+  // Log the withdrawal value transaction even if no token rows
+  if(!returned.length) {
+    logTransaction({
+      date: today(), type: 'Transfer', sym: p.name,
+      qty: null, price: null, total: withdrawn,
+      from: `Pool: ${p.name}`, to: wallet || 'External',
+      notes: notes || `Partial withdrawal — $${$f(withdrawn)} removed, $${$f(newVal)} remaining`,
+    });
+  }
+
+  persist(); closeModal('closeModal2'); renderAll();
+  toast(returned.length
+    ? `Partial withdrawal logged — ${returned.join(', ')} returned. Position reduced to $${$f(newVal)}`
+    : `Partial withdrawal of $${$f(withdrawn)} logged. Position reduced to $${$f(newVal)}`);
+}
+
 function doClose() {
   const p = archivePool('Close');
   if(!p) return;
