@@ -1,6 +1,6 @@
 {
-  "version": "1.1",
-  "updatedAt": "2026-03-26",
+  "version": "v2026.04.04",
+  "updatedAt": "2026-04-04",
   "appName": "Portfolio Tracker",
   "tabs": {
     "overview": {
@@ -9,32 +9,32 @@
         {
           "icon": "🎯",
           "heading": "What this tracker does",
-          "text": "The Portfolio Tracker is a single self-contained HTML file that runs entirely in your browser — no server, no installation, no account required. It solves the core challenge of managing a complex digital asset portfolio across multiple wallets, liquidity pools, staking vaults, perpetual hedge positions, and a speculative watchlist — all in one place with live prices from CoinGecko.<br><br>Your data never leaves your machine. Everything is stored in your browser's local storage and a linked .json backup file on your own drive. The only external calls made are to CoinGecko (prices), Deribit (implied volatility), Hyperliquid (funding rates), and this help server (content sync only — no portfolio data transmitted)."
+          "text": "The Portfolio Tracker is a single self-contained HTML file that runs entirely in your browser — no server, no installation, no account required. It solves the core challenge of managing a complex digital asset portfolio across multiple wallets, liquidity pools, staking vaults, and speculative positions, all in one place with live prices.<br><br>Your data never leaves your machine. Everything is stored in your browser's local storage and a linked .json backup file on your own drive."
         },
         {
           "icon": "📂",
           "heading": "The seven tabs — what each does",
-          "text": "<strong>📊 Summary</strong> — Portfolio command center. Total value, deployed capital, overall P&L across all areas, and the IL Break-Even Calculator for modeling new positions before committing capital.<br><br><strong>🔁 LP Pools</strong> — Tracks concentrated liquidity positions (Uniswap v3, Aerodrome, Orca, Beefy vaults). Live pricing, impermanent loss calculation using platform-appropriate math, yield logging, and the Beat HODL? scorecard — the definitive answer to whether LP yield has overcome impermanent loss.<br><br><strong>🏦 Vaults</strong> — Single-asset yield positions: staking, lending vaults, LSTs. Tracks APY, yield earned, days active, and net result vs entry value.<br><br><strong>💼 Holdings</strong> — Spot tokens across all wallets and chains. Average cost basis, P&L, allocation %, and per-holding price alerts (buy trigger, stop loss, T1/T2/T3 take-profit ladder).<br><br><strong>⚡ Hedge</strong> — Calculates optimal perpetual short positions on Hyperliquid to protect BTC, ETH, and SOL exposure at minimum funding cost. IV from Deribit, funding rates from Hyperliquid, and a 5-step formula produce a regime-based hedge ratio. The Performance Chart builds price history across sessions.<br><br><strong>📁 History</strong> — Archives all closed pools, rebalances, yield logs, and transactions. Full editing capability. Tax-ready CSV export.<br><br><strong>💎 GEMs</strong> — Watchlist for speculative tokens with buy triggers, stop losses, three take-profit tiers, Vol/MC momentum signals (1hr/24hr/48hr), and 7-day sparklines."
+          "text": "<strong>📊 Summary</strong> — Portfolio command center. Total value, deployed capital, P&L across all areas, and the IL Break-Even Calculator for modeling new positions before committing capital.<br><br><strong>🔁 LP Pools</strong> — Tracks concentrated liquidity positions (Uniswap v3, Aerodrome, Orca, Beefy vaults). Live pricing, impermanent loss calculation, yield logging, and the Beat HODL? scorecard.<br><br><strong>🏦 Vaults</strong> — Single-asset yield positions: staking, lending, LSTs. Tracks APY, yield earned, and net result vs entry value.<br><br><strong>💼 Holdings</strong> — Spot tokens across all wallets and chains. Cost basis, P&L, allocation %, and per-holding price alerts (buy trigger, stop loss, T1/T2/T3).<br><br><strong>⚡ Hedge</strong> — Calculates optimal perpetual short positions on Hyperliquid to protect BTC, ETH, and SOL exposure. Live IV from Deribit, funding rates from Hyperliquid, and a 5-step formula produce a regime-based hedge ratio. Performance chart shows hedge effectiveness over time.<br><br><strong>📁 History</strong> — Archives all closed pools, rebalances, yield logs, and transactions. Full editing capability on historical entries. Tax-ready CSV export.<br><br><strong>💎 GEMs</strong> — Watchlist for speculative tokens. Buy triggers, stop losses, three take-profit tiers, Vol/MC momentum signals, and sparklines."
         },
         {
           "icon": "🔑",
           "heading": "Key concepts to understand",
-          "text": "<strong>Beat HODL?</strong> — The fundamental LP question: has the yield earned by providing liquidity outweighed the impermanent loss vs simply holding the tokens? Shown as ✓ YES / ✗ NO on every pool.<br><br><strong>Hedge ratio</strong> — The percentage of your crypto exposure protected by a short position. Hard capped at 60% — you always retain meaningful upside exposure. The 5-step formula uses implied volatility, 7-day trend, funding rate, and pool yield to recommend the optimal ratio.<br><br><strong>Net carry</strong> — Pool yield earned minus annual funding cost on the hedge. Positive carry means the hedge is net profitable. This is the key metric for deciding whether to hedge at all.<br><br><strong>Funded From Holdings</strong> — When adding capital to a pool or vault, this feature auto-deducts source tokens from Holdings and logs Transfer transactions automatically — keeping all balances correct without manual editing.<br><br><strong>Backup envelope</strong> — Your .json backup file contains everything: portfolio data, hedge chart history, activation token, Pushover keys, and settings. Linking the backup file on any machine restores the complete tracker instantly."
+          "text": "<strong>Beat HODL?</strong> — The fundamental LP question: has the yield earned by providing liquidity outweighed the impermanent loss vs simply holding the tokens? Shown as ✓ YES / ✗ NO on every pool.<br><br><strong>Hedge ratio</strong> — The percentage of your crypto exposure protected by a short position. Hard capped at 60% — you always retain meaningful upside exposure. The formula uses implied volatility, 7-day trend, and funding rate to recommend the optimal ratio automatically.<br><br><strong>Net carry</strong> — Pool yield earned minus annual funding cost on the hedge. Positive carry means the hedge is net profitable.<br><br><strong>Funded From Holdings</strong> — When adding capital to a pool or vault, this feature auto-deducts the source tokens from your Holdings and logs Transfer transactions — keeping all balances correct without manual editing.<br><br><strong>Backup envelope</strong> — Your .json backup file contains everything: portfolio data, hedge chart history, activation token, Pushover keys, and settings. Linking the backup file on any machine restores the complete tracker instantly."
         },
         {
           "icon": "🚀",
           "heading": "Getting started — four steps",
-          "text": "<strong>1. Open in Chrome or Edge</strong> — double-click the HTML file. Firefox is not recommended (File System API limitations).<br><br><strong>2. Link your backup file</strong> — click ⛁ Data ▾ → Link / Change File → select or create a .json file in the same folder. Auto-save activates immediately (every 7 minutes, silently). The status dot turns green when active.<br><br><strong>3. Add your first position</strong> — go to the tab that matches what you want to track. Click the + button. For LP Pools: enter both token symbols, current quantities, entry value, and your price range.<br><br><strong>4. Refresh prices</strong> — click ↻ Refresh in the header. Prices update from CoinGecko and the live header bar populates. From here, everything is live and auto-refreshes every 5 minutes."
+          "text": "<strong>1. Open in Chrome or Edge</strong> — double-click the HTML file. Firefox is not recommended (File System API limitations).<br><br><strong>2. Link your backup file</strong> — click ⛁ Data ▾ → Link / Change File → select or create a .json file in the same folder. Auto-save activates immediately (every 7 minutes, silently).<br><br><strong>3. Add your first position</strong> — go to the tab that matches what you want to track. Click the + button. For LP Pools: enter both token symbols, current quantities, entry value, and your price range.<br><br><strong>4. Refresh prices</strong> — click ↻ Refresh in the header. Prices update from CoinGecko and the live header bar populates. From here, everything is live."
         },
         {
           "icon": "⛁",
           "heading": "Data protection",
-          "text": "<strong>Auto-save</strong> — every 7 minutes when a backup file is linked. Also saves automatically when you switch away from the browser tab. Silent — no notification on every save.<br><br><strong>Manual save</strong> — ⛁ Data ▾ → Save / Export Backup downloads a dated .json backup. The file uses a versioned envelope format containing both your portfolio data and hedge chart history.<br><br><strong>After a cache clear</strong> — if your browser cache is cleared, localStorage is wiped. Re-open the tracker and link your .json backup file — all data restores immediately including hedge chart history.<br><br><strong>Moving to a new machine</strong> — copy the entire tracker folder (HTML file + backup .json + help_img/ folder). Open the HTML in Chrome, link the backup file. Activation, settings, Pushover keys, and all data restore automatically."
+          "text": "<strong>Auto-save</strong> — every 7 minutes when a backup file is linked. Also saves when you switch away from the browser tab.<br><br><strong>Manual save</strong> — ⛁ Data ▾ → Save / Export Backup downloads a dated .json backup to your drive.<br><br><strong>After a cache clear</strong> — if your browser cache is cleared, localStorage is wiped. Re-open the tracker and link your .json backup file — all data restores immediately, including hedge chart history.<br><br><strong>Moving to a new machine</strong> — copy the entire tracker folder (HTML file + backup .json + help_img/ folder). Open the HTML in Chrome and link the backup file. Activation, settings, and all data restore automatically."
         },
         {
           "icon": "❓",
           "heading": "Common first-time questions",
-          "text": "<strong>Why isn't a token price loading?</strong> CoinGecko may be rate-limited — wait 60 seconds and click ↻ Refresh. If a specific token always shows — , its CoinGecko ID may be wrong — edit the entry and search for the correct ID.<br><br><strong>How do I activate the tracker?</strong> Your Install ID is shown on the activation screen. Contact the author with your ID to receive a machine-specific activation code. The code is stored in your backup file and restores automatically on any future import.<br><br><strong>What is the Hedge tab for?</strong> If you hold BTC, ETH, or SOL in pools or vaults, the Hedge tab helps you size a protective short position on Hyperliquid that offsets downside risk while keeping upside exposure. It is entirely optional — all other tabs function independently.<br><br><strong>Is my data safe?</strong> Yes — no data ever leaves your machine. The only external calls are to CoinGecko (prices), Deribit (IV), Hyperliquid (funding rates), and the Cloudflare Worker (help content — activation verified, no portfolio data transmitted)."
+          "text": "<strong>Why isn't a token price loading?</strong> CoinGecko may be rate-limited — wait 60 seconds and click ↻ Refresh. If a specific token always shows — , its CoinGecko ID may be wrong — edit the entry and search for the correct ID.<br><br><strong>How do I activate the tracker?</strong> Your Install ID is shown on the activation screen. Send it to the author and an activation code will be returned. The code is stored in your backup file and restores automatically on any future import.<br><br><strong>What is the Hedge tab for?</strong> If you hold BTC, ETH, or SOL in pools or vaults, the Hedge tab helps you size a protective short position on Hyperliquid that offsets downside risk while keeping your upside exposure. It is entirely optional — all other tabs function independently.<br><br><strong>Is my data safe?</strong> Yes — no data ever leaves your machine. The only external calls are to CoinGecko (prices), Deribit (implied volatility), Hyperliquid (funding rates), and a Cloudflare Worker (help content verification only). No portfolio data is transmitted in any of these calls."
         }
       ]
     },
@@ -44,27 +44,27 @@
         {
           "icon": "📋",
           "heading": "What this tab does",
-          "text": "Provides a bird's-eye view of your entire portfolio — total value, deployed capital, overall P&L, and a breakdown by area (Pools, Vaults, Holdings, GEMs). [img:1]"
+          "text": "The Summary Tab provides a bird's-eye view of your entire portfolio — Total Value, Deployed Capital, overall P&L, and a breakdown by area (Pools, Vaults, Holdings, GEMs). [img:1]\nThe Toolbar is on the top of every screen.  This controls many aspects of the application:\n[img:2]"
         },
         {
           "icon": "⚙️",
           "heading": "How it functions",
-          "text": "All values are calculated in real time from live prices via CoinGecko. The IL Break-Even Calculator lets you model impermanent loss scenarios for any pool type before committing capital."
+          "text": "All values are calculated in real time from live prices using a CoinGecko API (program interface). A IL (Impermanent Loss) Break-Even Calculator on the lower half of the Tab, allows  you to model impermanent loss scenarios for any pool type before committing capital. It estimates how long it will take for Pool Yield to overcome a specific Pool's IL.  This is a <em>prospective</em> means to estimate a Pool's profitability <em>before</em> entering."
         },
         {
           "icon": "✏️",
           "heading": "How to enter data",
-          "text": "No data entry here — this tab reads from all other tabs. Set your Inception Date by clicking the date field to track portfolio-wide performance from a specific start date."
+          "text": "The Summary Tab has no data entry — this tab summarizes data from all other tabs. Set your Inception Date by clicking the date field to track portfolio-wide performance from a specific start date."
         },
         {
           "icon": "➡️",
           "heading": "Further actions",
-          "text": "Use the IL Calculator to model new positions before adding them. Click ↻ Refresh in the header to update all live prices."
+          "text": "Use the IL Calculator to model new positions <em>before</em> adding them. Click ↻ Refresh in the header to update all live prices. Here is a modeled SOL/USDC pool, estimating the future price movement. [img:4]    \nWe input the numbers into the IL Calculator and see this result:\n[img:5]\nIn this example:  If the pool remains in range, the profit offsets any impermanent loss in the first day:  [img:6]"
         },
         {
           "icon": "📊",
           "heading": "How to interpret",
-          "text": "Deployed = what you put in. Current = what it's worth now. Overall P&L = current minus deployed. Each area card shows its own deployed vs current vs P&L."
+          "text": "Deployed = what you put in. Current = what it's worth now. Overall P&L = current minus deployed. Each Tab reveals its own Deployed $ vs Current$ vs P&L.\nThe IL Calculator helps estimate how long it will take for Yield to be greater than Impermanent loss when evaluating a Pool before entry.  See \"further action\" here."
         },
         {
           "icon": "❓",
@@ -79,32 +79,32 @@
         {
           "icon": "📋",
           "heading": "What this tab does",
-          "text": "Tracks all active liquidity pool positions — token quantities, live values, yield harvested, range status, IL vs HODL comparison, and annualized returns."
+          "text": "The Liquidity Pool Tab manages all active liquidity pool positions — Token quantities are tracked, live values, yield harvested, range high and low, IL vs HODL comparison, and annualized returns.  Customized alerts notify you when range limits are near.  These are on-screen and can also be sent as phone alerts. [img:1]\nPhone alerts appear along with audible notification:  [img:2]"
         },
         {
           "icon": "⚙️",
           "heading": "How it functions",
-          "text": "Live prices fetch from CoinGecko. The ratio between Token A and Token B is compared to your set range (Low/High) to determine range status. IL is calculated using the pool model you select (v2, v3, Curve, Balancer)."
+          "text": "Live prices originate from a CoinGecko API. The ratio between Token A and Token B is compared to your set range (Low/High) to determine range status. IL is calculated in real time, using the pool model appropriate for the Pool Platform (v2, v3, Curve, Balancer)."
         },
         {
           "icon": "✏️",
           "heading": "How to enter data",
-          "text": "Click <strong>+ Add Pool</strong>. Enter both token symbols, current quantities, entry value, and your price range. Use ✎ to edit any row. Click ▶ on a row to log a yield harvest inline."
+          "text": "Click <strong>+ Add Pool</strong>. Enter both token symbols, current quantities, entry value, and your price range. Use ✎ to edit any row. Click ▶ on a row to update token quantities and log yield harvest.  It is important to realize there is no necessity to update pools frequently.  The accuracy will improve with update and harvest, but whenever performed you are up-to-date.  To Add a new Pool:  Select \"Add Pool\" on the top right of the Liquidity Pool List.  Fill in the appropriate data.   [img:4]\nEntry Token number = Current number at Pool deposit.  Enter both.  The Platform Name dictates the Pool Math utilized for accurate calculation.  [img:8]"
         },
         {
           "icon": "➡️",
           "heading": "Further actions",
-          "text": "Log yield harvests regularly using the ▶ expand panel. When rebalancing use ✎ → Rebalance to reset your entry point. Use Close when exiting entirely."
+          "text": "Log yield harvests regularly using the ▶ expand panel. [img:5] \nWhen rebalancing use ✎ → Rebalance to reset your entry point. [img:6]\nAt that point, the Pool Values move to Closed Pool History.  \"Rebalance\" leaves the Pool in place. This then requires an update to the new Pool $ Value and Token A, and Token B quantities.   Use \"Close\" when exiting a Pool entirely.  Again, the Pool History is stored in Closed Pool History. "
         },
         {
           "icon": "📊",
           "heading": "How to interpret",
-          "text": "<strong>Range badge:</strong> In Range · Watch (within 20% of boundary) · Act Now (within 10%) · OUT OF RANGE.<br><strong>Net/Ann%:</strong> Total return including yield, annualized.<br><strong>Beat HODL?</strong> Pool+Yield vs simply holding the tokens."
+          "text": "<strong>Range badge:</strong> In Range · Watch (within 20% of boundary) · Act Now (within 10%) · OUT OF RANGE.<br><strong>Net/Ann%:</strong> Total return including yield, annualized.<br><strong>Beat HODL?</strong> Pool+Yield vs simply holding the tokens. [img:7]"
         },
         {
           "icon": "❓",
           "heading": "Common questions",
-          "text": "<strong>Why is Live Ratio showing — ?</strong> A token price failed to load — try Refresh.<br><strong>What pool model should I use?</strong> Uniswap v3/Orca = v3, Uniswap v2/Sushi = v2, Curve/Beefy stable pairs = Curve, Balancer = Balancer."
+          "text": "<strong>Why is Live Ratio showing — ?</strong> A token price failed to load — try Refresh.<br><strong>What pool model should I use?</strong> Uniswap v3/Orca = v3, Uniswap v2/Sushi = v2, Curve/Beefy stable pairs = Curve, Balancer = Balancer.  The Pool Mathematical model should be recognized by the Pool Platform input on Deposit using the Portfolio Tracker Deposit input."
         }
       ]
     },
@@ -114,22 +114,22 @@
         {
           "icon": "📋",
           "heading": "What this tab does",
-          "text": "Tracks single-asset yield positions — staking, lending vaults, LSTs, and any strategy where you deposit one token and earn yield on it over time."
+          "text": "The Vault tab tracks single-asset yield positions — staking, lending vaults, LSTs, and any strategy where you deposit one token and earn yield on it over time. [img:1]\n"
         },
         {
           "icon": "⚙️",
           "heading": "How it functions",
-          "text": "Current value = Qty × Live Price. If you enter an APY, it estimates yield earned based on days since entry. You can override this with actual yield logged."
+          "text": "Current value = Qty × Live Price. If you enter an APY, it estimates yield earned based on days since entry. You can override this with actual yield logged intermittently as desired."
         },
         {
           "icon": "✏️",
           "heading": "How to enter data",
-          "text": "Click <strong>+ Add Vault</strong>. Enter the token, platform, quantity, APY (optional), entry date, and entry value. Update Qty when your staked amount changes. Enter actual Yield Earned $ when you harvest."
+          "text": "Click <strong>+ Add Vault</strong>. Enter the token, platform, quantity, APY (optional), entry date, and entry value. Update Qty when your staked amount changes. Enter actual Yield Earned $ when you harvest. \nTo Add a New Vault, Select +Add Vault in the right upper corner of the Vault List, fill in the appropriate information and Save the Vault. [img:2]"
         },
         {
           "icon": "➡️",
           "heading": "Further actions",
-          "text": "Update yield earned periodically. If you add more capital, edit the vault and adjust qty and entry value. Use Close via the Edit modal to archive to History when exiting."
+          "text": "Update yield earned periodically. If you add more capital, edit the vault and adjust qty and entry value. Use Close via the Edit modal to archive to Vault History when exiting."
         },
         {
           "icon": "📊",
@@ -149,32 +149,32 @@
         {
           "icon": "📋",
           "heading": "What this tab does",
-          "text": "Tracks all spot holdings — tokens held in wallets, exchanges, or hardware devices. Shows live price, 24h change, average cost basis, current value, allocation %, and unrealized P&L."
+          "text": "Holdings or Assets tracks all spot holdings — This includes tokens held in wallets, exchanges, or hardware devices. This maintains the live price of all assets, the portfolio current total value of each asset, and Profit or Loss relative to your cost basis. The 24h% change, average cost basis, current value, allocation %, and unrealized P&L. [img:1]"
         },
         {
           "icon": "⚙️",
           "heading": "How it functions",
-          "text": "Each row is one token/wallet/chain combination. Average cost updates automatically using weighted average when you buy more. The Group button clusters holdings by wallet for a cleaner view. [img:2]"
+          "text": "In the Holdings Tab, each row is one token/wallet/chain combination. Average cost updates automatically using weighted average when you buy more. The Group button clusters holdings by wallet for a cleaner view. By changing the hierarchy (center top), you can view each asset across all Wallets and Exchanges, or view by Wallet showing the content of each.  This can be broken down further by Chain to view as an example, Ethereum on each chain on a specific wallet.  This helps you to understand what is available for gas fees and what can be used by assembling the same asset but from different chains."
         },
         {
           "icon": "✏️",
           "heading": "How to enter data",
-          "text": "Click <strong>+ Add Holding</strong> or use Buy/Sell/Swap/Transfer actions on an existing row. For buys, enter qty and price — cost basis is calculated automatically. For stablecoins, price locks at $1."
+          "text": "<strong>Click</strong> + Add Holding or use Buy/Sell/Swap/Transfer actions on an existing row. For buys, enter qty and price — cost basis is calculated and maintained automatically. This is also the case across the application Tabs.  For stablecoins, the price is locked at $1. [img:2]"
         },
         {
           "icon": "➡️",
           "heading": "Further actions",
-          "text": "Use the 🔔 alert button on any row to set price alerts (buy trigger, stop loss, TP1/2/3). Use Swap to record token-to-token trades. Use Transfer to move between wallets while preserving cost basis.[img:4]"
+          "text": "Use the 🔔 alert button on any row to set price alerts (buy trigger, stop loss, and Take Profit level: 1,2, or 3. Use Swap to record token-to-token trades. Use Transfer to move between wallets or from Central Exchange to your Wallet or your Wallet to Central exchange, while maintaining cost basis.[img:4]"
         },
         {
           "icon": "📊",
           "heading": "How to interpret",
-          "text": "<strong>Avg Cost:</strong> Your blended entry price across all purchases.<br><strong>Alloc %:</strong> This holding as a percentage of total spot portfolio value.<br><strong>P&L $/%:</strong> Unrealized gain/loss vs your cost basis."
+          "text": "Avg Cost: Your blended entry price across all purchases. Alloc %: Each holding as a percentage of total spot portfolio value. P&L $ is your unrealized Gain or Loss relative to the cost basis of that asset in your Portfolio."
         },
         {
           "icon": "❓",
           "heading": "Common questions",
-          "text": "<strong>Why does a token show — for price?</strong> The CoinGecko ID may be wrong — edit and search for the correct token.<br><strong>How do I record a sale?</strong> Use the Sell action on the holding row — it reduces qty and logs the transaction."
+          "text": "Why does a token show \"—\" for price? The CoinGecko ID may be wrong — re-search for the correct token, being sure to select an option below the search which shows the available matches. How do I record a sale?  Use the Sell action on the holding row — it reduces qty and logs the transaction."
         }
       ]
     },
@@ -320,6 +320,13 @@
   ],
   "changelog": [
     {
+      "version": "v2026.04.04",
+      "date": "2026-04-04",
+      "notes": [
+        "Help content updated"
+      ]
+    },
+    {
       "version": "v1.1",
       "date": "2026-03-26",
       "notes": [
@@ -339,48 +346,5 @@
         "Security hardening on activation system"
       ]
     }
-  ],
-  "whatsNew": {
-    "46.99": {
-      "headline": "Version 46.99 — What's New",
-      "summary": "Hedge chart persistence, GitHub help site, security hardening, and backup improvements.",
-      "items": [
-        {
-          "icon": "📈",
-          "title": "Hedge chart now builds history across sessions",
-          "text": "The Hedge Performance Chart accumulates price history between sessions using IV-adaptive sampling — 1, 2, 5, or 10 minute intervals based on current implied volatility, plus a 0.5% spot-move trigger that forces a sample regardless of interval. The 1H / 6H / 1D / 7D / All time windows are now meaningful as history accumulates over days and weeks. History is stored in a dedicated key (HPC_hist_v1) — never mixed with portfolio data — and travels with your backup file."
-        },
-        {
-          "icon": "📖",
-          "title": "Live help documentation site",
-          "text": "A full help site is now live at jdgoldstein.github.io/portfoliotracker-help — searchable, dark mode, sidebar navigation, tab-by-tab documentation, FAQ, and changelog. The tracker fetches help content in the background on startup via an activation-gated Cloudflare Worker. Edit help locally using the ✏ Edit button in the help modal, then click ⬆ Export to GitHub and upload help-content.json to the repo — all users receive updates within one hour."
-        },
-        {
-          "icon": "🔒",
-          "title": "Security hardening",
-          "text": "Activation secrets are no longer stored as plain text string literals — assembled at runtime from split arrays. The Demo's universal bypass key (ACT_MASTER) has been completely removed — only machine-specific derived codes accepted. The Demo trial is now triple-stamped (localStorage + IndexedDB + backup file field) to prevent reset via cache clear. demoRestoreTrialStamp() recovers the trial start from any surviving store on activation."
-        },
-        {
-          "icon": "🔑",
-          "title": "Per-recipient activation code generator",
-          "text": "Settings → 🔑 Generate User Code. Enter a recipient's Install ID (shown on their activation screen) to generate the unique machine-specific activation code for their machine. Code is copied to clipboard automatically. Keep a record of issued Install IDs — future versions can revoke access by rotating the application secret."
-        },
-        {
-          "icon": "⛁",
-          "title": "Versioned backup envelope (schema v2)",
-          "text": "Backup files now use a structured envelope: { schemaVersion: 2, db: {...}, hpcHistory: {...}, _lic, savedAt }. Hedge chart history travels with your backup and restores automatically on import. HedgeCache feed data (IV, funding rates, trend signals) is no longer written to backup files — only user overrides (ratio_*, limitBuy_*, ivSpreadBaseline) are preserved. Legacy v1 flat-format backups fully supported on import."
-        },
-        {
-          "icon": "⏱",
-          "title": "Auto-save every 7 minutes, silently",
-          "text": "Auto-save interval reduced from 10 to 7 minutes. No more toast notification on every auto-save tick — the last-saved timestamp is visible in the ⛁ Data menu. Auto-save also correctly strips feed data before writing, matching the clean output of a manual export."
-        },
-        {
-          "icon": "✦",
-          "title": "Overview tab and What's New modal",
-          "text": "The ? Help modal now has a tab navigation bar at the top. The first tab (⛁ Overview) provides a full introduction to the tracker — what each tab does, key concepts, getting started steps, and data protection. On each new version, a What's New modal appears automatically after activation (once per version), summarising the new features with a link to the full changelog."
-        }
-      ]
-    }
-  }
+  ]
 }
