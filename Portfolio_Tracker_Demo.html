@@ -14862,9 +14862,8 @@ function _renderImageManager() {
   let html = `
     <div style="font-size:11px;color:var(--text3);margin-bottom:14px;line-height:1.7;">
       This panel shows all help images across every tab. <strong style="color:var(--text2);">Green slots</strong> are filled —
-      hover to preview. <strong style="color:var(--text2);">Grey slots</strong> are empty — click Upload to add an image.
-      After uploading, reference it in the help text as <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-family:var(--mono);">[img:N]</code>
-      where N is the slot number.
+      hover to preview, click to enlarge. <strong style="color:var(--text2);">Grey slots</strong> are empty — click Upload to add.
+      After uploading, reference it in help text as <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-family:var(--mono);">[img:N]</code>.
     </div>`;
 
   TABS.forEach(tab => {
@@ -14890,23 +14889,24 @@ function _renderImageManager() {
       const n = String(i);
       const hasSrc = !!reg[n];
       const isReferenced = ref.has(n);
-      const thumb = hasSrc ? reg[n] : null;
 
       if(hasSrc) {
         html += `
-          <div style="position:relative;display:inline-flex;flex-direction:column;align-items:center;gap:4px;">
+          <div style="display:inline-flex;flex-direction:column;align-items:center;gap:4px;">
             <div style="position:relative;width:72px;height:54px;border-radius:5px;overflow:hidden;
               border:2px solid rgba(10,124,74,.5);background:var(--bg3);cursor:pointer;flex-shrink:0;"
               title="image${n}.png — click to preview"
-              onclick="helpZoomImg('${thumb}')">
-              <img src="${thumb}" style="width:100%;height:100%;object-fit:cover;">
+              data-img-tab="${tab}" data-img-n="${n}"
+              onclick="helpImgZoomByKey(this.dataset.imgTab, this.dataset.imgN)">
+              <img data-img-tab="${tab}" data-img-n="${n}"
+                style="width:100%;height:100%;object-fit:cover;" src="" data-lazy="1">
               <div style="position:absolute;inset:0;background:rgba(0,0,0,.45);opacity:0;transition:.15s;
                 display:flex;align-items:center;justify-content:center;font-size:16px;"
                 onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0">🔍</div>
             </div>
             <div style="font-size:9px;font-family:var(--mono);color:${isReferenced?'var(--accent)':'var(--text3)'};
               font-weight:${isReferenced?'700':'400'};"
-              title="${isReferenced?'Referenced in help text as [img:'+n+']':'Not yet referenced in help text'}">
+              title="${isReferenced?'Used in help text as [img:'+n+']':'Not yet referenced in help text'}">
               [img:${n}]${isReferenced?' ✓':''}
             </div>
             <label style="cursor:pointer;">
@@ -14914,7 +14914,8 @@ function _renderImageManager() {
                 background:rgba(10,124,74,.1);border:1px solid rgba(10,124,74,.3);
                 color:var(--accent);white-space:nowrap;">↺ Replace</span>
               <input type="file" accept="image/png,image/jpeg,image/webp" style="display:none"
-                onchange="helpImgUpload(this,'${tab}','${n}')">
+                data-tab="${tab}" data-n="${n}"
+                onchange="helpImgUpload(this,this.dataset.tab,this.dataset.n)">
             </label>
           </div>`;
       } else {
@@ -14930,7 +14931,8 @@ function _renderImageManager() {
                 <span style="font-size:8px;color:var(--text3);">Upload</span>
               </div>
               <input type="file" accept="image/png,image/jpeg,image/webp" style="display:none"
-                onchange="helpImgUpload(this,'${tab}','${n}')">
+                data-tab="${tab}" data-n="${n}"
+                onchange="helpImgUpload(this,this.dataset.tab,this.dataset.n)">
             </label>
             <div style="font-size:9px;font-family:var(--mono);color:var(--border2);">[img:${n}]</div>
           </div>`;
@@ -14951,7 +14953,8 @@ function _renderImageManager() {
               <span style="font-size:8px;color:#5b8dee;opacity:.7;">New</span>
             </div>
             <input type="file" accept="image/png,image/jpeg,image/webp" style="display:none"
-              onchange="helpImgUpload(this,'${tab}','${nextN}')">
+              data-tab="${tab}" data-n="${nextN}"
+              onchange="helpImgUpload(this,this.dataset.tab,this.dataset.n)">
           </label>
           <div style="font-size:9px;font-family:var(--mono);color:rgba(91,141,238,.4);">[img:${nextN}]</div>
         </div>`;
@@ -14961,8 +14964,35 @@ function _renderImageManager() {
   });
 
   document.getElementById('helpModalContent').innerHTML = html;
+  helpImgsLazyLoad();
+
+  // Lazy-load thumbnails after HTML is rendered — never embed base64 in attributes
+  requestAnimationFrame(() => {
+    document.querySelectorAll('img[data-lazy="1"]').forEach(img => {
+      const tab = img.dataset.imgTab;
+      const n   = img.dataset.imgN;
+      if(HELP_IMAGES[tab] && HELP_IMAGES[tab][n]) img.src = HELP_IMAGES[tab][n];
+    });
+  });
 }
 
+function helpImgZoomByKey(tab, n) {
+  const src = (HELP_IMAGES[tab] || {})[n];
+  if(src) helpZoomImg(src);
+}
+// Lazy-load any data-lazy images in the current help view
+function helpImgsLazyLoad() {
+  requestAnimationFrame(() => {
+    document.querySelectorAll('img[data-lazy="1"]').forEach(img => {
+      const tab = img.dataset.imgTab;
+      const n   = img.dataset.imgN;
+      if(HELP_IMAGES[tab] && HELP_IMAGES[tab][n]) {
+        img.src = HELP_IMAGES[tab][n];
+        img.removeAttribute('data-lazy');
+      }
+    });
+  });
+}
 function helpImgUpload(input, tab, n) {
   const file = input.files[0];
   if(!file) return;
@@ -15042,14 +15072,24 @@ function openHelpModal(tab) {
   function processImgTags(text, tabKey) {
     return text.replace(/\[img:(\d+)\]/g, (match, n) => {
       const regTab = HELP_IMAGES[tabKey] || {};
-      const src = regTab[n] || ('help_img/' + tabKey + '/image' + n + '.png');
-      return `<div style="margin:10px 0;text-align:center;" data-img-tab="${tabKey}" data-img-n="${n}">
-        <img src="${src}" alt="Help image ${n}"
-          style="max-width:100%;border-radius:6px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.15);cursor:zoom-in;"
-          title="Click to enlarge"
-          onclick="helpZoomImg(this.src)"
-          onerror="this.parentElement.style.display='none'">
-      </div>`;
+      const hasImg = !!regTab[n];
+      const fallback = 'help_img/' + tabKey + '/image' + n + '.png';
+      if(hasImg) {
+        return `<div style="margin:10px 0;text-align:center;" data-img-tab="${tabKey}" data-img-n="${n}">
+          <img data-img-tab="${tabKey}" data-img-n="${n}" data-lazy="1" src=""
+            style="max-width:100%;border-radius:6px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.15);cursor:zoom-in;"
+            title="Click to enlarge"
+            onclick="helpImgZoomByKey(this.dataset.imgTab, this.dataset.imgN)">
+        </div>`;
+      } else {
+        return `<div style="margin:10px 0;text-align:center;">
+          <img src="${fallback}" alt="Help image ${n}"
+            style="max-width:100%;border-radius:6px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.15);cursor:zoom-in;"
+            title="Click to enlarge"
+            onclick="helpZoomImg(this.src)"
+            onerror="this.parentElement.style.display='none'">
+        </div>`;
+      }
     });
   }
 
@@ -15065,6 +15105,7 @@ function openHelpModal(tab) {
       </div>
     </details>`).join('');
   document.getElementById('helpModalContent').innerHTML = html;
+  helpImgsLazyLoad();
 
   // Add full-docs link in footer
   const footerEl = document.querySelector('#helpModal .modal-actions');
