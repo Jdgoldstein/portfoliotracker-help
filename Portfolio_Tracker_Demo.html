@@ -2127,7 +2127,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
         <div class="hint">Pre-selects this wallet every time you log yield for this pool. Overridable per-harvest in the yield panel.</div>
       </div>
     </div>
-    <!-- Funded From Holdings — new pool entry only -->
+    <!-- Funded From Holdings — new pool only -->
     <div id="pm-funded-section" style="margin-top:14px;background:rgba(10,124,74,0.05);border:1px solid rgba(10,124,74,0.2);border-radius:var(--radius);padding:12px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
         <div>
@@ -2633,7 +2633,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
         <input id="vm-close-notes" placeholder="reason, outcome, etc.">
       </div>
     </div>
-    <!-- Funded From Holdings — shown on new vault entry -->
+    <!-- Funded From Holdings — new vault only -->
     <div id="vm-funded-section" style="margin-top:14px;background:rgba(10,124,74,0.05);border:1px solid rgba(10,124,74,0.2);border-radius:var(--radius);padding:12px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
         <div>
@@ -6395,7 +6395,6 @@ function openPoolModal(id=null) {
       + `<option value="💵 Cash"${p?.defaultWallet==='💵 Cash'?' selected':''}>💵 Cash</option>`;
   }
   onPoolTypeChange();
-  // Funded-from section: only relevant for new pools, hide when editing
   const pmFunded = document.getElementById('pm-funded-section');
   const pmSources = document.getElementById('pm-sources');
   if(pmFunded) pmFunded.style.display = id ? 'none' : '';
@@ -6462,9 +6461,7 @@ function savePool() {
     DB.pools[i] = p;
   } else {
     DB.pools.push(p);
-    // Deduct funded-from sources from Holdings (new pool only)
-    const pmSourceRows = document.querySelectorAll('#pm-sources > div');
-    pmSourceRows.forEach(row => {
+    document.querySelectorAll('#pm-sources > div').forEach(row => {
       const sym    = (row.querySelector('.pm-src-sym')?.value||'').trim().toUpperCase();
       const qty    = +row.querySelector('.pm-src-qty')?.value || 0;
       const wallet = (row.querySelector('.pm-src-wallet')?.value||'').trim();
@@ -6475,16 +6472,11 @@ function savePool() {
       );
       if(holding) {
         holding.qty = Math.max(0, (holding.qty||0) - qty);
-        logTransaction({
-          date: p.entryDate || today(), type: 'Transfer', sym,
+        logTransaction({ date: p.entryDate || today(), type: 'Transfer', sym,
           qty, price: null, total: null,
-          from: holding.wallet || 'Holdings',
-          to: `Pool: ${p.name}`,
-          notes: `Funded pool — ${qty} ${sym} → ${p.name}`,
-        });
-      } else {
-        toast(`⚠ ${qty} ${sym} — no matching holding found to deduct`, true);
-      }
+          from: holding.wallet || 'Holdings', to: `Pool: ${p.name}`,
+          notes: `Funded pool — ${qty} ${sym} → ${p.name}` });
+      } else { toast(`⚠ ${qty} ${sym} — no matching holding found`, true); }
     });
   }
   persist(); closeModal('poolModal'); fetchPrices(); renderHoldings(); toast('Pool saved');
@@ -7177,7 +7169,6 @@ function openVaultModal(id=null) {
   document.getElementById('vm-close-wallet').value = _vmWallet;
   document.getElementById('vm-close-dest').value     = 'holdings';
   document.getElementById('vm-close-notes').value    = '';
-  // Funded-from section: only relevant for new vaults, hide when editing
   const vmFunded = document.getElementById('vm-funded-section');
   const vmSources = document.getElementById('vm-sources');
   if(vmFunded) vmFunded.style.display = id ? 'none' : '';
@@ -7210,9 +7201,7 @@ function saveVault() {
   if(editingVaultId) { const i=DB.vaults.findIndex(x=>x.id===editingVaultId); DB.vaults[i]=obj; }
   else {
     DB.vaults.push(obj);
-    // Deduct funded-from sources from Holdings (new vault only)
-    const vmSourceRows = document.querySelectorAll('#vm-sources > div');
-    vmSourceRows.forEach(row => {
+    document.querySelectorAll('#vm-sources > div').forEach(row => {
       const sym    = (row.querySelector('.vm-src-sym')?.value||'').trim().toUpperCase();
       const qty    = +row.querySelector('.vm-src-qty')?.value || 0;
       const wallet = (row.querySelector('.vm-src-wallet')?.value||'').trim();
@@ -7223,16 +7212,11 @@ function saveVault() {
       );
       if(holding) {
         holding.qty = Math.max(0, (holding.qty||0) - qty);
-        logTransaction({
-          date: obj.entryDate || today(), type: 'Transfer', sym,
+        logTransaction({ date: obj.entryDate || today(), type: 'Transfer', sym,
           qty, price: null, total: null,
-          from: holding.wallet || 'Holdings',
-          to: `Vault: ${obj.name}`,
-          notes: `Funded vault — ${qty} ${sym} → ${obj.name}`,
-        });
-      } else {
-        toast(`⚠ ${qty} ${sym} — no matching holding found to deduct`, true);
-      }
+          from: holding.wallet || 'Holdings', to: `Vault: ${obj.name}`,
+          notes: `Funded vault — ${qty} ${sym} → ${obj.name}` });
+      } else { toast(`⚠ ${qty} ${sym} — no matching holding found`, true); }
     });
   }
   persist(); closeModal('vaultModal'); fetchPrices(); renderHoldings(); toast('Vault saved');
@@ -13259,7 +13243,6 @@ function toggleDataMenu() {
 
   const open = menu.style.display !== 'none';
   if(!open) {
-    // Position relative to the Data button using fixed coords
     const btn = document.querySelector('#dataMenuWrap > button');
     if(btn) {
       const r = btn.getBoundingClientRect();
@@ -14166,16 +14149,6 @@ const TAB_LABELS = {
   gems:     '💎 GEMs',
 };
 
-// ── Help Image Registry ─────────────────────────────────────────────────────
-// Images served from help_img/{tab}/imageN.png (external folder).
-// Use ? Help → 🖼 Images to upload replacements stored in localStorage.
-const HELP_IMAGES = (function() {
-  const r = {};
-  ['summary','pools','vaults','holdings','hedge','history','gems'].forEach(t => r[t] = {});
-  r["_ico"] = "";
-  return r;
-})();
-
 const HELP_CONTENT = {
   overview: {
     title: '⛁ Portfolio Tracker — Overview',
@@ -14657,18 +14630,16 @@ function _renderHelpTabNav(activeTab) {
     { key:'hedge',     label:'⚡ Hedge' },
     { key:'history',   label:'📁 History' },
     { key:'gems',      label:'💎 GEMs' },
-    { key:'imgmgr',    label:'🖼 Images' },
   ];
   nav.innerHTML = tabs.map(t => {
     const active = t.key === activeTab;
     const isNew  = t.key === 'whatsNew';
-    const isImg  = t.key === 'imgmgr';
     return `<button onclick="openHelpModal('${t.key}')" style="
       font-size:10px;padding:3px 8px;border-radius:4px;cursor:pointer;
       font-family:var(--sans);font-weight:${active?'700':'500'};
-      background:${active?'rgba(10,124,74,.12)':isNew?'rgba(245,158,11,.1)':isImg?'rgba(91,141,238,.1)':'var(--bg3)'};
-      border:1px solid ${active?'rgba(10,124,74,.4)':isNew?'rgba(245,158,11,.4)':isImg?'rgba(91,141,238,.4)':'var(--border2)'};
-      color:${active?'var(--accent)':isNew?'var(--warn)':isImg?'#5b8dee':'var(--text2)'};
+      background:${active?'rgba(10,124,74,.12)':isNew?'rgba(245,158,11,.1)':'var(--bg3)'};
+      border:1px solid ${active?'rgba(10,124,74,.4)':isNew?'rgba(245,158,11,.4)':'var(--border2)'};
+      color:${active?'var(--accent)':isNew?'var(--warn)':'var(--text2)'};
       white-space:nowrap;">${t.label}</button>`;
   }).join('');
 }
@@ -14815,185 +14786,6 @@ function helpFmt(textareaId, action) {
   } catch(e) {}
 })();
 
-// ── Image Manager ─────────────────────────────────────────────────────────────
-function _renderImageManager() {
-  const TABS = ['summary','pools','vaults','holdings','hedge','history','gems'];
-  const MAX_SLOTS = 10;
-
-  const referenced = {};
-  TABS.forEach(tab => {
-    referenced[tab] = new Set();
-    const data = HELP_CONTENT[tab];
-    if(!data) return;
-    data.sections.forEach(s => {
-      const matches = (s.text||'').matchAll(/\[img:(\d+)\]/g);
-      for(const m of matches) referenced[tab].add(m[1]);
-    });
-  });
-
-  let html = `
-    <div style="font-size:11px;color:var(--text3);margin-bottom:14px;line-height:1.7;">
-      This panel shows all help images across every tab. <strong style="color:var(--text2);">Green slots</strong> are filled —
-      hover to preview, click to enlarge. <strong style="color:var(--text2);">Grey slots</strong> are empty — click Upload to add.
-      After uploading, reference it in help text as <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-family:var(--mono);">[img:N]</code>.
-    </div>`;
-
-  TABS.forEach(tab => {
-    const reg = HELP_IMAGES[tab] || {};
-    const ref = referenced[tab] || new Set();
-    const allNums = new Set([...Object.keys(reg), ...ref]);
-    const maxFilled = allNums.size > 0 ? Math.max(...[...allNums].map(Number)) : 0;
-    const showSlots = Math.min(MAX_SLOTS, Math.max(maxFilled + 1, 3));
-
-    const tabLabel = {
-      summary:'📊 Summary', pools:'🔁 Pools', vaults:'🏦 Vaults',
-      holdings:'💼 Holdings', hedge:'⚡ Hedge', history:'📁 History', gems:'💎 GEMs'
-    }[tab] || tab;
-
-    html += `<div style="margin-bottom:18px;">
-      <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;
-        letter-spacing:.08em;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border);">
-        ${tabLabel}
-      </div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start;">`;
-
-    for(let i = 1; i <= showSlots; i++) {
-      const n = String(i);
-      const hasSrc = !!reg[n];
-      const isReferenced = ref.has(n);
-
-      if(hasSrc) {
-        html += `
-          <div style="display:inline-flex;flex-direction:column;align-items:center;gap:4px;">
-            <div style="position:relative;width:72px;height:54px;border-radius:5px;overflow:hidden;
-              border:2px solid rgba(10,124,74,.5);background:var(--bg3);cursor:pointer;flex-shrink:0;"
-              title="image${n}.png — click to preview"
-              data-img-tab="${tab}" data-img-n="${n}"
-              onclick="helpImgZoomByKey(this.dataset.imgTab, this.dataset.imgN)">
-              <img data-img-tab="${tab}" data-img-n="${n}"
-                style="width:100%;height:100%;object-fit:cover;" src="" data-lazy="1">
-              <div style="position:absolute;inset:0;background:rgba(0,0,0,.45);opacity:0;transition:.15s;
-                display:flex;align-items:center;justify-content:center;font-size:16px;"
-                onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0">🔍</div>
-            </div>
-            <div style="font-size:9px;font-family:var(--mono);color:${isReferenced?'var(--accent)':'var(--text3)'};
-              font-weight:${isReferenced?'700':'400'};"
-              title="${isReferenced?'Used in help text as [img:'+n+']':'Not yet referenced in help text'}">
-              [img:${n}]${isReferenced?' ✓':''}
-            </div>
-            <label style="cursor:pointer;">
-              <span style="font-size:9px;padding:2px 6px;border-radius:3px;
-                background:rgba(10,124,74,.1);border:1px solid rgba(10,124,74,.3);
-                color:var(--accent);white-space:nowrap;">↺ Replace</span>
-              <input type="file" accept="image/png,image/jpeg,image/webp" style="display:none"
-                data-tab="${tab}" data-n="${n}"
-                onchange="helpImgUpload(this,this.dataset.tab,this.dataset.n)">
-            </label>
-          </div>`;
-      } else {
-        html += `
-          <div style="display:inline-flex;flex-direction:column;align-items:center;gap:4px;">
-            <label style="cursor:pointer;">
-              <div style="width:72px;height:54px;border-radius:5px;border:2px dashed var(--border2);
-                background:var(--bg3);display:flex;flex-direction:column;align-items:center;
-                justify-content:center;gap:3px;transition:.15s;"
-                onmouseover="this.style.borderColor='var(--accent2)';this.style.background='rgba(91,141,238,.06)'"
-                onmouseout="this.style.borderColor='';this.style.background='var(--bg3)'">
-                <span style="font-size:18px;opacity:.4;">+</span>
-                <span style="font-size:8px;color:var(--text3);">Upload</span>
-              </div>
-              <input type="file" accept="image/png,image/jpeg,image/webp" style="display:none"
-                data-tab="${tab}" data-n="${n}"
-                onchange="helpImgUpload(this,this.dataset.tab,this.dataset.n)">
-            </label>
-            <div style="font-size:9px;font-family:var(--mono);color:var(--border2);">[img:${n}]</div>
-          </div>`;
-      }
-    }
-
-    if(showSlots < MAX_SLOTS) {
-      const nextN = String(showSlots + 1);
-      html += `
-        <div style="display:inline-flex;flex-direction:column;align-items:center;gap:4px;">
-          <label style="cursor:pointer;" title="Add image${nextN}.png">
-            <div style="width:72px;height:54px;border-radius:5px;border:2px dashed rgba(91,141,238,.3);
-              background:rgba(91,141,238,.04);display:flex;flex-direction:column;align-items:center;
-              justify-content:center;gap:3px;transition:.15s;"
-              onmouseover="this.style.borderColor='var(--accent2)';this.style.background='rgba(91,141,238,.1)'"
-              onmouseout="this.style.borderColor='rgba(91,141,238,.3)';this.style.background='rgba(91,141,238,.04)'">
-              <span style="font-size:18px;opacity:.3;color:#5b8dee;">+</span>
-              <span style="font-size:8px;color:#5b8dee;opacity:.7;">New</span>
-            </div>
-            <input type="file" accept="image/png,image/jpeg,image/webp" style="display:none"
-              data-tab="${tab}" data-n="${nextN}"
-              onchange="helpImgUpload(this,this.dataset.tab,this.dataset.n)">
-          </label>
-          <div style="font-size:9px;font-family:var(--mono);color:rgba(91,141,238,.4);">[img:${nextN}]</div>
-        </div>`;
-    }
-
-    html += `</div></div>`;
-  });
-
-  document.getElementById('helpModalContent').innerHTML = html;
-  helpImgsLazyLoad();
-
-  // Lazy-load thumbnails after HTML is rendered — never embed base64 in attributes
-  requestAnimationFrame(() => {
-    document.querySelectorAll('img[data-lazy="1"]').forEach(img => {
-      const tab = img.dataset.imgTab;
-      const n   = img.dataset.imgN;
-      if(HELP_IMAGES[tab] && HELP_IMAGES[tab][n]) img.src = HELP_IMAGES[tab][n];
-    });
-  });
-}
-
-function helpImgZoomByKey(tab, n) {
-  const src = (HELP_IMAGES[tab] || {})[n];
-  if(src) helpZoomImg(src);
-}
-// Lazy-load any data-lazy images in the current help view
-function helpImgsLazyLoad() {
-  requestAnimationFrame(() => {
-    document.querySelectorAll('img[data-lazy="1"]').forEach(img => {
-      const tab = img.dataset.imgTab;
-      const n   = img.dataset.imgN;
-      if(HELP_IMAGES[tab] && HELP_IMAGES[tab][n]) {
-        img.src = HELP_IMAGES[tab][n];
-        img.removeAttribute('data-lazy');
-      }
-    });
-  });
-}
-function helpImgUpload(input, tab, n) {
-  const file = input.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    if(!HELP_IMAGES[tab]) HELP_IMAGES[tab] = {};
-    HELP_IMAGES[tab][n] = e.target.result;
-    try {
-      const stored = JSON.parse(localStorage.getItem('pt_help_images') || '{}');
-      if(!stored[tab]) stored[tab] = {};
-      stored[tab][n] = e.target.result;
-      localStorage.setItem('pt_help_images', JSON.stringify(stored));
-    } catch(err) {}
-    toast(`✓ image${n}.png saved to ${tab} — reference it as [img:${n}] in help text`);
-    _renderImageManager();
-  };
-  reader.readAsDataURL(file);
-}
-
-(function _loadStoredHelpImages() {
-  try {
-    const stored = JSON.parse(localStorage.getItem('pt_help_images') || '{}');
-    Object.entries(stored).forEach(([tab, imgs]) => {
-      if(!HELP_IMAGES[tab]) HELP_IMAGES[tab] = {};
-      Object.assign(HELP_IMAGES[tab], imgs);
-    });
-  } catch(e) {}
-})();
-
 function helpZoomImg(src) {
   const el = document.getElementById('imgZoomOverlay');
   if(!el) return;
@@ -15004,16 +14796,16 @@ function helpZoomImg(src) {
 
 function openHelpModal(tab) {
   // Default to overview if no tab specified or tab not found
-  if(!tab || (!HELP_CONTENT[tab] && tab !== 'whatsNew' && tab !== 'imgmgr')) tab = 'overview';
+  if(!tab || (!HELP_CONTENT[tab] && tab !== 'whatsNew')) tab = 'overview';
   const data = HELP_CONTENT[tab];
-  if(!data && tab !== 'whatsNew' && tab !== 'imgmgr') return;
+  if(!data && tab !== 'whatsNew') return;
   _helpEditTab  = tab;
   _helpEditMode = false;
   const eb = document.getElementById('helpEditToggleBtn');
   if(eb) {
     eb.textContent='✏ Edit'; eb.style.background=''; eb.style.color=''; eb.style.borderColor='';
-    // Hide edit button on overview, whatsNew, and imgmgr tabs (read-only)
-    const isEditable = tab !== 'overview' && tab !== 'whatsNew' && tab !== 'imgmgr';
+    // Hide edit button on overview and whatsNew tabs (read-only)
+    const isEditable = tab !== 'overview' && tab !== 'whatsNew';
     eb.style.display = isEditable ? '' : 'none';
   }
   document.getElementById('helpModalContent').style.display = '';
@@ -15031,37 +14823,18 @@ function openHelpModal(tab) {
     return;
   }
 
-  // Handle Image Manager tab
-  if(tab === 'imgmgr') {
-    document.getElementById('helpModalTitle').textContent = '🖼 Image Manager';
-    _renderImageManager();
-    document.getElementById('helpModal').classList.add('open');
-    return;
-  }
-
   document.getElementById('helpModalTitle').textContent = data.title;
 
   function processImgTags(text, tabKey) {
     return text.replace(/\[img:(\d+)\]/g, (match, n) => {
-      const regTab = HELP_IMAGES[tabKey] || {};
-      const hasImg = !!regTab[n];
-      const fallback = 'help_img/' + tabKey + '/image' + n + '.png';
-      if(hasImg) {
-        return `<div style="margin:10px 0;text-align:center;" data-img-tab="${tabKey}" data-img-n="${n}">
-          <img data-img-tab="${tabKey}" data-img-n="${n}" data-lazy="1" src=""
-            style="max-width:100%;border-radius:6px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.15);cursor:zoom-in;"
-            title="Click to enlarge"
-            onclick="helpImgZoomByKey(this.dataset.imgTab, this.dataset.imgN)">
-        </div>`;
-      } else {
-        return `<div style="margin:10px 0;text-align:center;">
-          <img src="${fallback}" alt="Help image ${n}"
-            style="max-width:100%;border-radius:6px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.15);cursor:zoom-in;"
-            title="Click to enlarge"
-            onclick="helpZoomImg(this.src)"
-            onerror="this.parentElement.style.display='none'">
-        </div>`;
-      }
+      const src = 'help_img/' + tabKey + '/image' + n + '.png';
+      return `<div style="margin:10px 0;text-align:center;">
+        <img src="${src}" alt="Help image ${n}"
+          style="max-width:100%;border-radius:6px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.15);cursor:zoom-in;"
+          title="Click to enlarge"
+          onclick="helpZoomImg(this.src)"
+          onerror="this.parentElement.style.display='none'">
+      </div>`;
     });
   }
 
@@ -15077,7 +14850,6 @@ function openHelpModal(tab) {
       </div>
     </details>`).join('');
   document.getElementById('helpModalContent').innerHTML = html;
-  helpImgsLazyLoad();
 
   // Add full-docs link in footer
   const footerEl = document.querySelector('#helpModal .modal-actions');
