@@ -1146,13 +1146,14 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     <!-- Data menu dropdown -->
     <div style="position:relative;display:inline-block;" id="dataMenuWrap">
       <button class="btn sm" onclick="toggleDataMenu()" title="Import / Export data" style="padding:4px 8px;font-size:12px;">💾 Data ▾</button>
-      <div id="dataMenu" style="display:none;position:fixed;z-index:9100;
+      <div id="dataMenu" style="display:none;position:fixed;z-index:9100;right:4px;
         background:var(--bg2);border:1px solid var(--border2);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.2);
-        min-width:210px;padding:6px 0;white-space:nowrap;
+        width:220px;padding:6px 0;white-space:nowrap;
         max-height:calc(100vh - 60px);overflow-y:auto;overflow-x:hidden;">
         <div style="padding:4px 12px 6px;font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;border-bottom:1px solid var(--border);margin-bottom:4px;">Backup &amp; Restore</div>
         <button class="btn ghost prv-hide" id="saveNowBtn" onclick="saveNow()" style="display:none;width:100%;text-align:left;padding:7px 14px;border:none;border-radius:0;font-size:12px;background:none;font-weight:700;color:var(--accent);" title="Save immediately to linked backup file">⛁ Save Now</button>
-        <button class="btn ghost prv-hide" onclick="exportJSON();toggleDataMenu()" style="display:block;width:100%;text-align:left;padding:7px 14px;border:none;border-radius:0;font-size:12px;background:none;" title="Save to linked file, or download dated backup if no file linked">⬇ Save / Export Backup</button>
+        <button class="btn ghost prv-hide" onclick="exportJSON();toggleDataMenu()" style="display:block;width:100%;text-align:left;padding:7px 14px 3px;border:none;border-radius:0;font-size:12px;background:none;" title="Save to linked file, or download dated backup if no file linked">⬇ Save / Export Backup</button>
+        <div style="padding:0 14px 7px;font-size:10px;color:var(--text3);line-height:1.4;">Saves to your linked file, or downloads a dated .json if no file is linked.</div>
         <label class="prv-hide" style="display:flex;align-items:center;gap:8px;padding:4px 14px 8px;font-size:11px;color:var(--text2);cursor:pointer;" title="When saving to a linked file, also download a dated .json copy as a second backup">
           <input type="checkbox" id="alsoDownloadCopy" onchange="DB.settings.alsoDownloadCopy=this.checked;persist();"
             style="accent-color:var(--accent);width:13px;height:13px;cursor:pointer;flex-shrink:0;">
@@ -1161,6 +1162,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
         <label class="btn ghost prv-hide" style="display:block;width:100%;text-align:left;padding:7px 14px;border:none;border-radius:0;font-size:12px;background:none;cursor:pointer;" title="Restore from a previously exported backup file">
           ⬆ Import Backup (.json)<input type="file" accept=".json" onchange="importJSON(event);toggleDataMenu()" style="display:none">
         </label>
+        <div style="padding:0 14px 8px;font-size:10px;color:var(--text3);line-height:1.4;">Loads data from a .json backup. You will be prompted to link the file for auto-save afterwards.</div>
         <div style="border-top:1px solid var(--border);margin:4px 0;"></div>
         <div style="padding:4px 12px 5px;font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;">Export to Spreadsheet</div>
         <button class="btn ghost prv-hide" onclick="exportCSV('holdings');toggleDataMenu()" style="display:block;width:100%;text-align:left;padding:6px 14px;border:none;border-radius:0;font-size:12px;background:none;">📊 Holdings (.csv)</button>
@@ -1177,6 +1179,25 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
           <div id="dataMenuBackupRow" style="padding:4px 14px 8px;display:flex;align-items:center;gap:8px;">
             <span id="fsStatusDot2" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#b86800;flex-shrink:0;"></span>
             <button class="btn sm primary" onclick="linkBackupFile();toggleDataMenu()" style="font-size:11px;">⛁ Link / Create File</button>
+          </div>
+          <div style="padding:0 14px 6px;font-size:10px;color:var(--text3);line-height:1.4;">Connect a .json file for auto-save every 7 min. Creates one if it doesn't exist yet.</div>
+          <div style="padding:2px 14px 6px;">
+            <button class="btn sm ghost" onclick="unlinkBackupFile();toggleDataMenu()"
+              style="font-size:11px;width:100%;text-align:left;color:var(--text2);border-color:var(--border);"
+              title="Disconnect the linked backup file. Your data stays safe in the browser.">
+              ✕ Unlink File
+            </button>
+            <div style="font-size:10px;color:var(--text3);margin-top:3px;line-height:1.4;">Stop auto-saving to the current file. Your data stays safe in the browser until you re-link.</div>
+          </div>
+          <div style="padding:2px 14px 8px;">
+            <button class="btn sm ghost" onclick="resetDataLink();toggleDataMenu()"
+              style="font-size:11px;width:100%;text-align:left;color:#b86800;border-color:rgba(184,104,0,0.3);"
+              title="Clear the current data file link — use this if your data is saving to the wrong location. Your data stays safe in the browser until you re-link.">
+              ⚠ Reset Data Link
+            </button>
+            <div style="font-size:10px;color:var(--text3);margin-top:3px;line-height:1.5;">
+              Use if data is saving to wrong folder. Re-link after resetting.
+            </div>
           </div>
           <div id="dataMenuBackupName" style="display:none;padding:0 14px 8px;font-size:10px;color:#065f46;font-family:var(--mono);"></div>
         </div>
@@ -1226,6 +1247,45 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     ✨ Create File Now
   </button>
   <button onclick="document.getElementById('noBackupBanner').style.display='none'" 
+    style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;padding:0 2px;flex-shrink:0;" title="Dismiss">✕</button>
+</div>
+
+<!-- Update available banner — shown when a newer version is on GitHub -->
+<div id="updateBanner" style="display:none;position:fixed;top:0;left:0;right:0;
+  z-index:9200;background:linear-gradient(135deg,#0a9f6a,#065f46);
+  padding:10px 20px;box-shadow:0 2px 12px rgba(0,0,0,0.3);
+  display:none;align-items:center;gap:14px;justify-content:center;">
+  <span style="font-size:16px;flex-shrink:0;">✨</span>
+  <div style="flex:1;min-width:0;text-align:center;">
+    <span style="font-size:12px;font-weight:700;color:#fff;" id="updateBannerText">A new version is available</span>
+    <span style="font-size:11px;color:rgba(255,255,255,0.8);margin-left:8px;">— download the latest from your START_HERE link</span>
+  </div>
+  <a id="updateBannerLink" href="" target="_blank"
+    style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);border-radius:6px;
+    padding:5px 14px;font-size:11px;font-weight:700;color:#fff;text-decoration:none;white-space:nowrap;flex-shrink:0;">
+    ↓ Download Update
+  </a>
+  <button onclick="document.getElementById('updateBanner').style.display='none';localStorage.setItem('pt_update_dismissed',document.getElementById('updateBannerText').dataset.ver||'')"
+    style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.7);font-size:18px;padding:0 2px;flex-shrink:0;" title="Dismiss">✕</button>
+</div>
+
+<!-- Permission lost banner — shown when file handle exists but permission expired (common on Mac) -->
+<div id="permissionBanner" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  z-index:400;background:var(--bg2);border:1px solid rgba(204,34,0,0.45);border-radius:10px;
+  padding:12px 20px;box-shadow:0 4px 20px rgba(0,0,0,0.3);
+  align-items:center;gap:14px;max-width:560px;width:calc(100vw - 48px);">
+  <span style="font-size:20px;flex-shrink:0;">⚠</span>
+  <div style="flex:1;min-width:0;">
+    <div style="font-size:12px;font-weight:700;color:#f87171;margin-bottom:2px;">Auto-save permission lost</div>
+    <div style="font-size:11px;color:var(--text3);line-height:1.5;">
+      Your browser lost write access to the data file (common on Mac after restarting Chrome).
+      Click <strong style="color:var(--text2);">Restore Access</strong> to reconnect — your data is safe in the browser.
+    </div>
+  </div>
+  <button class="btn primary" onclick="restoreFilePermission()" style="white-space:nowrap;font-size:12px;padding:7px 14px;flex-shrink:0;background:linear-gradient(135deg,#dc2626,#991b1b);">
+    🔓 Restore Access
+  </button>
+  <button onclick="document.getElementById('permissionBanner').style.display='none'"
     style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;padding:0 2px;flex-shrink:0;" title="Dismiss">✕</button>
 </div>
 
@@ -2493,6 +2553,8 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
           <option value="unrecoverable">⚠ Unrecoverable</option>
           <option value="partial">🔶 Partial Recovery</option>
           <option value="legal">⚖️ Legal Action</option>
+          <option value="hack">🔴 Hack / Exploit</option>
+          <option value="pending">⏳ Pending — outcome unknown</option>
           <option value="recovered">✅ Recovered</option>
         </select>
       </div>
@@ -2600,6 +2662,28 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     <div class="form-grid col1">
       <div class="field"><label>Notes (reason, outcome, etc.)</label><input id="cl-notes" placeholder="optional"></div>
     </div>
+    <!-- Loss / Dispute flag -->
+    <div style="margin-bottom:12px;background:rgba(99,102,241,0.05);border:1px solid rgba(99,102,241,0.2);border-radius:var(--radius);padding:12px;">
+      <div style="font-size:10px;font-weight:700;color:#6366f1;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">🚨 Loss / Dispute Flag <span style="font-weight:400;color:var(--text3);text-transform:none;letter-spacing:0;">(optional — for hacks, legal actions, pending recoveries)</span></div>
+      <div class="form-grid cols2" style="gap:8px;">
+        <div class="field" style="margin-bottom:0;">
+          <label style="font-size:10px;">Status</label>
+          <select id="cl-lossStatus" style="font-size:12px;">
+            <option value="">— Normal close —</option>
+            <option value="unrecoverable">⚠ Unrecoverable loss</option>
+            <option value="partial">🔶 Partial recovery</option>
+            <option value="legal">⚖️ Legal action pending</option>
+            <option value="hack">🔴 Hack / exploit</option>
+            <option value="pending">⏳ Pending — outcome unknown</option>
+            <option value="recovered">✅ Recovered</option>
+          </select>
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label style="font-size:10px;">Detail <span style="font-weight:400;color:var(--text3);">(incident, platform, reference)</span></label>
+          <input id="cl-lossNote" placeholder="e.g. Drift hack — JLP vault — Apr 2026" style="font-size:12px;">
+        </div>
+      </div>
+    </div>
     <div class="modal-actions">
       <button class="btn" onclick="closeModal('closeModal2')">Cancel</button>
       <button class="btn warn" id="cl-rebalance-btn" onclick="doRebalance()">Rebalance (keep pool, reset entry)</button>
@@ -2671,6 +2755,28 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
       <div class="field" style="margin-top:6px;">
         <label>Close Notes</label>
         <input id="vm-close-notes" placeholder="reason, outcome, etc.">
+      </div>
+      <!-- Loss / Dispute flag — shown only when closing -->
+      <div id="vm-loss-section" style="display:none;margin-top:10px;background:rgba(99,102,241,0.05);border:1px solid rgba(99,102,241,0.2);border-radius:var(--radius);padding:12px;">
+        <div style="font-size:10px;font-weight:700;color:#6366f1;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">🚨 Loss / Dispute Flag <span style="font-weight:400;color:var(--text3);text-transform:none;letter-spacing:0;">(optional)</span></div>
+        <div class="form-grid cols2" style="gap:8px;">
+          <div class="field" style="margin-bottom:0;">
+            <label style="font-size:10px;">Status</label>
+            <select id="vm-lossStatus" style="font-size:12px;">
+              <option value="">— Normal close —</option>
+              <option value="unrecoverable">⚠ Unrecoverable loss</option>
+              <option value="partial">🔶 Partial recovery</option>
+              <option value="legal">⚖️ Legal action pending</option>
+              <option value="hack">🔴 Hack / exploit</option>
+              <option value="pending">⏳ Pending — outcome unknown</option>
+              <option value="recovered">✅ Recovered</option>
+            </select>
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label style="font-size:10px;">Detail</label>
+            <input id="vm-lossNote" placeholder="e.g. Drift hack — JLP vault — Apr 2026" style="font-size:12px;">
+          </div>
+        </div>
       </div>
     </div>
     <!-- Funded From Holdings — new vault only -->
@@ -5689,6 +5795,8 @@ function renderVaultHistory() {
     const rowStyle = h.lossStatus === 'unrecoverable' ? 'background:rgba(204,34,0,0.04);border-left:3px solid #cc2200;'
                    : h.lossStatus === 'partial'        ? 'background:rgba(184,104,0,0.04);border-left:3px solid #b86800;'
                    : h.lossStatus === 'legal'          ? 'background:rgba(99,102,241,0.04);border-left:3px solid #6366f1;'
+                   : h.lossStatus === 'hack'           ? 'background:rgba(204,34,0,0.06);border-left:3px solid #cc2200;'
+                   : h.lossStatus === 'pending'        ? 'background:rgba(184,104,0,0.06);border-left:3px solid #b86800;'
                    : h.lossStatus === 'recovered'      ? 'background:rgba(22,163,74,0.04);border-left:3px solid #16a34a;'
                    : '';
     const net = h.netResult || 0;
@@ -5779,6 +5887,8 @@ function renderHistory() {
     const rowStyle = h.lossStatus === 'unrecoverable' ? 'background:rgba(204,34,0,0.04);border-left:3px solid #cc2200;'
                    : h.lossStatus === 'partial'        ? 'background:rgba(184,104,0,0.04);border-left:3px solid #b86800;'
                    : h.lossStatus === 'legal'          ? 'background:rgba(99,102,241,0.04);border-left:3px solid #6366f1;'
+                   : h.lossStatus === 'hack'           ? 'background:rgba(204,34,0,0.06);border-left:3px solid #cc2200;'
+                   : h.lossStatus === 'pending'        ? 'background:rgba(184,104,0,0.06);border-left:3px solid #b86800;'
                    : h.lossStatus === 'recovered'      ? 'background:rgba(22,163,74,0.04);border-left:3px solid #16a34a;'
                    : '';
     return `<tr style="${rowStyle}">
@@ -6678,6 +6788,91 @@ function acAddSourceRow() {
   container.appendChild(row);
 }
 
+// ── Setup Guide ──────────────────────────────────────────────────────────────
+function _renderSetupGuide() {
+  const content = document.getElementById('helpModalContent');
+  if(!content) return;
+  content.innerHTML = `
+  <div style="font-size:12px;color:var(--text3);margin-bottom:16px;line-height:1.7;">
+    This guide walks you through the one-time setup needed to make the tracker save your data reliably.
+    You can return here any time — even if your data file link is lost.
+  </div>
+  <div style="display:flex;gap:4px;margin-bottom:18px;border-bottom:1px solid var(--border);padding-bottom:10px;">
+    <button id="sg-win-btn" class="btn sm primary" onclick="sgShowTab('win')" style="font-size:11px;">🪟 Windows</button>
+    <button id="sg-mac-btn" class="btn sm ghost"   onclick="sgShowTab('mac')" style="font-size:11px;">🍎 Mac</button>
+    <button id="sg-fix-btn" class="btn sm ghost"   onclick="sgShowTab('fix')" style="font-size:11px;color:#f59e0b;border-color:rgba(245,158,11,0.4);">🔧 Fix Problems</button>
+  </div>
+  <div id="sg-win" style="display:block;"><div style="display:flex;flex-direction:column;gap:12px;">
+    <div style="background:rgba(10,124,74,0.06);border:1px solid rgba(10,124,74,0.2);border-radius:8px;padding:14px 16px;">
+      <div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Step 1 — Create your working folder</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.8;">Open <strong>File Explorer</strong> (press <kbd style="background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-size:11px;">Win + E</kbd>). Navigate to <strong>Documents</strong>. Right-click in empty space → <strong>New → Folder</strong> → name it <strong>PortfolioTracker</strong>. Move <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-size:11px;">Portfolio_Tracker_Demo.html</code> into this folder.</div>
+    </div>
+    <div style="background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.25);border-radius:8px;padding:14px 16px;">
+      <div style="font-size:11px;font-weight:700;color:#f87171;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Step 2 — Tell Chrome where to save files</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.8;">In Chrome paste into the address bar: <code style="display:block;background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:6px 10px;margin:6px 0;font-size:11px;color:var(--accent);">chrome://settings/downloads</code>Turn <strong>ON</strong>: <em>"Ask where to save each file before downloading"</em><br><span style="font-size:11px;color:var(--text3);">Edge users: use <code style="background:var(--bg3);padding:1px 4px;border-radius:3px;">edge://settings/downloads</code></span></div>
+    </div>
+    <div style="background:rgba(91,141,238,0.05);border:1px solid rgba(91,141,238,0.2);border-radius:8px;padding:14px 16px;">
+      <div style="font-size:11px;font-weight:700;color:#5b8dee;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Step 3 — Link your data file</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.8;">Open the tracker from your <strong>PortfolioTracker</strong> folder (not from Downloads). Click <strong>▶ Start Free Trial</strong>. In the header click <strong>⛁ Data ▾ → Link / Create File</strong>. Navigate to your <strong>PortfolioTracker</strong> folder. Type <strong>portfolio_data.json</strong> → click <strong>Save</strong>. The dot turns <strong style="color:#3df5a0;">green ●</strong>.</div>
+    </div>
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px 16px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Step 4 — Create a desktop shortcut (optional)</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.8;">Open your <strong>PortfolioTracker</strong> folder in File Explorer. Right-click <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-size:11px;">Portfolio_Tracker_Demo.html</code> → <strong>Send to → Desktop (create shortcut)</strong>. Always open the tracker via this shortcut — never from Downloads.</div>
+    </div>
+  </div></div>
+  <div id="sg-mac" style="display:none;"><div style="display:flex;flex-direction:column;gap:12px;">
+    <div style="background:rgba(10,124,74,0.06);border:1px solid rgba(10,124,74,0.2);border-radius:8px;padding:14px 16px;">
+      <div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Step 1 — Create your working folder</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.8;">Open <strong>Finder</strong> (smiley face in Dock). Click <strong>Documents</strong> in the left sidebar. Press <kbd style="background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-size:11px;">Cmd + Shift + N</kbd> → name the folder <strong>PortfolioTracker</strong>. Move <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-size:11px;">Portfolio_Tracker_Demo.html</code> into this folder.</div>
+    </div>
+    <div style="background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.25);border-radius:8px;padding:14px 16px;">
+      <div style="font-size:11px;font-weight:700;color:#f87171;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Step 2 — Tell Chrome where to save files</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.8;">In Chrome paste: <code style="display:block;background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:6px 10px;margin:6px 0;font-size:11px;color:var(--accent);">chrome://settings/downloads</code>Turn <strong>ON</strong>: <em>"Ask where to save each file before downloading"</em><br><br><strong style="color:#f59e0b;">⚠ Mac extra step:</strong> The first time the tracker auto-saves, Chrome shows <em>"Allow this site to download multiple files?"</em> — click <strong>Allow</strong>. If you missed it: Chrome menu (⋮) → <strong>Settings → Privacy → Site settings → Additional permissions → Automatic downloads</strong> → add tracker to Allowed.</div>
+    </div>
+    <div style="background:rgba(91,141,238,0.05);border:1px solid rgba(91,141,238,0.2);border-radius:8px;padding:14px 16px;">
+      <div style="font-size:11px;font-weight:700;color:#5b8dee;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Step 3 — Link your data file</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.8;">Open the tracker from your <strong>PortfolioTracker</strong> folder in Finder. Click <strong>▶ Start Free Trial</strong>. Click <strong>⛁ Data ▾ → Link / Create File</strong>. Navigate to your <strong>PortfolioTracker</strong> folder. Type <strong>portfolio_data.json</strong> → click <strong>Save</strong>. The dot turns <strong style="color:#3df5a0;">green ●</strong>.</div>
+    </div>
+    <div style="background:rgba(184,104,0,0.06);border:1px solid rgba(184,104,0,0.25);border-radius:8px;padding:14px 16px;">
+      <div style="font-size:11px;font-weight:700;color:#f59e0b;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">⚠ If Chrome loses access after restart</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.8;">Mac Chrome resets file permissions on restart. You'll see an amber banner: <em>"Auto-save permission lost"</em>. Click <strong>🔓 Restore Access</strong> → click <strong>Allow</strong>. This is a Mac security feature — one click to fix each time.</div>
+    </div>
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px 16px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Step 4 — Create a desktop alias (optional)</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.8;">Open your <strong>PortfolioTracker</strong> folder in Finder. Hold <kbd style="background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-size:11px;">Cmd + Opt</kbd> and drag <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-size:11px;">Portfolio_Tracker_Demo.html</code> to your Desktop. Always open from here — not from Downloads.</div>
+    </div>
+  </div></div>
+  <div id="sg-fix" style="display:none;"><div style="display:flex;flex-direction:column;gap:12px;">
+    <div style="background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.25);border-radius:8px;padding:14px 16px;">
+      <div style="font-size:12px;font-weight:700;color:#f87171;margin-bottom:6px;">❓ My data file is in the wrong folder</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.8;">1. Click <strong>⛁ Data ▾ → Save / Export Backup</strong> — save a safe copy.<br>2. Click <strong>⛁ Data ▾ → ⚠ Reset Data Link</strong> to clear the wrong link.<br>3. Click <strong>⛁ Data ▾ → Link / Create File</strong> → navigate to your <strong>PortfolioTracker</strong> folder → save as <code style="background:var(--bg3);padding:1px 4px;border-radius:3px;font-size:11px;">portfolio_data.json</code>.<br>4. Dot turns <strong style="color:#3df5a0;">green ●</strong> — done.</div>
+    </div>
+    <div style="background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.25);border-radius:8px;padding:14px 16px;">
+      <div style="font-size:12px;font-weight:700;color:#f87171;margin-bottom:6px;">❓ Numbered copies appearing (autosave (1).json, (2).json…)</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.8;">This happens when "Ask where to save" is OFF in Chrome settings.<br><br>1. Find the highest-numbered copy — that's your most recent data.<br>2. Click <strong>⛁ Data ▾ → Import Backup</strong> → select that file.<br>3. Delete all numbered copies from Downloads.<br>4. Enable "Ask where to save": paste <code style="background:var(--bg3);padding:1px 4px;border-radius:3px;font-size:11px;">chrome://settings/downloads</code> in Chrome.<br>5. Click <strong>⛁ Data ▾ → Link / Create File</strong> → save to your <strong>PortfolioTracker</strong> folder.</div>
+    </div>
+    <div style="background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.25);border-radius:8px;padding:14px 16px;">
+      <div style="font-size:12px;font-weight:700;color:#f87171;margin-bottom:6px;">❓ Status dot is grey or orange</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.8;"><strong>Grey dot:</strong> No file linked. Click <strong>⛁ Data ▾ → Link / Create File</strong> → select your existing <code style="background:var(--bg3);padding:1px 4px;border-radius:3px;font-size:11px;">portfolio_data.json</code>.<br><br><strong>Orange / permission lost banner:</strong> Click <strong>🔓 Restore Access</strong> in the amber banner, or click <strong>⛁ Data ▾ → Link / Create File</strong> to relink.</div>
+    </div>
+    <div style="background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.25);border-radius:8px;padding:14px 16px;">
+      <div style="font-size:12px;font-weight:700;color:#f87171;margin-bottom:6px;">❓ I cleared my browser cache and lost my data</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.8;">Your data is safe in <code style="background:var(--bg3);padding:1px 4px;border-radius:3px;font-size:11px;">portfolio_data.json</code> on your computer — browser cache clearing only affects the browser copy.<br><br>Click <strong>⛁ Data ▾ → Import Backup</strong> → select your <code style="background:var(--bg3);padding:1px 4px;border-radius:3px;font-size:11px;">portfolio_data.json</code> → then relink via <strong>Link / Create File</strong>.</div>
+    </div>
+  </div></div>`;
+
+  window.sgShowTab = function(tab) {
+    ['win','mac','fix'].forEach(t => {
+      document.getElementById('sg-'+t).style.display = t===tab ? 'block' : 'none';
+      const btn = document.getElementById('sg-'+t+'-btn');
+      if(btn) {
+        btn.className = t===tab ? 'btn sm primary' : 'btn sm ghost';
+        if(t==='fix') { btn.style.color = t===tab ? '' : '#f59e0b'; btn.style.borderColor = t===tab ? '' : 'rgba(245,158,11,0.4)'; }
+      }
+    });
+  };
+}
+
 function _buildSourceRow(containerId, symClass, qtyClass, walletClass) {
   const container = document.getElementById(containerId);
   if(!container) return;
@@ -7043,6 +7238,8 @@ function archivePool(type) {
     yieldTotal: yld, netResult: net, hodlValue: hodl,
     annReturn: days&&cur ? annReturn(cur+yld, p.entryValue, days) : null,
     notes: notes || p.notes,
+    lossStatus: document.getElementById('cl-lossStatus')?.value || null,
+    lossNote:   document.getElementById('cl-lossNote')?.value.trim() || null,
     // Preserve yield log and token info so the history entry is fully editable
     yieldLog:      [...(p.yieldLog||[])],
     tokASym:       p.tokASym,       tokAGeckoId: p.tokAGeckoId,
@@ -7307,6 +7504,14 @@ function openVaultModal(id=null) {
   const editing = !!id;
   document.getElementById('vm-close-section').style.display = editing ? '' : 'none';
   document.getElementById('vm-close-btn').style.display     = editing ? '' : 'none';
+  const vmLoss = document.getElementById('vm-loss-section');
+  if(vmLoss) vmLoss.style.display = editing ? '' : 'none';
+  if(editing) {
+    const vmLS = document.getElementById('vm-lossStatus');
+    const vmLN = document.getElementById('vm-lossNote');
+    if(vmLS) vmLS.value = '';
+    if(vmLN) vmLN.value = '';
+  }
   // Populate vault-specific wallet datalist (separate from Holdings modal datalist)
   const walletNames = [...new Set(DB.holdings.map(x=>x.wallet).filter(Boolean).map(w=>w.trim()))].sort();
   const vmDl = document.getElementById('vm-wallet-options');
@@ -7427,8 +7632,8 @@ function closeVault() {
     netResult:  netResult,
     annReturn:  annReturn,
     notes:      notes || '',
-    lossStatus: null,
-    lossNote:   null,
+    lossStatus: document.getElementById('vm-lossStatus')?.value || null,
+    lossNote:   document.getElementById('vm-lossNote')?.value.trim() || null,
   });
   DB.vaults = DB.vaults.filter(x=>x.id!==id);
   persist(); closeModal('vaultModal'); renderAll();
@@ -9078,9 +9283,10 @@ function gemConfirmBuy(id) {
   const g = DB.gems.find(x => x.id === id);
   if(!g) return;
   const addQty   = g.buyQty;
-  const addPrice = g.alertIn;
+  const addPrice = g.alertIn || g.entryPrice;
   if(!addQty || addQty <= 0) { toast('Set Add Qty first', true); return; }
-  if(!confirm(`Confirm: add ${addQty} ${g.sym||'tokens'} at $${addPrice||'market'}?\n\nThis will update your Qty and recalculate your average entry price.`)) return;
+  const totalCost = addPrice ? +(addQty * addPrice).toFixed(2) : 0;
+  if(!confirm(`Confirm: buy ${addQty} ${g.sym||'tokens'} at $${addPrice||'market'}?\n\nTotal cost: $${totalCost}\nThis will deduct from your Holdings (USDC/stablecoin) and update your GEM position.`)) return;
   const prevQty  = g.qty || 0;
   const prevCost = g.totalCost || (g.entryPrice && prevQty ? g.entryPrice * prevQty : 0);
   const newCost  = addPrice ? addQty * addPrice : 0;
@@ -9089,10 +9295,93 @@ function gemConfirmBuy(id) {
   g.qty        = newQty;
   g.entryPrice = +newAvg.toFixed(6);
   g.totalCost  = +(prevCost + newCost).toFixed(2);
-  // Auto-stamp entry date if not already set
   if(!g.entryDate) g.entryDate = new Date().toISOString().slice(0,10);
-  persist(); renderGems();
-  toast(`Added ${addQty} ${g.sym||'tokens'} — new qty: ${newQty}, avg entry: $${g.entryPrice}`);
+
+  // Deduct cost from Holdings — find USDC/USDT/stablecoin in DeFi wallet
+  if(totalCost > 0) {
+    // Find best stablecoin source: prefer USDC, then USDT, then any stablecoin
+    const stables = ['USDC','USDT','USDT0','DAI','FRAX'];
+    let sourceHolding = null;
+    for(const sym of stables) {
+      sourceHolding = DB.holdings.find(h => h.sym.toUpperCase() === sym && (h.qty||0) >= totalCost);
+      if(sourceHolding) break;
+    }
+    // Fall back to any stablecoin with enough balance
+    if(!sourceHolding) {
+      sourceHolding = DB.holdings.find(h =>
+        stables.some(s => h.sym.toUpperCase() === s) && (h.qty||0) > 0);
+    }
+    if(sourceHolding) {
+      sourceHolding.qty = Math.max(0, (sourceHolding.qty||0) - totalCost);
+      logTransaction({
+        date: g.entryDate, type: 'Buy',
+        sym: g.sym||'', qty: addQty,
+        price: addPrice||null, total: totalCost,
+        from: sourceHolding.wallet || 'Holdings',
+        to: `GEM: ${g.sym}`,
+        notes: `Bought ${addQty} ${g.sym} at $${addPrice} — deducted $${totalCost} ${sourceHolding.sym}`,
+      });
+      toast(`Bought ${addQty} ${g.sym} — deducted $${totalCost} from ${sourceHolding.sym} (${sourceHolding.wallet||'Holdings'})`);
+    } else {
+      // No stablecoin found — still record the buy, warn user
+      logTransaction({
+        date: g.entryDate, type: 'Buy',
+        sym: g.sym||'', qty: addQty,
+        price: addPrice||null, total: totalCost,
+        from: 'External', to: `GEM: ${g.sym}`,
+        notes: `Bought ${addQty} ${g.sym} at $${addPrice} — no stablecoin found in Holdings to deduct from`,
+      });
+      toast(`Bought ${addQty} ${g.sym} — no stablecoin found in Holdings, please update manually`, true);
+    }
+  }
+
+  persist(); renderGems(); renderHoldings();
+}
+
+// ── Stop Loss execute modal ───────────────────────────────────────────────────
+function openSlExecuteModal(gemId) {
+  const g = DB.gems.find(x => x.id === gemId);
+  if(!g) return;
+  const lp = getPrice(g.geckoId) || g.stopLoss || 0;
+
+  // Reuse tpExecuteModal with tpNum=0 to signal stop loss
+  document.getElementById('tpe-gem-id').value = gemId;
+  document.getElementById('tpe-tp-num').value = 0;
+
+  document.querySelector('#tpExecuteModal .modal-title').textContent = '⛔ CONFIRM STOP LOSS EXECUTED';
+
+  document.getElementById('tpe-context').innerHTML =
+    `<strong>${g.sym||'GEM'}</strong> — Stop Loss sell &nbsp;|&nbsp; ` +
+    `Qty held: <strong>${g.qty||0}</strong> &nbsp;|&nbsp; ` +
+    `Stop Loss: <strong>${g.stopLoss ? '$'+g.stopLoss : '—'}</strong> &nbsp;|&nbsp; ` +
+    `Live price: <strong>${lp ? '$'+lp.toPrecision(4) : '—'}</strong>`;
+
+  document.getElementById('tpe-qty').value   = g.qty || '';
+  document.getElementById('tpe-price').value = g.stopLoss || lp || '';
+  document.getElementById('tpe-date').value  = today();
+  document.getElementById('tpe-notes').value = `Stop loss triggered — sold ${g.qty} ${g.sym}`;
+
+  const calcTotal = () => {
+    const q = +document.getElementById('tpe-qty').value||0;
+    const p = +document.getElementById('tpe-price').value||0;
+    document.getElementById('tpe-total').value = (q && p) ? (q*p).toFixed(2) : '';
+    tpeUpdateRecvLabel();
+  };
+  document.getElementById('tpe-qty').oninput   = calcTotal;
+  document.getElementById('tpe-price').oninput = calcTotal;
+  calcTotal();
+
+  const allSyms = [...new Set(DB.holdings.map(h=>h.sym).filter(Boolean))].sort();
+  document.getElementById('tpe-sym-list').innerHTML =
+    ['USDC','USDT','ETH','BTC','SOL',...allSyms.filter(s=>!['USDC','USDT','ETH','BTC','SOL'].includes(s))]
+    .map(s=>`<option value="${s}">`).join('');
+  document.getElementById('tpe-recv-sym').value = 'USDC';
+
+  const allWallets = [...new Set(DB.holdings.map(h=>h.wallet).filter(Boolean))].sort();
+  const walletSel = document.getElementById('tpe-wallet');
+  walletSel.innerHTML = allWallets.map(w=>`<option value="${w}">${w}</option>`).join('');
+
+  document.getElementById('tpExecuteModal').classList.add('open');
 }
 
 // ── Sell confirmation — subtracts sellQty from holdings
@@ -9226,6 +9515,8 @@ function tpExecuteConfirm() {
     notes: notes || `TP${tpNum} executed — ${g.sym} → ${recvSym}`,
   });
 
+  // Reset modal title in case it was changed to Stop Loss
+  document.querySelector('#tpExecuteModal .modal-title').textContent = '✔ CONFIRM TP EXECUTED';
   persist();
   closeModal('tpExecuteModal');
   renderGems(); renderHoldings(); renderHeader();
@@ -9574,11 +9865,10 @@ function initFileProtocolUI() {
   if(_loadedFromSeed) showRecoveryBanner();
 
   if(!IS_FILE_PROTOCOL) return;
-  // Hide the file-link section, show the notice
-  const linkSec = document.getElementById('fsLinkSection');
+  // Show the notice but keep fsLinkSection visible
+  // File System Access API works on file:// in Chrome — users can still link files
   const notice  = document.getElementById('fileProtocolNotice');
   const stamp   = document.getElementById('saveStamp');
-  if(linkSec) linkSec.style.display = 'none';
   if(notice)  notice.style.display  = 'block';
   if(stamp)   stamp.style.display   = 'none';
 }
@@ -9774,6 +10064,11 @@ function _gemPanelHtml(g) {
                 onblur="(function(el){const ep=DB.gems.find(x=>x.id==='${g.id}')?.entryPrice;if(!ep)return;const p=_gemPanelPriceFromPct(ep,el.value);if(p)gemPanelInline('${g.id}','stopLoss',p);})(this)">
               <span style="font-size:9px;color:var(--text3);">%</span>
               ${stopLossHit ? `<span style="font-size:9px;color:#cc2200;font-weight:700;white-space:nowrap;">⚠ HIT</span>` : ''}
+              ${g.stopLoss && g.qty > 0 ? `<button class="gem-confirm-btn ${stopLossHit ? 'sl' : 'ghost'}"
+                onclick="openSlExecuteModal('${g.id}')"
+                title="${stopLossHit ? 'Stop Loss hit — click to execute sell and return funds to Holdings' : 'Click to execute stop loss sell manually'}">
+                ${stopLossHit ? '⛔ Sell (SL hit)' : '⛔ Execute SL'}
+              </button>` : ''}
             </div>
             <div class="gem-panel-row">
               <label>TP 1 $</label>
@@ -12718,6 +13013,12 @@ function importJSON(e) {
         hideRecoveryBanner();
         const hpcNote = raw.schemaVersion === 2 && raw.hpcHistory ? ' + hedge chart history' : '';
         toast('✓ Data imported successfully' + hpcNote);
+        // Offer to link the imported file for auto-save
+        setTimeout(() => {
+          if(confirm('✓ Data imported!\n\nWould you like to link this file for auto-save?\n\nClicking OK will open a file picker — select the same .json file you just imported. The tracker will then auto-save to it every 7 minutes.')) {
+            linkBackupFile();
+          }
+        }, 400);
       } else {
         // Has existing data — run smart merge review
         hideRecoveryBanner();
@@ -13032,6 +13333,38 @@ async function noBackupBannerCreate() {
   }
 }
 
+async function resetDataLink() {
+  if(!confirm('Clear the current data file link?\n\nYour data stays safe in the browser. After resetting, use ⛁ Link / Create File to link the correct folder.')) return;
+  // Clear file handle from memory and IDB
+  fsFileHandle = null;
+  try { await idbKvDel('fsFileHandle'); } catch(e) {}
+  // Update UI
+  renderHeader();
+  toast('Data link cleared — use ⛁ Link / Create File to relink to your working folder');
+}
+
+async function restoreFilePermission() {
+  document.getElementById('permissionBanner').style.display = 'none';
+  if(!fsFileHandle) {
+    toast('No file linked — use ⛁ Link / Create File to relink', true);
+    return;
+  }
+  try {
+    const perm = await fsFileHandle.requestPermission({mode:'readwrite'});
+    if(perm === 'granted') {
+      await fsWriteNow(true);
+      updateFsStatus();
+      toast('✓ Access restored — auto-save is active again');
+    } else {
+      toast('Permission denied — try relinking your file via ⛁ Data ▾ → Link / Create File', true);
+      fsFileHandle = null;
+      updateFsStatus();
+    }
+  } catch(e) {
+    toast('Could not restore access: ' + e.message, true);
+  }
+}
+
 async function linkBackupFile() {
   if(!fsSupported()) { toast('File System API requires Chrome or Edge.', true); return; }
   if(fsFileHandle) {
@@ -13217,7 +13550,12 @@ async function fsWriteNow(fromGesture=false) {
       // Only call requestPermission from a real user gesture (click/keypress).
       // Auto-save timer is NOT a gesture — calling requestPermission there causes
       // Chrome to show its "allow this time / always" dialog on every auto-save tick.
-      if(!fromGesture) return false;  // skip silently; next user action will re-grant
+      if(!fromGesture) {
+        // Show persistent banner prompting user to restore permission
+        const pb = document.getElementById('permissionBanner');
+        if(pb) pb.style.display = 'flex';
+        return false;
+      }
       perm = await fsFileHandle.requestPermission({mode:'readwrite'});
     }
     if(perm !== 'granted') { toast('⚠ File permission reset (Chrome security policy). Click the backup button to reconnect.',true); fsFileHandle=null; updateFsStatus(); return false; }
@@ -13242,6 +13580,8 @@ async function fsWriteNow(fromGesture=false) {
     await w.close();
     fsLastSaved = new Date();
     fsMetaSave({ lastSaved: fsLastSaved.toISOString() });
+    const pb = document.getElementById('permissionBanner');
+    if(pb) pb.style.display = 'none';
     updateFsStatus();
     return true;
   } catch(e) {
@@ -13393,12 +13733,10 @@ function toggleDataMenu() {
     const btn = document.querySelector('#dataMenuWrap > button');
     if(btn) {
       const r = btn.getBoundingClientRect();
-      const menuW = 220;
-      let left = r.right - menuW;
-      if(left < 4) left = 4;
-      menu.style.top  = (r.bottom + 4) + 'px';
-      menu.style.left = left + 'px';
-      menu.style.right = 'auto';
+      menu.style.top   = (r.bottom + 4) + 'px';
+      menu.style.left  = 'auto';
+      menu.style.right = (window.innerWidth - r.right) + 'px';
+      menu.style.width = '220px';
     }
     menu.style.display = 'block';
     // Restore checkbox state from settings
@@ -14308,8 +14646,8 @@ const HELP_CONTENT = {
         text: `<strong>Beat HODL?</strong> — The fundamental LP question: has the yield earned by providing liquidity outweighed the impermanent loss vs simply holding the tokens? Shown as ✓ YES / ✗ NO on every pool.<br><br><strong>Hedge ratio</strong> — The percentage of your crypto exposure protected by a short position. Hard capped at 60% — you always retain meaningful upside exposure. The formula uses implied volatility, 7-day trend, and funding rate to recommend the optimal ratio automatically.<br><br><strong>Net carry</strong> — Pool yield earned minus annual funding cost on the hedge. Positive carry means the hedge is net profitable.<br><br><strong>Funded From Holdings</strong> — When adding capital to a pool or vault, this feature auto-deducts the source tokens from your Holdings and logs Transfer transactions — keeping all balances correct without manual editing.<br><br><strong>Backup envelope</strong> — Your .json backup file contains everything: portfolio data, hedge chart history, activation token, Pushover keys, and settings. Linking the backup file on any machine restores the complete tracker instantly.` },
       { icon: '🚀', heading: 'Getting started — four steps',
         text: `<strong>1. Open in Chrome or Edge</strong> — double-click the HTML file. Firefox is not recommended (File System API limitations).<br><br><strong>2. Link your backup file</strong> — click ⛁ Data ▾ → Link / Change File → select or create a .json file in the same folder. Auto-save activates immediately (every 7 minutes, silently).<br><br><strong>3. Add your first position</strong> — go to the tab that matches what you want to track. Click the + button. For LP Pools: enter both token symbols, current quantities, entry value, and your price range.<br><br><strong>4. Refresh prices</strong> — click ↻ Refresh in the header. Prices update from CoinGecko and the live header bar populates. From here, everything is live.` },
-      { icon: '⛁', heading: 'Data protection',
-        text: `<strong>Auto-save</strong> — every 7 minutes when a backup file is linked. Also saves when you switch away from the browser tab.<br><br><strong>Manual save</strong> — ⛁ Data ▾ → Save / Export Backup downloads a dated .json backup to your drive.<br><br><strong>After a cache clear</strong> — if your browser cache is cleared, localStorage is wiped. Re-open the tracker and link your .json backup file — all data restores immediately, including hedge chart history.<br><br><strong>Moving to a new machine</strong> — copy the entire tracker folder (HTML file + backup .json + help_img/ folder). Open the HTML in Chrome and link the backup file. Activation, settings, and all data restore automatically.` },
+      { icon: '⛁', heading: 'Data protection & the backup file',
+        text: `<strong>How your data is stored</strong> — All data lives in two places: your browser's localStorage (fast, automatic) and a .json backup file on your own drive (permanent, portable).<br><br><strong>Linking a backup file</strong> — Click ⛁ Data ▾ → Link / Create File. Select an existing .json or create a new one. Once linked, the tracker auto-saves every 7 minutes and on every tab switch. A green dot in the header confirms the link is active.<br><br><strong>Import Backup</strong> — Loads data from a .json file into the tracker. Use this to restore after a cache clear or on a new machine. After importing, you will be prompted to link the same file for auto-save — click OK and select the same file to reconnect everything in one step.<br><br><strong>Save / Export Backup</strong> — If a file is linked, saves to it immediately and optionally downloads a dated copy. If no file is linked, downloads a dated .json to your Downloads folder as a manual backup.<br><br><strong>Unlink File</strong> — Disconnects the current backup file without deleting any data. Your data stays safe in localStorage. Re-link at any time using Link / Create File.<br><br><strong>Reset Data Link</strong> — Use only if the tracker is saving to the wrong folder (e.g. a stale path from a previous machine). Clears the saved file path and forces you to re-link. Data is not affected.<br><br><strong>After a cache clear</strong> — localStorage is wiped. Re-open the tracker, click ⛁ Data ▾ → Import Backup, select your .json file, then link it when prompted. Everything restores in under a minute.<br><br><strong>Moving to a new machine</strong> — Copy the tracker folder (HTML file + .json backup + help_img/ folder) to the new machine. Open in Chrome, import and link the backup. Activation, settings, and all history restore automatically.` },
       { icon: '❓', heading: 'Common first-time questions',
         text: `<strong>Why isn't a token price loading?</strong> CoinGecko may be rate-limited — wait 60 seconds and click ↻ Refresh. If a specific token always shows — , its CoinGecko ID may be wrong — edit the entry and search for the correct ID.<br><br><strong>How do I activate the tracker?</strong> Your Install ID is shown on the activation screen. Send it to the author and an activation code will be returned. The code is stored in your backup file and restores automatically on any future import.<br><br><strong>What is the Hedge tab for?</strong> If you hold BTC, ETH, or SOL in pools or vaults, the Hedge tab helps you size a protective short position on Hyperliquid that offsets downside risk while keeping your upside exposure. It is entirely optional — all other tabs function independently.<br><br><strong>Is my data safe?</strong> Yes — no data ever leaves your machine. The only external calls are to CoinGecko (prices), Deribit (implied volatility), Hyperliquid (funding rates), and a Cloudflare Worker (help content sync only). No portfolio data is transmitted in any of these calls.` },
     ]
@@ -14433,6 +14771,38 @@ const HELP_CONTENT = {
         text: `<strong>Why is live price showing — ?</strong> The CoinGecko ID is wrong — edit and search again.<br><strong>What's the difference between Alert In and T1?</strong> Alert In fires when price drops TO your level (buy). T1/T2/T3 fire when price rises TO your target (sell).<br><strong>How do I get phone alerts?</strong> Install Pushover app, create account, enter User Key and App Token in Settings.` },
     ]
   },
+  setup: {
+    title: '⚙ Setup & Data Guide',
+    sections: [
+      { icon: '🪟', heading: 'Windows — Step 1: Create your working folder',
+        text: `Open <strong>File Explorer</strong> (press Win + E). Navigate to <strong>Documents</strong>. Right-click in empty space → <strong>New → Folder</strong> → name it <strong>PortfolioTracker</strong>.<br><br>Move <code>Portfolio_Tracker_Demo.html</code> into this folder. This is your permanent home for the tracker — never move it after setup.` },
+      { icon: '🪟', heading: 'Windows — Step 2: Tell Chrome where to save files',
+        text: `In Chrome, paste this into the address bar and press Enter:<br><br><code>chrome://settings/downloads</code><br><br>Turn <strong>ON</strong> the toggle: <em>"Ask where to save each file before downloading"</em><br><br>Edge users: use <code>edge://settings/downloads</code> instead.<br><br>This ensures your data file saves to your working folder rather than disappearing into Downloads.` },
+      { icon: '🪟', heading: 'Windows — Step 3: Link your data file',
+        text: `Open the tracker from your <strong>PortfolioTracker</strong> folder (not from Downloads or a browser bookmark).<br><br>Click <strong>▶ Start Free Trial</strong> on the activation screen.<br><br>In the header click <strong>⛁ Data ▾ → Link / Create File</strong>.<br><br>Navigate to your <strong>PortfolioTracker</strong> folder. Type <strong>portfolio_data.json</strong> as the filename → click <strong>Save</strong>.<br><br>The status dot in the header turns <strong>green ●</strong> — auto-save is now active every 7 minutes.` },
+      { icon: '🪟', heading: 'Windows — Step 4: Create a desktop shortcut',
+        text: `Open your <strong>PortfolioTracker</strong> folder in File Explorer. Right-click <code>Portfolio_Tracker_Demo.html</code> → <strong>Send to → Desktop (create shortcut)</strong>.<br><br>Always open the tracker via this shortcut. Never open it from Downloads or a browser bookmark — the file link won't work correctly from there.` },
+      { icon: '🍎', heading: 'Mac — Step 1: Create your working folder',
+        text: `Open <strong>Finder</strong> (the smiley face icon in your Dock). Click <strong>Documents</strong> in the left sidebar.<br><br>Press <strong>Cmd + Shift + N</strong> to create a new folder → name it <strong>PortfolioTracker</strong>.<br><br>Move <code>Portfolio_Tracker_Demo.html</code> into this folder.` },
+      { icon: '🍎', heading: 'Mac — Step 2: Tell Chrome where to save files',
+        text: `In Chrome, paste this into the address bar and press Enter:<br><br><code>chrome://settings/downloads</code><br><br>Turn <strong>ON</strong> the toggle: <em>"Ask where to save each file before downloading"</em><br><br><strong>Mac extra step:</strong> The first time the tracker auto-saves, Chrome shows a bar saying <em>"Allow this site to download multiple files?"</em> — click <strong>Allow</strong>. This only appears once.<br><br>If you missed it: Chrome menu (⋮) → <strong>Settings → Privacy and security → Site settings → Additional permissions → Automatic downloads</strong> → add the tracker to the Allowed list.` },
+      { icon: '🍎', heading: 'Mac — Step 3: Link your data file',
+        text: `Open the tracker from your <strong>PortfolioTracker</strong> folder in Finder (not from Downloads).<br><br>Click <strong>▶ Start Free Trial</strong>. In the header click <strong>⛁ Data ▾ → Link / Create File</strong>.<br><br>Navigate to your <strong>PortfolioTracker</strong> folder. Type <strong>portfolio_data.json</strong> → click <strong>Save</strong>.<br><br>The dot turns <strong>green ●</strong>.` },
+      { icon: '🍎', heading: 'Mac — If Chrome loses access after restart',
+        text: `Mac Chrome resets file write permissions when you restart the browser — this is a Mac security feature, not a bug.<br><br>You will see an amber banner at the bottom of the screen: <em>"Auto-save permission lost"</em>.<br><br>Click <strong>🔓 Restore Access</strong> → Chrome asks you to confirm — click <strong>Allow</strong>. Auto-save resumes immediately.<br><br>If the banner does not appear, click <strong>⛁ Data ▾ → Link / Create File</strong> and relink your file.` },
+      { icon: '🍎', heading: 'Mac — Step 4: Create a desktop alias',
+        text: `Open your <strong>PortfolioTracker</strong> folder in Finder. Hold <strong>Cmd + Opt</strong> and drag <code>Portfolio_Tracker_Demo.html</code> to your Desktop.<br><br>This creates an alias shortcut. Always open the tracker from here — not from Downloads or Safari.` },
+      { icon: '🔧', heading: 'Fix: Data file is saving to the wrong folder',
+        text: `1. Click <strong>⛁ Data ▾ → Save / Export Backup</strong> — save a copy somewhere safe first.<br>2. Click <strong>⛁ Data ▾ → ⚠ Reset Data Link</strong> to clear the wrong link.<br>3. Click <strong>⛁ Data ▾ → Link / Create File</strong> → navigate to your <strong>PortfolioTracker</strong> folder → save as <code>portfolio_data.json</code>.<br>4. The dot turns <strong>green ●</strong> — done.` },
+      { icon: '🔧', heading: 'Fix: Numbered copies appearing (autosave (1).json, (2).json…)',
+        text: `This happens when Chrome does not have <em>"Ask where to save"</em> turned on, so copies pile up in Downloads instead of overwriting the linked file.<br><br>1. Find the <strong>highest-numbered copy</strong> — that is your most recent data.<br>2. Click <strong>⛁ Data ▾ → Import Backup</strong> → select that file to restore your data.<br>3. Delete all the numbered copies from your Downloads folder.<br>4. Enable "Ask where to save": paste <code>chrome://settings/downloads</code> in Chrome → turn on the toggle.<br>5. Click <strong>⛁ Data ▾ → Link / Create File</strong> → save to your <strong>PortfolioTracker</strong> folder.` },
+      { icon: '🔧', heading: 'Fix: Status dot is grey or orange — data not saving',
+        text: `<strong>Grey dot</strong> means no file is linked. Click <strong>⛁ Data ▾ → Link / Create File</strong> → navigate to your working folder → select your existing <code>portfolio_data.json</code>.<br><br><strong>Orange dot</strong> or the amber <em>"Auto-save permission lost"</em> banner means the file is linked but Chrome lost write access. Click <strong>🔓 Restore Access</strong> in the banner, or use <strong>⛁ Data ▾ → Link / Create File</strong> to relink.` },
+      { icon: '🔧', heading: 'Fix: I cleared my browser cache and lost my data',
+        text: `If you had a linked file, your data is safe — the <code>portfolio_data.json</code> file on your computer is the permanent copy. Browser cache clearing only removes the browser's temporary copy.<br><br>Click <strong>⛁ Data ▾ → Import Backup</strong> → select your <code>portfolio_data.json</code> file → then relink it via <strong>⛁ Data ▾ → Link / Create File</strong>.` },
+    ]
+  }
+
 };
 
 // ── Search ─────────────────────────────────────────────────────────────────
@@ -14667,6 +15037,22 @@ async function fetchHelpContent() {
     });
     if (!res.ok) throw new Error('worker ' + res.status);
     const data = await res.json();
+    // Check for update
+    if(data && data.latestVersion && data.latestVersion !== APP_VERSION) {
+      const dismissed = localStorage.getItem('pt_update_dismissed');
+      if(dismissed !== data.latestVersion) {
+        const banner = document.getElementById('updateBanner');
+        const text   = document.getElementById('updateBannerText');
+        const link   = document.getElementById('updateBannerLink');
+        if(banner && text) {
+          text.textContent = `Version ${data.latestVersion} is available (you have ${APP_VERSION})`;
+          text.dataset.ver = data.latestVersion;
+          if(link) link.href = data.downloadUrl || 'https://jdgoldstein.github.io/portfoliotracker-help/START_HERE.html';
+          banner.style.display = 'flex';
+        }
+      }
+    }
+
     if (data && data.tabs) {
       Object.entries(data.tabs).forEach(([tab, tabData]) => {
         if (HELP_CONTENT[tab] && tabData.sections) {
@@ -14769,6 +15155,7 @@ function _renderHelpTabNav(activeTab) {
   }
   const tabs = [
     { key:'overview',  label:'⛁ Overview' },
+    { key:'setup',     label:'⚙ Setup & Data' },
     { key:'whatsNew',  label:"✦ What's New" },
     { key:'summary',   label:'📊 Summary' },
     { key:'pools',     label:'🔁 Pools' },
@@ -14943,16 +15330,16 @@ function helpZoomImg(src) {
 
 function openHelpModal(tab) {
   // Default to overview if no tab specified or tab not found
-  if(!tab || (!HELP_CONTENT[tab] && tab !== 'whatsNew')) tab = 'overview';
+  if(!tab || (!HELP_CONTENT[tab] && tab !== 'whatsNew' && tab !== 'setup')) tab = 'overview';
   const data = HELP_CONTENT[tab];
-  if(!data && tab !== 'whatsNew') return;
+  if(!data && tab !== 'whatsNew' && tab !== 'setup') return;
   _helpEditTab  = tab;
   _helpEditMode = false;
   const eb = document.getElementById('helpEditToggleBtn');
   if(eb) {
     eb.textContent='✏ Edit'; eb.style.background=''; eb.style.color=''; eb.style.borderColor='';
     // Hide edit button on overview and whatsNew tabs (read-only)
-    const isEditable = tab !== 'overview' && tab !== 'whatsNew';
+    const isEditable = tab !== 'overview' && tab !== 'whatsNew' && tab !== 'setup';
     eb.style.display = isEditable ? '' : 'none';
   }
   document.getElementById('helpModalContent').style.display = '';
@@ -14969,6 +15356,8 @@ function openHelpModal(tab) {
     document.getElementById('helpModal').classList.add('open');
     return;
   }
+
+  // Setup tab handled by HELP_CONTENT like other tabs
 
   document.getElementById('helpModalTitle').textContent = data.title;
 
