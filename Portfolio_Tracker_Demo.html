@@ -3321,7 +3321,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
       <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;font-weight:600;">💼 Default DeFi Wallet</div>
       <div class="field">
         <label>DeFi Wallet <span style="font-weight:400;color:var(--text3);font-size:10px;text-transform:none;letter-spacing:0;">— pre-selected for yield harvests, TP sells &amp; pool proceeds</span></label>
-        <select id="al-defiWallet" onchange="DB.settings.defiWallet=this.value;idbKvSet('defiWallet',this.value);persist();toast('DeFi wallet set to: '+this.value);"
+        <select id="al-defiWallet" onchange="DB.settings.defiWallet=this.value;vaultSet('defiWallet',this.value);persist();toast('DeFi wallet set to: '+this.value);"
           style="width:100%;padding:6px 8px;background:var(--bg2);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:12px;">
         </select>
         <div class="hint">Set this once and it will be the default wallet across yield logging, TP execute, and pool close flows. Overridable per transaction.</div>
@@ -3469,49 +3469,146 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 // Secrets assembled at runtime — not stored as plain literals
 const ACT_SECRET = (()=>{const p=['CPF_TR','ACKER_','2026_D','ELTA7_','WHISKE','Y'];return p.join('');})();
 const ACT_MASTER = (()=>{const p=['CPF_MA','STER_O','VERRID','E_KEY_','ZULU9'];return p.join('');})();
-const APP_VERSION  = '47.16';           // bumped on each release
+const APP_VERSION  = '47.21';           // bumped on each release
 const WHATS_NEW_KEY = 'cpf_seen_ver';   // localStorage: last version user saw What's New
 const ACT_STORE    = 'cpf_activation_v1';
 const ACT_ID_STORE = 'cpf_install_id';
 const ACT_VER      = 'v30';
 
 // ── Durable activation code storage (IDB-backed, survives localStorage clears) ─
-// Mirrors the activation code into a dedicated IDB store so that a partial
-// browser-data clear (cookies + localStorage only) doesn't lock the user out.
-const ACT_IDB_NAME = 'cpf_act_db';
-function actIdbOpen() {
+// ══════════════════════════════════════════════════════════════════════════════
+// cpfVault — Unified hardened storage for ALL critical settings
+// ══════════════════════════════════════════════════════════════════════════════
+// Single IDB database, single 'vault' object store.
+// Stores: activation code, PIN hash, Pushover keys, default wallet, install ID.
+// Survives ALL cache/localStorage clears — only wiped by "Clear all site data
+// including IndexedDB" (which no normal user accidentally triggers).
+// All reads/writes go through vaultGet() / vaultSet() / vaultSyncFromDB().
+//
+// Keys stored in vault:
+//   actCode      — activation/licence code
+//   pinHash      — SHA-256 of user PIN
+//   pinSet       — '1' if PIN is enabled
+//   pushKey      — Pushover application key
+//   pushToken    — Pushover user token
+//   defiWallet   — default DeFi wallet name
+//   hpc_history  — hedge performance chart history
+// ──────────────────────────────────────────────────────────────────────────────
+const CPF_VAULT_IDB   = 'cpf_vault_v1';
+const CPF_VAULT_VER   = 1;
+const CPF_VAULT_STORE = 'vault';
+let _vaultCache = null;
+let _vaultDbInst = null;
+
+function _vaultOpen() {
+  if(_vaultDbInst) return Promise.resolve(_vaultDbInst);
   return new Promise((res, rej) => {
-    const req = indexedDB.open(ACT_IDB_NAME, 1);
-    req.onupgradeneeded = e => e.target.result.createObjectStore('act');
-    req.onsuccess = e => res(e.target.result);
+    const req = indexedDB.open(CPF_VAULT_IDB, CPF_VAULT_VER);
+    req.onupgradeneeded = e => {
+      const db = e.target.result;
+      if(!db.objectStoreNames.contains(CPF_VAULT_STORE))
+        db.createObjectStore(CPF_VAULT_STORE);
+    };
+    req.onsuccess = e => { _vaultDbInst = e.target.result; res(_vaultDbInst); };
     req.onerror   = () => rej(req.error);
   });
 }
-async function actIdbSave(code) {
+
+async function vaultLoad() {
   try {
-    const db = await actIdbOpen();
-    await new Promise(res => {
-      const tx = db.transaction('act', 'readwrite');
-      tx.objectStore('act').put(code, 'code');
-      tx.oncomplete = res; tx.onerror = res;
+    const db = await _vaultOpen();
+    const all = await new Promise(res => {
+      const map = {};
+      const tx = db.transaction(CPF_VAULT_STORE, 'readonly');
+      const cur = tx.objectStore(CPF_VAULT_STORE).openCursor();
+      cur.onsuccess = e => {
+        const c = e.target.result;
+        if(c) { map[c.key] = c.value; c.continue(); }
+        else res(map);
+      };
+      cur.onerror = () => res({});
     });
-  } catch(e) {}
+    _vaultCache = all;
+    console.log('cpfVault: loaded', Object.keys(all).length, 'keys');
+    return all;
+  } catch(e) {
+    console.warn('cpfVault: load failed', e);
+    _vaultCache = {};
+    return {};
+  }
 }
-async function actIdbLoad() {
+
+async function vaultSet(key, value) {
+  if(!_vaultCache) _vaultCache = {};
+  _vaultCache[key] = value;
+  try { localStorage.setItem('cpfv_' + key, typeof value === 'string' ? value : JSON.stringify(value)); } catch(e) {}
   try {
-    const db = await actIdbOpen();
-    return await new Promise(res => {
-      const tx = db.transaction('act', 'readonly');
-      const req = tx.objectStore('act').get('code');
-      req.onsuccess = () => res(req.result || null);
+    const db = await _vaultOpen();
+    return new Promise(res => {
+      const tx = db.transaction(CPF_VAULT_STORE, 'readwrite');
+      tx.objectStore(CPF_VAULT_STORE).put(value, key);
+      tx.oncomplete = () => res(true);
+      tx.onerror    = () => res(false);
+    });
+  } catch(e) { return false; }
+}
+
+async function vaultGet(key) {
+  if(_vaultCache && key in _vaultCache) return _vaultCache[key];
+  try {
+    const db = await _vaultOpen();
+    const val = await new Promise(res => {
+      const tx = db.transaction(CPF_VAULT_STORE, 'readonly');
+      const req = tx.objectStore(CPF_VAULT_STORE).get(key);
+      req.onsuccess = () => res(req.result ?? null);
       req.onerror   = () => res(null);
     });
-  } catch(e) { return null; }
+    if(val !== null) { if(_vaultCache) _vaultCache[key] = val; return val; }
+  } catch(e) {}
+  try {
+    const ls = localStorage.getItem('cpfv_' + key);
+    if(ls !== null) return ls;
+  } catch(e) {}
+  return null;
 }
+
+async function vaultSyncFromDB() {
+  if(!window.DB || !window.DB.settings) return;
+  const s = DB.settings;
+  const tasks = [];
+  if(s.pushKey)    tasks.push(vaultSet('pushKey',    s.pushKey));
+  if(s.pushToken)  tasks.push(vaultSet('pushToken',  s.pushToken));
+  if(s.defiWallet) tasks.push(vaultSet('defiWallet', s.defiWallet));
+  await Promise.all(tasks);
+}
+
+async function vaultRestoreToDB() {
+  if(!window.DB) return;
+  if(!DB.settings) DB.settings = {};
+  const keys = ['pushKey','pushToken','defiWallet'];
+  let changed = false;
+  for(const k of keys) {
+    const v = await vaultGet(k);
+    if(v && !DB.settings[k]) { DB.settings[k] = v; changed = true; }
+  }
+  if(changed) {
+    try { persist(); } catch(e) {}
+    console.log('cpfVault: restored settings into DB');
+    const pkEl = document.getElementById('al-pushkey');
+    const ptEl = document.getElementById('al-pushtoken');
+    if(pkEl && DB.settings.pushKey)   pkEl.value = DB.settings.pushKey;
+    if(ptEl && DB.settings.pushToken) ptEl.value = DB.settings.pushToken;
+  }
+}
+
+// ── Activation code helpers (now backed by vault) ────────────────────────────
+async function actIdbSave(code) { await vaultSet('actCode', code); }
+async function actIdbLoad()     { return await vaultGet('actCode'); }
 
 // ── Obfuscated contact emails ────────────────────────────────────────────────
 function getContactEmail()  { return String.fromCharCode(106,100,103,111,108,100,115,116,101,105,110,64,103,109,97,105,108,46,99,111,109); }
 function getFallbackEmail() { return String.fromCharCode(106,100,103,111,108,100,115,116,101,105,110,64,97,117,116,111,109,97,116,105,111,110,109,101,100,46,99,111,109); }
+
 
 // ── Fingerprint → 8-char Installation ID (recomputed, not cached) ────────────
 async function computeInstallId() {
@@ -4037,6 +4134,12 @@ async function tapToOpenHandler() {
     if(m) m.style.visibility = '';
   }
   try {
+    // ── Step 1: Load vault FIRST — before auth, before PIN, before anything ──
+    await vaultLoad();
+
+    // ── Step 2: Restore PIN into localStorage from vault (sync read path) ────
+    await pinRestoreFromVault();
+
     const ok = await checkActivation();
     if(ok) {
       if(fsFileHandle) {
@@ -4113,7 +4216,7 @@ const KNOWN_TOKENS = [
 ];
 
 // ─── STORAGE ────────────────────────────────────────────────────────────────
-const SK = 'cpf_v19'; // bumped v47.15 — correct LP token HODL formula, self-heal removed
+const SK = 'cpf_v20'; // bumped v47.21 — unified vault storage layer
 function sanitiseDB(db) {
   // Ensure arrays exist
   if(!db.gems)             db.gems             = [];
@@ -4323,6 +4426,9 @@ function persist() {
   // Redundant backup under a different key — insurance if SK is cleared
   try { localStorage.setItem(SK_BACKUP, localStorage.getItem(SK)); } catch(e) {}
 
+  // Keep vault (IDB) in sync with every persist
+  vaultSyncFromDB().catch(() => {});
+
   // File system write only works on http/https — skip entirely on file://
   if(!IS_FILE_PROTOCOL && fsFileHandle) {
     fsFileHandle.queryPermission({mode:'readwrite'}).then(perm => {
@@ -4444,36 +4550,28 @@ function seed() {
 let DB = sanitiseDB(load());
 // Migrate history entries that predate the id field
 DB.history.forEach(h => { if(!h.id) h.id = uid(); });
-// Merge any history entries from embedded backup missing in localStorage
+// ── Embedded backup history merge ────────────────────────────────────────────
+// GUARD: Only merge when _loadedFromSeed is true — i.e. localStorage was
+// completely empty (genuine fresh install or first run). This MUST NOT run
+// on normal sessions or version updates, because the embedded backup contains
+// the pools/vaults/LPs that were open at build time. Merging them back after
+// a user has closed them causes ghost reappearance of closed positions.
 (function() {
   try {
+    if(!_loadedFromSeed) return; // ← CRITICAL: skip on normal sessions
     const eb = window._embeddedBackup;
     if(!eb || !eb.history || !eb.history.length) return;
     const seen = new Set(DB.history.map(h => h.id));
     let added = 0;
     eb.history.forEach(h => { if(h.id && !seen.has(h.id)) { DB.history.push(h); added++; } });
-    if(added > 0) { persist(); console.log('cpf: merged', added, 'history entries from embedded backup'); }
+    if(added > 0) { persist(); console.log('cpf: merged', added, 'history entries from embedded backup (seed only)'); }
   } catch(e) {}
 })();
 
 // ── IDB settings restore (runs async, fills gaps left by a cache clear) ───────
+// ── Vault settings restore (runs async after DB load) ────────────────────────
 async function idbRestoreSettings() {
-  try {
-    const pushKey    = await idbKvGet('pushKey');
-    const pushToken  = await idbKvGet('pushToken');
-    const defiWallet = await idbKvGet('defiWallet');
-    let changed = false;
-    if(pushKey   && !DB.settings?.pushKey)   { DB.settings.pushKey   = pushKey;    try { localStorage.setItem('cpf_pushKey',   pushKey);   } catch(e){} changed = true; }
-    if(pushToken && !DB.settings?.pushToken) { DB.settings.pushToken = pushToken;  try { localStorage.setItem('cpf_pushToken', pushToken); } catch(e){} changed = true; }
-    if(defiWallet && !DB.settings?.defiWallet) { DB.settings.defiWallet = defiWallet; changed = true; }
-    if(changed) {
-      persist();
-      const pkEl = document.getElementById('al-pushkey');
-      const ptEl = document.getElementById('al-pushtoken');
-      if(pkEl && pushKey)   pkEl.value = pushKey;
-      if(ptEl && pushToken) ptEl.value = pushToken;
-    }
-  } catch(e) {}
+  await vaultRestoreToDB();
 }
 setTimeout(idbRestoreSettings, 800);
 
@@ -11019,10 +11117,8 @@ function savePushoverKeys() {
   const t = document.getElementById('al-pushtoken').value;
   DB.settings.pushKey   = k;
   DB.settings.pushToken = t;
-  try { localStorage.setItem('cpf_pushKey', k);   } catch(e){}
-  try { localStorage.setItem('cpf_pushToken', t); } catch(e){}
-  idbKvSet('pushKey',   k);
-  idbKvSet('pushToken', t);
+  vaultSet('pushKey',   k);
+  vaultSet('pushToken', t);
   persist();
 }
 async function testPushover() {
@@ -12382,7 +12478,7 @@ function renderHedgeClosed() {
   // Async IDB restore for demo (no-op if no persistent history)
   (async function() {
     try {
-      const saved = await idbKvGet('hpc_history');
+      const saved = await vaultGet('hpc_history');
       if(saved && typeof saved === 'object' && Object.keys(saved).length > 0 && Object.keys(HPC.history || {}).length === 0) {
         HPC.history = saved;
       }
@@ -13057,7 +13153,7 @@ function _unpackBackup(raw) {
     // Restore HPC history to its own localStorage key — separate stream
     if(raw.hpcHistory && typeof raw.hpcHistory === 'object') {
       try { localStorage.setItem('HPC_hist_v1', JSON.stringify(raw.hpcHistory)); } catch(e) {}
-      idbKvSet('hpc_history', raw.hpcHistory); // IDB mirror — survives future cache clears
+      vaultSet('hpc_history', raw.hpcHistory); // IDB mirror — survives future cache clears
       // Push into live HPC instance if it exists
       if(window._HPC) {
         Object.keys(raw.hpcHistory).forEach(asset => {
@@ -13076,8 +13172,8 @@ function _applyImport(d) {
   if(!DB.history) DB.history = [];
   DB.history.forEach(h => { if(!h.id) h.id = uid(); });
   prices = DB.prices || {};
-  if(DB.settings?.pushKey)   { try { localStorage.setItem('cpf_pushKey',   DB.settings.pushKey);   } catch(e){} idbKvSet('pushKey',   DB.settings.pushKey);   }
-  if(DB.settings?.pushToken) { try { localStorage.setItem('cpf_pushToken', DB.settings.pushToken); } catch(e){} idbKvSet('pushToken', DB.settings.pushToken); }
+  if(DB.settings?.pushKey)   vaultSet('pushKey',   DB.settings.pushKey);
+  if(DB.settings?.pushToken) vaultSet('pushToken', DB.settings.pushToken);
   try { volMcRestoreAll(); } catch(e){}
   persist(); renderAll(); fetchPrices();
 }
@@ -13429,8 +13525,8 @@ async function fsActivate(handle, mode) {
             DB = sanitiseDB(d);
             DB.history.forEach(h => { if(!h.id) h.id = uid(); });
             prices = DB.prices||{};
-            if(DB.settings?.pushKey)   { try { localStorage.setItem('cpf_pushKey',   DB.settings.pushKey);   } catch(e){} idbKvSet('pushKey',   DB.settings.pushKey);   }
-            if(DB.settings?.pushToken) { try { localStorage.setItem('cpf_pushToken', DB.settings.pushToken); } catch(e){} idbKvSet('pushToken', DB.settings.pushToken); }
+            if(DB.settings?.pushKey)   vaultSet('pushKey',   DB.settings.pushKey);
+            if(DB.settings?.pushToken) vaultSet('pushToken', DB.settings.pushToken);
             try { volMcRestoreAll(); } catch(e){}
             localStorage.setItem(SK, JSON.stringify(DB));
             try { localStorage.setItem(SK_BACKUP, JSON.stringify(DB)); } catch(e){}
@@ -13806,24 +13902,10 @@ function openSettingsModal() {
   if(moverEl) moverEl.value = DB.settings.gemMoverPct || 10;
   const pushKey   = DB.settings.pushKey   || localStorage.getItem('cpf_pushKey')   || '';
   const pushToken = DB.settings.pushToken || localStorage.getItem('cpf_pushToken') || '';
-  if(DB.settings.pushKey)   { try { localStorage.setItem('cpf_pushKey',   DB.settings.pushKey);   } catch(e){} idbKvSet('pushKey',   DB.settings.pushKey);   }
-  if(DB.settings.pushToken) { try { localStorage.setItem('cpf_pushToken', DB.settings.pushToken); } catch(e){} idbKvSet('pushToken', DB.settings.pushToken); }
+  if(!DB.settings.pushKey   && pushKey)   { DB.settings.pushKey   = pushKey;   vaultSet('pushKey',   pushKey);   }
+  if(!DB.settings.pushToken && pushToken) { DB.settings.pushToken = pushToken; vaultSet('pushToken', pushToken); }
   document.getElementById('al-pushkey').value   = pushKey;
   document.getElementById('al-pushtoken').value = pushToken;
-  if(!pushKey || !pushToken) {
-    Promise.all([idbKvGet('pushKey'), idbKvGet('pushToken')]).then(([k, t]) => {
-      const pkEl = document.getElementById('al-pushkey');
-      const ptEl = document.getElementById('al-pushtoken');
-      if(k && pkEl && !pkEl.value) { pkEl.value = k; DB.settings.pushKey = k; }
-      if(t && ptEl && !ptEl.value) { ptEl.value = t; DB.settings.pushToken = t; }
-      const statusEl2 = document.getElementById('pushoverStatus');
-      const hk = (DB.settings.pushKey || k), ht = (DB.settings.pushToken || t);
-      if(statusEl2) {
-        statusEl2.textContent = (hk && ht) ? '✓ Pushover configured' : 'Not configured — enter keys above';
-        statusEl2.style.color = (hk && ht) ? '#065f46' : 'var(--text3)';
-      }
-    });
-  }
   const key   = pushKey;
   const token = pushToken;
   const statusEl = document.getElementById('pushoverStatus');
@@ -14203,14 +14285,31 @@ const PIN_KEY   = 'cpf_pin_hash';
 const PIN_SET   = 'cpf_pin_set';
 const LOCK_MINS = 5;
 let pinBuffer = '', pinMode = 'unlock', pinTemp = '', lockTimer = null;
-function pinHasPIN()  { return !!localStorage.getItem(PIN_SET); }
-function pinGetHash() { return localStorage.getItem(PIN_KEY); }
+function pinHasPIN()  {
+  if(_vaultCache && 'pinSet' in _vaultCache) return !!_vaultCache.pinSet;
+  return !!localStorage.getItem(PIN_SET);
+}
+function pinGetHash() {
+  if(_vaultCache && _vaultCache.pinHash) return _vaultCache.pinHash;
+  return localStorage.getItem(PIN_KEY);
+}
 async function pinSave(pin) {
   const h = await sha256(pin);
-  localStorage.setItem(PIN_KEY, h);
-  localStorage.setItem(PIN_SET, '1');
+  await vaultSet('pinHash', h);
+  await vaultSet('pinSet', '1');
+  try { localStorage.setItem(PIN_KEY, h); localStorage.setItem(PIN_SET, '1'); } catch(e) {}
 }
-function pinClearAll() { localStorage.removeItem(PIN_KEY); localStorage.removeItem(PIN_SET); }
+async function pinClearAll() {
+  await vaultSet('pinHash', null);
+  await vaultSet('pinSet',  null);
+  try { localStorage.removeItem(PIN_KEY); localStorage.removeItem(PIN_SET); } catch(e) {}
+}
+async function pinRestoreFromVault() {
+  const h = await vaultGet('pinHash');
+  const s = await vaultGet('pinSet');
+  if(h) { try { localStorage.setItem(PIN_KEY, h); } catch(e) {} }
+  if(s) { try { localStorage.setItem(PIN_SET, s); } catch(e) {} }
+}
 
 function showLock(msg='') {
   pinBuffer = '';
@@ -14883,6 +14982,20 @@ function helpSearchClear() {
 
 // ── What's New content — keyed by version string ─────────────────────────────
 const WHATS_NEW = {
+  '47.21': {
+    headline: "Version 47.21 — What's New",
+    summary:  'Your settings and data are now remembered more reliably — even after a browser update or cache clear. A bug that caused closed pools and vaults to reappear has also been fixed.',
+    items: [
+      { icon: '🔒', title: 'Your settings are now remembered after browser updates',
+        text: 'Things like your PIN, notification keys, and default wallet are now stored in a way that survives browser cache clears and app updates. You should no longer need to re-enter them when loading a new version.' },
+      { icon: '👻', title: 'Closed pools and vaults no longer reappear',
+        text: 'Some users saw pools or vaults they had already closed come back after loading a new version of the app. This has been fixed — closed positions stay closed.' },
+      { icon: '🔑', title: 'PIN lock is more reliable',
+        text: 'If you use a PIN to protect the app, it will now be remembered correctly even after clearing your browser cache. Your lock screen will work as expected every time.' },
+      { icon: '✅', title: 'General stability improvements',
+        text: 'Under the hood, the app now saves all your important settings to a single secure location rather than several separate ones. This makes restoring your data after any browser housekeeping much more consistent.' },
+    ]
+  },
   '47.16': {
     headline: "Version 47.16 — What's New",
     summary:  'Close / Rebalance flow fixed — returned token quantities are now editable, closed pool yield shows correctly across all legs, and the 7-day trial is now tamper-resistant.',
@@ -15443,8 +15556,8 @@ async function actReconnectBackup() {
         DB = sanitiseDB(d);
         DB.history.forEach(h => { if(!h.id) h.id = uid(); });
         prices = DB.prices||{};
-        if(DB.settings?.pushKey)   { try { localStorage.setItem('cpf_pushKey',   DB.settings.pushKey);   } catch(e){} idbKvSet('pushKey',   DB.settings.pushKey);   }
-        if(DB.settings?.pushToken) { try { localStorage.setItem('cpf_pushToken', DB.settings.pushToken); } catch(e){} idbKvSet('pushToken', DB.settings.pushToken); }
+        if(DB.settings?.pushKey)   vaultSet('pushKey',   DB.settings.pushKey);
+        if(DB.settings?.pushToken) vaultSet('pushToken', DB.settings.pushToken);
         try { volMcRestoreAll(); } catch(e){}
         localStorage.setItem(SK, JSON.stringify(DB));
       }
