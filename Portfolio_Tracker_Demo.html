@@ -1074,6 +1074,13 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     <button class="act-btn" onclick="actSubmit()">Activate →</button>
 
     <div class="act-err" id="actErr"></div>
+
+    <div style="margin-top:14px;text-align:center;">
+      <a href="https://jdgoldstein.github.io/portfoliotracker-help/START_HERE.html" target="_blank" rel="noopener"
+        style="font-size:11px;color:#4a8070;text-decoration:none;opacity:0.8;">
+        ⬆ Check for a newer version
+      </a>
+    </div>
     <div class="act-footer">
       After activating, link your backup file — future versions activate automatically.<br>
       Each code is unique to this machine.<br><br>
@@ -1142,6 +1149,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
         style="width:52px;">
       <span style="font-size:11px;line-height:1;">☾</span>
     </div>
+    <button class="btn sm" onclick="window.open('https://jdgoldstein.github.io/portfoliotracker-help/START_HERE.html','_blank')" title="Check for a newer version of the app" style="padding:4px 8px;font-size:12px;color:var(--accent2);border-color:rgba(0,102,204,0.3);">⬆ Update</button>
     <button class="btn sm" onclick="openSettingsModal()" title="App settings — Vol/MC interval, alerts, thresholds" style="padding:4px 8px;font-size:12px;">⚙ Settings</button>
     <!-- Data menu dropdown -->
     <div style="position:relative;display:inline-block;" id="dataMenuWrap">
@@ -1151,6 +1159,8 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
         width:220px;padding:6px 0;white-space:nowrap;
         max-height:calc(100vh - 60px);overflow-y:auto;overflow-x:hidden;">
         <div style="padding:4px 12px 6px;font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;border-bottom:1px solid var(--border);margin-bottom:4px;">Backup &amp; Restore</div>
+        <button class="btn ghost" onclick="window.open('https://jdgoldstein.github.io/portfoliotracker-help/START_HERE.html','_blank');toggleDataMenu()" style="display:block;width:100%;text-align:left;padding:7px 14px;border:none;border-radius:0;font-size:12px;background:none;color:var(--accent2);font-weight:600;" title="Opens the download page — check if a newer version is available">⬆ Check for Update</button>
+        <div style="border-bottom:1px solid var(--border);margin:0 0 4px;"></div>
         <button class="btn ghost prv-hide" id="saveNowBtn" onclick="saveNow()" style="display:none;width:100%;text-align:left;padding:7px 14px;border:none;border-radius:0;font-size:12px;background:none;font-weight:700;color:var(--accent);" title="Save immediately to linked backup file">⛁ Save Now</button>
         <button class="btn ghost prv-hide" onclick="exportJSON();toggleDataMenu()" style="display:block;width:100%;text-align:left;padding:7px 14px 3px;border:none;border-radius:0;font-size:12px;background:none;" title="Save to linked file, or download dated backup if no file linked">⬇ Save / Export Backup</button>
         <div style="padding:0 14px 7px;font-size:10px;color:var(--text3);line-height:1.4;">Saves to your linked file, or downloads a dated .json if no file is linked.</div>
@@ -3467,7 +3477,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 // Secrets assembled at runtime — not stored as plain literals
 const ACT_SECRET = (()=>{const p=['CPF_TR','ACKER_','2026_D','ELTA7_','WHISKE','Y'];return p.join('');})();
 const ACT_MASTER = (()=>{const p=['CPF_MA','STER_O','VERRID','E_KEY_','ZULU9'];return p.join('');})();
-const APP_VERSION  = '47.22';           // bumped on each release
+const APP_VERSION  = '47.23';           // bumped on each release
 const WHATS_NEW_KEY = 'cpf_seen_ver';   // localStorage: last version user saw What's New
 const ACT_STORE    = 'cpf_activation_v1';
 const ACT_ID_STORE = 'cpf_install_id';
@@ -15054,6 +15064,18 @@ function helpSearchClear() {
 
 // ── What's New content — keyed by version string ─────────────────────────────
 const WHATS_NEW = {
+  '47.23': {
+    headline: "Version 47.23 — What's New",
+    summary:  'Data integrity improvements, startup reliability fixes, and a built-in update check that works from any local file.',
+    items: [
+      { icon: '🛡️', title: 'Data integrity — embedded backup always current',
+        text: 'The HTML file now updates its own embedded data snapshot on every save via the new Link App File feature (💾 Data ▾ → Auto-Update App File). Previously the snapshot was frozen at the time the file was built, meaning a reboot with cleared browser storage would silently restore stale data — resurrecting closed pools, old vault balances, and positions that had been rebalanced. Link the HTML file once and it stays permanently in sync.' },
+      { icon: '🔄', title: 'Startup reliability — backup file always loads on open',
+        text: 'On startup the app now always compares your linked backup file against browser storage and loads whichever is newer. Previously a hidden file:// protocol restriction caused the backup file to be completely ignored on startup when running as a local file, meaning browser storage (which clears on reboot) was the only source of truth. The backup file is now always authoritative.' },
+      { icon: '⬆', title: 'Built-in update check — works from any local file',
+        text: 'A new Update button in the header and Check for Update entry in the Data menu open the download page directly. These work from file:// without any network fetch, so all users can check for new versions regardless of how the app is opened. The link is also visible on the activation screen before login.' },
+    ]
+  },
   '47.22': {
     headline: "Version 47.22 — What's New",
     summary:  'Stability and accuracy improvements — pool actions now always apply to the correct pool, and adding funds to a vault pool is simpler.',
