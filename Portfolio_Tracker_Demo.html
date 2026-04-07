@@ -1200,6 +1200,12 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
             </div>
           </div>
           <div id="dataMenuBackupName" style="display:none;padding:0 14px 8px;font-size:10px;color:#065f46;font-family:var(--mono);"></div>
+          <div style="border-top:1px solid var(--border);margin:4px 0 6px;"></div>
+          <div style="padding:2px 14px 3px;font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;">Auto-Update App File</div>
+          <div id="linkAppFileHint" style="padding:2px 14px 5px;font-size:10px;color:var(--text3);line-height:1.5;">Link this HTML file so the embedded backup stays current on every save — prevents stale data after reboot.</div>
+          <div style="padding:2px 14px 8px;">
+            <button id="linkAppFileBtn" class="btn sm" onclick="linkAppFile();toggleDataMenu()" style="font-size:11px;width:100%;text-align:left;">📄 Link App File</button>
+          </div>
         </div>
         <div id="fileProtocolNotice" style="display:none;padding:6px 14px 10px;">
           <div style="font-size:10px;color:#b86800;font-weight:600;margin-bottom:4px;">⚠ Running as local file</div>
@@ -2017,6 +2023,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 <div class="overlay" id="poolModal">
   <div class="modal" style="width:min(820px,96vw);max-height:92vh;">
     <div class="modal-title" id="poolModalTitle">ADD LP POOL</div>
+    <input type="hidden" id="poolModalId">
     <div class="form-grid cols3">
       <div class="field"><label>Pool Name</label><input id="pm-name" placeholder="e.g. UNI / ETH"></div>
       <div class="field"><label>Platform</label><input id="pm-platform" placeholder="e.g. Uniswap, Orca, Curve…"></div>
@@ -2204,75 +2211,74 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
       <!-- Edit-only pool actions — shown when editing an existing pool -->
       <div id="pm-edit-actions" style="display:none;flex:1;display:none;">
         <div style="display:flex;gap:6px;">
-          <button class="btn sm" id="pm-flip-btn" style="background:rgba(88,80,236,0.08);border-color:rgba(88,80,236,0.3);color:#5850ec;" onclick="flipPoolFromModal()" title="Toggle ratio direction">A↔B Flip</button>
-          <button class="btn sm warn" onclick="rebalanceFromModal()">⇄ Close / Rebalance</button>
-          <button class="btn sm primary" onclick="openAddCapitalModal()" title="Log an additional deposit into this pool">➕ Add Capital</button>
+          <button class="btn sm" id="pm-flip-btn" style="background:rgba(88,80,236,0.08);border-color:rgba(88,80,236,0.3);color:#5850ec;" onclick="flipPoolFromModal(document.getElementById('poolModalId').value)" title="Toggle ratio direction">A↔B Flip</button>
+          <button class="btn sm warn" onclick="rebalanceFromModal(document.getElementById('poolModalId').value)">⇄ Close / Rebalance</button>
+          <button class="btn sm primary" onclick="openAddCapitalModal(document.getElementById('poolModalId').value)" title="Log an additional deposit into this pool">➕ Add Capital</button>
         </div>
       </div>
       <div style="flex:1;"></div>
       <button class="btn" onclick="closeModal('poolModal')">Cancel</button>
-      <button class="btn primary" onclick="savePool()">Save Pool</button>
+      <button class="btn primary" onclick="savePool(document.getElementById('poolModalId').value)">Save Pool</button>
     </div>
   </div>
 </div>
 
 <!-- ADD CAPITAL MODAL -->
 <div class="overlay" id="addCapitalModal">
-  <div class="modal" style="width:520px;max-width:96vw;">
+  <div class="modal" style="width:480px;max-width:96vw;">
     <div class="modal-title">➕ ADD CAPITAL — <span id="ac-pool-title" style="color:var(--accent);font-size:13px;"></span></div>
     <input type="hidden" id="ac-pool-id">
-    <div style="font-size:11px;color:var(--text3);margin-bottom:10px;line-height:1.6;" id="ac-context"></div>
 
     <!-- Current position summary -->
     <div id="ac-summary" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-bottom:14px;font-size:12px;font-family:var(--mono);color:var(--text2);line-height:1.9;"></div>
 
-    <!-- Date + $ added — always shown -->
-    <div class="form-grid cols3">
+    <!-- Date — always shown -->
+    <div class="form-grid cols2" style="margin-bottom:10px;">
       <div class="field">
         <label>Date Added</label>
         <input id="ac-date" type="date" oninput="acUpdate()">
       </div>
       <div class="field">
-        <label>$ Value Added</label>
-        <input id="ac-value" type="number" step="any" placeholder="0" oninput="acUpdate()">
-      </div>
-      <div class="field">
-        <label style="color:var(--accent);">New Total Entry $</label>
-        <input id="ac-new-total" type="number" step="any" readonly
-          style="background:var(--bg3);color:var(--accent);font-weight:700;">
+        <label>Notes <span style="font-weight:400;color:var(--text3);font-size:10px;">(optional)</span></label>
+        <input id="ac-notes" placeholder="e.g. Added on market dip">
       </div>
     </div>
 
-    <!-- VAULT MODE: enter amount added + optional token qty -->
+    <!-- VAULT MODE section -->
     <div id="ac-vault-section" style="display:none;">
-      <div style="background:rgba(10,124,74,0.06);border:1px solid rgba(10,124,74,0.2);border-radius:var(--radius);padding:10px 14px;margin-bottom:10px;">
-        <div style="font-size:11px;color:var(--text2);line-height:1.7;margin-bottom:10px;">
-          💡 <strong>Vault-mode pool</strong> — enter what you deposited. The new total entry value is calculated automatically.
-        </div>
-        <div class="form-grid cols3" style="margin-bottom:0;">
+      <div style="background:rgba(10,124,74,0.06);border:1px solid rgba(10,124,74,0.2);border-radius:var(--radius);padding:12px 14px;margin-bottom:10px;">
+        <div class="form-grid cols2" style="margin-bottom:10px;">
           <div class="field">
-            <label>$ Amount Added</label>
-            <input id="ac-vault-added" type="number" step="any" placeholder="e.g. 10000" oninput="acVaultUpdate()">
+            <label id="ac-vault-tokqty-label">Token Qty Added</label>
+            <input id="ac-vault-tokqty" type="number" step="any" placeholder="e.g. 0.5" oninput="acVaultUpdate()">
           </div>
           <div class="field">
-            <label>Token Qty Added <span style="font-size:9px;color:var(--text3);">(optional)</span></label>
-            <input id="ac-vault-tokqty" type="number" step="any" placeholder="e.g. 0.5 ETH">
+            <label style="color:var(--accent);">Current Pool Value $</label>
+            <input id="ac-vault-curval" type="number" step="any" placeholder="from platform now" oninput="acVaultUpdate()" style="color:var(--accent);font-weight:700;">
+          </div>
+        </div>
+        <div style="display:flex;gap:20px;font-size:12px;font-family:var(--mono);padding:8px 10px;background:var(--bg3);border-radius:4px;border:1px solid var(--border);">
+          <div>Added: <strong id="ac-vault-added-display" style="color:var(--accent);">—</strong></div>
+          <div>New entry total: <strong id="ac-vault-newval" style="color:var(--accent);">—</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LP MODE section -->
+    <div id="ac-lp-section" style="display:none;">
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-bottom:10px;">
+        <div style="font-size:10px;color:var(--accent);margin-bottom:10px;">Enter the new totals from the platform after your addition — the tracker calculates what was added.</div>
+        <div class="form-grid cols2" style="margin-bottom:8px;">
+          <div class="field">
+            <label>$ Value Added</label>
+            <input id="ac-value" type="number" step="any" placeholder="0" oninput="acUpdate()">
           </div>
           <div class="field">
             <label style="color:var(--accent);">New Total Entry $</label>
-            <input id="ac-vault-newval" type="number" step="any" readonly
-              style="background:var(--bg3);color:var(--accent);font-weight:700;">
+            <input id="ac-new-total" type="number" step="any" readonly style="background:var(--bg2);color:var(--accent);font-weight:700;">
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- LP MODE: token quantities — enter new totals from platform after addition -->
-    <div id="ac-lp-section" style="display:none;">
-      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-bottom:10px;">
-        <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Token Quantities — After Addition</div>
-        <div style="font-size:10px;color:var(--accent);margin-bottom:8px;">Enter the new totals shown on the platform (e.g. Orca position page) — the tracker calculates what was added.</div>
-        <div class="form-grid">
+        <div class="form-grid" style="margin-bottom:0;">
           <div>
             <div style="font-size:10px;color:var(--text3);margin-bottom:4px;" id="ac-tokA-label">Token A</div>
             <div class="form-grid cols2" style="margin-bottom:0;">
@@ -2315,24 +2321,15 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
       <div style="font-size:10px;color:var(--text3);flex:1;">Weighted avg of original + addition date by $ value — keeps annualised return accurate.</div>
     </div>
 
-    <!-- Funded From Holdings — optional source deduction -->
+    <!-- Funded From Holdings -->
     <div style="border:1px solid var(--border2);border-radius:var(--radius);padding:10px 12px;margin-bottom:10px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-        <div>
-          <span style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;">📤 Funded From Holdings</span>
-          <span style="font-size:10px;color:var(--text3);margin-left:8px;">(optional — auto-deducts from your Holdings)</span>
-        </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <span style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;">📤 Funded From Holdings <span style="font-weight:400;color:var(--text3);text-transform:none;">(optional — auto-deducts qty)</span></span>
         <button class="btn sm ghost" onclick="acAddSourceRow()" style="font-size:10px;padding:2px 8px;">+ Add Source</button>
       </div>
       <div id="ac-sources" style="display:flex;flex-direction:column;gap:6px;"></div>
       <div style="font-size:10px;color:var(--text3);margin-top:6px;line-height:1.5;">
-        Enter what <strong>left your wallet</strong> — not what the pool received. If the platform auto-swapped (e.g. Orca splits one token into two), just enter the single token you sent. Use one row per token/wallet.
-      </div>
-    </div>
-
-    <div class="form-grid col1" style="margin-bottom:6px;">
-      <div class="field"><label>Notes <span style="font-weight:400;color:var(--text3);font-size:10px;">(optional)</span></label>
-        <input id="ac-notes" placeholder="e.g. Added on market dip">
+        Enter what <strong>left your wallet</strong> — token qty and which wallet. The tracker deducts it from your Holdings automatically.
       </div>
     </div>
 
@@ -2697,6 +2694,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 <div class="overlay" id="vaultModal">
   <div class="modal">
     <div class="modal-title" id="vaultModalTitle">ADD VAULT</div>
+    <input type="hidden" id="vaultModalId">
     <div id="vm-subtitle" style="font-size:11px;color:var(--text3);margin:-8px 0 10px;line-height:1.5;">
       For single-asset yield positions — lending vaults, staking, LSTs (e.g. Scallop, Drift, Marinade).<br>
       <span style="color:var(--text3);opacity:0.8;">For Beefy-style LP pools, use the <strong style="color:var(--text2);">LP Pools tab</strong> with <strong style="color:var(--text2);">Vault Mode</strong> enabled instead.</span>
@@ -2793,8 +2791,8 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     </div>
     <div class="modal-actions">
       <button class="btn" onclick="closeModal('vaultModal')">Cancel</button>
-      <button class="btn danger" id="vm-close-btn" style="display:none;" onclick="closeVault()">Close Vault</button>
-      <button class="btn primary" onclick="saveVault()">Save Vault</button>
+      <button class="btn danger" id="vm-close-btn" style="display:none;" onclick="closeVault(document.getElementById('vaultModalId').value)">Close Vault</button>
+      <button class="btn primary" onclick="saveVault(document.getElementById('vaultModalId').value)">Save Vault</button>
     </div>
   </div>
 </div>
@@ -3469,7 +3467,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 // Secrets assembled at runtime — not stored as plain literals
 const ACT_SECRET = (()=>{const p=['CPF_TR','ACKER_','2026_D','ELTA7_','WHISKE','Y'];return p.join('');})();
 const ACT_MASTER = (()=>{const p=['CPF_MA','STER_O','VERRID','E_KEY_','ZULU9'];return p.join('');})();
-const APP_VERSION  = '47.21';           // bumped on each release
+const APP_VERSION  = '47.22';           // bumped on each release
 const WHATS_NEW_KEY = 'cpf_seen_ver';   // localStorage: last version user saw What's New
 const ACT_STORE    = 'cpf_activation_v1';
 const ACT_ID_STORE = 'cpf_install_id';
@@ -3709,31 +3707,31 @@ async function checkActivation() {
   // Layer 1: restore backup handle from IDB, then read _lic from backup file
   try {
     if(!fsFileHandle) await restoreFsHandleFromIDB();
+    if(!htmlFileHandle) { try { htmlFileHandle = await loadHandleIDB('htmlFileHandle'); } catch(e){} }
     if(fsFileHandle) {
       const token = await readLicFromBackup();
       if(token) {
         const valid = await verifyLicToken(token, id);
         if(valid) {
           try { const c = JSON.parse(atob(token)).c; localStorage.setItem(ACT_STORE, c); actIdbSave(c); } catch(e){}
-          // Restore data from backup file only on http/https where file is the primary store.
-          // On file:// localStorage IS the truth — never let the json file overwrite it.
+          // Restore data from backup file — backup file is always the source of truth.
+          // Use timestamps: if backup file is newer than localStorage (or localStorage
+          // was seeded from the embedded snapshot), the backup file wins on all protocols.
           try {
-            if(!IS_FILE_PROTOCOL) {
-              const file = await fsFileHandle.getFile();
-              const _rawA = JSON.parse(await file.text());
-              const d = _unpackBackup(_rawA);
-              if(d.pools || d.vaults || d.holdings || d.gems) {
-                const fileTime  = _rawA.savedAt || d.savedAt || 0;
-                const localTime = (typeof DB !== 'undefined' && DB && DB.savedAt) ? DB.savedAt : 0;
-                const shouldUseFile = (typeof _loadedFromSeed !== 'undefined' && _loadedFromSeed) || fileTime > localTime;
-                if(shouldUseFile) {
-                  if(typeof DB !== 'undefined') {
-                    DB = sanitiseDB(d);
-                    DB.history.forEach(h=>{if(!h.id)h.id=uid();});
-                    if(typeof prices !== 'undefined') prices = DB.prices||{};
-                  }
-                  if(typeof SK !== 'undefined') localStorage.setItem(SK, JSON.stringify(d));
+            const file = await fsFileHandle.getFile();
+            const _rawA = JSON.parse(await file.text());
+            const d = _unpackBackup(_rawA);
+            if(d.pools || d.vaults || d.holdings || d.gems) {
+              const fileTime  = _rawA.savedAt || d.savedAt || 0;
+              const localTime = (typeof DB !== 'undefined' && DB && DB.savedAt) ? DB.savedAt : 0;
+              const shouldUseFile = (typeof _loadedFromSeed !== 'undefined' && _loadedFromSeed) || fileTime > localTime;
+              if(shouldUseFile) {
+                if(typeof DB !== 'undefined') {
+                  DB = sanitiseDB(d);
+                  DB.history.forEach(h=>{if(!h.id)h.id=uid();});
+                  if(typeof prices !== 'undefined') prices = DB.prices||{};
                 }
+                if(typeof SK !== 'undefined') localStorage.setItem(SK, JSON.stringify(d));
               }
             }
           } catch(e){}
@@ -3819,8 +3817,8 @@ async function showActivationScreen() {
               const text = await file.text();
               const _rawB = JSON.parse(text);
               const d = _unpackBackup(_rawB);
-              if((d.pools || d.vaults || d.holdings || d.gems) && !IS_FILE_PROTOCOL) {
-                // On file:// localStorage is always the truth — never overwrite from file.
+              if(d.pools || d.vaults || d.holdings || d.gems) {
+                // Backup file is source of truth — use timestamps to decide which is newer.
                 const fileTime  = _rawB.savedAt || d.savedAt || 0;
                 const localTime = DB.savedAt || 0;
                 const shouldUseFile = _loadedFromSeed || fileTime > localTime;
@@ -4025,8 +4023,8 @@ self.addEventListener('fetch', e => { e.respondWith(fetch(e.request).catch(() =>
         // It's our backup — store the handle
         fsFileHandle = handle;
         await storeHandleIDB('fsFileHandle', handle);
-        // Load data — on file:// localStorage is truth; on http/https prefer newer
-        if((d.pools || d.vaults || d.holdings || d.gems) && !IS_FILE_PROTOCOL) {
+        // Load data — backup file is source of truth, use timestamp to decide
+        if(d.pools || d.vaults || d.holdings || d.gems) {
           const fileTime  = _rawC.savedAt || d.savedAt || 0;
           const localTime = DB.savedAt || 0;
           const shouldUseFile = _loadedFromSeed || fileTime > localTime;
@@ -4092,7 +4090,7 @@ async function tapToOpenHandler() {
       const text = await file.text();
       const _rawD = JSON.parse(text);
       const d = _unpackBackup(_rawD);
-      if((d.pools || d.vaults || d.holdings || d.gems) && !IS_FILE_PROTOCOL) {
+      if(d.pools || d.vaults || d.holdings || d.gems) {
         const fileTime = _rawD.savedAt || d.savedAt || 0;
         const localTime = DB.savedAt || 0;
         const shouldUseFile = _loadedFromSeed || fileTime > localTime;
@@ -4317,8 +4315,10 @@ function load() {
   } catch(e) {}
   // ── EMBEDDED BACKUP FALLBACK ────────────────────────────────────────────────
   // If localStorage is empty (fresh browser session, reboot, cleared cache),
-  // auto-load the last saved portfolio backup instead of showing the seed data.
-  // This eliminates the "No saved data found" banner after a restart.
+  // load the embedded snapshot as a TEMPORARY seed only. _loadedFromSeed is set
+  // TRUE here so the file-handle restore (checkActivation / gesture-reconnect)
+  // always replaces this with the linked backup file — which is the source of truth.
+  _loadedFromSeed = true;
   try {
     window._embeddedBackup = {"pools":[{"id":"dp1","name":"ETH / USDC","platform":"Uniswap","entryDate":"2026-01-15","entryValue":10000,"tokASym":"ETH","tokAGeckoId":"ethereum","tokAQtyEntry":3.2,"tokAQty":2.9,"tokBSym":"USDC","tokBGeckoId":"usd-coin","tokBQtyEntry":6800,"tokBQty":7400,"rangeLow":1800,"rangeHigh":2600,"liveRatio":null,"rewardTokSym":"","rewardTokId":"","vaultMode":false,"notes":"Demo pool \u2014 Vol/Stable concentrated","poolType":"uni_v3","ampCoeff":200,"weightA":50,"yieldLog":[{"date":"2026-02-01","tokSym":"ETH","tokId":"ethereum","qty":0.04,"usd":88.0,"action":"Yield Harvest","notes":""},{"date":"2026-03-01","tokSym":"ETH","tokId":"ethereum","qty":0.038,"usd":72.2,"action":"Yield Harvest","notes":""}],"invertRatio":false,"entryPriceA":2100,"entryPriceB":1.0,"aprPct":"18","alertTier":"sensitive"},{"id":"dp2","name":"SOL / USDC","platform":"Orca","entryDate":"2026-02-01","entryValue":5000,"tokASym":"SOL","tokAGeckoId":"solana","tokAQtyEntry":42,"tokAQty":38,"tokBSym":"USDC","tokBGeckoId":"usd-coin","tokBQtyEntry":5000,"tokBQty":5800,"rangeLow":95,"rangeHigh":175,"liveRatio":null,"rewardTokSym":"ORCA","rewardTokId":"orca","vaultMode":false,"notes":"Demo pool","poolType":"uni_v3","ampCoeff":200,"weightA":50,"yieldLog":[{"date":"2026-02-15","tokSym":"ORCA","tokId":"orca","qty":120,"usd":48.0,"action":"Reward Harvest","notes":""}],"invertRatio":false,"entryPriceA":119,"entryPriceB":1.0,"aprPct":"22","alertTier":"standard"},{"id":"dp3","name":"WETH / msETH","platform":"Aerodrome","entryDate":"2026-01-20","entryValue":15000,"tokASym":"WETH","tokAGeckoId":"ethereum","tokAQtyEntry":4.5,"tokAQty":4.5,"tokBSym":"msETH","tokBGeckoId":"ethereum","tokBQtyEntry":4.5,"tokBQty":4.5,"rangeLow":0.99,"rangeHigh":1.01,"liveRatio":1.001,"rewardTokSym":"AERO","rewardTokId":"aerodrome-finance","vaultMode":false,"notes":"Demo pool \u2014 correlated LST pair","poolType":"curve","ampCoeff":200,"weightA":50,"yieldLog":[{"date":"2026-02-01","tokSym":"AERO","tokId":"aerodrome-finance","qty":380,"usd":130.6,"action":"Reward Harvest","notes":""},{"date":"2026-03-01","tokSym":"AERO","tokId":"aerodrome-finance","qty":310,"usd":106.6,"action":"Reward Harvest","notes":""}],"invertRatio":false,"entryPriceA":2100,"entryPriceB":2100,"aprPct":"8","alertTier":"standard"},{"id":"dp4","name":"cbETH / ETH","platform":"Beefy","entryDate":"2025-12-01","entryValue":20000,"tokASym":"cbETH","tokAGeckoId":"ethereum","tokAQtyEntry":6.0,"tokAQty":6.0,"tokBSym":"ETH","tokBGeckoId":"ethereum","tokBQtyEntry":0,"tokBQty":0,"rangeLow":0.995,"rangeHigh":1.005,"liveRatio":1.0,"rewardTokSym":"","rewardTokId":"","vaultMode":true,"notes":"Demo vault \u2014 Beefy auto-managed","poolType":"curve","ampCoeff":200,"weightA":50,"yieldLog":[],"invertRatio":false,"entryPriceA":2050,"entryPriceB":2050,"manualCurrentValue":21200,"aprPct":"4.5","alertTier":"silent"}],"vaults":[{"id":"dv1","name":"USDC Lending","platform":"Aave","tokSym":"USDC","tokGeckoId":"usd-coin","qty":8000,"apy":0.055,"entryDate":"2026-01-01","entryValue":8000,"yieldEarned":0,"notes":"Demo vault"},{"id":"dv2","name":"ETH Staking","platform":"Lido","tokSym":"stETH","tokGeckoId":"ethereum","qty":2.5,"apy":0.038,"entryDate":"2025-11-01","entryValue":8500,"yieldEarned":0,"notes":"Demo vault"}],"holdings":[{"id":"dh1","sym":"BTC","geckoId":"bitcoin","cat":"L1","chain":"Bitcoin","wallet":"Hardware Wallet A","avgCost":45000,"qty":0.5},{"id":"dh2","sym":"ETH","geckoId":"ethereum","cat":"L1","chain":"Ethereum","wallet":"Hardware Wallet A","avgCost":2200,"qty":4.0},{"id":"dh3","sym":"SOL","geckoId":"solana","cat":"L1","chain":"Solana","wallet":"Hardware Wallet B","avgCost":95,"qty":80},{"id":"dh4","sym":"USDC","geckoId":"usd-coin","cat":"Stablecoin","chain":"Ethereum","wallet":"Hardware Wallet A","avgCost":1,"qty":3500},{"id":"dh5","sym":"AAVE","geckoId":"aave","cat":"DeFi","chain":"Ethereum","wallet":"Hardware Wallet B","avgCost":160,"qty":12},{"id":"dh6","sym":"UNI","geckoId":"uniswap","cat":"DeFi","chain":"Ethereum","wallet":"Hardware Wallet B","avgCost":8,"qty":400}],"history":[{"id":"dr1","name":"ETH / USDC","platform":"Uniswap","type":"Rebalance","entryDate":"2025-10-01","closeDate":"2026-01-15","days":106,"entryValue":9500,"exitValue":9820,"yieldTotal":680,"netResult":1000,"hodlValue":10100,"annReturn":36.4,"notes":"Demo closed pool"},{"id":"dr2","name":"BTC / USDC","platform":"Uniswap","type":"Close","entryDate":"2025-08-01","closeDate":"2025-11-30","days":121,"entryValue":12000,"exitValue":13400,"yieldTotal":920,"netResult":2320,"hodlValue":14200,"annReturn":58.2,"notes":"Demo closed pool"}],"gems":[{"id":"dg1","sym":"ETH","geckoId":"ethereum","risk":"Low","entryPrice":null,"qty":null,"totalCost":null,"entryDate":"","t1":2800,"t2":3500,"t3":5000,"alertIn":1600,"alertOut":3200,"contract":"","chain":"ethereum","notes":"Demo GEM - watching for breakout"},{"id":"dg2","sym":"SOL","geckoId":"solana","risk":"Medium","entryPrice":null,"qty":null,"totalCost":null,"entryDate":"","t1":200,"t2":300,"t3":500,"alertIn":null,"alertOut":null,"contract":"","chain":"solana","notes":"Demo GEM"},{"id":"dg3","sym":"AAVE","geckoId":"aave","risk":"Medium","entryPrice":160,"qty":15,"totalCost":2400,"entryDate":"2026-01-10","t1":220,"t2":280,"t3":400,"alertIn":140,"alertOut":350,"stopLoss":120,"contract":"","chain":"ethereum","notes":"Demo GEM - DeFi blue chip"},{"id":"dg4","sym":"UNI","geckoId":"uniswap","risk":"Medium","entryPrice":null,"qty":null,"totalCost":null,"entryDate":"","t1":null,"t2":null,"t3":null,"alertIn":null,"alertOut":null,"contract":"","chain":"ethereum","notes":"Demo GEM - watch for v4 catalyst","alertPct":8},{"id":"dg5","sym":"LINK","geckoId":"chainlink","risk":"Low","entryPrice":null,"qty":null,"totalCost":null,"entryDate":"","t1":25,"t2":35,"t3":50,"alertIn":12,"alertOut":null,"contract":"","chain":"ethereum","notes":"Demo GEM - oracle leader"},{"id":"dg6","sym":"INJ","geckoId":"injective-protocol","risk":"High","entryPrice":null,"qty":null,"totalCost":null,"entryDate":"","t1":null,"t2":null,"t3":null,"alertIn":null,"alertOut":null,"contract":"","chain":"ethereum","notes":"Demo GEM - high risk/reward","alertPct":12}],"settings":{"gemMoverPct":10,"poolActNowPct":5,"poolWatchPct":15,"poolActNowCooldownMins":20,"poolWatchCooldownMins":60,"poolOutCooldownMins":30,"gemCooldownMins":20},"transactions":[],"savedAt":1772914560965};
     if(window._embeddedBackup && (window._embeddedBackup.pools || window._embeddedBackup.gems || window._embeddedBackup.holdings)) {
@@ -4329,7 +4329,6 @@ function load() {
       return parsed;
     }
   } catch(e) {}
-  _loadedFromSeed = true;
   return seed();
 }
 // ─── FLYOVER TOOLTIP SYSTEM ──────────────────────────────────────────────────
@@ -6583,6 +6582,8 @@ function inlineHolding(id, key, val) {
 // ─── POOL MODAL ──────────────────────────────────────────────────────────────
 function openPoolModal(id=null) {
   editingPoolId = id;
+  const pmIdEl = document.getElementById('poolModalId');
+  if(pmIdEl) pmIdEl.value = id || '';
   document.getElementById('poolModalTitle').textContent = id ? 'EDIT LP POOL' : 'ADD LP POOL';
   // Show edit-only actions when editing an existing pool
   const pmEditAct = document.getElementById('pm-edit-actions');
@@ -6649,10 +6650,11 @@ function openPoolModal(id=null) {
   if(pmSources) pmSources.innerHTML = '';
   document.getElementById('poolModal').classList.add('open');
 }
-function savePool() {
-  const existing = editingPoolId ? DB.pools.find(x=>x.id===editingPoolId) : null;
+function savePool(id) {
+  const resolvedId = id || editingPoolId || null;
+  const existing = resolvedId ? DB.pools.find(x=>x.id===resolvedId) : null;
   const p = {
-    id:           editingPoolId || uid(),
+    id:           resolvedId || uid(),
     name:         v('pm-name'),
     platform:     v('pm-platform'),
     network:      v('pm-network'),
@@ -6704,8 +6706,8 @@ function savePool() {
     }
   }
   if(!p.name) { toast('Pool name required',true); return; }
-  if(editingPoolId) {
-    const i = DB.pools.findIndex(x=>x.id===editingPoolId);
+  if(resolvedId) {
+    const i = DB.pools.findIndex(x=>x.id===resolvedId);
     DB.pools[i] = p;
   } else {
     DB.pools.push(p);
@@ -6740,8 +6742,7 @@ function flipPool(id) {
   renderPools();
   toast(p.invertRatio ? `↔ ${p.name} — ratio now B÷A` : `↔ ${p.name} — ratio now A÷B`);
 }
-function flipPoolFromModal() {
-  const id = editingPoolId;
+function flipPoolFromModal(id) {
   if(!id) return;
   const p = DB.pools.find(x=>x.id===id);
   if(!p) return;
@@ -6754,55 +6755,56 @@ function flipPoolFromModal() {
   }
   toast(p.invertRatio ? `↔ ${p.name} — ratio now B÷A` : `↔ ${p.name} — ratio now A÷B`);
 }
-function rebalanceFromModal() {
-  const id = document.getElementById('poolModalId')?.value || editingPoolId;
+function rebalanceFromModal(id) {
+  const resolvedId = id || document.getElementById('poolModalId')?.value;
   closeModal('poolModal');
-  if(id) setTimeout(()=>openCloseModal(id), 80);
+  if(resolvedId) setTimeout(()=>openCloseModal(resolvedId), 80);
 }
 
 // ─── ADD CAPITAL TO POOL ─────────────────────────────────────────────────────
-function openAddCapitalModal() {
-  const id = editingPoolId;
+function openAddCapitalModal(id) {
+  if(!id) { console.error('openAddCapitalModal: no pool id'); return; }
   const p  = DB.pools.find(x=>x.id===id);
   if(!p) return;
 
-  // Set modal title with pool identity
   const titleEl = document.getElementById('ac-pool-title');
   if(titleEl) titleEl.textContent = `${p.name}${p.network?' · '+p.network:''}${p.subtitle?' · '+p.subtitle:''}`;
 
   document.getElementById('ac-pool-id').value = id;
   document.getElementById('ac-date').value    = today();
-  document.getElementById('ac-value').value   = '';
   document.getElementById('ac-notes').value   = '';
-  document.getElementById('ac-tokA-qty-add').value = '';
-  document.getElementById('ac-tokB-qty-add').value = '';
-  document.getElementById('ac-vault-newval').value = '';
-  document.getElementById('ac-vault-added').value  = '';
-  document.getElementById('ac-vault-tokqty').value = '';
-  // Clear funded-from source rows
   document.getElementById('ac-sources').innerHTML = '';
 
-  // Show/hide vault vs LP sections
   const isVault = p.vaultMode;
   document.getElementById('ac-vault-section').style.display = isVault ? '' : 'none';
   document.getElementById('ac-lp-section').style.display    = isVault ? 'none' : '';
 
-  // Token labels
-  document.getElementById('ac-tokA-label').textContent = p.tokASym || 'Token A';
-  document.getElementById('ac-tokB-label').textContent = p.tokBSym || 'Token B';
+  if(isVault) {
+    document.getElementById('ac-vault-tokqty').value  = '';
+    document.getElementById('ac-vault-curval').value  = '';
+    document.getElementById('ac-vault-added-display').textContent = '—';
+    document.getElementById('ac-vault-newval').textContent        = '—';
+    const tokLabel = document.getElementById('ac-vault-tokqty-label');
+    if(tokLabel) tokLabel.textContent = `${p.tokASym || 'Token'} Qty Added`;
+  } else {
+    document.getElementById('ac-value').value        = '';
+    document.getElementById('ac-new-total').value    = '';
+    document.getElementById('ac-tokA-qty-new').value = '';
+    document.getElementById('ac-tokB-qty-new').value = '';
+    document.getElementById('ac-tokA-qty-add').value = p.tokAQty || '';
+    document.getElementById('ac-tokB-qty-add').value = p.tokBQty || '';
+    document.getElementById('ac-tokA-label').textContent = p.tokASym || 'Token A';
+    document.getElementById('ac-tokB-label').textContent = p.tokBSym || 'Token B';
+    const deltaEl = document.getElementById('ac-qty-delta');
+    if(deltaEl) deltaEl.style.display = 'none';
+  }
 
-  // Current summary — make pool identity unmistakably clear
   const cur = poolCurrentValue(p);
-  const networkBadge = p.network ? ` · ${p.network}` : '';
-  document.getElementById('ac-context').innerHTML =
-    `<div style="background:rgba(61,245,160,0.05);border:1px solid rgba(61,245,160,0.2);border-radius:6px;padding:8px 12px;margin-bottom:4px;">
-       <div style="font-size:15px;font-weight:700;color:var(--text1);">${p.name}</div>
-       <div style="font-size:11px;color:var(--text3);margin-top:2px;">${p.platform||''}${networkBadge}${p.subtitle?' · '+p.subtitle:''} &nbsp;|&nbsp; Current value: <strong style="color:var(--accent);">${cur!==null?$f(cur,2):'—'}</strong></div>
-     </div>`;
   document.getElementById('ac-summary').innerHTML =
-    `Original entry:&nbsp;&nbsp; ${p.entryDate||'no date'} &nbsp;&nbsp; ${$f(p.entryValue,2)}<br>` +
+    `Pool:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${p.name}${p.subtitle?' · '+p.subtitle:''}${p.network?' · '+p.network:''}<br>` +
+    `Original entry: ${p.entryDate||'no date'} &nbsp; ${$f(p.entryValue,2)}<br>` +
     (isVault
-      ? `Current value:&nbsp;&nbsp;&nbsp; ${cur!==null?$f(cur,2):'—'}<br>`
+      ? `Current value: &nbsp;${cur!==null?$f(cur,2):'—'}<br>`
       : `${p.tokASym||'Tok A'}: ${p.tokAQty||0} &nbsp;|&nbsp; ${p.tokBSym||'Tok B'}: ${p.tokBQty||0}<br>`) +
     `Additions logged: ${(p.additions||[]).length}`;
 
@@ -6817,16 +6819,7 @@ function openAddCapitalModal() {
     histEl.style.display = 'none';
   }
 
-  // Pre-populate "Was (before)" fields with current pool qtys
-  if(!isVault) {
-    document.getElementById('ac-tokA-qty-add').value = p.tokAQty || '';
-    document.getElementById('ac-tokB-qty-add').value = p.tokBQty || '';
-    document.getElementById('ac-tokA-qty-new').value = '';
-    document.getElementById('ac-tokB-qty-new').value = '';
-    const deltaEl = document.getElementById('ac-qty-delta');
-    if(deltaEl) deltaEl.style.display = 'none';
-  }
-
+  document.getElementById('ac-blended-date').textContent = p.entryDate || '—';
   acUpdate();
   closeModal('poolModal');
   document.getElementById('addCapitalModal').classList.add('open');
@@ -7007,13 +7000,17 @@ function acVaultUpdate() {
   const id = document.getElementById('ac-pool-id').value;
   const p  = DB.pools.find(x=>x.id===id);
   if(!p) return;
-  const added   = +document.getElementById('ac-vault-added').value || 0;
+  const curVal  = +document.getElementById('ac-vault-curval').value || 0;
   const origVal = p.entryValue || 0;
-  const newTotal = origVal + added;
-  document.getElementById('ac-vault-newval').value = newTotal > 0 ? newTotal.toFixed(2) : '';
-  // Sync to main $ added field so blended date calc works
-  document.getElementById('ac-value').value = added > 0 ? added.toFixed(2) : '';
-  document.getElementById('ac-new-total').value = newTotal > 0 ? newTotal.toFixed(2) : '';
+  const added   = Math.max(0, curVal - origVal);
+  // Show calculated values as read-only display
+  const addedEl   = document.getElementById('ac-vault-added-display');
+  const newvalEl  = document.getElementById('ac-vault-newval');
+  if(addedEl) addedEl.textContent  = curVal > 0 ? $f(added, 2) : '—';
+  if(newvalEl) newvalEl.textContent = curVal > 0 ? $f(curVal, 2) : '—';
+  // Drive the shared blended-date calculation
+  const hiddenVal = document.getElementById('ac-value');
+  if(hiddenVal) hiddenVal.value = added > 0 ? added.toFixed(2) : '';
   acUpdate();
 }
 
@@ -7082,10 +7079,11 @@ function saveAddCapital() {
 
   let addValue, newTotal;
   if(p.vaultMode) {
-    // Vault: user enters $ added, we forward-calculate new total
-    addValue = +document.getElementById('ac-vault-added').value || 0;
-    newTotal = (p.entryValue || 0) + addValue;
-    if(!addValue) { toast('Enter the $ amount you added', true); return; }
+    // Vault: user enters current pool value → we calculate what was added
+    const curVal = +document.getElementById('ac-vault-curval').value || 0;
+    if(!curVal || curVal <= origValue) { toast('Enter the current pool value from the platform (must be greater than current entry)', true); return; }
+    newTotal = curVal;
+    addValue = curVal - origValue;
   } else {
     addValue = +document.getElementById('ac-value').value || 0;
     newTotal = origValue + addValue;
@@ -7567,6 +7565,8 @@ function doRebalance() {
 // ─── VAULT MODAL ────────────────────────────────────────────────────────────
 function openVaultModal(id=null) {
   editingVaultId = id;
+  const vmIdEl = document.getElementById('vaultModalId');
+  if(vmIdEl) vmIdEl.value = id || '';
   document.getElementById('vaultModalTitle').textContent = id ? 'EDIT VAULT' : 'ADD VAULT';
   const v2 = id ? DB.vaults.find(v=>v.id===id) : null;
   document.getElementById('vm-name').value       = v2?.name||'';
@@ -7625,18 +7625,19 @@ function openVaultModal(id=null) {
   if(vmSources) vmSources.innerHTML = '';
   document.getElementById('vaultModal').classList.add('open');
 }
-function saveVault() {
+function saveVault(id) {
+  const resolvedId = id || editingVaultId || null;
   const entryVal   = +v('vm-entry')||0;
   const curValInput = parseFloat(document.getElementById('vm-curval')?.value);
   let yieldEarned = 0;
-  if(editingVaultId && !isNaN(curValInput) && curValInput > 0) {
+  if(resolvedId && !isNaN(curValInput) && curValInput > 0) {
     yieldEarned = Math.max(0, curValInput - entryVal);
-  } else if(editingVaultId) {
-    const existing = DB.vaults.find(x=>x.id===editingVaultId);
+  } else if(resolvedId) {
+    const existing = DB.vaults.find(x=>x.id===resolvedId);
     yieldEarned = existing?.yieldEarned || 0;
   }
   const obj = {
-    id:          editingVaultId || uid(),
+    id:          resolvedId || uid(),
     name:        v('vm-name'),
     platform:    v('vm-platform'),
     tokSym:      document.getElementById('vm-tok-sym').value || v('vm-tok-search'),
@@ -7648,7 +7649,7 @@ function saveVault() {
     yieldEarned: yieldEarned,
     notes:       v('vm-notes'),
   };
-  if(editingVaultId) { const i=DB.vaults.findIndex(x=>x.id===editingVaultId); DB.vaults[i]=obj; }
+  if(resolvedId) { const i=DB.vaults.findIndex(x=>x.id===resolvedId); DB.vaults[i]=obj; }
   else {
     DB.vaults.push(obj);
     document.querySelectorAll('#vm-sources > div').forEach(row => {
@@ -7671,9 +7672,9 @@ function saveVault() {
   }
   persist(); closeModal('vaultModal'); fetchPrices(); renderHoldings(); toast('Vault saved');
 }
-function closeVault() {
-  const id   = editingVaultId;
-  const v2   = id ? DB.vaults.find(x=>x.id===id) : null;
+function closeVault(id) {
+  const resolvedId = id || editingVaultId;
+  const v2   = resolvedId ? DB.vaults.find(x=>x.id===resolvedId) : null;
   if(!v2) return;
   if(!confirm(`Close vault "${v2.name}"? This will remove it from Vaults.`)) return;
   const dest   = document.getElementById('vm-close-dest').value;
@@ -13384,6 +13385,7 @@ async function restoreFsHandleFromIDB() {
 }
 
 let fsFileHandle  = null;
+let htmlFileHandle = null; // handle to this HTML file — keeps _embeddedBackup in sync
 let fsAutoTimer   = null;
 let fsLastSaved   = null;
 let fsSaveQueued  = false;
@@ -13637,6 +13639,75 @@ async function _fsWriteWithHandle(handle) {
     fsMetaSave({ lastSaved: fsLastSaved.toISOString() });
   } catch(e) {}
 }
+// ── HTML self-update — keeps _embeddedBackup in sync with every save ─────────
+async function updateEmbeddedBackup() {
+  if(!htmlFileHandle) return;
+  try {
+    const perm = await htmlFileHandle.queryPermission({mode:'readwrite'});
+    if(perm !== 'granted') return;
+    const file = await htmlFileHandle.getFile();
+    const text = await file.text();
+    const payload = Object.assign({}, DB);
+    delete payload.prices;
+    const blob = JSON.stringify(payload, null, 0);
+    const patched = text.replace(
+      /([ \t]*window\._embeddedBackup = )\{[\s\S]*?\}(;)/,
+      (_, pre, semi) => pre + blob + semi
+    );
+    if(patched === text) return;
+    const w = await htmlFileHandle.createWritable();
+    await w.write(patched);
+    await w.close();
+  } catch(e) {
+    console.warn('cpf: HTML self-update skipped:', e.message);
+  }
+}
+
+async function linkAppFile() {
+  if(!fsSupported()) { toast('File System API requires Chrome or Edge.', true); return; }
+  if(htmlFileHandle) {
+    if(confirm('HTML file linked: ' + htmlFileHandle.name + '\n\nClick OK to unlink it.')) {
+      htmlFileHandle = null;
+      try { await idbKvDel('htmlFileHandle'); } catch(e){}
+      toast('App file unlinked.');
+      updateAppFileLinkUI();
+    }
+    return;
+  }
+  try {
+    const [handle] = await window.showOpenFilePicker({
+      types: [{ description: 'Portfolio Tracker HTML', accept: {'text/html': ['.html']} }],
+      multiple: false
+    });
+    const perm = await handle.requestPermission({mode:'readwrite'});
+    if(perm !== 'granted') { toast('Write permission needed.', true); return; }
+    htmlFileHandle = handle;
+    await storeHandleIDB('htmlFileHandle', handle);
+    toast('✓ App file linked — embedded backup will update on every save.');
+    updateAppFileLinkUI();
+    await updateEmbeddedBackup();
+  } catch(e) {
+    if(e.name !== 'AbortError') toast('Could not link app file: ' + e.message, true);
+  }
+}
+
+function updateAppFileLinkUI() {
+  const btn = document.getElementById('linkAppFileBtn');
+  const hint = document.getElementById('linkAppFileHint');
+  if(!btn) return;
+  if(htmlFileHandle) {
+    btn.textContent = '📄 ' + htmlFileHandle.name + ' (linked)';
+    btn.style.color = 'var(--accent)';
+    btn.style.borderColor = 'rgba(10,124,74,0.4)';
+    if(hint) hint.style.display = 'none';
+  } else {
+    btn.textContent = '📄 Link App File';
+    btn.style.color = '';
+    btn.style.borderColor = '';
+    if(hint) hint.style.display = '';
+  }
+}
+
 async function fsWriteNow(fromGesture=false) {
   if(!fsFileHandle) return false;
   try {
@@ -13679,6 +13750,7 @@ async function fsWriteNow(fromGesture=false) {
     const pb = document.getElementById('permissionBanner');
     if(pb) pb.style.display = 'none';
     updateFsStatus();
+    updateEmbeddedBackup(); // keep HTML embedded backup in sync
     return true;
   } catch(e) {
     if(e.name==='NotAllowedError') { toast('⚠ File permission reset (Chrome security policy). Click the backup button to reconnect.',true); fsFileHandle=null; updateFsStatus(); }
@@ -14982,6 +15054,16 @@ function helpSearchClear() {
 
 // ── What's New content — keyed by version string ─────────────────────────────
 const WHATS_NEW = {
+  '47.22': {
+    headline: "Version 47.22 — What's New",
+    summary:  'Stability and accuracy improvements — pool actions now always apply to the correct pool, and adding funds to a vault pool is simpler.',
+    items: [
+      { icon: '🔒', title: 'Pool and vault actions always apply to the right pool',
+        text: 'When you open a pool or vault to edit it, all actions — Save, Add Capital, Close, Flip ratio — are now locked to that specific pool from the moment you open it. A previous issue could cause these actions to apply to a different pool if you had updated another pool in the same session.' },
+      { icon: '➕', title: 'Adding funds to a vault pool is now simpler',
+        text: 'The Add Capital screen for Beefy-style vault pools previously asked for the same dollar amount in two places, which was confusing. It now asks only for the token quantity you deposited, the current pool value shown on the platform, and which wallet the funds came from. Everything else is calculated automatically.' },
+    ]
+  },
   '47.21': {
     headline: "Version 47.21 — What's New",
     summary:  'Your settings and data are now remembered more reliably — even after a browser update or cache clear. A bug that caused closed pools and vaults to reappear has also been fixed.',
