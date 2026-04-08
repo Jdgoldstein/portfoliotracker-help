@@ -131,8 +131,7 @@ input[type="date"] { color-scheme: dark; }
 /* ── TABLE WRAP ── */
 .tbl-wrap{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 180px);border:2px solid #7a9abf;border-radius:var(--radius);box-shadow:0 2px 8px rgba(0,0,0,0.12);max-width:100%;width:100%;}
 #tab-pools .tbl-wrap table{table-layout:auto;}
-#tab-pools table{table-layout:fixed;width:100%;}
-#tab-pools table th,#tab-pools table td{padding:3px 4px;overflow:hidden;text-overflow:ellipsis;}
+#tab-pools table th,#tab-pools table td{padding:3px 4px;}
 #tab-pools table input.cell-in.narrow{width:56px;}
 #tab-pools thead th{font-size:var(--fs-th);}
 #tab-pools tbody td{font-size:var(--fs-mono);}
@@ -1428,7 +1427,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
             <th title="Total yield harvested — click the 🌾 button to log a harvest" style="cursor:help;width:80px;background:rgba(10,124,74,0.07);color:var(--accent);">🌾 Yield</th>
             <th title="Net Result + annualized return" style="width:120px;">Net / Ann%</th>
             <th title="Impermanent loss vs HODL value" style="width:100px;">IL / HODL</th>
-            <th title="Does Current + Yield beat HODL value?" style="width:80px;">HODL?</th>
+            <th title="Does Current + Yield beat HODL value?" style="min-width:52px;">HODL?</th>
           </tr>
         </thead>
         <tbody id="poolBody"></tbody>
@@ -3477,7 +3476,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 // Secrets assembled at runtime — not stored as plain literals
 const ACT_SECRET = (()=>{const p=['CPF_TR','ACKER_','2026_D','ELTA7_','WHISKE','Y'];return p.join('');})();
 const ACT_MASTER = (()=>{const p=['CPF_MA','STER_O','VERRID','E_KEY_','ZULU9'];return p.join('');})();
-const APP_VERSION  = '47.23';           // bumped on each release
+const APP_VERSION  = '47.24';           // bumped on each release
 const WHATS_NEW_KEY = 'cpf_seen_ver';   // localStorage: last version user saw What's New
 const ACT_STORE    = 'cpf_activation_v1';
 const ACT_ID_STORE = 'cpf_install_id';
@@ -5139,6 +5138,20 @@ function renderPools() {
           return `<input class="cell-in narrow" value="${p.tokAQty||''}" onfocus="this.dataset.orig=this.value" onblur="if(this.value!==''&&this.value!==this.dataset.orig)inlinePool('${p.id}','tokAQty',+this.value)" style="width:70px;text-align:right;" title="Current qty of ${p.tokASym}">`;
         })()}
       </td>
+      <td style="background:rgba(74,158,255,0.05);">
+        ${(()=>{
+          const isLikePair = p.vaultMode && p.tokAGeckoId && p.tokBGeckoId && p.tokAGeckoId === p.tokBGeckoId;
+          if(isLikePair) {
+            return `<span style="color:var(--text3);font-size:10px;" title="Same asset as Token A — total shown in QTY A">—</span>`;
+          }
+          if(p.vaultMode) {
+            return `<div style="font-size:calc(var(--fs-mono) - 2px);color:var(--text3);margin-bottom:2px;">wrapped</div>`
+              + `<span style="font-family:var(--mono);font-size:var(--fs-mono);color:var(--text3);">vault</span>`;
+          }
+          return `<div style="font-size:calc(var(--fs-mono) - 2px);color:var(--accent2);margin-bottom:2px">${p.tokBSym||''}</div>`
+            + `<input class="cell-in narrow" value="${p.tokBQty||''}" onfocus="this.dataset.orig=this.value" onblur="if(this.value!==''&&this.value!==this.dataset.orig)inlinePool('${p.id}','tokBQty',+this.value)" style="width:70px;text-align:right;" title="Current qty of ${p.tokBSym}">`;
+        })()}
+      </td>
       <td style="background:rgba(167,139,250,0.05);overflow:hidden;">${p.vaultMode ? '' : `<input class="cell-in narrow" value="${p.rangeLow ? qf(p.rangeLow) : ''}" onfocus="this.dataset.orig=this.value" onblur="if(this.value!==''&&this.value!==this.dataset.orig)inlinePool('${p.id}','rangeLow',+this.value)" style="width:100%;text-align:right;" title="${p.rangeLow||''}">`}</td>
       <td style="text-align:right;overflow:hidden;">
         ${p.vaultMode
@@ -6074,7 +6087,18 @@ function renderHeader() {
   // ── Collect pool alerts ──
   const poolAlerts = [];
   DB.pools.forEach(p => {
-    if(p.vaultMode) return;
+    if(p.vaultMode) {
+      const cur  = poolCurrentValue(p);
+      const yld  = poolYieldTotal(p);
+      const hodl = poolHodlValue(p);
+      if(cur === null || hodl === null || hodl === 0) return;
+      const total   = cur + yld;
+      const deficit = hodl - total;
+      const defPct  = deficit / hodl;
+      if(defPct >= 0.05)       poolAlerts.push({label:`🔴 ${p.name} −HODL`, color:'#cc2200', bg:'rgba(204,34,0,0.18)', border:'2px solid #cc2200', shadow:'0 0 6px rgba(204,34,0,0.3)'});
+      else if(defPct > 0)      poolAlerts.push({label:`⚠ ${p.name} −HODL`, color:'#cc6600', bg:'rgba(204,102,0,0.15)', border:'2px solid #cc6600', shadow:'0 0 4px rgba(204,102,0,0.2)'});
+      return;
+    }
     const st = rangeStatus(p);
     if(st === 'OUT OF RANGE') poolAlerts.push({label:`🔴 ${p.name}`, color:'#cc2200', bg:'rgba(204,34,0,0.18)', border:'2px solid #cc2200', shadow:'0 0 6px rgba(204,34,0,0.3)'});
     else if(st === 'Act Now')  poolAlerts.push({label:`⚡ ${p.name}`, color:'#cc6600', bg:'rgba(204,102,0,0.15)', border:'2px solid #cc6600', shadow:'0 0 4px rgba(204,102,0,0.2)'});
@@ -15064,6 +15088,18 @@ function helpSearchClear() {
 
 // ── What's New content — keyed by version string ─────────────────────────────
 const WHATS_NEW = {
+  '47.24': {
+    headline: "Version 47.24 — What's New",
+    summary:  'Vault pool HODL alerts, column alignment fix, and Mac display improvements.',
+    items: [
+      { icon: '⚠️', title: 'Vault pools now generate HODL underperformance alerts',
+        text: 'Beefy-style vault pools were previously excluded from the alert system entirely, since they have no price range to breach. They now participate with their own alert logic: an amber ⚠ alert fires when Current Value + Yield falls behind the HODL baseline by any amount, and a red 🔴 alert fires when the deficit reaches 5% or more. This makes it immediately visible when a vault is underperforming simply holding the entry tokens.' },
+      { icon: '📐', title: 'Column alignment — Qty B cell restored in pool rows',
+        text: 'A missing Qty B table cell in the pool row template caused every column from Low onward to be shifted one position to the right, misaligning headers and data. The cell has been restored, bringing the row structure to the correct 16 columns to match the 16 header cells.' },
+      { icon: '🖥️', title: 'Mac display — column text rendering improved',
+        text: 'Table column headers were set to font-weight 800 at 11px with tight letter-spacing, which rendered poorly on macOS due to subpixel antialiasing differences. Weight reduced to 700, letter-spacing relaxed, and -webkit-font-smoothing: antialiased added. Column header and label font sizes raised from 11px/10px to 12px/11px minimum floor.' },
+    ]
+  },
   '47.23': {
     headline: "Version 47.23 — What's New",
     summary:  'Data integrity improvements, startup reliability fixes, and a built-in update check that works from any local file.',
