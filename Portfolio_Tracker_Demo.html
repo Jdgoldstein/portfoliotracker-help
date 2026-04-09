@@ -1254,8 +1254,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
   <div class="modal" style="width:min(480px,96vw);">
     <div class="modal-title">📬 SEND FEEDBACK</div>
     <p style="font-size:11px;color:var(--text3);margin-bottom:14px;line-height:1.6;">
-      Your feedback opens a GitHub issue pre-filled with your message — just click <strong>Submit</strong> on GitHub.
-      No account needed to view, but you'll need a free GitHub account to submit.
+      Questions, bug reports, or suggestions — fill in the form and click <strong>Send</strong>. No account needed.
     </p>
     <div class="form-grid cols2" style="margin-bottom:10px;">
       <div class="field">
@@ -1273,28 +1272,31 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
       </div>
     </div>
     <div class="field" style="margin-bottom:10px;">
+      <label>Email <span style="font-weight:400;color:var(--text3);font-size:10px;">(optional — lets us reply to you directly)</span></label>
+      <input id="fb-email" type="email" placeholder="your@email.com" style="font-size:12px;">
+    </div>
+    <div class="field" style="margin-bottom:10px;">
       <label>Message</label>
       <textarea id="fb-message" rows="5" placeholder="Describe your question, issue, or idea..."
         style="width:100%;box-sizing:border-box;font-family:var(--sans);font-size:12px;padding:7px 10px;
                background:var(--bg2);border:1px solid var(--border2);border-radius:4px;
                color:var(--text);resize:vertical;line-height:1.6;"></textarea>
     </div>
-    <!-- Screenshot tip -->
     <div style="background:rgba(10,124,74,0.06);border:1px solid rgba(10,124,74,0.2);border-radius:var(--radius);padding:10px 12px;margin-bottom:14px;">
       <div style="font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px;">📸 Want to include a screenshot?</div>
       <div style="font-size:11px;color:var(--text2);line-height:1.6;">
-        After GitHub opens, take a screenshot first:<br>
+        Take a screenshot, then email it as a reply to our response.<br>
         <span style="font-family:var(--mono);font-size:10px;color:var(--accent);">Mac:</span> <kbd style="background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-size:10px;">Cmd ⇧ 4</kbd> &nbsp;
-        <span style="font-family:var(--mono);font-size:10px;color:var(--accent);">Windows:</span> <kbd style="background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-size:10px;">Win ⇧ S</kbd><br>
-        Then <strong>drag the image file</strong> into the GitHub text box before submitting.
+        <span style="font-family:var(--mono);font-size:10px;color:var(--accent);">Windows:</span> <kbd style="background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-size:10px;">Win ⇧ S</kbd>
       </div>
     </div>
     <div style="font-size:10px;color:var(--text3);margin-bottom:14px;">
-      Version <span id="fb-version" style="font-family:var(--mono);color:var(--text2);"></span> will be included automatically.
+      Auto-included: Version <span id="fb-version" style="font-family:var(--mono);color:var(--text2);"></span> &nbsp;·&nbsp; <span id="fb-platform" style="font-family:var(--mono);color:var(--text2);"></span>
     </div>
+    <div id="fb-status" style="display:none;padding:8px 12px;border-radius:4px;font-size:12px;margin-bottom:10px;"></div>
     <div class="modal-actions">
       <button class="btn" onclick="closeModal('feedbackModal')">Cancel</button>
-      <button class="btn primary" onclick="submitFeedback()">📬 Open GitHub →</button>
+      <button class="btn primary" id="fb-submit-btn" onclick="submitFeedback()">📬 Send Feedback</button>
     </div>
   </div>
 </div>
@@ -14062,44 +14064,66 @@ function saveGemMoverPct() {
   if(inlineInp) inlineInp.value = val;
 }
 // ─── FEEDBACK MODAL ──────────────────────────────────────────────────────────
-const FEEDBACK_REPO = 'Jdgoldstein/portfoliotracker-help';  // ← GitHub repo for issues
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xbdpenae';
 
 function openFeedbackModal() {
   const vEl = document.getElementById('fb-version');
   if(vEl) vEl.textContent = APP_VERSION;
+  const ua = navigator.userAgent;
+  const os = /Mac/i.test(ua) ? 'Mac' : /Win/i.test(ua) ? 'Windows' : /Linux/i.test(ua) ? 'Linux' : /iPhone|iPad/i.test(ua) ? 'iOS' : /Android/i.test(ua) ? 'Android' : 'Unknown OS';
+  const browser = /Chrome/i.test(ua) && !/Edg/i.test(ua) ? 'Chrome' : /Safari/i.test(ua) && !/Chrome/i.test(ua) ? 'Safari' : /Firefox/i.test(ua) ? 'Firefox' : /Edg/i.test(ua) ? 'Edge' : 'Unknown Browser';
+  const platEl = document.getElementById('fb-platform');
+  if(platEl) platEl.textContent = `${browser} / ${os}`;
   document.getElementById('fb-message').value = '';
   document.getElementById('fb-name').value = '';
+  document.getElementById('fb-email').value = '';
   document.getElementById('fb-type').value = 'Question';
+  const statusEl = document.getElementById('fb-status');
+  if(statusEl) { statusEl.style.display = 'none'; statusEl.textContent = ''; }
+  const btn = document.getElementById('fb-submit-btn');
+  if(btn) { btn.disabled = false; btn.textContent = '📬 Send Feedback'; }
   document.getElementById('feedbackModal').classList.add('open');
 }
 
-function submitFeedback() {
-  const type    = document.getElementById('fb-type').value;
-  const name    = document.getElementById('fb-name').value.trim();
-  const message = document.getElementById('fb-message').value.trim();
-  if(!message) { toast('Please enter a message before submitting', true); return; }
+async function submitFeedback() {
+  const type     = document.getElementById('fb-type').value;
+  const name     = document.getElementById('fb-name').value.trim();
+  const email    = document.getElementById('fb-email').value.trim();
+  const message  = document.getElementById('fb-message').value.trim();
+  const version  = document.getElementById('fb-version').textContent;
+  const platform = document.getElementById('fb-platform').textContent;
 
-  const title = `[${type}] ${message.slice(0, 60)}${message.length > 60 ? '…' : ''}`;
-  const body  = [
-    `**Type:** ${type}`,
-    name ? `**From:** ${name}` : '',
-    `**Version:** ${APP_VERSION}`,
-    '',
-    '**Message:**',
-    message,
-    '',
-    '---',
-    '_📸 Tip: drag a screenshot into this text box before clicking Submit_',
-  ].filter(l => l !== null).join('\n');
+  if(!message) { toast('Please enter a message before sending', true); return; }
 
-  const url = `https://github.com/${FEEDBACK_REPO}/issues/new`
-    + `?title=${encodeURIComponent(title)}`
-    + `&body=${encodeURIComponent(body)}`
-    + `&labels=feedback`;
+  const btn = document.getElementById('fb-submit-btn');
+  const statusEl = document.getElementById('fb-status');
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
 
-  window.open(url, '_blank');
-  closeModal('feedbackModal');
-  toast('✓ GitHub opened — add a screenshot if needed, then click Submit');
+  try {
+    const res = await fetch(FORMSPREE_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        type, name: name || 'Anonymous', email: email || 'not provided',
+        message, version, platform,
+        _subject: `[${type}] Portfolio Tracker v${version}`,
+      }),
+    });
+    if(res.ok) {
+      statusEl.style.cssText = 'display:block;padding:8px 12px;border-radius:4px;font-size:12px;margin-bottom:10px;background:rgba(10,124,74,0.1);border:1px solid rgba(10,124,74,0.3);color:var(--accent);';
+      statusEl.textContent = '✓ Feedback sent — thank you! We\'ll be in touch if you left an email.';
+      btn.textContent = '✓ Sent';
+      setTimeout(() => closeModal('feedbackModal'), 2500);
+    } else {
+      throw new Error('Server error');
+    }
+  } catch(e) {
+    statusEl.style.cssText = 'display:block;padding:8px 12px;border-radius:4px;font-size:12px;margin-bottom:10px;background:rgba(204,34,0,0.08);border:1px solid rgba(204,34,0,0.3);color:#cc2200;';
+    statusEl.textContent = '⚠ Could not send — please try again.';
+    btn.disabled = false;
+    btn.textContent = '📬 Send Feedback';
+  }
 }
 
 function openSettingsModal() {
