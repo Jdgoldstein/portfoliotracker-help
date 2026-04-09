@@ -1128,7 +1128,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 <!-- HEADER -->
 <div id="header" style="visibility:hidden;">
   <div class="logo">PORTFOLIO <small>TRACKER</small></div>
-  <span id="versionBadge" style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-left:4px;align-self:flex-end;padding-bottom:2px;"></span>
+  <span id="versionBadge" style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-left:4px;align-self:flex-end;padding-bottom:2px;">v47.28</span>
   <span id="privacyBadge">🙈 VALUES MASKED</span>
   <div class="header-stats" id="hdrStats"></div>
   <div class="header-right">
@@ -1283,11 +1283,24 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
                color:var(--text);resize:vertical;line-height:1.6;"></textarea>
     </div>
     <div style="background:rgba(10,124,74,0.06);border:1px solid rgba(10,124,74,0.2);border-radius:var(--radius);padding:10px 12px;margin-bottom:14px;">
-      <div style="font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px;">📸 Want to include a screenshot?</div>
-      <div style="font-size:11px;color:var(--text2);line-height:1.6;">
-        Take a screenshot, then email it as a reply to our response.<br>
-        <span style="font-family:var(--mono);font-size:10px;color:var(--accent);">Mac:</span> <kbd style="background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-size:10px;">Cmd ⇧ 4</kbd> &nbsp;
+      <div style="font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">📸 Attach a Screenshot (optional)</div>
+      <div style="font-size:11px;color:var(--text2);line-height:1.6;margin-bottom:8px;">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--accent);">① Mac:</span> <kbd style="background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-size:10px;">Cmd ⇧ 4</kbd> &nbsp;
         <span style="font-family:var(--mono);font-size:10px;color:var(--accent);">Windows:</span> <kbd style="background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-size:10px;">Win ⇧ S</kbd>
+        &nbsp; then ② click the box below and press <kbd style="background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-size:10px;">Cmd+V</kbd> / <kbd style="background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-size:10px;">Ctrl+V</kbd>
+      </div>
+      <div id="fb-paste-zone"
+        tabindex="0"
+        onpaste="fbHandlePaste(event)"
+        onclick="this.focus()"
+        style="border:2px dashed var(--border2);border-radius:6px;padding:16px;text-align:center;
+               cursor:pointer;min-height:64px;display:flex;align-items:center;justify-content:center;
+               flex-direction:column;gap:6px;transition:border-color .2s;outline:none;"
+        onfocus="this.style.borderColor='var(--accent)'"
+        onblur="this.style.borderColor='var(--border2)'">
+        <span id="fb-paste-label" style="font-size:11px;color:var(--text3);">Click here, then paste screenshot (Cmd+V / Ctrl+V)</span>
+        <img id="fb-paste-preview" src="" alt="" style="display:none;max-width:100%;max-height:120px;border-radius:4px;border:1px solid var(--border);">
+        <button id="fb-paste-clear" type="button" onclick="fbClearPaste(event)" style="display:none;font-size:10px;color:#cc2200;background:none;border:none;cursor:pointer;padding:2px 6px;">✕ Remove</button>
       </div>
     </div>
     <div style="font-size:10px;color:var(--text3);margin-bottom:14px;">
@@ -3540,7 +3553,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 // Secrets assembled at runtime — not stored as plain literals
 const ACT_SECRET = (()=>{const p=['CPF_TR','ACKER_','2026_D','ELTA7_','WHISKE','Y'];return p.join('');})();
 const ACT_MASTER = (()=>{const p=['CPF_MA','STER_O','VERRID','E_KEY_','ZULU9'];return p.join('');})();
-const APP_VERSION  = '47.27';           // bumped on each release
+const APP_VERSION  = '47.28';           // bumped on each release
 const WHATS_NEW_KEY = 'cpf_seen_ver';   // localStorage: last version user saw What's New
 const ACT_STORE    = 'cpf_activation_v1';
 const ACT_ID_STORE = 'cpf_install_id';
@@ -4241,6 +4254,7 @@ async function tapToOpenHandler() {
         if(demoWelcomeSeen()) {
           demoStartTrial();
           renderAll(); fetchPrices(); initFileProtocolUI(); initHelpSync(); initPIN();
+          checkWhatsNew();
           setTimeout(demoInjectBanner, 300);
           if(!IS_FILE_PROTOCOL) setTimeout(_showNoBackupBanner, 2000);
         } else {
@@ -14065,6 +14079,8 @@ function saveGemMoverPct() {
 }
 // ─── FEEDBACK MODAL ──────────────────────────────────────────────────────────
 const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xbdpenae';
+const IMGBB_API_KEY      = 'ab03e5f5abceb7d23cb84bc4452e88fc';
+let _fbImageBase64 = null;
 
 function openFeedbackModal() {
   const vEl = document.getElementById('fb-version');
@@ -14078,11 +14094,46 @@ function openFeedbackModal() {
   document.getElementById('fb-name').value = '';
   document.getElementById('fb-email').value = '';
   document.getElementById('fb-type').value = 'Question';
+  fbClearPaste();
   const statusEl = document.getElementById('fb-status');
   if(statusEl) { statusEl.style.display = 'none'; statusEl.textContent = ''; }
   const btn = document.getElementById('fb-submit-btn');
   if(btn) { btn.disabled = false; btn.textContent = '📬 Send Feedback'; }
   document.getElementById('feedbackModal').classList.add('open');
+}
+
+function fbHandlePaste(e) {
+  const items = e.clipboardData?.items;
+  if(!items) return;
+  for(const item of items) {
+    if(item.type.startsWith('image/')) {
+      const blob = item.getAsFile();
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        _fbImageBase64 = ev.target.result.split(',')[1];
+        const preview  = document.getElementById('fb-paste-preview');
+        const label    = document.getElementById('fb-paste-label');
+        const clearBtn = document.getElementById('fb-paste-clear');
+        if(preview)  { preview.src = ev.target.result; preview.style.display = 'block'; }
+        if(label)    label.style.display = 'none';
+        if(clearBtn) clearBtn.style.display = 'inline-block';
+      };
+      reader.readAsDataURL(blob);
+      e.preventDefault();
+      return;
+    }
+  }
+}
+
+function fbClearPaste(e) {
+  if(e) e.stopPropagation();
+  _fbImageBase64 = null;
+  const preview  = document.getElementById('fb-paste-preview');
+  const label    = document.getElementById('fb-paste-label');
+  const clearBtn = document.getElementById('fb-paste-clear');
+  if(preview)  { preview.src = ''; preview.style.display = 'none'; }
+  if(label)    label.style.display = 'inline';
+  if(clearBtn) clearBtn.style.display = 'none';
 }
 
 async function submitFeedback() {
@@ -14098,7 +14149,21 @@ async function submitFeedback() {
   const btn = document.getElementById('fb-submit-btn');
   const statusEl = document.getElementById('fb-status');
   btn.disabled = true;
-  btn.textContent = 'Sending…';
+  btn.textContent = _fbImageBase64 ? 'Uploading screenshot…' : 'Sending…';
+  statusEl.style.display = 'none';
+
+  let screenshotUrl = null;
+  if(_fbImageBase64) {
+    try {
+      const fd = new FormData();
+      fd.append('key', IMGBB_API_KEY);
+      fd.append('image', _fbImageBase64);
+      fd.append('name', `feedback_v${version}_${Date.now()}`);
+      const imgRes  = await fetch('https://api.imgbb.com/1/upload', { method:'POST', body: fd });
+      const imgData = await imgRes.json();
+      if(imgData.success) { screenshotUrl = imgData.data.url; btn.textContent = 'Sending…'; }
+    } catch(e) { screenshotUrl = null; }
+  }
 
   try {
     const res = await fetch(FORMSPREE_ENDPOINT, {
@@ -14107,6 +14172,7 @@ async function submitFeedback() {
       body: JSON.stringify({
         type, name: name || 'Anonymous', email: email || 'not provided',
         message, version, platform,
+        screenshot: screenshotUrl || 'none',
         _subject: `[${type}] Portfolio Tracker v${version}`,
       }),
     });
@@ -14115,9 +14181,7 @@ async function submitFeedback() {
       statusEl.textContent = '✓ Feedback sent — thank you! We\'ll be in touch if you left an email.';
       btn.textContent = '✓ Sent';
       setTimeout(() => closeModal('feedbackModal'), 2500);
-    } else {
-      throw new Error('Server error');
-    }
+    } else { throw new Error('Server error'); }
   } catch(e) {
     statusEl.style.cssText = 'display:block;padding:8px 12px;border-radius:4px;font-size:12px;margin-bottom:10px;background:rgba(204,34,0,0.08);border:1px solid rgba(204,34,0,0.3);color:#cc2200;';
     statusEl.textContent = '⚠ Could not send — please try again.';
@@ -15973,18 +16037,13 @@ function demoMarkWelcomeSeen(){ localStorage.setItem(DEMO_SEEN_KEY,'1'); }
 
 function demoInjectBanner() {
   if(!DEMO_MODE) return;
-  const d = demoTrialDaysLeft();
   const e = document.getElementById('demoBanner'); if(e) e.remove();
   const b = document.createElement('div');
   b.id = 'demoBanner';
-  const c = d<=1 ? '#cc2200' : d<=3 ? '#b86800' : '#0a7c4a';
-  b.style.cssText = `position:fixed;top:0;left:0;right:0;z-index:1000;background:${c};color:#fff;text-align:center;padding:5px 12px;font-size:11px;font-weight:600;font-family:var(--sans);display:flex;align-items:center;justify-content:center;gap:16px;cursor:pointer;`;
-  const dLabel = d > 0.05 ? Math.ceil(d)+' day'+(Math.ceil(d)===1?'':'s')+' left' : 'EXPIRED';
-  b.innerHTML = `<span>🔑 DEMO — ${dLabel}</span><span style="opacity:.85;font-weight:400;">Click to activate and remove this bar</span>`;
+  b.style.cssText = `position:fixed;top:0;left:0;right:0;z-index:1000;background:#0a7c4a;color:#fff;text-align:center;padding:5px 12px;font-size:11px;font-weight:600;font-family:var(--sans);display:flex;align-items:center;justify-content:center;gap:16px;cursor:pointer;`;
+  b.innerHTML = `<span>🔑 DEMO v${APP_VERSION}</span><span style="opacity:.85;font-weight:400;">Click to activate and remove this bar</span>`;
   b.addEventListener('click', () => showActivationScreen());
   document.body.prepend(b);
-  // If trial just expired mid-session, show activation screen
-  if(demoTrialExpired()) setTimeout(() => showActivationScreen(), 1500);
   const bannerH = b.getBoundingClientRect().height || 29;
   const h = document.getElementById('header'); if(h) h.style.top = bannerH+'px';
   const m = document.getElementById('main');   if(m) m.style.marginTop = (bannerH+48)+'px';
@@ -16014,6 +16073,7 @@ function demoStartAndEnter() {
   demoMarkWelcomeSeen();
   document.getElementById('demoWelcome').style.display = 'none';
   renderAll(); fetchPrices(); initFileProtocolUI(); initHelpSync(); initPIN();
+  checkWhatsNew();
   setTimeout(demoInjectBanner, 300);
   // On Mac with no linked file, trigger first auto-export after 10s so Chrome's
   // "Allow downloads?" prompt fires immediately rather than 7 minutes later.
