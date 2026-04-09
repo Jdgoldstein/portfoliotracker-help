@@ -15966,84 +15966,32 @@ async function actLinkBackup() {
 
 
 const DEMO_MODE        = true;
-const DEMO_TRIAL_KEY   = 'cpf_demo_trial_start';
 const DEMO_SEEN_KEY    = 'cpf_demo_welcome_seen';
-const DEMO_DAYS        = 7;
-const DEMO_LOCK_AFTER  = 6;  // reserved for future grace-period use
+const DEMO_EXPIRES     = '2026-05-09';  // ← update this date with each new demo release
+
+function demoExpired()        { return new Date() > new Date(DEMO_EXPIRES); }
+function demoWelcomeSeen()    { return !!localStorage.getItem(DEMO_SEEN_KEY); }
+function demoMarkWelcomeSeen(){ localStorage.setItem(DEMO_SEEN_KEY, '1'); }
+function demoRestoreTrialIfCleared() { return Promise.resolve(); } // no-op — no longer needed
+function demoStartTrial()     {}  // no-op — no longer needed
+function demoTrialExpired()   { return demoExpired(); }
 
 // ── Trial start timestamp — triple-stamped: localStorage + IDB + embedded backup ──
-// localStorage alone can be cleared by the user to reset the trial clock.
-// IDB persists through a cache/cookie clear (only removed by "clear all site data").
-// The backup file provides a third copy that travels with the user across machines.
-
-async function _demoIdbSaveTrial(iso) {
-  try {
-    const db = await actIdbOpen();
-    await new Promise(res => {
-      const tx = db.transaction('act', 'readwrite');
-      tx.objectStore('act').put(iso, 'trialStart');
-      tx.oncomplete = res; tx.onerror = res;
-    });
-  } catch(e) {}
-}
-
-async function _demoIdbLoadTrial() {
-  try {
-    const db = await actIdbOpen();
-    return await new Promise(res => {
-      const tx = db.transaction('act', 'readonly');
-      const req = tx.objectStore('act').get('trialStart');
-      req.onsuccess = () => res(req.result || null);
-      req.onerror   = () => res(null);
-    });
-  } catch(e) { return null; }
-}
-
-// Reads trial start from localStorage first, falls back to IDB, then backup file.
-// If IDB or backup has a date but localStorage doesn't (cache was cleared),
-// restores to localStorage so subsequent reads are fast.
-async function demoRestoreTrialIfCleared() {
-  if(localStorage.getItem(DEMO_TRIAL_KEY)) return; // already present — nothing to do
-  // Try IDB first (fastest after localStorage)
-  const idbVal = await _demoIdbLoadTrial();
-  if(idbVal) {
-    localStorage.setItem(DEMO_TRIAL_KEY, idbVal);
-    return;
-  }
-  // Try backup file field (DB._demoTrialStart written when trial first starts)
-  if(DB && DB._demoTrialStart) {
-    localStorage.setItem(DEMO_TRIAL_KEY, DB._demoTrialStart);
-    await _demoIdbSaveTrial(DB._demoTrialStart); // re-stamp IDB too
-  }
-}
-
-function demoGetTrialStart()  { const v=localStorage.getItem(DEMO_TRIAL_KEY); return v?new Date(v):null; }
-
-function demoStartTrial() {
-  if(localStorage.getItem(DEMO_TRIAL_KEY)) return; // already stamped
-  const iso = new Date().toISOString();
-  // Stamp 1: localStorage
-  localStorage.setItem(DEMO_TRIAL_KEY, iso);
-  // Stamp 2: IndexedDB (async, fire and forget)
-  _demoIdbSaveTrial(iso);
-  // Stamp 3: backup file — store in DB so it's written on next fsWriteNow()
-  if(typeof DB !== 'undefined') { DB._demoTrialStart = iso; }
-}
-
-function demoTrialDaysLeft()  { const s=demoGetTrialStart(); if(!s) return DEMO_DAYS; return Math.max(0,DEMO_DAYS-(Date.now()-s.getTime())/864e5); }
-function demoTrialExpired()   { return DEMO_MODE && demoTrialDaysLeft() <= 0; }
-function demoWelcomeSeen()    { return !!localStorage.getItem(DEMO_SEEN_KEY); }
-function demoMarkWelcomeSeen(){ localStorage.setItem(DEMO_SEEN_KEY,'1'); }
-
 function demoInjectBanner() {
   if(!DEMO_MODE) return;
   const e = document.getElementById('demoBanner'); if(e) e.remove();
   const b = document.createElement('div');
   b.id = 'demoBanner';
-  b.style.cssText = `position:fixed;top:0;left:0;right:0;z-index:1000;background:#0a7c4a;color:#fff;text-align:center;padding:5px 12px;font-size:11px;font-weight:600;font-family:var(--sans);display:flex;align-items:center;justify-content:center;gap:16px;cursor:pointer;`;
-  b.innerHTML = `<span>🔑 DEMO v${APP_VERSION}</span><span style="opacity:.85;font-weight:400;">Click to activate and remove this bar</span>`;
+  const expired = demoExpired();
+  const colour = expired ? '#cc2200' : '#0a7c4a';
+  b.style.cssText = `position:fixed;top:0;left:0;right:0;z-index:1000;background:${colour};color:#fff;text-align:center;padding:5px 12px;font-size:11px;font-weight:600;font-family:var(--sans);display:flex;align-items:center;justify-content:center;gap:16px;cursor:pointer;`;
+  const label = expired
+    ? `🔑 DEMO EXPIRED — Click to activate`
+    : `🔑 DEMO v${APP_VERSION} — Expires ${DEMO_EXPIRES} · Click to activate`;
+  b.innerHTML = `<span>${label}</span>`;
   b.addEventListener('click', () => showActivationScreen());
   document.body.prepend(b);
+  if(expired) setTimeout(() => showActivationScreen(), 1500);
   const bannerH = b.getBoundingClientRect().height || 29;
   const h = document.getElementById('header'); if(h) h.style.top = bannerH+'px';
   const m = document.getElementById('main');   if(m) m.style.marginTop = (bannerH+48)+'px';
@@ -16052,19 +16000,6 @@ function demoInjectBanner() {
 function demoShowWelcomeModal() {
   const el = document.getElementById('demoWelcome');
   if(!el) return;
-  const infoEl = document.getElementById('demoWelcomeTrialInfo');
-  if(infoEl) {
-    const started = demoGetTrialStart();
-    if(started) {
-      const d = demoTrialDaysLeft();
-      const dLabel = d > 0.05 ? Math.ceil(d)+' day'+(Math.ceil(d)===1?'':'s') : 'less than a day';
-      infoEl.textContent = `Your trial has already started — ${dLabel} remaining.`;
-      const startBtn = el.querySelector('button');
-      if(startBtn) startBtn.textContent = '▶ Continue Trial';
-    } else {
-      infoEl.textContent = `Fully functional for ${DEMO_DAYS} days — no features locked.`;
-    }
-  }
   el.style.display = 'flex';
 }
 
@@ -16123,19 +16058,19 @@ async function demoCreateFile() {
     <div style="font-size:18px;font-weight:700;color:var(--text1);margin-bottom:8px;letter-spacing:.02em;">Portfolio Tracker — Demo</div>
     <div style="font-size:12px;color:var(--text2);line-height:1.8;margin-bottom:20px;">
       Explore the full feature set — LP pools, vaults, holdings, GEMs watchlist, hedge calculator, yield tracking, RSI/Bollinger indicators, and more.<br><br>
-      <span id="demoWelcomeTrialInfo" style="color:var(--accent);font-weight:600;">Fully functional for 7 days — no features locked.</span>
+      <span style="color:var(--accent);font-weight:600;">Fully functional until ${DEMO_EXPIRES} — all features available.</span>
     </div>
     <div style="display:flex;flex-direction:column;gap:10px;">
       <button class="btn primary" style="padding:11px 16px;font-size:13px;font-weight:700;" onclick="demoStartAndEnter()">
-        ▶ Start Free Trial
+        ▶ Explore the Demo
       </button>
       <button class="btn" style="padding:10px 16px;font-size:12px;" onclick="demoGoActivate()">
         🔑 I Have an Activation Code
       </button>
     </div>
     <div style="margin-top:16px;font-size:10px;color:var(--text3);line-height:1.6;">
-      Trial starts on first open. All data saved locally in your browser.<br>
-      Contact us for a licence code to unlock permanently.
+      Demo expires ${DEMO_EXPIRES}. All data saved locally in your browser.<br>
+      Contact us for a licence code to unlock the full version permanently.
     </div>
   </div>
 </div>
