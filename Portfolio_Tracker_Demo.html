@@ -77,8 +77,8 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:va
 }
 .logo{font-family:var(--mono);font-size:13px;color:var(--accent);letter-spacing:.06em;white-space:nowrap;}
 .logo small{color:var(--text3);font-size:10px;margin-left:6px;}
-.header-stats{display:flex;gap:6px;flex:1 1 0;justify-content:center;flex-wrap:nowrap;overflow:visible;min-width:0;}
-.hstat{text-align:center;min-width:0;}
+.header-stats{display:flex;gap:4px;flex:1 1 0;justify-content:center;flex-wrap:wrap;overflow:hidden;min-width:0;}
+.hstat{text-align:center;min-width:0;flex-shrink:1;}
 .hstat-label{font-size:9px;color:#1a2438;text-transform:uppercase;letter-spacing:.06em;font-weight:600;white-space:nowrap;}
 .hstat-val{font-family:var(--mono);font-size:var(--fs-mono);margin-top:1px;font-weight:700;white-space:nowrap;overflow:visible;}
 .header-right{display:flex;align-items:center;gap:6px;white-space:nowrap;}
@@ -134,7 +134,7 @@ input[type="date"] { color-scheme: dark; }
 #tab-pools table{table-layout:fixed;width:100%;}
 #tab-pools table th,#tab-pools table td{padding:3px 4px;overflow:hidden;text-overflow:ellipsis;}
 #tab-pools table input.cell-in.narrow{width:56px;}
-#tab-pools thead th{font-size:var(--fs-th);}
+#tab-pools thead th{font-size:var(--fs-th);white-space:normal;line-height:1.2;}
 #tab-pools tbody td{font-size:var(--fs-mono);}
 #tab-pools tfoot td{font-size:var(--fs-mono);}
 #tab-vaults .tbl-wrap table{table-layout:auto;}
@@ -1128,7 +1128,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 <!-- HEADER -->
 <div id="header" style="visibility:hidden;">
   <div class="logo">PORTFOLIO <small>TRACKER</small></div>
-  <span id="versionBadge" style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-left:4px;align-self:flex-end;padding-bottom:2px;">v47.28</span>
+  <span id="versionBadge" style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-left:4px;align-self:flex-end;padding-bottom:2px;">v47.29</span>
   <span id="privacyBadge">🙈 VALUES MASKED</span>
   <div class="header-stats" id="hdrStats"></div>
   <div class="header-right">
@@ -1244,7 +1244,6 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     </div>
     <button class="btn sm" id="lockBtn" onclick="lockApp()" title="Lock tracker" style="display:none;">🔒 Lock</button>
     <button class="btn sm" id="pwaInstallBtn" onclick="pwaInstall()" title="Install as app for automatic file access on open" style="display:none;background:rgba(109,40,217,.08);border-color:rgba(109,40,217,.3);color:#6d28d9;">⊕ Install App</button>
-    <button class="btn sm" onclick="openFeedbackModal()" title="Send feedback or a question to the developer via GitHub" style="padding:4px 8px;font-size:12px;background:rgba(10,124,74,0.08);border-color:rgba(10,124,74,0.35);color:var(--accent);">📬 Feedback</button>
     <div id="fsBackupStatus" style="display:none;"></div>
   </div>
 </div>
@@ -1386,7 +1385,8 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     <span id="poolAlertPill" style="display:inline-flex;align-self:center;margin-right:4px;cursor:pointer;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;font-family:var(--mono);white-space:nowrap;transition:all .4s;color:var(--text3);background:transparent;border:1px solid var(--border);box-shadow:none;opacity:0.5;" onclick="switchTab('pools')" title="All pools in range — no alerts">🔁 Pools ✓</span>
     <span id="gemAlertPill"  style="display:inline-flex;align-self:center;margin-right:4px;cursor:pointer;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;font-family:var(--mono);white-space:nowrap;transition:all .4s;color:var(--text3);background:transparent;border:1px solid var(--border);box-shadow:none;opacity:0.5;" onclick="switchTab('gems')"  title="No GEM alerts active">💎 GEMs ✓</span>
     <div style="flex:1;"></div>
-    <button id="globalHelpBtn" class="btn sm btn-help" onclick="openHelpModal(window._activeTab||'overview')" title="Help for current tab — click Overview tab for general introduction" style="align-self:center;margin-right:4px;">? Help</button>
+    <button id="globalHelpBtn" class="btn sm btn-help" onclick="openHelpModal(window._activeTab||'overview')" title="Help for current tab — click Overview tab for general introduction" style="align-self:center;margin-right:2px;">? Help</button>
+    <button class="btn sm" onclick="openFeedbackModal()" title="Send feedback or a question" style="align-self:center;margin-right:4px;padding:4px 8px;font-size:12px;background:rgba(10,124,74,0.08);border-color:rgba(10,124,74,0.35);color:var(--accent);">📬 Feedback</button>
   </div>
 
   <!-- ══ LP POOLS ══ -->
@@ -3400,6 +3400,24 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
   <div class="modal">
     <div class="modal-title">⚙ SETTINGS</div>
 
+    <!-- ── CPI Benchmark ────────────────────────────────────────────── -->
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:14px;">
+      <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;font-weight:600;">📊 CPI Benchmark Badge</div>
+      <div class="form-grid cols2">
+        <div class="field">
+          <label>CPI / Inflation Rate <span style="font-weight:400;color:var(--text3);font-size:10px;">(annual %)</span></label>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <input id="al-cpiRate" type="number" min="0" max="30" step="0.1" placeholder="3.5"
+              oninput="saveCpiRate()"
+              style="width:72px;">
+            <span style="font-size:11px;color:var(--text3);">%</span>
+            <button class="btn sm" onclick="fetchBenchmarks(true)" style="font-size:10px;padding:2px 8px;">↻ Fetch live</button>
+          </div>
+          <div class="hint" id="cpiRateHint">Green badge on pool rows when annualized net return beats this rate. Auto-fetched from FRED (St. Louis Fed) on startup.</div>
+        </div>
+      </div>
+    </div>
+
     <!-- ── Default DeFi Wallet ──────────────────────────────────────── -->
     <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:14px;">
       <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;font-weight:600;">💼 Default DeFi Wallet</div>
@@ -3553,7 +3571,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 // Secrets assembled at runtime — not stored as plain literals
 const ACT_SECRET = (()=>{const p=['CPF_TR','ACKER_','2026_D','ELTA7_','WHISKE','Y'];return p.join('');})();
 const ACT_MASTER = (()=>{const p=['CPF_MA','STER_O','VERRID','E_KEY_','ZULU9'];return p.join('');})();
-const APP_VERSION  = '47.28';           // bumped on each release
+const APP_VERSION  = '47.29';           // bumped on each release
 const WHATS_NEW_KEY = 'cpf_seen_ver';   // localStorage: last version user saw What's New
 const ACT_STORE    = 'cpf_activation_v1';
 const ACT_ID_STORE = 'cpf_install_id';
@@ -3854,7 +3872,7 @@ async function actCheckAfterLink() {
     toast('✓ Activation verified from backup file.');
     fsWriteNow();
     updateFsStatus(); fsStartAutoSave();
-    renderAll(); fetchPrices(); initFileProtocolUI(); initHelpSync(); checkWhatsNew();
+    renderAll(); fetchPrices(); fetchBenchmarks(); initFileProtocolUI(); initHelpSync(); checkWhatsNew();
     initPIN();
   }
   // If not ok, activation screen stays visible with backup already linked
@@ -3922,7 +3940,7 @@ async function showActivationScreen() {
             const authOk = await checkActivation();
             if(authOk) {
               hideActivationScreen();
-              updateFsStatus(); fsStartAutoSave(); renderAll(); fetchPrices(); initFileProtocolUI(); initHelpSync(); checkWhatsNew();
+              updateFsStatus(); fsStartAutoSave(); renderAll(); fetchPrices(); fetchBenchmarks(); initFileProtocolUI(); initHelpSync(); checkWhatsNew();
               initPIN();
               return;
             }
@@ -4195,7 +4213,7 @@ async function tapToOpenHandler() {
     try { ok = await checkActivation(); } catch(e) { console.warn('cpf: checkActivation error:', e); }
     if(overlay) overlay.style.display = 'none';
     if(ok) {
-      try { updateFsStatus(); fsStartAutoSave(); renderAll(); fetchPrices(); initFileProtocolUI(); initHelpSync(); checkWhatsNew(); } catch(e){}
+      try { updateFsStatus(); fsStartAutoSave(); renderAll(); fetchPrices(); fetchBenchmarks(); initFileProtocolUI(); initHelpSync(); checkWhatsNew(); } catch(e){}
       initPIN();
     } else {
       _tapExit(true);
@@ -4253,7 +4271,7 @@ async function tapToOpenHandler() {
       } else {
         if(demoWelcomeSeen()) {
           demoStartTrial();
-          renderAll(); fetchPrices(); initFileProtocolUI(); initHelpSync(); initPIN();
+          renderAll(); fetchPrices(); fetchBenchmarks(); initFileProtocolUI(); initHelpSync(); initPIN();
           checkWhatsNew();
           setTimeout(demoInjectBanner, 300);
           if(!IS_FILE_PROTOCOL) setTimeout(_showNoBackupBanner, 2000);
@@ -5240,7 +5258,11 @@ function renderPools() {
           const raw = (Math.pow((cur+yld)/p.entryValue, 365/days) - 1) * 100;
           if(!isFinite(raw)||isNaN(raw)) return '';
           const ann = Math.max(-999, Math.min(9999, raw));
-          return `<div style="font-size:12px;font-weight:700;color:${ann>=0?'#065f46':'#991b1b'};margin-top:3px;letter-spacing:-.01em;">${ann.toFixed(1)}% <span style="font-size:9px;font-weight:500;opacity:.75;">ann/${days}d</span></div>`;
+          const cpi = (DB.settings.cpiRate ?? 3.5);
+          const cpiBadge = days >= 7
+            ? `<span title="Annualized net return vs CPI (${cpi.toFixed(1)}% target)" style="display:inline-block;margin-left:5px;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:800;vertical-align:middle;letter-spacing:.04em;background:${ann>=cpi?'#0a7c4a':'#cc2200'};color:#ffffff;">${ann>=cpi?'▲':'▼'} CPI</span>`
+            : '';
+          return `<div style="font-size:12px;font-weight:700;color:${ann>=0?'#065f46':'#991b1b'};margin-top:3px;letter-spacing:-.01em;">${ann.toFixed(1)}% <span style="font-size:9px;font-weight:500;opacity:.75;">ann/${days}d</span>${cpiBadge}</div>`;
         })()}
       </td>
       <td class="${(()=>{ if(cur===null||hodl===null) return 'neu'; const il=hodl-cur; return il>0?'danger':'pos'; })()}">
@@ -14190,11 +14212,58 @@ async function submitFeedback() {
   }
 }
 
+// ─── CPI BENCHMARK ───────────────────────────────────────────────────────────
+const FRED_API_KEY   = '296dfd085a59469431f2709ce6bdabaf';
+const FRED_CPI_URL   = `https://api.stlouisfed.org/fred/series/observations?series_id=CPIAUCSL&api_key=${FRED_API_KEY}&file_type=json&sort_order=desc&limit=13`;
+const CPI_CACHE_HRS  = 24;
+
+async function fetchBenchmarks(manual=false) {
+  const last = DB.settings._cpiFetchedAt || 0;
+  if(!manual && Date.now() - last < CPI_CACHE_HRS * 3600000) return;
+  try {
+    const res  = await fetch(FRED_CPI_URL);
+    if(!res.ok) throw new Error('FRED error ' + res.status);
+    const data = await res.json();
+    const obs  = (data.observations || []).filter(o => o.value !== '.');
+    if(obs.length < 13) throw new Error('Not enough CPI data');
+    const latest = parseFloat(obs[0].value);
+    const year   = parseFloat(obs[12].value);
+    const cpiAnn = ((latest - year) / year) * 100;
+    DB.settings.cpiRate       = Math.round(cpiAnn * 10) / 10;
+    DB.settings._cpiFetchedAt = Date.now();
+    persist();
+    const el = document.getElementById('al-cpiRate');
+    if(el) el.value = DB.settings.cpiRate;
+    const hint = document.getElementById('cpiRateHint');
+    if(hint) hint.textContent = `Live CPI: ${DB.settings.cpiRate}% — fetched from FRED ${new Date().toLocaleDateString()}. Green badge when pool beats this rate.`;
+    if(manual) toast(`✓ CPI rate updated: ${DB.settings.cpiRate}%`);
+    renderPools();
+  } catch(e) {
+    if(!DB.settings.cpiRate) DB.settings.cpiRate = 3.5;
+    if(manual) toast(`⚠ Could not fetch CPI — using ${DB.settings.cpiRate}%`, true);
+  }
+}
+
+function saveCpiRate() {
+  const val = parseFloat(document.getElementById('al-cpiRate').value);
+  if(!isNaN(val) && val >= 0 && val <= 30) {
+    DB.settings.cpiRate = Math.round(val * 10) / 10;
+    persist();
+    renderPools();
+  }
+}
+
 function openSettingsModal() {
   const snapEl = document.getElementById('al-volMcSnapMins');
   if(snapEl) snapEl.value = DB.settings.volMcSnapMins || 10;
   const moverEl = document.getElementById('al-gemMoverPct');
   if(moverEl) moverEl.value = DB.settings.gemMoverPct || 10;
+  const cpiEl = document.getElementById('al-cpiRate');
+  if(cpiEl) cpiEl.value = DB.settings.cpiRate ?? 3.5;
+  const hint = document.getElementById('cpiRateHint');
+  if(hint && DB.settings._cpiFetchedAt) {
+    hint.textContent = `Live CPI: ${DB.settings.cpiRate}% — fetched from FRED ${new Date(DB.settings._cpiFetchedAt).toLocaleDateString()}. Green badge when pool beats this rate.`;
+  }
   const pushKey   = DB.settings.pushKey   || localStorage.getItem('cpf_pushKey')   || '';
   const pushToken = DB.settings.pushToken || localStorage.getItem('cpf_pushToken') || '';
   if(!DB.settings.pushKey   && pushKey)   { DB.settings.pushKey   = pushKey;   vaultSet('pushKey',   pushKey);   }
@@ -15277,6 +15346,14 @@ function helpSearchClear() {
 
 // ── What's New content — keyed by version string ─────────────────────────────
 const WHATS_NEW = {
+  '47.29': {
+    headline: "Version 47.29 — What's New",
+    summary:  'CPI benchmark badge — pool rows now show whether annualized net return beats inflation, fetched live from FRED.',
+    items: [
+      { icon: '📊', title: 'CPI Benchmark Badge — beat inflation at a glance',
+        text: 'Each pool row now shows a small ▲CPI (green) or ▼CPI (red) badge next to the annualized return, comparing your net return against the current CPI inflation rate. The rate is fetched automatically from the Federal Reserve FRED database on startup and cached for 24 hours. You can also set a manual rate or refresh it live in Settings → CPI Benchmark Badge. Only shown for pools open 7+ days.' },
+    ]
+  },
   '47.27': {
     headline: "Version 47.27 — What's New",
     summary:  'Demo feedback channel — send questions, bug reports or suggestions directly to the developer via GitHub.',
@@ -16007,7 +16084,7 @@ function demoStartAndEnter() {
   demoStartTrial();
   demoMarkWelcomeSeen();
   document.getElementById('demoWelcome').style.display = 'none';
-  renderAll(); fetchPrices(); initFileProtocolUI(); initHelpSync(); initPIN();
+  renderAll(); fetchPrices(); fetchBenchmarks(); initFileProtocolUI(); initHelpSync(); initPIN();
   checkWhatsNew();
   setTimeout(demoInjectBanner, 300);
   // On Mac with no linked file, trigger first auto-export after 10s so Chrome's
