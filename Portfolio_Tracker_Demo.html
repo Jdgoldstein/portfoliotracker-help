@@ -131,7 +131,8 @@ input[type="date"] { color-scheme: dark; }
 /* ── TABLE WRAP ── */
 .tbl-wrap{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 180px);border:2px solid #7a9abf;border-radius:var(--radius);box-shadow:0 2px 8px rgba(0,0,0,0.12);max-width:100%;width:100%;}
 #tab-pools .tbl-wrap table{table-layout:auto;}
-#tab-pools table th,#tab-pools table td{padding:3px 4px;}
+#tab-pools table{table-layout:fixed;width:100%;}
+#tab-pools table th,#tab-pools table td{padding:3px 4px;overflow:hidden;text-overflow:ellipsis;}
 #tab-pools table input.cell-in.narrow{width:56px;}
 #tab-pools thead th{font-size:var(--fs-th);}
 #tab-pools tbody td{font-size:var(--fs-mono);}
@@ -1243,7 +1244,58 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     </div>
     <button class="btn sm" id="lockBtn" onclick="lockApp()" title="Lock tracker" style="display:none;">🔒 Lock</button>
     <button class="btn sm" id="pwaInstallBtn" onclick="pwaInstall()" title="Install as app for automatic file access on open" style="display:none;background:rgba(109,40,217,.08);border-color:rgba(109,40,217,.3);color:#6d28d9;">⊕ Install App</button>
+    <button class="btn sm" onclick="openFeedbackModal()" title="Send feedback or a question to the developer via GitHub" style="padding:4px 8px;font-size:12px;background:rgba(10,124,74,0.08);border-color:rgba(10,124,74,0.35);color:var(--accent);">📬 Feedback</button>
     <div id="fsBackupStatus" style="display:none;"></div>
+  </div>
+</div>
+
+<!-- FEEDBACK MODAL -->
+<div class="overlay" id="feedbackModal">
+  <div class="modal" style="width:min(480px,96vw);">
+    <div class="modal-title">📬 SEND FEEDBACK</div>
+    <p style="font-size:11px;color:var(--text3);margin-bottom:14px;line-height:1.6;">
+      Your feedback opens a GitHub issue pre-filled with your message — just click <strong>Submit</strong> on GitHub.
+      No account needed to view, but you'll need a free GitHub account to submit.
+    </p>
+    <div class="form-grid cols2" style="margin-bottom:10px;">
+      <div class="field">
+        <label>Type</label>
+        <select id="fb-type" style="width:100%;padding:6px 8px;background:var(--bg2);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:12px;">
+          <option value="Question">❓ Question</option>
+          <option value="Bug Report">🐛 Bug Report</option>
+          <option value="Suggestion">💡 Suggestion</option>
+          <option value="Other">💬 Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Your name / alias <span style="font-weight:400;color:var(--text3);font-size:10px;">(optional)</span></label>
+        <input id="fb-name" placeholder="e.g. DemoUser1" style="font-size:12px;">
+      </div>
+    </div>
+    <div class="field" style="margin-bottom:10px;">
+      <label>Message</label>
+      <textarea id="fb-message" rows="5" placeholder="Describe your question, issue, or idea..."
+        style="width:100%;box-sizing:border-box;font-family:var(--sans);font-size:12px;padding:7px 10px;
+               background:var(--bg2);border:1px solid var(--border2);border-radius:4px;
+               color:var(--text);resize:vertical;line-height:1.6;"></textarea>
+    </div>
+    <!-- Screenshot tip -->
+    <div style="background:rgba(10,124,74,0.06);border:1px solid rgba(10,124,74,0.2);border-radius:var(--radius);padding:10px 12px;margin-bottom:14px;">
+      <div style="font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px;">📸 Want to include a screenshot?</div>
+      <div style="font-size:11px;color:var(--text2);line-height:1.6;">
+        After GitHub opens, take a screenshot first:<br>
+        <span style="font-family:var(--mono);font-size:10px;color:var(--accent);">Mac:</span> <kbd style="background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-size:10px;">Cmd ⇧ 4</kbd> &nbsp;
+        <span style="font-family:var(--mono);font-size:10px;color:var(--accent);">Windows:</span> <kbd style="background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-size:10px;">Win ⇧ S</kbd><br>
+        Then <strong>drag the image file</strong> into the GitHub text box before submitting.
+      </div>
+    </div>
+    <div style="font-size:10px;color:var(--text3);margin-bottom:14px;">
+      Version <span id="fb-version" style="font-family:var(--mono);color:var(--text2);"></span> will be included automatically.
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('feedbackModal')">Cancel</button>
+      <button class="btn primary" onclick="submitFeedback()">📬 Open GitHub →</button>
+    </div>
   </div>
 </div>
 
@@ -1427,7 +1479,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
             <th title="Total yield harvested — click the 🌾 button to log a harvest" style="cursor:help;width:80px;background:rgba(10,124,74,0.07);color:var(--accent);">🌾 Yield</th>
             <th title="Net Result + annualized return" style="width:120px;">Net / Ann%</th>
             <th title="Impermanent loss vs HODL value" style="width:100px;">IL / HODL</th>
-            <th title="Does Current + Yield beat HODL value?" style="min-width:52px;max-width:110px;">HODL?</th>
+            <th title="Does Current + Yield beat HODL value?" style="width:80px;">HODL?</th>
           </tr>
         </thead>
         <tbody id="poolBody"></tbody>
@@ -1819,8 +1871,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
             <thead><tr id="yieldHead">
               <th class="sortable" onclick="sortYieldLog('date')">Date</th>
               <th class="left sortable" onclick="sortYieldLog('poolName')">Pool</th>
-              <th class="left sortable" onclick="sortYieldLog('tokSym')">Token</th>
-              <th class="sortable" onclick="sortYieldLog('qty')">Qty</th>
+              <th class="left" colspan="2">Tokens Harvested</th>
               <th class="sortable" onclick="sortYieldLog('usd')">USD $</th>
               <th class="sortable" onclick="sortYieldLog('action')">Action</th>
               <th class="sortable" onclick="sortYieldLog('dest')">Dest.</th>
@@ -2276,48 +2327,34 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     <!-- LP MODE section -->
     <div id="ac-lp-section" style="display:none;">
       <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-bottom:10px;">
-        <div style="font-size:10px;color:var(--accent);margin-bottom:10px;">Enter the new totals from the platform after your addition — the tracker calculates what was added.</div>
-        <div class="form-grid cols2" style="margin-bottom:8px;">
+        <div style="font-size:10px;color:var(--accent);margin-bottom:10px;">Enter the qty of each token you added — the tracker calculates the dollar value from live prices.</div>
+        <div class="form-grid cols2" style="margin-bottom:10px;">
           <div class="field">
-            <label>$ Value Added</label>
-            <input id="ac-value" type="number" step="any" placeholder="0" oninput="acUpdate()">
+            <label id="ac-tokA-label">Token A — Qty Added</label>
+            <input id="ac-tokA-qty-add" type="number" step="any" placeholder="from platform" oninput="acCalcFromQtys()" style="color:var(--accent);font-weight:700;">
+            <div style="font-size:10px;color:var(--text3);margin-top:2px;">Was: <span id="ac-tokA-was" style="font-family:var(--mono);">—</span></div>
           </div>
           <div class="field">
-            <label style="color:var(--accent);">New Total Entry $</label>
-            <input id="ac-new-total" type="number" step="any" readonly style="background:var(--bg2);color:var(--accent);font-weight:700;">
+            <label id="ac-tokB-label">Token B — Qty Added</label>
+            <input id="ac-tokB-qty-add" type="number" step="any" placeholder="from platform" oninput="acCalcFromQtys()" style="color:var(--accent);font-weight:700;">
+            <div style="font-size:10px;color:var(--text3);margin-top:2px;">Was: <span id="ac-tokB-was" style="font-family:var(--mono);">—</span></div>
           </div>
         </div>
-        <div class="form-grid" style="margin-bottom:0;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:8px 10px;background:var(--bg2);border:1px solid rgba(10,124,74,0.25);border-radius:4px;">
           <div>
-            <div style="font-size:10px;color:var(--text3);margin-bottom:4px;" id="ac-tokA-label">Token A</div>
-            <div class="form-grid cols2" style="margin-bottom:0;">
-              <div class="field">
-                <label style="color:var(--accent);">New Total Qty</label>
-                <input id="ac-tokA-qty-new" type="number" step="any" placeholder="from platform" oninput="acUpdateQtys()" style="color:var(--accent);font-weight:700;">
-              </div>
-              <div class="field">
-                <label style="color:var(--text3);">Was (before)</label>
-                <input id="ac-tokA-qty-add" type="number" step="any" readonly style="background:var(--bg3);color:var(--text3);">
-              </div>
-            </div>
+            <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:2px;">Calculated $ Added</div>
+            <div id="ac-calc-added" style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--accent);">—</div>
+            <div id="ac-calc-hint" style="font-size:9px;color:var(--text3);margin-top:1px;"></div>
           </div>
           <div>
-            <div style="font-size:10px;color:var(--text3);margin-bottom:4px;" id="ac-tokB-label">Token B</div>
-            <div class="form-grid cols2" style="margin-bottom:0;">
-              <div class="field">
-                <label style="color:var(--accent);">New Total Qty</label>
-                <input id="ac-tokB-qty-new" type="number" step="any" placeholder="from platform" oninput="acUpdateQtys()" style="color:var(--accent);font-weight:700;">
-              </div>
-              <div class="field">
-                <label style="color:var(--text3);">Was (before)</label>
-                <input id="ac-tokB-qty-add" type="number" step="any" readonly style="background:var(--bg3);color:var(--text3);">
-              </div>
-            </div>
+            <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:2px;">New Total Entry $</div>
+            <div id="ac-new-total-display" style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--text2);">—</div>
           </div>
         </div>
-        <div id="ac-qty-delta" style="font-size:10px;color:var(--text3);margin-top:6px;display:none;">
-          Added: <span id="ac-tokA-delta" style="color:var(--accent);font-family:var(--mono);"></span> &nbsp;|&nbsp; <span id="ac-tokB-delta" style="color:var(--accent);font-family:var(--mono);"></span>
-        </div>
+        <input type="hidden" id="ac-value">
+        <input type="hidden" id="ac-new-total">
+        <input type="hidden" id="ac-tokA-qty-new">
+        <input type="hidden" id="ac-tokB-qty-new">
       </div>
     </div>
 
@@ -2331,14 +2368,39 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     </div>
 
     <!-- Funded From Holdings -->
-    <div style="border:1px solid var(--border2);border-radius:var(--radius);padding:10px 12px;margin-bottom:10px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-        <span style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;">📤 Funded From Holdings <span style="font-weight:400;color:var(--text3);text-transform:none;">(optional — auto-deducts qty)</span></span>
-        <button class="btn sm ghost" onclick="acAddSourceRow()" style="font-size:10px;padding:2px 8px;">+ Add Source</button>
+    <div id="ac-funded-section" style="border:1px solid var(--border2);border-radius:var(--radius);padding:10px 12px;margin-bottom:10px;">
+      <div style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">
+        📤 Funded From Holdings <span style="font-weight:400;color:var(--text3);text-transform:none;">(optional — auto-deducts qty)</span>
       </div>
-      <div id="ac-sources" style="display:flex;flex-direction:column;gap:6px;"></div>
+      <div class="form-grid cols2" style="margin-bottom:8px;">
+        <div class="field" style="margin-bottom:0;">
+          <label id="ac-fund-tokA-label" style="font-size:10px;">Token A qty leaving wallet</label>
+          <input id="ac-fund-tokA-qty" type="number" step="any" placeholder="0" style="font-family:var(--mono);font-size:12px;">
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label id="ac-fund-tokB-label" style="font-size:10px;">Token B qty leaving wallet</label>
+          <input id="ac-fund-tokB-qty" type="number" step="any" placeholder="0" style="font-family:var(--mono);font-size:12px;">
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:4px;">
+        <label style="font-size:10px;">From Wallet</label>
+        <select id="ac-fund-wallet" style="width:100%;padding:5px 8px;background:var(--bg2);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:12px;">
+        </select>
+      </div>
+      <div style="margin-top:4px;">
+        <button type="button" class="btn sm ghost" onclick="acToggleBWallet()" id="ac-fund-bwallet-btn" style="font-size:10px;padding:2px 8px;">
+          ＋ Token B from different wallet?
+        </button>
+        <div id="ac-fund-bwallet-row" style="display:none;margin-top:6px;">
+          <div class="field" style="margin-bottom:0;">
+            <label id="ac-fund-tokB-wallet-label" style="font-size:10px;">Token B — From Wallet</label>
+            <select id="ac-fund-wallet-b" style="width:100%;padding:5px 8px;background:var(--bg2);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:12px;">
+            </select>
+          </div>
+        </div>
+      </div>
       <div style="font-size:10px;color:var(--text3);margin-top:6px;line-height:1.5;">
-        Enter what <strong>left your wallet</strong> — token qty and which wallet. The tracker deducts it from your Holdings automatically.
+        Enter the qty of each token that <strong>left your wallet</strong>. The tracker deducts it from Holdings automatically.
       </div>
     </div>
 
@@ -3476,7 +3538,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 // Secrets assembled at runtime — not stored as plain literals
 const ACT_SECRET = (()=>{const p=['CPF_TR','ACKER_','2026_D','ELTA7_','WHISKE','Y'];return p.join('');})();
 const ACT_MASTER = (()=>{const p=['CPF_MA','STER_O','VERRID','E_KEY_','ZULU9'];return p.join('');})();
-const APP_VERSION  = '47.24';           // bumped on each release
+const APP_VERSION  = '47.27';           // bumped on each release
 const WHATS_NEW_KEY = 'cpf_seen_ver';   // localStorage: last version user saw What's New
 const ACT_STORE    = 'cpf_activation_v1';
 const ACT_ID_STORE = 'cpf_install_id';
@@ -5138,20 +5200,6 @@ function renderPools() {
           return `<input class="cell-in narrow" value="${p.tokAQty||''}" onfocus="this.dataset.orig=this.value" onblur="if(this.value!==''&&this.value!==this.dataset.orig)inlinePool('${p.id}','tokAQty',+this.value)" style="width:70px;text-align:right;" title="Current qty of ${p.tokASym}">`;
         })()}
       </td>
-      <td style="background:rgba(74,158,255,0.05);">
-        ${(()=>{
-          const isLikePair = p.vaultMode && p.tokAGeckoId && p.tokBGeckoId && p.tokAGeckoId === p.tokBGeckoId;
-          if(isLikePair) {
-            return `<span style="color:var(--text3);font-size:10px;" title="Same asset as Token A — total shown in QTY A">—</span>`;
-          }
-          if(p.vaultMode) {
-            return `<div style="font-size:calc(var(--fs-mono) - 2px);color:var(--text3);margin-bottom:2px;">wrapped</div>`
-              + `<span style="font-family:var(--mono);font-size:var(--fs-mono);color:var(--text3);">vault</span>`;
-          }
-          return `<div style="font-size:calc(var(--fs-mono) - 2px);color:var(--accent2);margin-bottom:2px">${p.tokBSym||''}</div>`
-            + `<input class="cell-in narrow" value="${p.tokBQty||''}" onfocus="this.dataset.orig=this.value" onblur="if(this.value!==''&&this.value!==this.dataset.orig)inlinePool('${p.id}','tokBQty',+this.value)" style="width:70px;text-align:right;" title="Current qty of ${p.tokBSym}">`;
-        })()}
-      </td>
       <td style="background:rgba(167,139,250,0.05);overflow:hidden;">${p.vaultMode ? '' : `<input class="cell-in narrow" value="${p.rangeLow ? qf(p.rangeLow) : ''}" onfocus="this.dataset.orig=this.value" onblur="if(this.value!==''&&this.value!==this.dataset.orig)inlinePool('${p.id}','rangeLow',+this.value)" style="width:100%;text-align:right;" title="${p.rangeLow||''}">`}</td>
       <td style="text-align:right;overflow:hidden;">
         ${p.vaultMode
@@ -6087,18 +6135,7 @@ function renderHeader() {
   // ── Collect pool alerts ──
   const poolAlerts = [];
   DB.pools.forEach(p => {
-    if(p.vaultMode) {
-      const cur  = poolCurrentValue(p);
-      const yld  = poolYieldTotal(p);
-      const hodl = poolHodlValue(p);
-      if(cur === null || hodl === null || hodl === 0) return;
-      const total   = cur + yld;
-      const deficit = hodl - total;
-      const defPct  = deficit / hodl;
-      if(defPct >= 0.05)       poolAlerts.push({label:`🔴 ${p.name} −HODL`, color:'#cc2200', bg:'rgba(204,34,0,0.18)', border:'2px solid #cc2200', shadow:'0 0 6px rgba(204,34,0,0.3)'});
-      else if(defPct > 0)      poolAlerts.push({label:`⚠ ${p.name} −HODL`, color:'#cc6600', bg:'rgba(204,102,0,0.15)', border:'2px solid #cc6600', shadow:'0 0 4px rgba(204,102,0,0.2)'});
-      return;
-    }
+    if(p.vaultMode) return;
     const st = rangeStatus(p);
     if(st === 'OUT OF RANGE') poolAlerts.push({label:`🔴 ${p.name}`, color:'#cc2200', bg:'rgba(204,34,0,0.18)', border:'2px solid #cc2200', shadow:'0 0 6px rgba(204,34,0,0.3)'});
     else if(st === 'Act Now')  poolAlerts.push({label:`⚡ ${p.name}`, color:'#cc6600', bg:'rgba(204,102,0,0.15)', border:'2px solid #cc6600', shadow:'0 0 4px rgba(204,102,0,0.2)'});
@@ -6807,7 +6844,7 @@ function openAddCapitalModal(id) {
   document.getElementById('ac-pool-id').value = id;
   document.getElementById('ac-date').value    = today();
   document.getElementById('ac-notes').value   = '';
-  document.getElementById('ac-sources').innerHTML = '';
+  acInitFundedFrom(p);
 
   const isVault = p.vaultMode;
   document.getElementById('ac-vault-section').style.display = isVault ? '' : 'none';
@@ -6825,12 +6862,17 @@ function openAddCapitalModal(id) {
     document.getElementById('ac-new-total').value    = '';
     document.getElementById('ac-tokA-qty-new').value = '';
     document.getElementById('ac-tokB-qty-new').value = '';
-    document.getElementById('ac-tokA-qty-add').value = p.tokAQty || '';
-    document.getElementById('ac-tokB-qty-add').value = p.tokBQty || '';
-    document.getElementById('ac-tokA-label').textContent = p.tokASym || 'Token A';
-    document.getElementById('ac-tokB-label').textContent = p.tokBSym || 'Token B';
-    const deltaEl = document.getElementById('ac-qty-delta');
-    if(deltaEl) deltaEl.style.display = 'none';
+    document.getElementById('ac-tokA-qty-add').value = '';
+    document.getElementById('ac-tokB-qty-add').value = '';
+    document.getElementById('ac-tokA-label').textContent = (p.tokASym || 'Token A') + ' — Qty Added';
+    document.getElementById('ac-tokB-label').textContent = (p.tokBSym || 'Token B') + ' — Qty Added';
+    const wasA = document.getElementById('ac-tokA-was');
+    const wasB = document.getElementById('ac-tokB-was');
+    if(wasA) wasA.textContent = p.tokAQty != null ? qf(p.tokAQty) : '—';
+    if(wasB) wasB.textContent = p.tokBQty != null ? qf(p.tokBQty) : '—';
+    document.getElementById('ac-calc-added').textContent = '—';
+    document.getElementById('ac-new-total-display').textContent = '—';
+    document.getElementById('ac-calc-hint').textContent = '';
   }
 
   const cur = poolCurrentValue(p);
@@ -6859,58 +6901,100 @@ function openAddCapitalModal(id) {
   document.getElementById('addCapitalModal').classList.add('open');
 }
 
-// Auto-split $ added into token quantities based on live prices and current ratio
-function acAutoSplit() {
+function acCalcFromQtys() {
   const id = document.getElementById('ac-pool-id').value;
   const p  = DB.pools.find(x=>x.id===id);
   if(!p || p.vaultMode) return;
-  const addVal = +document.getElementById('ac-value').value || 0;
-  if(!addVal) return;
 
+  const aAdded = +document.getElementById('ac-tokA-qty-add').value || 0;
+  const bAdded = +document.getElementById('ac-tokB-qty-add').value || 0;
   const pA = getPrice(p.tokAGeckoId);
   const pB = getPrice(p.tokBGeckoId);
-  if(pA && pB) {
-    // Split 50/50 by value (standard LP)
-    const half   = addVal / 2;
-    const aAdded = +(half / pA).toFixed(6);
-    const bAdded = +(half / pB).toFixed(6);
-    document.getElementById('ac-tokA-qty-add').value = aAdded;
-    document.getElementById('ac-tokB-qty-add').value = bAdded;
-  } else if(pA) {
-    // Only token A price known
-    document.getElementById('ac-tokA-qty-add').value = +(addVal / pA).toFixed(6);
-  }
-  acUpdateQtys();
+
+  let calcAdded = 0;
+  const hints = [];
+  if(aAdded && pA) { calcAdded += aAdded * pA; hints.push(`${p.tokASym||'A'}: ${aAdded} × ${$f(pA)} = ${$f(aAdded*pA)}`); }
+  else if(aAdded)  { hints.push(`${p.tokASym||'A'}: no live price`); }
+  if(bAdded && pB) { calcAdded += bAdded * pB; hints.push(`${p.tokBSym||'B'}: ${bAdded} × ${$f(pB)} = ${$f(bAdded*pB)}`); }
+  else if(bAdded)  { hints.push(`${p.tokBSym||'B'}: no live price`); }
+
+  const origValue = p.entryValue || 0;
+  const newTotal  = origValue + calcAdded;
+
+  const calcEl    = document.getElementById('ac-calc-added');
+  const newTotEl  = document.getElementById('ac-new-total-display');
+  const hintEl    = document.getElementById('ac-calc-hint');
+  if(calcEl)   calcEl.textContent   = calcAdded > 0 ? $f(calcAdded, 2) : '—';
+  if(newTotEl) newTotEl.textContent = calcAdded > 0 ? $f(newTotal, 2)  : '—';
+  if(hintEl)   hintEl.textContent   = hints.join(' + ');
+
+  document.getElementById('ac-value').value     = calcAdded > 0 ? calcAdded.toFixed(2) : '';
+  document.getElementById('ac-new-total').value = calcAdded > 0 ? newTotal.toFixed(2)  : '';
+  document.getElementById('ac-tokA-qty-new').value = aAdded > 0 ? ((p.tokAQty||0) + aAdded).toFixed(6) : '';
+  document.getElementById('ac-tokB-qty-new').value = bAdded > 0 ? ((p.tokBQty||0) + bAdded).toFixed(6) : '';
+
+  acUpdate();
 }
 
-function acAddSourceRow() {
-  const container = document.getElementById('ac-sources');
-  const rowId = 'ac-src-' + Date.now();
-  // Build wallet options from existing holdings
-  const wallets = [...new Set(DB.holdings.map(h=>h.wallet).filter(Boolean))];
-  const walletOpts = wallets.map(w=>`<option value="${w}">`).join('');
-  const syms = [...new Set(DB.holdings.map(h=>h.sym).filter(Boolean))].sort();
-  const symOpts = syms.map(s=>`<option value="${s}">`).join('');
-  const row = document.createElement('div');
-  row.id = rowId;
-  row.style.cssText = 'display:grid;grid-template-columns:1fr 120px 1fr auto;gap:6px;align-items:end;';
-  row.innerHTML = `
-    <div class="field" style="margin-bottom:0;">
-      <label style="font-size:10px;">Token</label>
-      <input class="ac-src-sym" list="ac-src-sym-list" placeholder="e.g. AERO, ETH" style="font-family:var(--mono);font-size:12px;">
-      <datalist id="ac-src-sym-list">${symOpts}</datalist>
-    </div>
-    <div class="field" style="margin-bottom:0;">
-      <label style="font-size:10px;">Qty</label>
-      <input class="ac-src-qty" type="number" step="any" placeholder="0" style="font-family:var(--mono);font-size:12px;">
-    </div>
-    <div class="field" style="margin-bottom:0;">
-      <label style="font-size:10px;">From Wallet</label>
-      <input class="ac-src-wallet" list="ac-src-wallet-list" placeholder="e.g. Ledger X1" style="font-size:12px;">
-      <datalist id="ac-src-wallet-list">${walletOpts}</datalist>
-    </div>
-    <button class="btn sm danger" onclick="document.getElementById('${rowId}').remove()" style="margin-bottom:0;padding:3px 7px;">✕</button>`;
-  container.appendChild(row);
+function acAutoSplit() {}
+
+function acUpdate() {
+  const id = document.getElementById('ac-pool-id').value;
+  const p  = DB.pools.find(x=>x.id===id);
+  if(!p) return;
+
+  const addValue  = +document.getElementById('ac-value').value || 0;
+  const addDate   = document.getElementById('ac-date').value;
+  const origValue = p.entryValue || 0;
+  const newTotal  = origValue + addValue;
+
+  if(addValue > 0 && addDate && p.entryDate && origValue > 0) {
+    const origTs    = new Date(p.entryDate).getTime();
+    const addTs     = new Date(addDate).getTime();
+    const blendedTs = origTs * (origValue/newTotal) + addTs * (addValue/newTotal);
+    document.getElementById('ac-blended-date').textContent =
+      new Date(blendedTs).toISOString().slice(0,10);
+  } else {
+    document.getElementById('ac-blended-date').textContent = p.entryDate || '—';
+  }
+}
+
+function acUpdateQtys() {}
+
+function acInitFundedFrom(p) {
+  const allWallets = [...new Set(DB.holdings.map(h=>h.wallet).filter(Boolean))].sort();
+  let topWallet = p.defaultWallet || getDefiWallet() || '';
+  if(!topWallet) {
+    const syms = [p.tokASym, p.tokBSym].filter(Boolean);
+    const counts = {};
+    DB.holdings.filter(h=>syms.includes(h.sym)&&h.wallet).forEach(h=>{counts[h.wallet]=(counts[h.wallet]||0)+1;});
+    topWallet = Object.entries(counts).sort((a,b)=>b[1]-a[1])[0]?.[0] || '';
+  }
+  const walletList = [
+    ...(topWallet ? [topWallet] : []),
+    ...allWallets.filter(w=>w!==topWallet),
+    '— Skip / External —',
+  ];
+  const opts = walletList.map((w,i) =>
+    `<option value="${w}"${i===0?' selected':''}>${w}${i===0&&topWallet?' ✦':''}</option>`
+  ).join('');
+  document.getElementById('ac-fund-wallet').innerHTML = opts;
+  document.getElementById('ac-fund-wallet-b').innerHTML = opts;
+  document.getElementById('ac-fund-tokA-label').textContent = (p.tokASym||'Token A') + ' qty leaving wallet';
+  document.getElementById('ac-fund-tokB-label').textContent = (p.tokBSym||'Token B') + ' qty leaving wallet';
+  document.getElementById('ac-fund-tokB-wallet-label').textContent = (p.tokBSym||'Token B') + ' — From Wallet';
+  document.getElementById('ac-fund-tokA-qty').value = '';
+  document.getElementById('ac-fund-tokB-qty').value = '';
+  document.getElementById('ac-fund-bwallet-row').style.display = 'none';
+  document.getElementById('ac-fund-bwallet-btn').textContent = '＋ Token B from different wallet?';
+}
+
+function acToggleBWallet() {
+  const row = document.getElementById('ac-fund-bwallet-row');
+  const btn = document.getElementById('ac-fund-bwallet-btn');
+  const open = row.style.display !== 'none';
+  row.style.display = open ? 'none' : '';
+  btn.textContent = open ? '＋ Token B from different wallet?' : '－ Same wallet for both tokens';
 }
 
 // ── Setup Guide ──────────────────────────────────────────────────────────────
@@ -7048,60 +7132,6 @@ function acVaultUpdate() {
   acUpdate();
 }
 
-function acUpdate() {
-  const id = document.getElementById('ac-pool-id').value;
-  const p  = DB.pools.find(x=>x.id===id);
-  if(!p) return;
-
-  const addValue  = +document.getElementById('ac-value').value || 0;
-  const addDate   = document.getElementById('ac-date').value;
-  const origValue = p.entryValue || 0;
-  const newTotal  = origValue + addValue;
-
-  if(!p.vaultMode) {
-    document.getElementById('ac-new-total').value = newTotal > 0 ? newTotal.toFixed(2) : '';
-    // Auto-split when $ value changes
-    acAutoSplit();
-  }
-
-  // Blended date
-  if(addValue > 0 && addDate && p.entryDate && origValue > 0) {
-    const origTs    = new Date(p.entryDate).getTime();
-    const addTs     = new Date(addDate).getTime();
-    const blendedTs = origTs * (origValue/newTotal) + addTs * (addValue/newTotal);
-    document.getElementById('ac-blended-date').textContent =
-      new Date(blendedTs).toISOString().slice(0,10);
-  } else {
-    document.getElementById('ac-blended-date').textContent = p.entryDate || '—';
-  }
-}
-
-function acUpdateQtys() {
-  const id = document.getElementById('ac-pool-id').value;
-  const p  = DB.pools.find(x=>x.id===id);
-  if(!p) return;
-  const aNew = +document.getElementById('ac-tokA-qty-new').value || 0;
-  const bNew = +document.getElementById('ac-tokB-qty-new').value || 0;
-  const aWas = p.tokAQty || 0;
-  const bWas = p.tokBQty || 0;
-  const aAdd = Math.max(0, aNew - aWas);
-  const bAdd = Math.max(0, bNew - bWas);
-  // Store deltas in the "add" fields for saveAddCapital to read
-  document.getElementById('ac-tokA-qty-add').value = aNew > 0 ? aAdd.toFixed(6) : '';
-  document.getElementById('ac-tokB-qty-add').value = bNew > 0 ? bAdd.toFixed(6) : '';
-  // Show delta summary
-  const deltaEl = document.getElementById('ac-qty-delta');
-  const tokAName = document.getElementById('ac-tokA-label').textContent;
-  const tokBName = document.getElementById('ac-tokB-label').textContent;
-  if(deltaEl && (aNew > 0 || bNew > 0)) {
-    deltaEl.style.display = '';
-    document.getElementById('ac-tokA-delta').textContent = `+${aAdd.toFixed(4)} ${tokAName}`;
-    document.getElementById('ac-tokB-delta').textContent = `+${bAdd.toFixed(4)} ${tokBName}`;
-  } else if(deltaEl) {
-    deltaEl.style.display = 'none';
-  }
-}
-
 function saveAddCapital() {
   const id = document.getElementById('ac-pool-id').value;
   const p  = DB.pools.find(x=>x.id===id);
@@ -7172,23 +7202,28 @@ function saveAddCapital() {
   });
 
   // ── Deduct funded-from sources from Holdings ──
-  const sourceRows = document.querySelectorAll('#ac-sources > div');
   const deductions = [];
-  sourceRows.forEach(row => {
-    const sym    = (row.querySelector('.ac-src-sym')?.value||'').trim().toUpperCase();
-    const qty    = +row.querySelector('.ac-src-qty')?.value || 0;
-    const wallet = (row.querySelector('.ac-src-wallet')?.value||'').trim();
-    if(!sym || !qty) return;
-    // Find matching holding — match on sym (and wallet if specified)
+  const skip = '— Skip / External —';
+  const primaryWallet = (document.getElementById('ac-fund-wallet')?.value||'').trim();
+  const bWalletOverride = document.getElementById('ac-fund-bwallet-row')?.style.display !== 'none'
+    ? (document.getElementById('ac-fund-wallet-b')?.value||'').trim()
+    : primaryWallet;
+
+  const fundEntries = [
+    { sym: p.tokASym, qty: +document.getElementById('ac-fund-tokA-qty')?.value||0, wallet: primaryWallet },
+    { sym: p.tokBSym, qty: +document.getElementById('ac-fund-tokB-qty')?.value||0, wallet: bWalletOverride },
+  ];
+
+  fundEntries.forEach(({sym, qty, wallet}) => {
+    if(!sym || !qty || !wallet || wallet === skip) return;
     const holding = DB.holdings.find(h =>
-      h.sym.toUpperCase() === sym &&
+      h.sym.toUpperCase() === sym.toUpperCase() &&
       (!wallet || (h.wallet||'').toLowerCase() === wallet.toLowerCase())
     );
     if(holding) {
       const before = holding.qty || 0;
       holding.qty = Math.max(0, before - qty);
       deductions.push(`${qty} ${sym} from ${holding.wallet||'Holdings'} (${before.toFixed(4)} → ${holding.qty.toFixed(4)})`);
-      // Log the deduction as a transaction
       logTransaction({
         date: addDate, type: 'Transfer', sym,
         qty, price: null, total: null,
@@ -7197,7 +7232,7 @@ function saveAddCapital() {
         notes: `Funded pool — ${qty} ${sym} → ${p.name}`,
       });
     } else {
-      deductions.push(`⚠ ${qty} ${sym} — no matching holding found`);
+      deductions.push(`⚠ ${qty} ${sym} — no matching holding found in ${wallet}`);
     }
   });
 
@@ -8377,38 +8412,63 @@ function renderYieldLogTab() {
     tfoot.innerHTML = '';
     return;
   }
+
   let totalUsd = 0;
-  tbody.innerHTML = filtered.map(e => {
-    if(e.usd) totalUsd += e.usd;
-    const destLabel = e.dest === 'holdings' ? '➕ Holdings' : e.dest === 'reinvest' ? '🔄 Reinvested' : '💵 Cash';
-    const closedStyle = e._closed ? 'opacity:0.75;font-style:italic;' : '';
-    const poolLabel = e._closed
-      ? `${e.poolName||'—'} <span style="font-size:9px;color:var(--text3);font-style:normal;background:var(--bg3);border-radius:3px;padding:1px 4px;">closed</span>`
-      : (e.poolName||'—');
-    const actionBtns = e._closed
-      ? `<button class="btn sm ghost" onclick="openYieldEdit('${e._poolId}','${e._yieldKey}','history')" title="Edit entry" style="margin-right:3px;">✎</button>
-         <button class="btn sm danger" onclick="deleteYieldEntry('${e._poolId}','${e._yieldKey}','history')" title="Delete entry">✕</button>`
-      : `<button class="btn sm ghost" onclick="openYieldEdit('${e._poolId}','${e._yieldKey}','active')" title="Edit entry" style="margin-right:3px;">✎</button>
-         <button class="btn sm danger" onclick="deleteYieldEntry('${e._poolId}','${e._yieldKey}','active')" title="Delete entry">✕</button>`;
+
+  // Group entries by pool + date so multi-token harvests appear as one row
+  const groups = [];
+  const groupMap = {};
+  filtered.forEach(e => {
+    const key = `${e._poolId}||${e.date||''}`;
+    if(!groupMap[key]) {
+      groupMap[key] = { key, date: e.date, poolName: e.poolName, _poolId: e._poolId,
+        _closed: e._closed, tokens: [], totalUsd: 0, action: e.action, dest: e.dest, notes: e.notes };
+      groups.push(groupMap[key]);
+    }
+    groupMap[key].tokens.push(e);
+    groupMap[key].totalUsd += e.usd || 0;
+  });
+
+  tbody.innerHTML = groups.map(g => {
+    totalUsd += g.totalUsd;
+    const destLabel = g.dest === 'holdings' ? '➕ Holdings' : g.dest === 'reinvest' ? '🔄 Reinvested' : '💵 Cash';
+    const closedStyle = g._closed ? 'opacity:0.75;font-style:italic;' : '';
+    const poolLabel = g._closed
+      ? `${g.poolName||'—'} <span style="font-size:9px;color:var(--text3);font-style:normal;background:var(--bg3);border-radius:3px;padding:1px 4px;">closed</span>`
+      : (g.poolName||'—');
+
+    const tokenCells = g.tokens.map(e =>
+      `<span style="white-space:nowrap;margin-right:8px;">
+        <span style="color:var(--accent2);font-size:10px;">${e.tokSym||'—'}</span>
+        <span style="font-family:var(--mono);margin-left:2px;">${e.qty!=null?qf(e.qty):'—'}</span>
+      </span>`
+    ).join('');
+
+    const actionBtns = g.tokens.map(e => {
+      const src = e._closed ? 'history' : 'active';
+      return `<button class="btn sm ghost" onclick="openYieldEdit('${e._poolId}','${e._yieldKey}','${src}')" title="Edit ${e.tokSym||''} entry" style="margin-right:2px;">✎</button>`
+           + `<button class="btn sm danger" onclick="deleteYieldEntry('${e._poolId}','${e._yieldKey}','${src}')" title="Delete ${e.tokSym||''} entry">✕</button>`;
+    }).join('<span style="display:inline-block;width:4px;"></span>');
+
     return `<tr style="${closedStyle}">
-      <td style="font-family:var(--mono);font-size:11px;">${e.date||'—'}</td>
+      <td style="font-family:var(--mono);font-size:11px;">${g.date||'—'}</td>
       <td class="left" style="font-weight:600;">${poolLabel}</td>
-      <td class="left">${e.tokSym||'—'}</td>
-      <td style="font-family:var(--mono);">${e.qty!=null?qf(e.qty):'—'}</td>
-      <td class="pos" style="font-family:var(--mono);font-weight:600;">${e.usd?$f(e.usd):'—'}</td>
-      <td style="font-size:10px;color:var(--text2);">${e.action||'—'}</td>
+      <td class="left" colspan="2" style="font-family:var(--mono);">${tokenCells}</td>
+      <td class="pos" style="font-family:var(--mono);font-weight:600;">${g.totalUsd?$f(g.totalUsd):'—'}</td>
+      <td style="font-size:10px;color:var(--text2);">${g.action||'—'}</td>
       <td style="font-size:10px;color:var(--accent);">${destLabel}</td>
-      <td class="left" style="color:var(--text3);font-size:11px;">${e.notes||''}</td>
+      <td class="left" style="color:var(--text3);font-size:11px;">${g.notes||''}</td>
       <td style="white-space:nowrap;">${actionBtns}</td>
     </tr>`;
   }).join('');
+
   const fromVal = document.getElementById('yieldDateFrom')?.value;
   const toVal   = document.getElementById('yieldDateTo')?.value;
   const rangeLabel = (fromVal || toVal)
     ? ` <span style="color:var(--text3);font-weight:400;">(${fromVal||'…'} → ${toVal||'…'})</span>`
     : '';
   tfoot.innerHTML = `<tr>
-    <td colspan="4" class="left" style="font-size:10px;color:var(--text3);padding-left:8px;">${filtered.length} entries${rangeLabel}</td>
+    <td colspan="4" class="left" style="font-size:10px;color:var(--text3);padding-left:8px;">${groups.length} harvest${groups.length!==1?'s':''} · ${filtered.length} token entries${rangeLabel}</td>
     <td class="pos" style="font-family:var(--mono);font-weight:700;">${$f(totalUsd)}</td>
     <td colspan="4"></td>
   </tr>`;
@@ -14001,6 +14061,47 @@ function saveGemMoverPct() {
   const inlineInp = document.getElementById('gemMoverPctInput');
   if(inlineInp) inlineInp.value = val;
 }
+// ─── FEEDBACK MODAL ──────────────────────────────────────────────────────────
+const FEEDBACK_REPO = 'Jdgoldstein/portfoliotracker-help';  // ← GitHub repo for issues
+
+function openFeedbackModal() {
+  const vEl = document.getElementById('fb-version');
+  if(vEl) vEl.textContent = APP_VERSION;
+  document.getElementById('fb-message').value = '';
+  document.getElementById('fb-name').value = '';
+  document.getElementById('fb-type').value = 'Question';
+  document.getElementById('feedbackModal').classList.add('open');
+}
+
+function submitFeedback() {
+  const type    = document.getElementById('fb-type').value;
+  const name    = document.getElementById('fb-name').value.trim();
+  const message = document.getElementById('fb-message').value.trim();
+  if(!message) { toast('Please enter a message before submitting', true); return; }
+
+  const title = `[${type}] ${message.slice(0, 60)}${message.length > 60 ? '…' : ''}`;
+  const body  = [
+    `**Type:** ${type}`,
+    name ? `**From:** ${name}` : '',
+    `**Version:** ${APP_VERSION}`,
+    '',
+    '**Message:**',
+    message,
+    '',
+    '---',
+    '_📸 Tip: drag a screenshot into this text box before clicking Submit_',
+  ].filter(l => l !== null).join('\n');
+
+  const url = `https://github.com/${FEEDBACK_REPO}/issues/new`
+    + `?title=${encodeURIComponent(title)}`
+    + `&body=${encodeURIComponent(body)}`
+    + `&labels=feedback`;
+
+  window.open(url, '_blank');
+  closeModal('feedbackModal');
+  toast('✓ GitHub opened — add a screenshot if needed, then click Submit');
+}
+
 function openSettingsModal() {
   const snapEl = document.getElementById('al-volMcSnapMins');
   if(snapEl) snapEl.value = DB.settings.volMcSnapMins || 10;
@@ -15088,16 +15189,30 @@ function helpSearchClear() {
 
 // ── What's New content — keyed by version string ─────────────────────────────
 const WHATS_NEW = {
-  '47.24': {
-    headline: "Version 47.24 — What's New",
-    summary:  'Vault pool HODL alerts, column alignment fix, and Mac display improvements.',
+  '47.27': {
+    headline: "Version 47.27 — What's New",
+    summary:  'Demo feedback channel — send questions, bug reports or suggestions directly to the developer via GitHub.',
     items: [
-      { icon: '⚠️', title: 'Vault pools now generate HODL underperformance alerts',
-        text: 'Beefy-style vault pools were previously excluded from the alert system entirely, since they have no price range to breach. They now participate with their own alert logic: an amber ⚠ alert fires when Current Value + Yield falls behind the HODL baseline by any amount, and a red 🔴 alert fires when the deficit reaches 5% or more. This makes it immediately visible when a vault is underperforming simply holding the entry tokens.' },
-      { icon: '📐', title: 'Column alignment — Qty B cell restored in pool rows',
-        text: 'A missing Qty B table cell in the pool row template caused every column from Low onward to be shifted one position to the right, misaligning headers and data. The cell has been restored, bringing the row structure to the correct 16 columns to match the 16 header cells.' },
-      { icon: '🖥️', title: 'Mac display — column text rendering improved',
-        text: 'Table column headers were set to font-weight 800 at 11px with tight letter-spacing, which rendered poorly on macOS due to subpixel antialiasing differences. Weight reduced to 700, letter-spacing relaxed, and -webkit-font-smoothing: antialiased added. Column header and label font sizes raised from 11px/10px to 12px/11px minimum floor.' },
+      { icon: '📬', title: 'Feedback button — send questions or reports from within the app',
+        text: 'A new Feedback button in the header opens a short form where you can choose a type (Question, Bug Report, Suggestion), write your message, and optionally add your name. Clicking Open GitHub pre-fills a GitHub issue with your message and the current version number — just hit Submit. A screenshot tip is shown in the modal explaining how to capture and attach a screenshot directly in GitHub before submitting.' },
+    ]
+  },
+  '47.26': {
+    headline: "Version 47.26 — What's New",
+    summary:  'Funded From Holdings redesigned — cleaner layout, default wallet pre-filled, optional per-token wallet override.',
+    items: [
+      { icon: '📤', title: 'Funded From Holdings — redesigned for clarity',
+        text: 'The Funded From Holdings section in Add Capital now shows two simple qty fields (one per token) followed by a single wallet dropdown pre-filled with the pool\'s default DeFi wallet — consistent with how other modals handle wallet selection. For the edge case where Token B comes from a different source, a "Token B from different wallet?" toggle reveals a second wallet selector. The old freeform three-column grid that clipped off the right edge of the modal has been removed entirely.' },
+    ]
+  },
+  '47.25': {
+    headline: "Version 47.25 — What's New",
+    summary:  'Add Capital redesigned for natural token-first input, yield log now groups multi-token harvests into single rows.',
+    items: [
+      { icon: '➕', title: 'Add Capital — enter token quantities, not dollars',
+        text: 'The LP Add Capital modal now asks for the qty of each token you added (e.g. 0.5 AAVE + 0.02 WETH) — matching exactly what the platform shows you. The dollar value is calculated automatically from live prices and shown as "Calculated $ Added" before you confirm, so you can verify the number looks right without doing any arithmetic yourself. The new total entry $ is also shown as a read-only confirmation.' },
+      { icon: '📋', title: 'Yield log — multi-token harvests shown as one row',
+        text: 'When two tokens are harvested from the same pool on the same date (e.g. AAVE + WETH from an AAVE/WETH pool), they now appear as a single combined row in the History yield log rather than two separate rows. Token symbol and quantity are shown side by side, with a combined USD total. Individual edit and delete buttons are still available for each token entry. This makes the log much easier to scan, especially when searching back through many months of harvests.' },
     ]
   },
   '47.23': {
