@@ -279,8 +279,8 @@
       <div class="help-card">
         <div class="card-heading"><span class="card-icon">1️⃣</span>Open the tracker</div>
         <div class="card-body">
-          Open the <code>Portfolio_Tracker.html</code> file in Chrome or Edge. The tracker runs entirely in your browser — no installation, no server, no account required.
-          <div class="tip-box"><strong>Tip:</strong> For best experience, use Chrome on desktop. The File System auto-save feature requires Chrome or Edge.</div>
+          Open the <code>Portfolio_Tracker.html</code> file in Chrome, Brave, or Edge. The tracker runs entirely in your browser — no installation, no server, no account required.
+          <div class="tip-box"><strong>Tip:</strong> Chrome, Brave, and Edge all work. Brave users: set Shields to Standard so live prices load. Firefox and Safari are not recommended — File System auto-save is unsupported.</div>
         </div>
       </div>
       <div class="help-card">
@@ -429,7 +429,7 @@ function showUpdateBanner(version, date) {
 // ── Render ────────────────────────────────────────────────────────────────────
 function renderAll() {
   if (!helpData) return;
-  document.getElementById('version-badge').textContent = helpData.version;
+  document.getElementById('version-badge').textContent = 'v' + (helpData.latestVersion || helpData.version);
   renderTabs();
   renderWhatsNew();
   renderFAQ();
@@ -439,22 +439,18 @@ function renderAll() {
 
 function renderWhatsNew() {
   const container = document.getElementById('whats-new-list');
-  if (!container || !helpData.whatsNew) return;
-  const entries = Object.entries(helpData.whatsNew).reverse();
-  container.innerHTML = entries.map(([ver, data]) => `
+  if (!container) return;
+
+  // Read from tabs.whatsNew.sections (already sorted newest-first by the app export)
+  const sections = helpData?.tabs?.whatsNew?.sections;
+  if (!sections || !sections.length) return;
+
+  container.innerHTML = sections.map(s => `
     <div class="changelog-entry" style="margin-bottom:16px;">
       <div style="background:rgba(10,124,74,.06);border:1px solid rgba(10,124,74,.2);border-radius:var(--border-radius-md,6px);padding:10px 16px;margin-bottom:12px;">
-        <div class="changelog-ver">v${ver} — ${data.headline}</div>
-        <div class="changelog-date">${data.summary}</div>
+        <div class="changelog-ver">${s.icon} ${s.heading}</div>
       </div>
-      ${(data.items||[]).map(item => `
-        <div style="display:flex;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius,6px);margin-bottom:8px;background:var(--color-background-primary,#fff);">
-          <div style="font-size:20px;flex-shrink:0;">${item.icon}</div>
-          <div>
-            <div style="font-weight:600;font-size:14px;color:var(--color-text-primary);margin-bottom:4px;">${item.title}</div>
-            <div style="font-size:13px;color:var(--color-text-secondary,#555);line-height:1.7;">${item.text}</div>
-          </div>
-        </div>`).join('')}
+      <div style="font-size:13px;color:var(--color-text-secondary,#555);line-height:1.8;padding:0 4px;">${s.text}</div>
     </div>
   `).join('');
 }
@@ -483,7 +479,9 @@ function zoomImg(src) {
 function renderTabs() {
   const container = document.getElementById('tab-sections');
   if (!container || !helpData.tabs) return;
-  container.innerHTML = Object.entries(helpData.tabs).map(([key, tab]) => `
+  container.innerHTML = Object.entries(helpData.tabs)
+    .filter(([key]) => key !== 'whatsNew')  // rendered separately in its own section
+    .map(([key, tab]) => `
     <div class="help-section" id="${key}">
       <div class="section-header">
         <div class="section-title">${tab.title}</div>
