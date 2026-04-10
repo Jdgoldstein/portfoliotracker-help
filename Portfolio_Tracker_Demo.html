@@ -1128,7 +1128,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 <!-- HEADER -->
 <div id="header" style="visibility:hidden;">
   <div class="logo">PORTFOLIO <small>TRACKER</small></div>
-  <span id="versionBadge" style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-left:4px;align-self:flex-end;padding-bottom:2px;">v47.31</span>
+  <span id="versionBadge" style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-left:4px;align-self:flex-end;padding-bottom:2px;">v47.32</span>
   <span id="privacyBadge">🙈 VALUES MASKED</span>
   <div class="header-stats" id="hdrStats"></div>
   <div class="header-right">
@@ -2206,8 +2206,10 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
           <input type="hidden" id="pm-tokA-id">
           <input type="hidden" id="pm-tokA-sym">
         </div>
-        <div class="field"><label>Qty at Entry</label><input id="pm-tokA-qtyEntry" type="number" placeholder="0"></div>
-        <div class="field"><label>Current Qty</label><input id="pm-tokA-qty" type="number" placeholder="0"></div>
+        <div class="field"><label>Qty at Entry</label><input id="pm-tokA-qtyEntry" type="number" placeholder="0"
+          oninput="if(!editingPoolId){const p=document.getElementById('pm-tokA-qty');if(p&&!p.value)p.value=this.value;}"></div>
+        <div class="field"><label>Current Qty</label><input id="pm-tokA-qty" type="number" placeholder="0"
+          oninput="if(!editingPoolId){const p=document.getElementById('pm-tokA-qtyEntry');if(p&&!p.value)p.value=this.value;}"></div>
       </div>
     </div>
     <!-- Token B -->
@@ -2221,8 +2223,10 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
           <input type="hidden" id="pm-tokB-id">
           <input type="hidden" id="pm-tokB-sym">
         </div>
-        <div class="field"><label>Qty at Entry</label><input id="pm-tokB-qtyEntry" type="number" placeholder="0"></div>
-        <div class="field"><label>Current Qty</label><input id="pm-tokB-qty" type="number" placeholder="0"></div>
+        <div class="field"><label>Qty at Entry</label><input id="pm-tokB-qtyEntry" type="number" placeholder="0"
+          oninput="if(!editingPoolId){const p=document.getElementById('pm-tokB-qty');if(p&&!p.value)p.value=this.value;}"></div>
+        <div class="field"><label>Current Qty</label><input id="pm-tokB-qty" type="number" placeholder="0"
+          oninput="if(!editingPoolId){const p=document.getElementById('pm-tokB-qtyEntry');if(p&&!p.value)p.value=this.value;}"></div>
       </div>
     </div>
     <!-- Range -->
@@ -3584,7 +3588,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 // Secrets assembled at runtime — not stored as plain literals
 const ACT_SECRET = (()=>{const p=['CPF_TR','ACKER_','2026_D','ELTA7_','WHISKE','Y'];return p.join('');})();
 const ACT_MASTER = (()=>{const p=['CPF_MA','STER_O','VERRID','E_KEY_','ZULU9'];return p.join('');})();
-const APP_VERSION  = '47.31';           // bumped on each release
+const APP_VERSION  = '47.32';           // bumped on each release
 const WHATS_NEW_KEY = 'cpf_seen_ver';   // localStorage: last version user saw What's New
 const ACT_STORE    = 'cpf_activation_v1';
 const ACT_ID_STORE = 'cpf_install_id';
@@ -15564,6 +15568,36 @@ function helpSearchClear() {
 
 // ── What's New content — keyed by version string ─────────────────────────────
 const WHATS_NEW = {
+  '47.32': {
+    headline: "Version 47.32 — What's New",
+    summary:  'Version bump to ensure all demo users receive the full set of recent updates.',
+    items: [
+      { icon: '✅', title: 'All recent updates now delivered',
+        text: 'This version ensures all demo users see the complete set of recent improvements: pool close wallet dropdown with Token B override, per-token transaction logging on close and rebalance, independent Hedge ratio alert pill, Brave browser setup guide, qty auto-mirror on new pool entry, CPI benchmark badge, screenshot paste in feedback, and hedge ratio alert banner on Summary page.' },
+    ]
+  },
+  '47.31': {
+    headline: "Version 47.31 — What's New",
+    summary:  'Pool close redesigned with wallet dropdown, per-token transaction logging, rebalance exit logging, Brave browser support, and qty auto-mirror on new pool entry.',
+    items: [
+      { icon: '📤', title: 'Pool Close — wallet dropdown with Token B override',
+        text: 'The Close/Rebalance modal now uses a wallet dropdown pre-filled with the pool default DeFi wallet — same as the entry side. A "Token B returns to different wallet?" toggle adds a second wallet selector for the edge case where tokens go to different wallets on exit.' },
+      { icon: '📋', title: 'Per-token transaction logging on close and rebalance',
+        text: 'Each token now gets its own transaction log entry when a pool is closed or rebalanced — showing the exact qty, price at exit, and destination wallet. Previously a single combined entry was logged. Rebalances now also log the exit side before resetting for the new leg.' },
+      { icon: '🦁', title: 'Brave browser — full setup guide and compatibility note',
+        text: 'The Help → Setup & Data Guide now includes step-by-step Brave instructions for both Windows and Mac — matching the Chrome guide exactly. A new Brave Browser section in the Overview tab explains Shields settings and which features require Standard mode.' },
+      { icon: '🔢', title: 'New pool entry — qty auto-mirrors between Entry and Current fields',
+        text: 'When adding a new pool, typing a quantity in either the Qty at Entry or Current Qty field now automatically fills the other if it is blank. At the moment of first entry they are always equal, so there is no longer any need to type the same number twice. Auto-mirror is disabled when editing an existing pool.' },
+    ]
+  },
+  '47.28': {
+    headline: "Version 47.28 — What's New",
+    summary:  'Feedback modal upgraded — paste a screenshot directly into the form and it uploads automatically with your message.',
+    items: [
+      { icon: '📸', title: 'Feedback — paste screenshot directly in the modal',
+        text: 'The Feedback modal now includes a paste zone for screenshots. Take a screenshot (Cmd+Shift+4 on Mac, Win+Shift+S on Windows), click the dashed box, and press Cmd+V / Ctrl+V. A thumbnail preview appears instantly. When you send feedback the screenshot uploads automatically to imgbb and the link is included in the email — no extra steps needed.' },
+    ]
+  },
   '47.30': {
     headline: "Version 47.30 — What's New",
     summary:  'Hedge ratio alert — Summary page and phone alerts now notify when the suggested hedge ratio shifts significantly from your current position.',
@@ -15843,29 +15877,47 @@ async function initHelpSync() {
 
 // ── What's New renderer ───────────────────────────────────────────────────────
 function _renderWhatsNew() {
-  const ver  = APP_VERSION;
-  const data = WHATS_NEW[ver];
   const contentEl = document.getElementById('helpModalContent');
   if(!contentEl) return;
-  if(!data) {
-    contentEl.innerHTML = `<div style="padding:20px;text-align:center;color:var(--text3);">No What's New content for version ${ver}.</div>`;
+
+  const versions = Object.keys(WHATS_NEW).sort((a,b) => {
+    const [aMaj,aMin] = a.split('.').map(Number);
+    const [bMaj,bMin] = b.split('.').map(Number);
+    return bMaj !== aMaj ? bMaj - aMaj : bMin - aMin;
+  });
+
+  if(!versions.length) {
+    contentEl.innerHTML = `<div style="padding:20px;text-align:center;color:var(--text3);">No changelog entries found.</div>`;
     return;
   }
-  const itemsHtml = data.items.map(item => `
-    <div style="display:flex;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;background:var(--bg2);">
-      <div style="font-size:20px;flex-shrink:0;margin-top:1px;">${item.icon}</div>
-      <div>
-        <div style="font-weight:700;font-size:var(--fs-base);color:var(--text);margin-bottom:4px;">${item.title}</div>
-        <div style="font-size:calc(var(--fs-base) - 1px);color:var(--text2);line-height:1.7;">${item.text}</div>
+
+  const html = versions.map(ver => {
+    const data = WHATS_NEW[ver];
+    const isCurrent = ver === APP_VERSION;
+    const itemsHtml = (data.items||[]).map(item => `
+      <div style="display:flex;gap:10px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:6px;background:var(--bg2);">
+        <div style="font-size:18px;flex-shrink:0;margin-top:1px;">${item.icon}</div>
+        <div>
+          <div style="font-weight:700;font-size:var(--fs-base);color:var(--text);margin-bottom:2px;">${item.title}</div>
+          <div style="font-size:calc(var(--fs-base) - 1px);color:var(--text2);line-height:1.7;">${item.text}</div>
+        </div>
+      </div>`).join('');
+
+    return `<div style="margin-bottom:16px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <span style="font-family:var(--mono);font-size:13px;font-weight:700;color:${isCurrent?'var(--accent)':'var(--text2)'};">v${ver}</span>
+        ${isCurrent ? '<span style="font-size:9px;font-weight:700;padding:2px 6px;background:rgba(10,124,74,0.15);color:var(--accent);border:1px solid rgba(10,124,74,0.3);border-radius:10px;">CURRENT</span>' : ''}
+        <span style="font-size:11px;color:var(--text3);flex:1;">${data.summary||''}</span>
       </div>
-    </div>`).join('');
+      ${itemsHtml}
+    </div>`;
+  }).join('<hr style="border:none;border-top:1px solid var(--border);margin:8px 0 16px;">');
 
   contentEl.innerHTML = `
-    <div style="background:rgba(10,124,74,.06);border:1px solid rgba(10,124,74,.2);border-radius:var(--radius);padding:12px 16px;margin-bottom:16px;">
-      <div style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:3px;">v${ver} — ${data.headline}</div>
-      <div style="font-size:12px;color:var(--text2);">${data.summary}</div>
+    <div style="background:rgba(10,124,74,.06);border:1px solid rgba(10,124,74,.2);border-radius:var(--radius);padding:10px 14px;margin-bottom:14px;font-size:11px;color:var(--text2);">
+      <strong style="color:var(--accent);">Full Changelog</strong> — ${versions.length} versions · Current: v${APP_VERSION}
     </div>
-    ${itemsHtml}
+    ${html}
     <div style="margin-top:12px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius);font-size:11px;color:var(--text3);display:flex;align-items:center;justify-content:space-between;gap:12px;">
       <span>Full release notes and changelog:</span>
       <a href="${HELP_SITE_URL}#changelog" target="_blank" rel="noopener"
@@ -16097,8 +16149,8 @@ function openHelpModal(tab) {
   const eb = document.getElementById('helpEditToggleBtn');
   if(eb) {
     eb.textContent='✏ Edit'; eb.style.background=''; eb.style.color=''; eb.style.borderColor='';
-    // Hide edit button on overview and whatsNew tabs (read-only)
-    const isEditable = tab !== 'overview' && tab !== 'whatsNew' && tab !== 'setup';
+    // Edit/export hidden in demo — read-only for all tabs
+    const isEditable = false;
     eb.style.display = isEditable ? '' : 'none';
   }
   document.getElementById('helpModalContent').style.display = '';
@@ -16110,7 +16162,11 @@ function openHelpModal(tab) {
 
   // Handle What's New tab
   if(tab === 'whatsNew') {
-    document.getElementById('helpModalTitle').textContent = "✦ What's New";
+    document.getElementById('helpModalTitle').textContent = "✦ What's New — Full Changelog";
+    _helpEditMode = false;
+    const ep2 = document.getElementById('helpEditPanel');
+    if(ep2) ep2.style.display = 'none';
+    document.getElementById('helpModalContent').style.display = '';
     _renderWhatsNew();
     document.getElementById('helpModal').classList.add('open');
     return;
