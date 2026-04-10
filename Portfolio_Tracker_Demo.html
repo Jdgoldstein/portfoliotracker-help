@@ -16012,6 +16012,7 @@ function checkWhatsNew() {
   try {
     const seen = localStorage.getItem(WHATS_NEW_KEY);
     if(seen !== APP_VERSION && WHATS_NEW[APP_VERSION]) {
+      try { localStorage.setItem(WHATS_NEW_KEY, APP_VERSION); } catch(e) {}
       setTimeout(() => openWhatsNewModal(), 1200);
     }
   } catch(e) {}
