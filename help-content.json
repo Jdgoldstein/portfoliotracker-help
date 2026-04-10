@@ -504,10 +504,155 @@
   "faq": [],
   "changelog": [
     {
-      "version": "v2026.04.10",
+      "version": "47.32",
       "date": "2026-04-10",
       "notes": [
-        "Help content updated"
+        "Version bump to ensure all demo users receive the full set of recent updates.",
+        "✅ All recent updates now delivered: This version ensures all demo users see the complete set of recent improvements."
+      ]
+    },
+    {
+      "version": "47.31",
+      "date": "2026-04-10",
+      "notes": [
+        "Pool close redesigned with wallet dropdown, per-token transaction logging, rebalance exit logging, Brave browser support, and qty auto-mirror on new pool entry.",
+        "📤 Pool Close — wallet dropdown with Token B override: The Close/Rebalance modal now uses a wallet dropdown pre-filled with the pool default DeFi wallet. A \"Token B returns to different wallet?\" toggle adds a second wallet selector.",
+        "📋 Per-token transaction logging on close and rebalance: Each token now gets its own transaction log entry when a pool is closed or rebalanced — showing the exact qty, price at exit, and destination wallet.",
+        "🦁 Brave browser — full setup guide: The Help → Setup & Data Guide now includes step-by-step Brave instructions for both Windows and Mac.",
+        "🔢 New pool entry — qty auto-mirrors between Entry and Current fields: When adding a new pool, typing a quantity in either field auto-fills the other if blank."
+      ]
+    },
+    {
+      "version": "47.30",
+      "date": "2026-04-10",
+      "notes": [
+        "Hedge ratio alert — Summary page and phone alerts notify when the suggested hedge ratio shifts significantly.",
+        "⚖ Hedge Ratio Alert — know when to rebalance your hedge: When the suggested hedge ratio shifts more than 10 percentage points a banner appears on Summary and a Pushover alert fires."
+      ]
+    },
+    {
+      "version": "47.29",
+      "date": "2026-04-10",
+      "notes": [
+        "CPI benchmark badge — pool rows now show whether annualized net return beats inflation.",
+        "📊 CPI Benchmark Badge — beat inflation at a glance: Each pool row now shows a ▲CPI (green) or ▼CPI (red) badge comparing your net return against the current CPI inflation rate fetched from FRED."
+      ]
+    },
+    {
+      "version": "47.28",
+      "date": "2026-04-10",
+      "notes": [
+        "Feedback modal upgraded — paste a screenshot directly into the form.",
+        "📸 Feedback — paste screenshot directly in the modal: The Feedback modal now includes a paste zone — screenshot uploads automatically to imgbb with your message."
+      ]
+    },
+    {
+      "version": "47.27",
+      "date": "2026-04-10",
+      "notes": [
+        "Demo feedback channel — send questions or bug reports directly to the developer.",
+        "📬 Feedback button: A new Feedback button in the header opens a short form for questions, bug reports, or suggestions."
+      ]
+    },
+    {
+      "version": "47.26",
+      "date": "2026-04-10",
+      "notes": [
+        "Funded From Holdings redesigned — cleaner layout, default wallet pre-filled.",
+        "📤 Funded From Holdings — redesigned for clarity: Two qty fields, single wallet dropdown pre-filled with pool default DeFi wallet, optional Token B wallet override."
+      ]
+    },
+    {
+      "version": "47.25",
+      "date": "2026-04-10",
+      "notes": [
+        "Add Capital redesigned for token-first input, yield log groups multi-token harvests.",
+        "➕ Add Capital — enter token quantities, not dollars: Enter qty of each token — dollar value calculated automatically from live prices.",
+        "📋 Yield log — multi-token harvests shown as one row: Same-pool same-date harvests now appear as a single combined row."
+      ]
+    },
+    {
+      "version": "47.23",
+      "date": "2026-04-10",
+      "notes": [
+        "Data integrity improvements and startup reliability fixes."
+      ]
+    },
+    {
+      "version": "47.22",
+      "date": "2026-04-10",
+      "notes": [
+        "Pool and vault action locking and Add Capital vault mode simplified."
+      ]
+    },
+    {
+      "version": "47.21",
+      "date": "2026-04-10",
+      "notes": [
+        "Update check, backup reliability, and various fixes."
+      ]
+    },
+    {
+      "version": "47.15",
+      "date": "2026-04-10",
+      "notes": [
+        "Hedge tab — perpetual short sizing with IV and funding rate."
+      ]
+    },
+    {
+      "version": "47.07",
+      "date": "2026-04-10",
+      "notes": [
+        "GEM alerts — Pushover integration for price targets."
+      ]
+    },
+    {
+      "version": "47.06",
+      "date": "2026-04-10",
+      "notes": [
+        "History tab improvements and CSV export."
+      ]
+    },
+    {
+      "version": "47.05",
+      "date": "2026-04-10",
+      "notes": [
+        "Pool alert system — Act Now and Watch tier notifications."
+      ]
+    },
+    {
+      "version": "47.04",
+      "date": "2026-04-10",
+      "notes": [
+        "Vault close and partial withdrawal flow."
+      ]
+    },
+    {
+      "version": "47.03",
+      "date": "2026-04-10",
+      "notes": [
+        "Holdings alerts — buy trigger, stop loss, T1/T2/T3."
+      ]
+    },
+    {
+      "version": "47.02",
+      "date": "2026-04-10",
+      "notes": [
+        "Beat HODL? scorecard and annualized return calculation."
+      ]
+    },
+    {
+      "version": "47.01",
+      "date": "2026-04-10",
+      "notes": [
+        "Yield log and harvest tracking."
+      ]
+    },
+    {
+      "version": "47.00",
+      "date": "2026-04-10",
+      "notes": [
+        "Initial release — LP pools, vaults, holdings, GEMs."
       ]
     }
   ]
