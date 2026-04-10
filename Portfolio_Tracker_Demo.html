@@ -1128,7 +1128,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 <!-- HEADER -->
 <div id="header" style="visibility:hidden;">
   <div class="logo">PORTFOLIO <small>TRACKER</small></div>
-  <span id="versionBadge" style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-left:4px;align-self:flex-end;padding-bottom:2px;">v47.29</span>
+  <span id="versionBadge" style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-left:4px;align-self:flex-end;padding-bottom:2px;">v47.31</span>
   <span id="privacyBadge">🙈 VALUES MASKED</span>
   <div class="header-stats" id="hdrStats"></div>
   <div class="header-right">
@@ -1382,9 +1382,10 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     <div class="tab" onclick="switchTab('history')">History</div>
     <div class="tab" onclick="switchTab('gems')">💎 GEMs<span id="gemTabBadge" style="display:none;margin-left:5px;background:#cc2200;color:#fff;border-radius:10px;font-size:9px;font-weight:700;padding:1px 5px;vertical-align:middle;"></span></div>
     <div style="width:16px;flex-shrink:0;"></div>
-    <span id="poolAlertPill" style="display:inline-flex;align-self:center;margin-right:4px;cursor:pointer;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;font-family:var(--mono);white-space:nowrap;transition:all .4s;color:var(--text3);background:transparent;border:1px solid var(--border);box-shadow:none;opacity:0.5;" onclick="switchTab('pools')" title="All pools in range — no alerts">🔁 Pools ✓</span>
-    <span id="gemAlertPill"  style="display:inline-flex;align-self:center;margin-right:4px;cursor:pointer;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;font-family:var(--mono);white-space:nowrap;transition:all .4s;color:var(--text3);background:transparent;border:1px solid var(--border);box-shadow:none;opacity:0.5;" onclick="switchTab('gems')"  title="No GEM alerts active">💎 GEMs ✓</span>
     <div style="flex:1;"></div>
+    <span id="poolAlertPill" style="display:inline-flex;align-self:center;margin-right:4px;cursor:pointer;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--mono);white-space:nowrap;transition:all .4s;color:#065f46;background:rgba(10,124,74,0.15);border:1px solid rgba(10,124,74,0.4);box-shadow:none;opacity:1;" onclick="switchTab('pools')" title="All pools in range — no alerts">🔁 Pools ✓</span>
+    <span id="gemAlertPill"  style="display:inline-flex;align-self:center;margin-right:4px;cursor:pointer;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--mono);white-space:nowrap;transition:all .4s;color:#065f46;background:rgba(10,124,74,0.15);border:1px solid rgba(10,124,74,0.4);box-shadow:none;opacity:1;" onclick="switchTab('gems')"  title="No GEM alerts active">💎 GEMs ✓</span>
+    <span id="hedgeAlertPill" style="display:inline-flex;align-self:center;margin-right:4px;cursor:pointer;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--mono);white-space:nowrap;transition:all .4s;color:#065f46;background:rgba(10,124,74,0.15);border:1px solid rgba(10,124,74,0.4);box-shadow:none;opacity:1;" onclick="switchTab('hedge')" title="Hedge ratio on target">⚖ Hedge ✓</span>
     <button id="globalHelpBtn" class="btn sm btn-help" onclick="openHelpModal(window._activeTab||'overview')" title="Help for current tab — click Overview tab for general introduction" style="align-self:center;margin-right:2px;">? Help</button>
     <button class="btn sm" onclick="openFeedbackModal()" title="Send feedback or a question" style="align-self:center;margin-right:4px;padding:4px 8px;font-size:12px;background:rgba(10,124,74,0.08);border-color:rgba(10,124,74,0.35);color:var(--accent);">📬 Feedback</button>
   </div>
@@ -2663,8 +2664,8 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     <!-- Destination choice — LP pools -->
     <div id="cl-lp-dest" style="background:rgba(10,124,74,0.06);border:1px solid rgba(10,124,74,0.2);border-radius:var(--radius);padding:12px;margin-bottom:12px;">
       <div style="font-size:9px;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;font-weight:700;">📤 Where do closed funds go?</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;align-items:start;">
-        <div class="field" style="grid-column:1/3;">
+      <div class="form-grid cols2" style="margin-bottom:8px;">
+        <div class="field" style="margin-bottom:0;">
           <label>Return funds to</label>
           <select id="cl-dest" onchange="onCloseDestChange()">
             <option value="holdings">➕ Holdings — updates token qty & cost basis</option>
@@ -2673,9 +2674,21 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
           </select>
           <div class="hint" id="cl-dest-hint" style="color:var(--accent);">Token quantities added back to Holdings at current prices — cost basis updated.</div>
         </div>
-        <div class="field" id="cl-wallet-field">
-          <label>Wallet</label>
-          <input id="cl-wallet" placeholder="e.g. Trezor" list="wallet-options" autocomplete="off">
+        <div class="field" id="cl-wallet-field" style="margin-bottom:0;">
+          <label>Token A — Wallet</label>
+          <select id="cl-wallet" style="width:100%;padding:6px 8px;background:var(--bg2);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:12px;">
+          </select>
+        </div>
+      </div>
+      <!-- Token B wallet override -->
+      <div id="cl-wallet-b-wrap" style="margin-top:4px;">
+        <button type="button" class="btn sm ghost" onclick="clToggleBWallet()" id="cl-wallet-b-btn" style="font-size:10px;padding:2px 8px;">＋ Token B returns to different wallet?</button>
+        <div id="cl-wallet-b-row" style="display:none;margin-top:6px;">
+          <div class="field" style="margin-bottom:0;">
+            <label id="cl-wallet-b-label" style="font-size:10px;">Token B — Wallet</label>
+            <select id="cl-wallet-b" style="width:100%;padding:6px 8px;background:var(--bg2);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:12px;">
+            </select>
+          </div>
         </div>
       </div>
       <!-- Editable returned token quantities — shown when dest=holdings -->
@@ -3571,7 +3584,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 // Secrets assembled at runtime — not stored as plain literals
 const ACT_SECRET = (()=>{const p=['CPF_TR','ACKER_','2026_D','ELTA7_','WHISKE','Y'];return p.join('');})();
 const ACT_MASTER = (()=>{const p=['CPF_MA','STER_O','VERRID','E_KEY_','ZULU9'];return p.join('');})();
-const APP_VERSION  = '47.29';           // bumped on each release
+const APP_VERSION  = '47.31';           // bumped on each release
 const WHATS_NEW_KEY = 'cpf_seen_ver';   // localStorage: last version user saw What's New
 const ACT_STORE    = 'cpf_activation_v1';
 const ACT_ID_STORE = 'cpf_install_id';
@@ -3872,7 +3885,7 @@ async function actCheckAfterLink() {
     toast('✓ Activation verified from backup file.');
     fsWriteNow();
     updateFsStatus(); fsStartAutoSave();
-    renderAll(); fetchPrices(); fetchBenchmarks(); initFileProtocolUI(); initHelpSync(); checkWhatsNew();
+    renderAll(); fetchPrices(); fetchBenchmarks(); fetchHedgeData(false); initFileProtocolUI(); initHelpSync(); checkWhatsNew();
     initPIN();
   }
   // If not ok, activation screen stays visible with backup already linked
@@ -3940,7 +3953,7 @@ async function showActivationScreen() {
             const authOk = await checkActivation();
             if(authOk) {
               hideActivationScreen();
-              updateFsStatus(); fsStartAutoSave(); renderAll(); fetchPrices(); fetchBenchmarks(); initFileProtocolUI(); initHelpSync(); checkWhatsNew();
+              updateFsStatus(); fsStartAutoSave(); renderAll(); fetchPrices(); fetchBenchmarks(); fetchHedgeData(false); initFileProtocolUI(); initHelpSync(); checkWhatsNew();
               initPIN();
               return;
             }
@@ -4213,7 +4226,7 @@ async function tapToOpenHandler() {
     try { ok = await checkActivation(); } catch(e) { console.warn('cpf: checkActivation error:', e); }
     if(overlay) overlay.style.display = 'none';
     if(ok) {
-      try { updateFsStatus(); fsStartAutoSave(); renderAll(); fetchPrices(); fetchBenchmarks(); initFileProtocolUI(); initHelpSync(); checkWhatsNew(); } catch(e){}
+      try { updateFsStatus(); fsStartAutoSave(); renderAll(); fetchPrices(); fetchBenchmarks(); fetchHedgeData(false); initFileProtocolUI(); initHelpSync(); checkWhatsNew(); } catch(e){}
       initPIN();
     } else {
       _tapExit(true);
@@ -4271,7 +4284,7 @@ async function tapToOpenHandler() {
       } else {
         if(demoWelcomeSeen()) {
           demoStartTrial();
-          renderAll(); fetchPrices(); fetchBenchmarks(); initFileProtocolUI(); initHelpSync(); initPIN();
+          renderAll(); fetchPrices(); fetchBenchmarks(); fetchHedgeData(false); initFileProtocolUI(); initHelpSync(); initPIN();
           checkWhatsNew();
           setTimeout(demoInjectBanner, 300);
           if(!IS_FILE_PROTOCOL) setTimeout(_showNoBackupBanner, 2000);
@@ -6217,8 +6230,8 @@ function renderHeader() {
   const poolPill = document.getElementById('poolAlertPill');
   if(poolPill) {
     if(poolAlerts.length === 0) {
-      // Quiet state — always visible, dim, shows system is watching
-      poolPill.style.cssText = `display:inline-flex;align-self:center;margin-right:4px;cursor:pointer;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;font-family:var(--mono);white-space:nowrap;transition:all .4s;color:var(--text3);background:transparent;border:1px solid var(--border);box-shadow:none;opacity:0.5;`;
+      // All clear — solid green pill
+      poolPill.style.cssText = `display:inline-flex;align-self:center;margin-right:4px;cursor:pointer;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--mono);white-space:nowrap;transition:all .4s;color:#065f46;background:rgba(10,124,74,0.15);border:1px solid rgba(10,124,74,0.4);box-shadow:none;opacity:1;`;
       poolPill.textContent = '🔁 Pools ✓';
       poolPill.title = 'All pools in range — no alerts';
     } else {
@@ -6244,6 +6257,34 @@ function renderHeader() {
       gemPill.style.cssText = `display:inline-flex;align-self:center;margin-right:4px;cursor:pointer;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--mono);white-space:nowrap;transition:all .4s;color:${a.color};background:${a.bg};border:${a.border};box-shadow:${a.shadow};opacity:1;`;
       gemPill.textContent = a.label;
       gemPill.title = gemAlerts.length > 1 ? `${gemAlerts.length} GEM alerts — click to view` : 'GEM alert — click to view';
+    }
+  }
+
+  // ── Update hedge pill ──
+  const hedgePill = document.getElementById('hedgeAlertPill');
+  if(hedgePill) {
+    const hasPositions = (DB.hedgePositions||[]).length > 0;
+    if(!hasPositions) {
+      hedgePill.style.cssText = `display:inline-flex;align-self:center;margin-right:4px;cursor:pointer;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;font-family:var(--mono);white-space:nowrap;transition:all .4s;color:var(--text3);background:transparent;border:1px solid var(--border);box-shadow:none;opacity:0.5;`;
+      hedgePill.textContent = '⚖ Hedge';
+      hedgePill.title = 'No hedge positions open';
+    } else {
+      const hedgeGaps = ['BTC','ETH','SOL'].filter(asset => {
+        const pos = (DB.hedgePositions||[]).find(p => p.asset === asset);
+        if(!pos) return false;
+        const suggested = calcOptimalRatio(asset);
+        const current   = DB.hedgeCache?.[`ratio_${asset}`] ?? suggested;
+        return Math.abs(suggested - current) >= HEDGE_RATIO_THRESHOLD;
+      });
+      if(hedgeGaps.length === 0) {
+        hedgePill.style.cssText = `display:inline-flex;align-self:center;margin-right:4px;cursor:pointer;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--mono);white-space:nowrap;transition:all .4s;color:#065f46;background:rgba(10,124,74,0.15);border:1px solid rgba(10,124,74,0.4);box-shadow:none;opacity:1;`;
+        hedgePill.textContent = '⚖ Hedge ✓';
+        hedgePill.title = 'Hedge ratios on target';
+      } else {
+        hedgePill.style.cssText = `display:inline-flex;align-self:center;margin-right:4px;cursor:pointer;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--mono);white-space:nowrap;transition:all .4s;color:#92400e;background:rgba(184,104,0,0.15);border:1px solid rgba(184,104,0,0.5);box-shadow:0 0 6px rgba(184,104,0,0.3);opacity:1;`;
+        hedgePill.textContent = `⚖ Hedge ⚠ ${hedgeGaps.join('/')}`;
+        hedgePill.title = `Hedge ratio adjustment suggested for ${hedgeGaps.join(', ')} — click to review`;
+      }
     }
   }
 
@@ -7375,16 +7416,37 @@ function openCloseModal(poolId) {
     DB.holdings.filter(h=>syms.includes(h.sym)&&h.wallet).forEach(h=>{wCount[h.wallet]=(wCount[h.wallet]||0)+1;});
     _smartWallet = Object.entries(wCount).sort((a,b)=>b[1]-a[1])[0]?.[0] || _allWallets[0] || '';
   }
+  const _walletOpts = [
+    ...(_smartWallet ? [_smartWallet] : []),
+    ..._allWallets.filter(w=>w!==_smartWallet),
+    '— External / Skip —',
+  ].map((w,i) => `<option value="${w}"${i===0?' selected':''}>${w}${i===0&&_smartWallet?' ✦':''}</option>`).join('');
+
+  const clWalletEl = document.getElementById('cl-wallet');
+  const clWalletBEl = document.getElementById('cl-wallet-b');
+  if(clWalletEl) clWalletEl.innerHTML = _walletOpts;
+  if(clWalletBEl) clWalletBEl.innerHTML = _walletOpts;
+
+  const clWalletBLabel = document.getElementById('cl-wallet-b-label');
+  if(clWalletBLabel) clWalletBLabel.textContent = (p.tokBSym||'Token B') + ' — Wallet';
+
+  const clWalletBRow = document.getElementById('cl-wallet-b-row');
+  const clWalletBBtn = document.getElementById('cl-wallet-b-btn');
+  if(clWalletBRow) clWalletBRow.style.display = 'none';
+  if(clWalletBBtn) clWalletBBtn.textContent = '＋ Token B returns to different wallet?';
+
+  const clWalletBWrap = document.getElementById('cl-wallet-b-wrap');
+  if(clWalletBWrap) clWalletBWrap.style.display = (isVault || !p.tokBSym) ? 'none' : '';
+
   const _wDl = document.getElementById('wallet-options');
   if(_wDl) _wDl.innerHTML = _allWallets.map(w=>`<option value="${w}">`).join('');
+
   if(isVault) {
     clAddReturnRow();
     document.getElementById('cl-vault-wallet').value = _smartWallet;
   } else {
     const clDest = document.getElementById('cl-dest');
     if(clDest) clDest.value = 'holdings';
-    const clWallet = document.getElementById('cl-wallet');
-    if(clWallet) clWallet.value = _smartWallet;
     // Pre-populate returned token qty fields with current tracker values (user can correct)
     const qaEl = document.getElementById('cl-lp-qa');
     const qbEl = document.getElementById('cl-lp-qb');
@@ -7395,7 +7457,6 @@ function openCloseModal(poolId) {
     if(qaLabel && p.tokASym) qaLabel.textContent = `${p.tokASym} Qty Returned`;
     if(qbEl) qbEl.value = (p.tokBQty > 0) ? p.tokBQty : '';
     if(qbLabel && p.tokBSym) qbLabel.textContent = `${p.tokBSym} Qty Returned`;
-    // Hide token B field if pool only has one token (vault-like LP)
     if(qbWrap) qbWrap.style.display = (p.tokBSym && !p.vaultMode) ? '' : 'none';
     onCloseDestChange();
   }
@@ -7544,12 +7605,21 @@ function doPartialWithdrawal() {
     : `Partial withdrawal of $${$f(withdrawn)} logged. Position reduced to $${$f(newVal)}`);
 }
 
+function clToggleBWallet() {
+  const row = document.getElementById('cl-wallet-b-row');
+  const btn = document.getElementById('cl-wallet-b-btn');
+  const open = row.style.display !== 'none';
+  row.style.display = open ? 'none' : '';
+  btn.textContent = open ? '＋ Token B returns to different wallet?' : '－ Same wallet for both tokens';
+}
+
 function doClose() {
   const p = archivePool('Close');
   if(!p) return;
+  const closeDate = today();
+  const skip = '— External / Skip —';
 
   if(p.vaultMode) {
-    // ── Vault close: process flexible return rows ──
     const wallet = document.getElementById('cl-vault-wallet')?.value.trim() || '';
     const returnRows = document.querySelectorAll('#cl-returns > div');
     const returned = [];
@@ -7557,7 +7627,6 @@ function doClose() {
       const sym = (row.querySelector('.cl-ret-sym')?.value||'').trim().toUpperCase();
       const qty = +row.querySelector('.cl-ret-qty')?.value || 0;
       if(!sym || !qty) return;
-      // Find geckoId from KNOWN_TOKENS or existing Holdings
       const known = KNOWN_TOKENS.find(t => t.sym.toLowerCase() === sym.toLowerCase());
       const existing = DB.holdings.find(h => h.sym.toUpperCase() === sym);
       const geckoId = known?.id || existing?.geckoId || '';
@@ -7565,7 +7634,7 @@ function doClose() {
       mergeYieldIntoHoldings(sym, geckoId, qty, price * qty, wallet);
       returned.push(`${qty} ${sym}`);
       logTransaction({
-        date: today(), type: 'Pool Close', sym,
+        date: closeDate, type: 'Pool Close', sym,
         qty, price, total: price * qty,
         from: `Pool: ${p.name}`, to: wallet || 'Holdings',
         notes: `Vault closed — ${qty} ${sym} returned`,
@@ -7573,8 +7642,7 @@ function doClose() {
     });
     const exitVal = poolCurrentValue(p) || 0;
     if(!returned.length) {
-      // No return rows — log as external
-      logTransaction({ date:today(), type:'Pool Close', sym:p.name,
+      logTransaction({ date:closeDate, type:'Pool Close', sym:p.name,
         qty:null, price:null, total:exitVal,
         from:`Pool: ${p.name}`, to:'External',
         notes:`Vault closed — funds withdrawn (no Holdings update)` });
@@ -7587,41 +7655,49 @@ function doClose() {
     return;
   }
 
-  // ── LP pool close: standard destination logic ──
-  const dest   = (document.getElementById('cl-dest')?.value) || 'holdings';
-  const wallet = v('cl-wallet') || '';
-  // Return tokens to Holdings unless "cash" selected
+  // ── LP pool close ──
+  const dest    = (document.getElementById('cl-dest')?.value) || 'holdings';
+  const walletA = (document.getElementById('cl-wallet')?.value||'').trim();
+  const bWalletOpen = document.getElementById('cl-wallet-b-row')?.style.display !== 'none';
+  const walletB = bWalletOpen
+    ? (document.getElementById('cl-wallet-b')?.value||'').trim()
+    : walletA;
+
+  // Use editable qty fields (user may have corrected them)
+  const retQtyA = parseFloat(document.getElementById('cl-lp-qa')?.value) || p.tokAQty || 0;
+  const retQtyB = parseFloat(document.getElementById('cl-lp-qb')?.value) || p.tokBQty || 0;
+
   if(dest === 'holdings') {
-    const pa = getPrice(p.tokAGeckoId);
-    const pb = getPrice(p.tokBGeckoId);
-    // Read qty from editable fields — user may have corrected them (especially after a rebalance)
-    const retQtyA = parseFloat(document.getElementById('cl-lp-qa')?.value) || p.tokAQty || 0;
-    const retQtyB = parseFloat(document.getElementById('cl-lp-qb')?.value) || p.tokBQty || 0;
-    if(p.tokASym && retQtyA > 0) {
-      const priceA = pa || 0;
-      mergeYieldIntoHoldings(p.tokASym, p.tokAGeckoId, retQtyA, priceA * retQtyA, wallet);
+    if(p.tokASym && retQtyA > 0 && walletA && walletA !== skip) {
+      const priceA = getPrice(p.tokAGeckoId) || 0;
+      mergeYieldIntoHoldings(p.tokASym, p.tokAGeckoId, retQtyA, priceA * retQtyA, walletA);
+      logTransaction({
+        date: closeDate, type: 'Pool Close', sym: p.tokASym,
+        qty: retQtyA, price: priceA, total: priceA * retQtyA,
+        from: `Pool: ${p.name}`, to: walletA,
+        notes: `Pool closed — ${retQtyA.toFixed(4)} ${p.tokASym} returned to ${walletA}`,
+      });
     }
-    if(p.tokBSym && retQtyB > 0) {
-      const priceB = pb || 0;
-      mergeYieldIntoHoldings(p.tokBSym, p.tokBGeckoId, retQtyB, priceB * retQtyB, wallet);
+    if(p.tokBSym && retQtyB > 0 && walletB && walletB !== skip) {
+      const priceB = getPrice(p.tokBGeckoId) || 0;
+      mergeYieldIntoHoldings(p.tokBSym, p.tokBGeckoId, retQtyB, priceB * retQtyB, walletB);
+      logTransaction({
+        date: closeDate, type: 'Pool Close', sym: p.tokBSym,
+        qty: retQtyB, price: priceB, total: priceB * retQtyB,
+        from: `Pool: ${p.name}`, to: walletB,
+        notes: `Pool closed — ${retQtyB.toFixed(4)} ${p.tokBSym} returned to ${walletB}`,
+      });
     }
-    const exitVal = poolCurrentValue(p) || 0;
-    logTransaction({
-      date: today(), type: 'Pool Close',
-      sym: p.name, qty: null, price: null, total: exitVal,
-      from: `Pool: ${p.name}`, to: wallet || 'Holdings',
-      notes: `Pool closed — tokens returned to Holdings`,
-    });
   } else if(dest === 'cash_internal') {
     const exitVal = poolCurrentValue(p) || 0;
-    mergeCashIntoHoldings(exitVal, wallet);
-    logTransaction({ date:today(), type:'Pool Close', sym:p.name,
+    mergeCashIntoHoldings(exitVal, walletA !== skip ? walletA : '');
+    logTransaction({ date:closeDate, type:'Pool Close', sym:p.name,
       qty:null, price:null, total:exitVal,
-      from:`Pool: ${p.name}`, to:wallet||'Cash',
-      notes:`Pool closed — proceeds $${exitVal.toFixed(2)} → cash Holdings` });
+      from:`Pool: ${p.name}`, to: walletA !== skip ? walletA : 'Cash',
+      notes:`Pool closed — $${exitVal.toFixed(2)} proceeds → cash Holdings` });
   } else {
     const exitVal = poolCurrentValue(p) || 0;
-    logTransaction({ date:today(), type:'Pool Close', sym:p.name,
+    logTransaction({ date:closeDate, type:'Pool Close', sym:p.name,
       qty:null, price:null, total:exitVal,
       from:`Pool: ${p.name}`, to:'External',
       notes:`Pool closed — funds withdrawn externally` });
@@ -7633,15 +7709,53 @@ function doClose() {
         dest==='cash_internal' ? `Pool closed — $${_ev.toFixed(2)} added to cash Holdings` :
         'Pool closed — logged as external withdrawal');
 }
+
 function doRebalance() {
   const p = archivePool('Rebalance');
   if(!p) return;
+  const rebalDate = today();
+  const skip = '— External / Skip —';
 
-  // ── Clear all entry fields for the new leg ────────────────────────────────
-  // Qty at Entry = Current Qty = blank (user must enter new numbers)
-  // Entry value, date, range all reset — tokens A & B are kept (same pair)
+  // ── Log exit side ──
+  const dest    = (document.getElementById('cl-dest')?.value) || 'holdings';
+  const walletA = (document.getElementById('cl-wallet')?.value||'').trim();
+  const bWalletOpen = document.getElementById('cl-wallet-b-row')?.style.display !== 'none';
+  const walletB = bWalletOpen
+    ? (document.getElementById('cl-wallet-b')?.value||'').trim()
+    : walletA;
+  const retQtyA = parseFloat(document.getElementById('cl-lp-qa')?.value) || p.tokAQty || 0;
+  const retQtyB = parseFloat(document.getElementById('cl-lp-qb')?.value) || p.tokBQty || 0;
+
+  if(dest === 'holdings') {
+    if(p.tokASym && retQtyA > 0 && walletA && walletA !== skip) {
+      const priceA = getPrice(p.tokAGeckoId) || 0;
+      logTransaction({
+        date: rebalDate, type: 'Rebalance', sym: p.tokASym,
+        qty: retQtyA, price: priceA, total: priceA * retQtyA,
+        from: `Pool: ${p.name}`, to: walletA,
+        notes: `Rebalance — ${retQtyA.toFixed(4)} ${p.tokASym} returned to ${walletA}`,
+      });
+    }
+    if(p.tokBSym && retQtyB > 0 && walletB && walletB !== skip) {
+      const priceB = getPrice(p.tokBGeckoId) || 0;
+      logTransaction({
+        date: rebalDate, type: 'Rebalance', sym: p.tokBSym,
+        qty: retQtyB, price: priceB, total: priceB * retQtyB,
+        from: `Pool: ${p.name}`, to: walletB,
+        notes: `Rebalance — ${retQtyB.toFixed(4)} ${p.tokBSym} returned to ${walletB}`,
+      });
+    }
+  } else {
+    const exitVal = poolCurrentValue(p) || 0;
+    logTransaction({ date:rebalDate, type:'Rebalance', sym:p.name,
+      qty:null, price:null, total:exitVal,
+      from:`Pool: ${p.name}`, to: dest==='cash_external'?'External':'Cash',
+      notes:`Rebalance exit — $${exitVal.toFixed(2)}` });
+  }
+
+  // ── Reset pool for new leg ──
   p.entryValue    = 0;
-  p.entryDate     = today();
+  p.entryDate     = rebalDate;
   p.tokAQtyEntry  = 0;
   p.tokAQty       = 0;
   p.tokBQtyEntry  = 0;
@@ -7653,16 +7767,14 @@ function doRebalance() {
   p.liveRatio     = null;
   p.manualCurrentValue = null;
 
-  // Preserve yield history in the archived history record
   const histEntry = DB.history[DB.history.length - 1];
   if(histEntry) histEntry.yieldLog = [...(p.yieldLog||[])];
-  p.yieldLog = [];  // Fresh log for the new leg
+  p.yieldLog = [];
 
   persist();
   closeModal('closeModal2');
   renderAll();
 
-  // Re-open the pool Edit modal immediately so user enters new quantities
   setTimeout(() => {
     openPoolModal(p.id);
     toast('Old leg archived. Enter new Token A & B quantities for the new leg, then Save.');
@@ -9000,20 +9112,24 @@ function onCloseDestChange() {
   const dest = document.getElementById('cl-dest')?.value;
   const hint = document.getElementById('cl-dest-hint');
   const wField = document.getElementById('cl-wallet-field');
-  const qtyBlock = document.getElementById('cl-lp-qtys');
-  const qtyHint  = document.getElementById('cl-lp-qty-hint');
+  const bWrap  = document.getElementById('cl-wallet-b-wrap');
+  const qtySection = document.getElementById('cl-lp-qtys');
   if(dest==='holdings') {
     if(hint) hint.textContent = 'Token quantities added back to Holdings at current prices — cost basis updated.';
     if(wField) wField.style.display='';
-    if(qtyBlock) qtyBlock.style.display='grid';
-    if(qtyHint) qtyHint.style.display='';
+    if(bWrap)  bWrap.style.display='';
+    if(qtySection) qtySection.style.display='';
   } else {
-    if(hint) hint.textContent = 'Exit value logged as cash — no Holdings rows updated.';
-    if(wField) wField.style.display='none';
-    if(qtyBlock) qtyBlock.style.display='none';
-    if(qtyHint) qtyHint.style.display='none';
+    if(hint) hint.textContent = dest==='cash_internal'
+      ? 'Exit value added as cash to Holdings — no per-token rows updated.'
+      : 'Exit value logged only — no Holdings rows updated.';
+    if(wField) wField.style.display = dest==='cash_internal' ? '' : 'none';
+    if(bWrap)  bWrap.style.display='none';
+    if(qtySection) qtySection.style.display='none';
   }
 }
+
+
 
 // ─── GEMS ─────────────────────────────────────────────────────────────────────
 // alertPct badge — colour scales with volatility: low=green, mid=amber, high=red
@@ -11242,6 +11358,7 @@ function checkAlerts() {
 
   // ── Hedge position alerts ──
   try { checkHedgeAlerts(); } catch(e) {}
+  try { checkHedgeRatioAlerts(); } catch(e) {}
 }
 
 // ── Pushover stub (Phase 2) ───────────────────────────────────────────────────
@@ -11643,6 +11760,8 @@ async function fetchHedgeData(force=false) {
 
   renderHedgeCards();
   renderHedgePositions();
+  // Re-render Summary so hedge ratio banner reflects fresh data
+  try { if(window._activeTab === 'summary' || !window._activeTab) renderSummary(); } catch(e) {}
 }
 
 // ── Helper: check if asset IV is diverging unusually from BTC ──────────────────
@@ -12924,6 +13043,50 @@ function deleteHlTransfer(type, idx) {
   else                            acct.withdrawals = acct.withdrawals.filter((_,i)=>i!==entry.origIdx);
   persist(); renderHlBar(); renderHlAccount();
   toast('Transfer entry deleted');
+}
+
+// ── Hedge ratio change alerts ─────────────────────────────────────────────────
+const HEDGE_RATIO_THRESHOLD = 0.10;
+const HEDGE_RATIO_COOLDOWN  = 4 * 60 * 60 * 1000;
+
+function checkHedgeRatioAlerts() {
+  if(!(DB.hedgePositions||[]).length) return;
+  const HEDGE_ASSETS_LIST = ['BTC','ETH','SOL'];
+  HEDGE_ASSETS_LIST.forEach(asset => {
+    const pos = (DB.hedgePositions||[]).find(p => p.asset === asset);
+    if(!pos) return;
+    const suggested = calcOptimalRatio(asset);
+    const current   = DB.hedgeCache?.[`ratio_${asset}`] ?? suggested;
+    const gap       = suggested - current;
+    if(Math.abs(gap) < HEDGE_RATIO_THRESHOLD) {
+      _alertReset(`hedge-ratio-${asset}`, 'gem');
+      return;
+    }
+    const key = `hedge-ratio-${asset}`;
+    const last = alertedPools[key];
+    if(last && (Date.now() - last) < HEDGE_RATIO_COOLDOWN) return;
+    alertedPools[key] = Date.now();
+    _alertSaveLog();
+    const direction  = gap > 0 ? 'increase' : 'reduce';
+    const arrow      = gap > 0 ? '▲' : '▼';
+    const curPct     = Math.round(current * 100);
+    const sugPct     = Math.round(suggested * 100);
+    const cache      = DB.hedgeCache?.[asset] || {};
+    const trend      = cache.trend7d || 0;
+    const iv         = cache.iv || 65;
+    const fund8hr    = cache.funding8hr || 0;
+    const reason     = gap < 0 && trend > 5  ? 'market trending up, IV easing'
+                     : gap > 0 && trend < -5 ? 'bearish trend, elevated risk'
+                     : gap < 0              ? `IV dropped to ${iv.toFixed(0)}`
+                     : gap > 0              ? `IV elevated at ${iv.toFixed(0)}`
+                     : 'conditions changed';
+    sendNotification(
+      `⚖ ${asset} Hedge Ratio: ${direction} suggested`,
+      `Current: ${curPct}% → Suggested: ${sugPct}% ${arrow}\nReason: ${reason}. Check Hedge tab to adjust.`,
+      gap > 0 ? 'down' : 'up',
+      'hedge'
+    );
+  });
 }
 
 // ── Hedge alerts (integrated into checkAlerts) ────────────────────────────────
@@ -14457,7 +14620,42 @@ function renderSummary() {
     return `data-tip-id="${id}"`;
   }
 
-  el.innerHTML = `
+  // ── Hedge ratio alert banner ─────────────────────────────────────────────
+  const hedgeAlertRows = [];
+  if((DB.hedgePositions||[]).length) {
+    ['BTC','ETH','SOL'].forEach(asset => {
+      const pos = (DB.hedgePositions||[]).find(p => p.asset === asset);
+      if(!pos) return;
+      const suggested = calcOptimalRatio(asset);
+      const current   = DB.hedgeCache?.[`ratio_${asset}`] ?? suggested;
+      const gap       = suggested - current;
+      if(Math.abs(gap) < HEDGE_RATIO_THRESHOLD) return;
+      const arrow     = gap > 0 ? '▲' : '▼';
+      const curPct    = Math.round(current * 100);
+      const sugPct    = Math.round(suggested * 100);
+      const cache     = DB.hedgeCache?.[asset] || {};
+      const trend     = cache.trend7d || 0;
+      const iv        = cache.iv || 65;
+      const reason    = gap < 0 && trend > 5  ? 'market trending up, IV easing'
+                      : gap > 0 && trend < -5 ? 'bearish trend, elevated risk'
+                      : gap < 0              ? `IV dropped to ${iv.toFixed(0)}`
+                      : gap > 0              ? `IV elevated at ${iv.toFixed(0)}`
+                      : 'conditions changed';
+      const color = gap > 0 ? '#cc2200' : '#b86800';
+      hedgeAlertRows.push(`<div style="display:flex;align-items:center;gap:10px;padding:6px 12px;background:${gap>0?'rgba(204,34,0,0.08)':'rgba(184,104,0,0.08)'};border-left:3px solid ${color};border-radius:4px;margin-bottom:4px;font-size:11px;">
+        <span style="font-size:14px;">⚖</span>
+        <span style="font-weight:700;color:${color};">${asset} Hedge</span>
+        <span style="color:var(--text2);">Current <strong>${curPct}%</strong> → Suggested <strong>${sugPct}%</strong> ${arrow}</span>
+        <span style="color:var(--text3);font-size:10px;">${reason}</span>
+        <span style="margin-left:auto;cursor:pointer;color:var(--accent2);font-size:10px;white-space:nowrap;" onclick="switchTab('hedge')">Go to Hedge →</span>
+      </div>`);
+    });
+  }
+  const hedgeBannerHtml = hedgeAlertRows.length
+    ? `<div style="margin-bottom:8px;">${hedgeAlertRows.join('')}</div>`
+    : '';
+
+  el.innerHTML = hedgeBannerHtml + `
     <div style="background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--border2);border-radius:10px;padding:8px 14px;margin-bottom:6px;display:flex;align-items:center;gap:0;flex-wrap:wrap;box-shadow:0 2px 12px rgba(0,0,0,.2);">
       <div style="padding:4px 16px 4px 0;border-right:1px solid var(--border);margin-right:16px;flex-shrink:0;">
         <div style="font-size:calc(var(--fs-base) - 3px);font-weight:600;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;margin-bottom:1px;">Total Portfolio Value</div>
@@ -15346,6 +15544,14 @@ function helpSearchClear() {
 
 // ── What's New content — keyed by version string ─────────────────────────────
 const WHATS_NEW = {
+  '47.30': {
+    headline: "Version 47.30 — What's New",
+    summary:  'Hedge ratio alert — Summary page and phone alerts now notify when the suggested hedge ratio shifts significantly from your current position.',
+    items: [
+      { icon: '⚖', title: 'Hedge Ratio Alert — know when to rebalance your hedge',
+        text: 'When the model suggested hedge ratio for BTC, ETH, or SOL shifts more than 10 percentage points from your current ratio, a banner appears on the Summary page showing the current vs suggested ratio and the reason (IV change, trend shift, funding rate). A Pushover phone alert fires simultaneously. Alerts are throttled to once per 4 hours per asset to avoid noise.' },
+    ]
+  },
   '47.29': {
     headline: "Version 47.29 — What's New",
     summary:  'CPI benchmark badge — pool rows now show whether annualized net return beats inflation, fetched live from FRED.',
@@ -16084,7 +16290,7 @@ function demoStartAndEnter() {
   demoStartTrial();
   demoMarkWelcomeSeen();
   document.getElementById('demoWelcome').style.display = 'none';
-  renderAll(); fetchPrices(); fetchBenchmarks(); initFileProtocolUI(); initHelpSync(); initPIN();
+  renderAll(); fetchPrices(); fetchBenchmarks(); fetchHedgeData(false); initFileProtocolUI(); initHelpSync(); initPIN();
   checkWhatsNew();
   setTimeout(demoInjectBanner, 300);
   // On Mac with no linked file, trigger first auto-export after 10s so Chrome's
