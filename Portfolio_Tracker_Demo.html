@@ -5252,6 +5252,21 @@ function renderPools() {
           return `<input class="cell-in narrow" value="${p.tokAQty||''}" onfocus="this.dataset.orig=this.value" onblur="if(this.value!==''&&this.value!==this.dataset.orig)inlinePool('${p.id}','tokAQty',+this.value)" style="width:70px;text-align:right;" title="Current qty of ${p.tokASym}">`;
         })()}
       </td>
+      <td style="background:rgba(74,158,255,0.05);">
+        ${(()=>{
+          const isLikePair = p.vaultMode && p.tokAGeckoId && p.tokBGeckoId && p.tokAGeckoId === p.tokBGeckoId;
+          if(isLikePair) {
+            // Like-pair vault: Token B is same asset as A — show dash, total is in Token A
+            return `<span style="color:var(--text3);font-size:10px;" title="Same asset as Token A — total shown in QTY A">—</span>`;
+          }
+          if(p.vaultMode) {
+            return `<div style="font-size:calc(var(--fs-mono) - 2px);color:var(--text3);margin-bottom:2px;">wrapped</div>`
+              + `<span style="font-family:var(--mono);font-size:var(--fs-mono);color:var(--text3);">vault</span>`;
+          }
+          return `<div style="font-size:calc(var(--fs-mono) - 2px);color:var(--accent2);margin-bottom:2px">${p.tokBSym||''}</div>`
+            + `<input class="cell-in narrow" value="${p.tokBQty||''}" onfocus="this.dataset.orig=this.value" onblur="if(this.value!==''&&this.value!==this.dataset.orig)inlinePool('${p.id}','tokBQty',+this.value)" style="width:70px;text-align:right;" title="Current qty of ${p.tokBSym}">`;
+        })()}
+      </td>
       <td style="background:rgba(167,139,250,0.08);overflow:hidden;">${p.vaultMode ? '' : `<input class="cell-in narrow" value="${p.rangeLow ? qf(p.rangeLow) : ''}" onfocus="this.dataset.orig=this.value" onblur="if(this.value!==''&&this.value!==this.dataset.orig)inlinePool('${p.id}','rangeLow',+this.value)" style="width:100%;text-align:right;" title="${p.rangeLow||''}">`}</td>
       <td class="ratio-col" style="text-align:right;overflow:hidden;background:rgba(59,130,246,0.22);">
         ${p.vaultMode
