@@ -13712,7 +13712,7 @@ function _showNoBackupBanner() {
 
 async function noBackupBannerCreate() {
   document.getElementById('noBackupBanner').style.display = 'none';
-  if(!fsSupported()) { toast('File System API requires Chrome or Edge.', true); return; }
+  if(!fsSupported()) { toast('File System API requires Chrome, Brave, or Edge.', true); return; }
   try {
     const handle = await window.showSaveFilePicker({
       suggestedName: 'portfolio_data.json',
@@ -13759,7 +13759,7 @@ async function restoreFilePermission() {
 }
 
 async function linkBackupFile() {
-  if(!fsSupported()) { toast('File System API requires Chrome or Edge.', true); return; }
+  if(!fsSupported()) { toast('File System API requires Chrome, Brave, or Edge.', true); return; }
   if(fsFileHandle) {
     const meta = fsMetaLoad();
     const savedDate = fsLastSaved || (meta.lastSaved ? new Date(meta.lastSaved) : null);
@@ -13959,7 +13959,7 @@ async function updateEmbeddedBackup() {
 }
 
 async function linkAppFile() {
-  if(!fsSupported()) { toast('File System API requires Chrome or Edge.', true); return; }
+  if(!fsSupported()) { toast('File System API requires Chrome, Brave, or Edge.', true); return; }
   if(htmlFileHandle) {
     if(confirm('HTML file linked: ' + htmlFileHandle.name + '\n\nClick OK to unlink it.')) {
       htmlFileHandle = null;
@@ -15306,7 +15306,9 @@ const HELP_CONTENT = {
       { icon: '🔑', heading: 'Key concepts to understand',
         text: `<strong>Beat HODL?</strong> — The fundamental LP question: has the yield earned by providing liquidity outweighed the impermanent loss vs simply holding the tokens? Shown as ✓ YES / ✗ NO on every pool.<br><br><strong>Hedge ratio</strong> — The percentage of your crypto exposure protected by a short position. Hard capped at 60% — you always retain meaningful upside exposure. The formula uses implied volatility, 7-day trend, and funding rate to recommend the optimal ratio automatically.<br><br><strong>Net carry</strong> — Pool yield earned minus annual funding cost on the hedge. Positive carry means the hedge is net profitable.<br><br><strong>Funded From Holdings</strong> — When adding capital to a pool or vault, this feature auto-deducts the source tokens from your Holdings and logs Transfer transactions — keeping all balances correct without manual editing.<br><br><strong>Backup envelope</strong> — Your .json backup file contains everything: portfolio data, hedge chart history, activation token, Pushover keys, and settings. Linking the backup file on any machine restores the complete tracker instantly.` },
       { icon: '🚀', heading: 'Getting started — four steps',
-        text: `<strong>1. Open in Chrome or Edge</strong> — double-click the HTML file. Firefox is not recommended (File System API limitations).<br><br><strong>2. Link your backup file</strong> — click ⛁ Data ▾ → Link / Change File → select or create a .json file in the same folder. Auto-save activates immediately (every 7 minutes, silently).<br><br><strong>3. Add your first position</strong> — go to the tab that matches what you want to track. Click the + button. For LP Pools: enter both token symbols, current quantities, entry value, and your price range.<br><br><strong>4. Refresh prices</strong> — click ↻ Refresh in the header. Prices update from CoinGecko and the live header bar populates. From here, everything is live.` },
+        text: `<strong>1. Open in Chrome, Brave, or Edge</strong> — double-click the HTML file. Brave works identically to Chrome. Firefox is not recommended (File System API limitations).<br><br><strong>2. Link your backup file</strong> — click ⛁ Data ▾ → Link / Change File → select or create a .json file in the same folder. Auto-save activates immediately (every 7 minutes, silently).<br><br><strong>3. Add your first position</strong> — go to the tab that matches what you want to track. Click the + button. For LP Pools: enter both token symbols, current quantities, entry value, and your price range.<br><br><strong>4. Refresh prices</strong> — click ↻ Refresh in the header. Prices update from CoinGecko and the live header bar populates. From here, everything is live.` },
+      { icon: '🦁', heading: 'Using Brave Browser',
+        text: `The tracker works identically in Brave as in Chrome — all features are supported. However, Brave's built-in <strong>Shields</strong> feature may block external data requests depending on your Shields setting.<br><br><strong>If prices aren't loading, or live hedge/CPI data isn't updating:</strong><br>Click the <strong>lion icon</strong> (🦁) in the address bar → set Shields to <strong>Standard</strong> (not Aggressive), or turn Shields off for this page.<br><br><strong>Affected by Aggressive Shields:</strong> CoinGecko prices · Hyperliquid funding/IV · FRED CPI rate · Formspree feedback · imgbb screenshot uploads.<br><br><strong>Not affected:</strong> All stored data, Holdings, Pools, Vaults, GEMs, History — these are local and always available regardless of Shields setting.` },
       { icon: '⛁', heading: 'Data protection & the backup file',
         text: `<strong>How your data is stored</strong> — All data lives in two places: your browser's localStorage (fast, automatic) and a .json backup file on your own drive (permanent, portable).<br><br><strong>Linking a backup file</strong> — Click ⛁ Data ▾ → Link / Create File. Select an existing .json or create a new one. Once linked, the tracker auto-saves every 7 minutes and on every tab switch. A green dot in the header confirms the link is active.<br><br><strong>Import Backup</strong> — Loads data from a .json file into the tracker. Use this to restore after a cache clear or on a new machine. After importing, you will be prompted to link the same file for auto-save — click OK and select the same file to reconnect everything in one step.<br><br><strong>Save / Export Backup</strong> — If a file is linked, saves to it immediately and optionally downloads a dated copy. If no file is linked, downloads a dated .json to your Downloads folder as a manual backup.<br><br><strong>Unlink File</strong> — Disconnects the current backup file without deleting any data. Your data stays safe in localStorage. Re-link at any time using Link / Create File.<br><br><strong>Reset Data Link</strong> — Use only if the tracker is saving to the wrong folder (e.g. a stale path from a previous machine). Clears the saved file path and forces you to re-link. Data is not affected.<br><br><strong>After a cache clear</strong> — localStorage is wiped. Re-open the tracker, click ⛁ Data ▾ → Import Backup, select your .json file, then link it when prompted. Everything restores in under a minute.<br><br><strong>Moving to a new machine</strong> — Copy the tracker folder (HTML file + .json backup + help_img/ folder) to the new machine. Open in Chrome, import and link the backup. Activation, settings, and all history restore automatically.` },
       { icon: '❓', heading: 'Common first-time questions',
@@ -15453,6 +15455,24 @@ const HELP_CONTENT = {
         text: `Mac Chrome resets file write permissions when you restart the browser — this is a Mac security feature, not a bug.<br><br>You will see an amber banner at the bottom of the screen: <em>"Auto-save permission lost"</em>.<br><br>Click <strong>🔓 Restore Access</strong> → Chrome asks you to confirm — click <strong>Allow</strong>. Auto-save resumes immediately.<br><br>If the banner does not appear, click <strong>⛁ Data ▾ → Link / Create File</strong> and relink your file.` },
       { icon: '🍎', heading: 'Mac — Step 4: Create a desktop alias',
         text: `Open your <strong>PortfolioTracker</strong> folder in Finder. Hold <strong>Cmd + Opt</strong> and drag <code>Portfolio_Tracker_Demo.html</code> to your Desktop.<br><br>This creates an alias shortcut. Always open the tracker from here — not from Downloads or Safari.` },
+      { icon: '🦁', heading: 'Brave (Windows) — Step 1: Create your working folder',
+        text: `Open <strong>File Explorer</strong> (press <strong>Win + E</strong>). Click <strong>Documents</strong> in the left sidebar.<br><br>Right-click in empty space → <strong>New → Folder</strong> → name it <strong>PortfolioTracker</strong>.<br><br>Move <code>Portfolio_Tracker_Demo.html</code> into this folder. This is your permanent home — never move it after setup.` },
+      { icon: '🦁', heading: 'Brave (Windows) — Step 2: Tell Brave where to save files',
+        text: `In Brave, paste this into the address bar and press Enter:<br><br><code>brave://settings/downloads</code><br><br>Turn <strong>ON</strong> the toggle: <em>"Ask where to save each file before downloading"</em><br><br>This ensures your data file saves to your working folder instead of disappearing into Downloads.<br><br><strong>Also check Brave Shields:</strong> Click the <strong>lion icon 🦁</strong> in the address bar while the tracker is open → make sure Shields is set to <strong>Standard</strong> (not Aggressive). Aggressive Shields blocks live price updates.` },
+      { icon: '🦁', heading: 'Brave (Windows) — Step 3: Link your data file',
+        text: `Open the tracker from your <strong>PortfolioTracker</strong> folder (not from Downloads or a bookmark).<br><br>Click <strong>▶ Explore the Demo</strong> on the welcome screen.<br><br>In the header click <strong>⛁ Data ▾ → Link / Create File</strong>.<br><br>A Save dialog opens — navigate to your <strong>PortfolioTracker</strong> folder. Type <strong>portfolio_data.json</strong> as the filename → click <strong>Save</strong>.<br><br>The status dot in the header turns <strong>green ●</strong> — auto-save is now active. If Brave asks <em>"Allow this site to save files?"</em> click <strong>Allow</strong>.` },
+      { icon: '🦁', heading: 'Brave (Windows) — Step 4: Create a desktop shortcut',
+        text: `Open your <strong>PortfolioTracker</strong> folder in File Explorer. Right-click <code>Portfolio_Tracker_Demo.html</code> → <strong>Send to → Desktop (create shortcut)</strong>.<br><br>Always open the tracker from this desktop shortcut. Never open it from Downloads or a Brave bookmark — the file link will not reconnect correctly from there.` },
+      { icon: '🦁', heading: 'Brave (Mac) — Step 1: Create your working folder',
+        text: `Open <strong>Finder</strong> (the smiley face in your Dock). Click <strong>Documents</strong> in the left sidebar.<br><br>Press <strong>Cmd + Shift + N</strong> to create a new folder → name it <strong>PortfolioTracker</strong>.<br><br>Move <code>Portfolio_Tracker_Demo.html</code> into this folder.` },
+      { icon: '🦁', heading: 'Brave (Mac) — Step 2: Tell Brave where to save files',
+        text: `In Brave, paste this into the address bar and press Enter:<br><br><code>brave://settings/downloads</code><br><br>Turn <strong>ON</strong> the toggle: <em>"Ask where to save each file before downloading"</em><br><br><strong>Mac extra step:</strong> The first time the tracker auto-saves, Brave may show a bar at the top saying <em>"Allow this site to download multiple files?"</em> — click <strong>Allow</strong>. This only appears once.<br><br>If you missed it: click the <strong>lion icon 🦁</strong> in the address bar → <strong>Site settings</strong> → scroll to <strong>Automatic downloads</strong> → set to <strong>Allow</strong>.<br><br><strong>Also check Shields:</strong> Click the lion icon 🦁 → set Shields to <strong>Standard</strong> so prices and live data load correctly.` },
+      { icon: '🦁', heading: 'Brave (Mac) — Step 3: Link your data file',
+        text: `Open the tracker from your <strong>PortfolioTracker</strong> folder in Finder (not from Downloads).<br><br>Click <strong>▶ Explore the Demo</strong>. In the header click <strong>⛁ Data ▾ → Link / Create File</strong>.<br><br>Navigate to your <strong>PortfolioTracker</strong> folder. Type <strong>portfolio_data.json</strong> → click <strong>Save</strong>.<br><br>The dot turns <strong>green ●</strong>. If the dot stays grey, close and reopen the tracker from the same folder.` },
+      { icon: '🦁', heading: 'Brave (Mac) — If Brave loses access after restart',
+        text: `Like Chrome on Mac, Brave may reset file write permissions when you restart the browser — this is a Mac security feature.<br><br>You will see an amber banner: <em>"Auto-save permission lost"</em>.<br><br>Click <strong>🔓 Restore Access</strong> → Brave asks you to confirm → click <strong>Allow</strong>. Auto-save resumes immediately.<br><br>If the banner does not appear: click <strong>⛁ Data ▾ → Link / Create File</strong> and relink your <code>portfolio_data.json</code> file.` },
+      { icon: '🦁', heading: 'Brave (Mac) — Step 4: Create a desktop alias',
+        text: `Open your <strong>PortfolioTracker</strong> folder in Finder. Hold <strong>Cmd + Opt</strong> and drag <code>Portfolio_Tracker_Demo.html</code> to your Desktop.<br><br>This creates an alias shortcut. Always open the tracker from here — not from Downloads.` },
       { icon: '🔧', heading: 'Fix: Data file is saving to the wrong folder',
         text: `1. Click <strong>⛁ Data ▾ → Save / Export Backup</strong> — save a copy somewhere safe first.<br>2. Click <strong>⛁ Data ▾ → ⚠ Reset Data Link</strong> to clear the wrong link.<br>3. Click <strong>⛁ Data ▾ → Link / Create File</strong> → navigate to your <strong>PortfolioTracker</strong> folder → save as <code>portfolio_data.json</code>.<br>4. The dot turns <strong>green ●</strong> — done.` },
       { icon: '🔧', heading: 'Fix: Numbered copies appearing (autosave (1).json, (2).json…)',
@@ -16202,7 +16222,7 @@ async function actReconnectBackup() {
 // ── Link backup from activation screen (auto-unlock path) ────────────────────
 async function actLinkBackup() {
   if(!fsSupported()) {
-    document.getElementById('actErr').textContent = 'File linking requires Chrome or Edge.';
+    document.getElementById('actErr').textContent = 'File linking requires Chrome, Brave, or Edge.';
     return;
   }
   const statusEl = document.getElementById('actFileStatus');
