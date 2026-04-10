@@ -5252,7 +5252,7 @@ function renderPools() {
           return `<input class="cell-in narrow" value="${p.tokAQty||''}" onfocus="this.dataset.orig=this.value" onblur="if(this.value!==''&&this.value!==this.dataset.orig)inlinePool('${p.id}','tokAQty',+this.value)" style="width:70px;text-align:right;" title="Current qty of ${p.tokASym}">`;
         })()}
       </td>
-      <td style="background:rgba(167,139,250,0.08);overflow:hidden);">${p.vaultMode ? '' : `<input class="cell-in narrow" value="${p.rangeLow ? qf(p.rangeLow) : ''}" onfocus="this.dataset.orig=this.value" onblur="if(this.value!==''&&this.value!==this.dataset.orig)inlinePool('${p.id}','rangeLow',+this.value)" style="width:100%;text-align:right;" title="${p.rangeLow||''}">`}</td>
+      <td style="background:rgba(167,139,250,0.08);overflow:hidden;">${p.vaultMode ? '' : `<input class="cell-in narrow" value="${p.rangeLow ? qf(p.rangeLow) : ''}" onfocus="this.dataset.orig=this.value" onblur="if(this.value!==''&&this.value!==this.dataset.orig)inlinePool('${p.id}','rangeLow',+this.value)" style="width:100%;text-align:right;" title="${p.rangeLow||''}">`}</td>
       <td class="ratio-col" style="text-align:right;overflow:hidden;background:rgba(59,130,246,0.22);">
         ${p.vaultMode
           ? `<span style="font-size:10px;color:var(--text3);font-style:italic;">auto</span>`
@@ -5262,7 +5262,7 @@ function renderPools() {
           ${pctHigh!==null?` ${(pctHigh*100).toFixed(1)}%hi`:''}
         </div>` : ''}
       </td>
-      <td style="background:rgba(167,139,250,0.08);overflow:hidden);">${p.vaultMode ? '' : `<input class="cell-in narrow" value="${p.rangeHigh ? qf(p.rangeHigh) : ''}" onfocus="this.dataset.orig=this.value" onblur="if(this.value!==''&&this.value!==this.dataset.orig)inlinePool('${p.id}','rangeHigh',+this.value)" style="width:100%;text-align:right;" title="${p.rangeHigh||''}">`}</td>
+      <td style="background:rgba(167,139,250,0.08);overflow:hidden;">${p.vaultMode ? '' : `<input class="cell-in narrow" value="${p.rangeHigh ? qf(p.rangeHigh) : ''}" onfocus="this.dataset.orig=this.value" onblur="if(this.value!==''&&this.value!==this.dataset.orig)inlinePool('${p.id}','rangeHigh',+this.value)" style="width:100%;text-align:right;" title="${p.rangeHigh||''}">`}</td>
       <td>${p.vaultMode ? `<span class="badge b-neutral" style="background:rgba(74,158,255,0.1);color:#4a9eff;border-color:rgba(74,158,255,0.3);">Vault</span>` : rangeBadge(status)}</td>
       <td class="${cur!==null?cc(cur-p.entryValue):''}">${$f(cur,2)}</td>
       <td class="yield-cell-highlight" style="text-align:center;padding:3px 4px;">
@@ -13223,7 +13223,7 @@ function openModal(id) {
 function closeModal(id) {
   document.getElementById(id).classList.remove('open');
   if(id === 'welcomeModal') localStorage.setItem('cpf_seen', '1');
-  if(id === 'helpModal') helpSearchClear();
+  if(id === 'helpModal') { helpSearchClear(); try { if(_helpEditTab === 'whatsNew') localStorage.setItem(WHATS_NEW_KEY, APP_VERSION); } catch(e){} }
 }
 // Modals require explicit Close/Cancel — click-away is disabled to prevent data loss
 // document.querySelectorAll('.overlay').forEach(o => {
