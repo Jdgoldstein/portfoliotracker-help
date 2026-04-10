@@ -131,8 +131,8 @@ input[type="date"] { color-scheme: dark; }
 /* ── TABLE WRAP ── */
 .tbl-wrap{overflow-x:auto;overflow-y:visible;border:2px solid #7a9abf;border-radius:var(--radius);box-shadow:0 2px 8px rgba(0,0,0,0.12);max-width:100%;width:100%;scrollbar-gutter:stable;}
 #tab-pools .tbl-wrap table{table-layout:auto;}
-#tab-pools table{table-layout:fixed;width:100%;}
-#tab-pools table th,#tab-pools table td{padding:3px 4px;overflow:hidden;text-overflow:ellipsis;}
+#tab-pools table{table-layout:auto;}
+#tab-pools table th,#tab-pools table td{padding:3px 4px;}
 #tab-pools table input.cell-in.narrow{width:56px;}
 #tab-pools thead th{font-size:var(--fs-th);white-space:normal;line-height:1.2;will-change:transform;}
 #tab-pools tbody td{font-size:var(--fs-mono);}
@@ -1481,22 +1481,22 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
       <table>
         <thead>
           <tr>
-            <th class="left" style="width:28px;padding:4px 2px;"></th>
-            <th class="left" style="width:160px;padding:4px 5px;">Pool</th>
-            <th title="Annual Percentage Rate — informational only, not used in calculations" style="color:var(--accent);width:44px;">APR %</th>
-            <th title="Entry date — click to edit" style="width:38px;padding:2px 1px;">Date</th>
-            <th title="USD value when position opened" style="width:72px;">Entry $</th>
-            <th title="Current quantity of Token A" style="width:80px;background:rgba(74,158,255,0.07);">Qty A</th>
-            <th title="Current quantity of Token B" style="width:80px;background:rgba(74,158,255,0.07);">Qty B</th>
-            <th title="Range low boundary" style="width:72px;background:rgba(167,139,250,0.10);">Low</th>
-            <th title="Current live ratio between the two tokens" class="ratio-col" style="width:72px;background:rgba(59,130,246,0.22);">Live Ratio</th>
-            <th title="Range high boundary" style="width:72px;background:rgba(167,139,250,0.10);">High</th>
-            <th title="Range status based on live ratio vs low/high" style="width:80px;">Range</th>
-            <th title="Auto-calculated: Tok A qty × price + Tok B qty × price" style="width:80px;">Current $</th>
-            <th title="Total yield harvested — click the 🌾 button to log a harvest" style="cursor:help;width:80px;background:rgba(10,124,74,0.07);color:var(--accent);">🌾 Yield</th>
-            <th title="Net Result + annualized return" style="width:120px;">Net / Ann%</th>
-            <th title="Impermanent loss vs HODL value" style="width:100px;">IL / HODL</th>
-            <th title="Does Current + Yield beat HODL value?" style="width:80px;">HODL?</th>
+            <th class="left" style="min-width:28px;padding:4px 2px;"></th>
+            <th class="left" style="min-width:80px;padding:4px 5px;">Pool</th>
+            <th title="Annual Percentage Rate — informational only, not used in calculations" style="color:var(--accent);min-width:44px;">APR %</th>
+            <th title="Entry date — click to edit" style="min-width:38px;padding:2px 1px;">Date</th>
+            <th title="USD value when position opened" style="min-width:72px;">Entry $</th>
+            <th title="Current quantity of Token A" style="min-width:80px;background:rgba(74,158,255,0.07);">Qty A</th>
+            <th title="Current quantity of Token B" style="min-width:80px;background:rgba(74,158,255,0.07);">Qty B</th>
+            <th title="Range low boundary" style="min-width:72px;background:rgba(167,139,250,0.10);">Low</th>
+            <th title="Current live ratio between the two tokens" class="ratio-col" style="min-width:72px;background:rgba(59,130,246,0.22);">Live Ratio</th>
+            <th title="Range high boundary" style="min-width:72px;background:rgba(167,139,250,0.10);">High</th>
+            <th title="Range status based on live ratio vs low/high" style="min-width:80px;">Range</th>
+            <th title="Auto-calculated: Tok A qty × price + Tok B qty × price" style="min-width:80px;">Current $</th>
+            <th title="Total yield harvested — click the 🌾 button to log a harvest" style="cursor:help;min-width:80px;background:rgba(10,124,74,0.07);color:var(--accent);">🌾 Yield</th>
+            <th title="Net Result + annualized return" style="min-width:120px;">Net / Ann%</th>
+            <th title="Impermanent loss vs HODL value" style="min-width:100px;">IL / HODL</th>
+            <th title="Does Current + Yield beat HODL value?" style="min-width:80px;">HODL?</th>
           </tr>
         </thead>
         <tbody id="poolBody"></tbody>
