@@ -129,12 +129,12 @@ input[type="date"] { color-scheme: dark; }
 .card-sub{font-size:calc(var(--fs-base) - 2px);color:#4a5168;margin-top:3px;}
 
 /* ── TABLE WRAP ── */
-.tbl-wrap{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 180px);border:2px solid #7a9abf;border-radius:var(--radius);box-shadow:0 2px 8px rgba(0,0,0,0.12);max-width:100%;width:100%;}
+.tbl-wrap{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 180px);border:2px solid #7a9abf;border-radius:var(--radius);box-shadow:0 2px 8px rgba(0,0,0,0.12);max-width:100%;width:100%;scrollbar-gutter:stable;}
 #tab-pools .tbl-wrap table{table-layout:auto;}
 #tab-pools table{table-layout:fixed;width:100%;}
 #tab-pools table th,#tab-pools table td{padding:3px 4px;overflow:hidden;text-overflow:ellipsis;}
 #tab-pools table input.cell-in.narrow{width:56px;}
-#tab-pools thead th{font-size:var(--fs-th);white-space:normal;line-height:1.2;}
+#tab-pools thead th{font-size:var(--fs-th);white-space:normal;line-height:1.2;will-change:transform;}
 #tab-pools tbody td{font-size:var(--fs-mono);}
 #tab-pools tfoot td{font-size:var(--fs-mono);}
 #tab-vaults .tbl-wrap table{table-layout:auto;}
@@ -1128,7 +1128,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 <!-- HEADER -->
 <div id="header" style="visibility:hidden;">
   <div class="logo">PORTFOLIO <small>TRACKER</small></div>
-  <span id="versionBadge" style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-left:4px;align-self:flex-end;padding-bottom:2px;">v47.32</span>
+  <span id="versionBadge" style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-left:4px;align-self:flex-end;padding-bottom:2px;">v47.34</span>
   <span id="privacyBadge">🙈 VALUES MASKED</span>
   <div class="header-stats" id="hdrStats"></div>
   <div class="header-right">
@@ -3588,7 +3588,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 // Secrets assembled at runtime — not stored as plain literals
 const ACT_SECRET = (()=>{const p=['CPF_TR','ACKER_','2026_D','ELTA7_','WHISKE','Y'];return p.join('');})();
 const ACT_MASTER = (()=>{const p=['CPF_MA','STER_O','VERRID','E_KEY_','ZULU9'];return p.join('');})();
-const APP_VERSION  = '47.32';           // bumped on each release
+const APP_VERSION  = '47.34';           // bumped on each release
 const WHATS_NEW_KEY = 'cpf_seen_ver';   // localStorage: last version user saw What's New
 const ACT_STORE    = 'cpf_activation_v1';
 const ACT_ID_STORE = 'cpf_install_id';
@@ -5252,7 +5252,7 @@ function renderPools() {
         })()}
       </td>
       <td style="background:rgba(167,139,250,0.05);overflow:hidden;">${p.vaultMode ? '' : `<input class="cell-in narrow" value="${p.rangeLow ? qf(p.rangeLow) : ''}" onfocus="this.dataset.orig=this.value" onblur="if(this.value!==''&&this.value!==this.dataset.orig)inlinePool('${p.id}','rangeLow',+this.value)" style="width:100%;text-align:right;" title="${p.rangeLow||''}">`}</td>
-      <td style="text-align:right;overflow:hidden;">
+      <td style="text-align:right;overflow:hidden;background:rgba(59,130,246,0.13);">
         ${p.vaultMode
           ? `<span style="font-size:10px;color:var(--text3);font-style:italic;">auto</span>`
           : ratio ? `<span style="font-family:var(--mono);font-size:var(--fs-mono);font-weight:600">${ratio < 0.0001 ? ratio.toExponential(2) : ratio.toPrecision(4)}</span>` : '<span class="neu">—</span>'}
@@ -15299,275 +15299,18 @@ const TAB_LABELS = {
   gems:     '💎 GEMs',
 };
 
-const HELP_CONTENT = {
-  overview: {
-    title: '⛁ Portfolio Tracker — Overview',
-    sections: [
-      { icon: '🎯', heading: 'What this tracker does',
-        text: `The Portfolio Tracker is a single self-contained HTML file that runs entirely in your browser — no server, no installation, no account required. It solves the core challenge of managing a complex digital asset portfolio across multiple wallets, liquidity pools, staking vaults, and speculative positions, all in one place with live prices.<br><br>Your data never leaves your machine. Everything is stored in your browser's local storage and a linked .json backup file on your own drive.` },
-      { icon: '📂', heading: 'The seven tabs — what each does',
-        text: `<strong>📊 Summary</strong> — Portfolio command center. Total value, deployed capital, P&L across all areas, and the IL Break-Even Calculator for modeling new positions before committing capital.<br><br><strong>🔁 LP Pools</strong> — Tracks concentrated liquidity positions (Uniswap v3, Aerodrome, Orca, Beefy vaults). Live pricing, impermanent loss calculation, yield logging, and the Beat HODL? scorecard.<br><br><strong>🏦 Vaults</strong> — Single-asset yield positions: staking, lending, LSTs. Tracks APY, yield earned, and net result vs entry value.<br><br><strong>💼 Holdings</strong> — Spot tokens across all wallets and chains. Cost basis, P&L, allocation %, and per-holding price alerts (buy trigger, stop loss, T1/T2/T3).<br><br><strong>⚡ Hedge</strong> — Calculates optimal perpetual short positions on Hyperliquid to protect BTC, ETH, and SOL exposure. Live IV from Deribit, funding rates from Hyperliquid, and a 5-step formula produce a regime-based hedge ratio. Performance chart shows hedge effectiveness over time.<br><br><strong>📁 History</strong> — Archives all closed pools, rebalances, yield logs, and transactions. Full editing capability on historical entries. Tax-ready CSV export.<br><br><strong>💎 GEMs</strong> — Watchlist for speculative tokens. Buy triggers, stop losses, three take-profit tiers, Vol/MC momentum signals, and sparklines.` },
-      { icon: '🔑', heading: 'Key concepts to understand',
-        text: `<strong>Beat HODL?</strong> — The fundamental LP question: has the yield earned by providing liquidity outweighed the impermanent loss vs simply holding the tokens? Shown as ✓ YES / ✗ NO on every pool.<br><br><strong>Hedge ratio</strong> — The percentage of your crypto exposure protected by a short position. Hard capped at 60% — you always retain meaningful upside exposure. The formula uses implied volatility, 7-day trend, and funding rate to recommend the optimal ratio automatically.<br><br><strong>Net carry</strong> — Pool yield earned minus annual funding cost on the hedge. Positive carry means the hedge is net profitable.<br><br><strong>Funded From Holdings</strong> — When adding capital to a pool or vault, this feature auto-deducts the source tokens from your Holdings and logs Transfer transactions — keeping all balances correct without manual editing.<br><br><strong>Backup envelope</strong> — Your .json backup file contains everything: portfolio data, hedge chart history, activation token, Pushover keys, and settings. Linking the backup file on any machine restores the complete tracker instantly.` },
-      { icon: '🚀', heading: 'Getting started — four steps',
-        text: `<strong>1. Open in Chrome, Brave, or Edge</strong> — double-click the HTML file. Brave works identically to Chrome. Firefox is not recommended (File System API limitations).<br><br><strong>2. Link your backup file</strong> — click ⛁ Data ▾ → Link / Change File → select or create a .json file in the same folder. Auto-save activates immediately (every 7 minutes, silently).<br><br><strong>3. Add your first position</strong> — go to the tab that matches what you want to track. Click the + button. For LP Pools: enter both token symbols, current quantities, entry value, and your price range.<br><br><strong>4. Refresh prices</strong> — click ↻ Refresh in the header. Prices update from CoinGecko and the live header bar populates. From here, everything is live.` },
-      { icon: '🦁', heading: 'Using Brave Browser',
-        text: `The tracker works identically in Brave as in Chrome — all features are supported. However, Brave's built-in <strong>Shields</strong> feature may block external data requests depending on your Shields setting.<br><br><strong>If prices aren't loading, or live hedge/CPI data isn't updating:</strong><br>Click the <strong>lion icon</strong> (🦁) in the address bar → set Shields to <strong>Standard</strong> (not Aggressive), or turn Shields off for this page.<br><br><strong>Affected by Aggressive Shields:</strong> CoinGecko prices · Hyperliquid funding/IV · FRED CPI rate · Formspree feedback · imgbb screenshot uploads.<br><br><strong>Not affected:</strong> All stored data, Holdings, Pools, Vaults, GEMs, History — these are local and always available regardless of Shields setting.` },
-      { icon: '⛁', heading: 'Data protection & the backup file',
-        text: `<strong>How your data is stored</strong> — All data lives in two places: your browser's localStorage (fast, automatic) and a .json backup file on your own drive (permanent, portable).<br><br><strong>Linking a backup file</strong> — Click ⛁ Data ▾ → Link / Create File. Select an existing .json or create a new one. Once linked, the tracker auto-saves every 7 minutes and on every tab switch. A green dot in the header confirms the link is active.<br><br><strong>Import Backup</strong> — Loads data from a .json file into the tracker. Use this to restore after a cache clear or on a new machine. After importing, you will be prompted to link the same file for auto-save — click OK and select the same file to reconnect everything in one step.<br><br><strong>Save / Export Backup</strong> — If a file is linked, saves to it immediately and optionally downloads a dated copy. If no file is linked, downloads a dated .json to your Downloads folder as a manual backup.<br><br><strong>Unlink File</strong> — Disconnects the current backup file without deleting any data. Your data stays safe in localStorage. Re-link at any time using Link / Create File.<br><br><strong>Reset Data Link</strong> — Use only if the tracker is saving to the wrong folder (e.g. a stale path from a previous machine). Clears the saved file path and forces you to re-link. Data is not affected.<br><br><strong>After a cache clear</strong> — localStorage is wiped. Re-open the tracker, click ⛁ Data ▾ → Import Backup, select your .json file, then link it when prompted. Everything restores in under a minute.<br><br><strong>Moving to a new machine</strong> — Copy the tracker folder (HTML file + .json backup + help_img/ folder) to the new machine. Open in Chrome, import and link the backup. Activation, settings, and all history restore automatically.` },
-      { icon: '❓', heading: 'Common first-time questions',
-        text: `<strong>Why isn't a token price loading?</strong> CoinGecko may be rate-limited — wait 60 seconds and click ↻ Refresh. If a specific token always shows — , its CoinGecko ID may be wrong — edit the entry and search for the correct ID.<br><br><strong>How do I activate the tracker?</strong> Your Install ID is shown on the activation screen. Send it to the author and an activation code will be returned. The code is stored in your backup file and restores automatically on any future import.<br><br><strong>What is the Hedge tab for?</strong> If you hold BTC, ETH, or SOL in pools or vaults, the Hedge tab helps you size a protective short position on Hyperliquid that offsets downside risk while keeping your upside exposure. It is entirely optional — all other tabs function independently.<br><br><strong>Is my data safe?</strong> Yes — no data ever leaves your machine. The only external calls are to CoinGecko (prices), Deribit (implied volatility), Hyperliquid (funding rates), and a Cloudflare Worker (help content sync only). No portfolio data is transmitted in any of these calls.` },
-    ]
-  },
-  summary: {
-    title: '📊 Summary Tab',
-    sections: [
-      { icon: '📋', heading: 'What this tab does',
-        text: `Provides a bird's-eye view of your entire portfolio — total value, deployed capital, overall P&L, and a breakdown by area (Pools, Vaults, Holdings, GEMs).` },
-      { icon: '⚙️', heading: 'How it functions',
-        text: `All values are calculated in real time from live prices via CoinGecko. The IL Break-Even Calculator lets you model impermanent loss scenarios for any pool type before committing capital.` },
-      { icon: '✏️', heading: 'How to enter data',
-        text: `No data entry here — this tab reads from all other tabs. Set your Inception Date by clicking the date field to track portfolio-wide performance from a specific start date.` },
-      { icon: '➡️', heading: 'Further actions',
-        text: `Use the IL Calculator to model new positions before adding them. Click ↻ Refresh in the header to update all live prices.` },
-      { icon: '📊', heading: 'How to interpret',
-        text: `Deployed = what you put in. Current = what it's worth now. Overall P&L = current minus deployed. Each area card shows its own deployed vs current vs P&L.` },
-      { icon: '❓', heading: 'Common questions',
-        text: `<strong>Why does P&L show — ?</strong> Prices haven't loaded yet — click Refresh.<br><strong>Why doesn't it match my pool totals exactly?</strong> Pool P&L includes yield; Holdings P&L is price appreciation only.` },
-    ]
-  },
-  pools: {
-    title: '🔁 LP Pools Tab',
-    sections: [
-      { icon: '📋', heading: 'What this tab does',
-        text: `Tracks all active liquidity pool positions — token quantities, live values, yield harvested, range status, IL vs HODL comparison, and annualized returns.` },
-      { icon: '⚙️', heading: 'How it functions',
-        text: `Live prices fetch from CoinGecko. The ratio between Token A and Token B is compared to your set range (Low/High) to determine range status. IL is calculated using the pool model you select (v2, v3, Curve, Balancer).` },
-      { icon: '✏️', heading: 'How to enter data',
-        text: `Click <strong>+ Add Pool</strong>. Enter both token symbols, current quantities, entry value, and your price range. Use ✎ to edit any row. Click ▶ on a row to log a yield harvest inline.` },
-      { icon: '➡️', heading: 'Further actions',
-        text: `Log yield harvests regularly using the ▶ expand panel.<br><br><strong>Closing a pool:</strong> Click ✎ → Close / Rebalance → Close Position. The close dialog shows the exact token quantities the tracker has on record — <strong>edit these fields to match what the platform actually returned to your wallet</strong> before confirming. This is especially important if you previously used Rebalance (which resets quantities to zero).<br><br><strong>Rebalancing a pool:</strong> Click ✎ → Close / Rebalance → Rebalance. This archives the old leg and re-opens the pool modal for you to enter fresh quantities. Any yield you log while in the rebalanced state will appear in the new leg's yield history.` },
-      { icon: '📊', heading: 'How to interpret',
-        text: `<strong>Range badge:</strong> In Range · Watch (within 20% of boundary) · Act Now (within 10%) · OUT OF RANGE.<br><strong>Net/Ann%:</strong> Total return including yield, annualized.<br><strong>Beat HODL?</strong> Pool+Yield vs simply holding the tokens.` },
-      { icon: '❓', heading: 'Common questions',
-        text: `<strong>Why is Live Ratio showing — ?</strong> A token price failed to load — try Refresh.<br><strong>What pool model should I use?</strong> Uniswap v3/Orca = v3, Uniswap v2/Sushi = v2, Curve/Beefy stable pairs = Curve, Balancer = Balancer.<br><br><strong>I rebalanced and then closed — why were the wrong quantities returned to Holdings?</strong> When you use Rebalance, the pool's tracked quantities are reset to zero. If you later close without entering new quantities, the tracker has nothing to return. Always enter the actual received quantities in the close dialog's Token A / Token B fields before confirming the close.<br><br><strong>The Closed Pool yield log is empty after I closed — where is my yield?</strong> When filtering by pool name in the Yield Log → Closed Pools tab, yield from all legs (rebalances + final close) is shown together. If yield still appears missing, select "All Pools" in the dropdown to confirm it's there, then narrow back to the specific pool.` },
-    ]
-  },
-  vaults: {
-    title: '🏦 Vaults Tab',
-    sections: [
-      { icon: '📋', heading: 'What this tab does',
-        text: `Tracks single-asset yield positions — staking, lending vaults, LSTs, and any strategy where you deposit one token and earn yield on it over time.` },
-      { icon: '⚙️', heading: 'How it functions',
-        text: `Current value = Qty × Live Price. If you enter an APY, it estimates yield earned based on days since entry. You can override this with actual yield logged.` },
-      { icon: '✏️', heading: 'How to enter data',
-        text: `Click <strong>+ Add Vault</strong>. Enter the token, platform, quantity, APY (optional), entry date, and entry value. Update Qty when your staked amount changes. Enter actual Yield Earned $ when you harvest.` },
-      { icon: '➡️', heading: 'Further actions',
-        text: `Update yield earned periodically. If you add more capital, edit the vault and adjust qty and entry value. Use Close via the Edit modal to archive to History when exiting.` },
-      { icon: '📊', heading: 'How to interpret',
-        text: `<strong>Ann. Return:</strong> Combines price appreciation + yield, annualized. EST means it's using your APY estimate rather than logged yield.<br><strong>Yield APR</strong> = pure yield return excluding price movement.` },
-      { icon: '❓', heading: 'Common questions',
-        text: `<strong>Why is Current showing — ?</strong> Token price not loaded — check the CoinGecko ID is correct.<br><strong>My vault shows a loss — why?</strong> The token price may have fallen since entry. Entry value reflects what you deposited, not what it's worth now.` },
-    ]
-  },
-  holdings: {
-    title: '💼 Holdings Tab',
-    sections: [
-      { icon: '📋', heading: 'What this tab does',
-        text: `Tracks all spot holdings — tokens held in wallets, exchanges, or hardware devices. Shows live price, 24h change, average cost basis, current value, allocation %, and unrealized P&L.` },
-      { icon: '⚙️', heading: 'How it functions',
-        text: `Each row is one token/wallet/chain combination. Average cost updates automatically using weighted average when you buy more. The Group button clusters holdings by wallet for a cleaner view.` },
-      { icon: '✏️', heading: 'How to enter data',
-        text: `Click <strong>+ Add Holding</strong> or use Buy/Sell/Swap/Transfer actions on an existing row. For buys, enter qty and price — cost basis is calculated automatically. For stablecoins, price locks at $1.` },
-      { icon: '➡️', heading: 'Further actions',
-        text: `Use the 🔔 alert button on any row to set price alerts (buy trigger, stop loss, TP1/2/3). Use Swap to record token-to-token trades. Use Transfer to move between wallets while preserving cost basis.` },
-      { icon: '📊', heading: 'How to interpret',
-        text: `<strong>Avg Cost:</strong> Your blended entry price across all purchases.<br><strong>Alloc %:</strong> This holding as a percentage of total spot portfolio value.<br><strong>P&L $/%:</strong> Unrealized gain/loss vs your cost basis.` },
-      { icon: '❓', heading: 'Common questions',
-        text: `<strong>Why does a token show — for price?</strong> The CoinGecko ID may be wrong — edit and search for the correct token.<br><strong>How do I record a sale?</strong> Use the Sell action on the holding row — it reduces qty and logs the transaction.` },
-    ]
-  },
-  hedge: {
-    title: '⚡ Hedge Tab',
-    sections: [
-      { icon: '📋', heading: 'What this tab does',
-        text: `Calculates optimal short hedge sizes for BTC, ETH, and SOL to protect your LP and vault positions from downside price risk. Tracks open shorts on Hyperliquid and monitors funding rates.` },
-      { icon: '⚙️', heading: 'How it functions',
-        text: `The optimal ratio is calculated from IV (implied volatility), 7-day trend, funding rate, your pool yield APY, and BTC/asset stability signals. Funding rates and IV fetch live from Hyperliquid and Deribit.` },
-      { icon: '✏️', heading: 'How to enter data',
-        text: `Use the slider on each asset card to set your hedge ratio. Click <strong>+ Open Position</strong> to log a short — enter asset, margin ($), leverage, and entry price. Log HL deposits/withdrawals via the HL Deposit/Withdraw button.` },
-      { icon: '➡️', heading: 'Further actions',
-        text: `Click ↻ Refresh to fetch latest funding rates and IV. Close positions via the Close button on Open Positions. Check the calculation detail (▶ Show) on each card to understand how the ratio was derived.` },
-      { icon: '📊', heading: 'How to interpret',
-        text: `<strong>Funding Rate:</strong> Negative = shorts paying longs (costs you). Positive = longs paying shorts (you earn).<br><strong>Rate / Funding column:</strong> Current 8hr rate · cumulative net earned or paid.<br><strong>Net carry:</strong> Annual pool yield minus annual funding cost — positive means hedging is net profitable.` },
-      { icon: '❓', heading: 'Common questions',
-        text: `<strong>Why is funding rate showing — ?</strong> Click Refresh — Hyperliquid data fetches on demand.<br><strong>What does negative net carry mean?</strong> Funding cost exceeds pool yield — consider reducing hedge ratio.<br><strong>What is the Limit Buy checkbox?</strong> Signals recovery conviction and reduces the recommended hedge by ~18%.` },
-    ]
-  },
-  history: {
-    title: '📁 History Tab',
-    sections: [
-      { icon: '📋', heading: 'What this tab does',
-        text: `Archives all closed and rebalanced pool positions, yield harvest logs, and transactions. Your permanent record for performance analysis and tax reporting.` },
-      { icon: '⚙️', heading: 'How it functions',
-        text: `Positions are auto-archived when you Close or Rebalance from the LP Pools tab. Yield entries are linked to their pool. The Loss Status flag lets you mark positions where funds were lost to hacks, mismanagement, or theft.<br><br><strong>Rebalance + Close creates two history legs:</strong> If you Rebalance a pool and later Close it, two records appear in Closed Pools — one for the rebalance leg and one for the close leg. In the Yield Log → Closed Pools tab, selecting the pool name from the dropdown shows yield from <em>both</em> legs combined, so nothing is hidden.` },
-      { icon: '✏️', heading: 'How to enter data',
-        text: `Use ⚙ on any history row to edit dates, name, type, and Loss Status. To mark a loss: click ⚙, set Loss Status (Unrecoverable / Partial / Legal Action), and add a note describing what happened.` },
-      { icon: '➡️', heading: 'Further actions',
-        text: `Add yield entries to closed pools via ➕ Add Yield Entry. Export to CSV for tax reporting. Update Loss Status if funds are partially recovered or legal proceedings conclude.` },
-      { icon: '📊', heading: 'How to interpret',
-        text: `<strong>Net Result:</strong> Exit value + yield - entry value.<br><strong>Beat HODL?</strong> Did pool + yield outperform simply holding the tokens?<br><strong>Loss badges:</strong> ⚠ Unrecoverable · 🔶 Partial · ⚖️ Legal Action · ✅ Recovered.` },
-      { icon: '❓', heading: 'Common questions',
-        text: `<strong>How do I record a hack or theft?</strong> Close the vault/pool at $0 exit value, then edit the history entry and set Loss Status to Unrecoverable with a note.<br><strong>Can I change the loss status later?</strong> Yes — fully editable at any time via the ⚙ button.` },
-    ]
-  },
-  gems: {
-    title: '💎 GEMs Tab',
-    sections: [
-      { icon: '📋', heading: 'What this tab does',
-        text: `Watchlist for speculative tokens — tracks live price, 24h change, Vol/MC momentum, entry price, targets (T1/T2/T3), stop loss, and buy triggers. Sends Pushover alerts when prices hit your levels.` },
-      { icon: '⚙️', heading: 'How it functions',
-        text: `Prices fetch from CoinGecko. Vol/MC (Volume/Market Cap ratio) is tracked over 1hr, 24hr, and 48hr windows to detect momentum shifts before price moves. Sparklines show 7-day price history at a glance.` },
-      { icon: '✏️', heading: 'How to enter data',
-        text: `Click <strong>+ Add GEM</strong> and search for the token. Set your entry price, qty held, and targets. Use the ▶ expand panel on any row to set Stop Loss, T1/T2/T3, and Add trigger inline.` },
-      { icon: '➡️', heading: 'Further actions',
-        text: `Set up Pushover in Settings (⚙ icon) for phone alerts. Use ✔ Executed? to confirm TP sells and auto-update your qty. The thesis editor (📝) lets you record your investment case for each token.` },
-      { icon: '📊', heading: 'How to interpret',
-        text: `<strong>Vol/MC columns (1h/24h/48h):</strong> % change in volume-to-market-cap ratio vs that window. Rising Vol/MC often precedes price moves.<br><strong>Alert % badge:</strong> Custom mover alert threshold — fires when 24h move exceeds this %.` },
-      { icon: '❓', heading: 'Common questions',
-        text: `<strong>Why is live price showing — ?</strong> The CoinGecko ID is wrong — edit and search again.<br><strong>What's the difference between Alert In and T1?</strong> Alert In fires when price drops TO your level (buy). T1/T2/T3 fire when price rises TO your target (sell).<br><strong>How do I get phone alerts?</strong> Install Pushover app, create account, enter User Key and App Token in Settings.` },
-    ]
-  },
-  setup: {
-    title: '⚙ Setup & Data Guide',
-    sections: [
-      { icon: '🪟', heading: 'Windows — Step 1: Create your working folder',
-        text: `Open <strong>File Explorer</strong> (press Win + E). Navigate to <strong>Documents</strong>. Right-click in empty space → <strong>New → Folder</strong> → name it <strong>PortfolioTracker</strong>.<br><br>Move <code>Portfolio_Tracker_Demo.html</code> into this folder. This is your permanent home for the tracker — never move it after setup.` },
-      { icon: '🪟', heading: 'Windows — Step 2: Tell Chrome where to save files',
-        text: `In Chrome, paste this into the address bar and press Enter:<br><br><code>chrome://settings/downloads</code><br><br>Turn <strong>ON</strong> the toggle: <em>"Ask where to save each file before downloading"</em><br><br>Edge users: use <code>edge://settings/downloads</code> instead.<br><br>This ensures your data file saves to your working folder rather than disappearing into Downloads.` },
-      { icon: '🪟', heading: 'Windows — Step 3: Link your data file',
-        text: `Open the tracker from your <strong>PortfolioTracker</strong> folder (not from Downloads or a browser bookmark).<br><br>Click <strong>▶ Start Free Trial</strong> on the activation screen.<br><br>In the header click <strong>⛁ Data ▾ → Link / Create File</strong>.<br><br>Navigate to your <strong>PortfolioTracker</strong> folder. Type <strong>portfolio_data.json</strong> as the filename → click <strong>Save</strong>.<br><br>The status dot in the header turns <strong>green ●</strong> — auto-save is now active every 7 minutes.` },
-      { icon: '🪟', heading: 'Windows — Step 4: Create a desktop shortcut',
-        text: `Open your <strong>PortfolioTracker</strong> folder in File Explorer. Right-click <code>Portfolio_Tracker_Demo.html</code> → <strong>Send to → Desktop (create shortcut)</strong>.<br><br>Always open the tracker via this shortcut. Never open it from Downloads or a browser bookmark — the file link won't work correctly from there.` },
-      { icon: '🍎', heading: 'Mac — Step 1: Create your working folder',
-        text: `Open <strong>Finder</strong> (the smiley face icon in your Dock). Click <strong>Documents</strong> in the left sidebar.<br><br>Press <strong>Cmd + Shift + N</strong> to create a new folder → name it <strong>PortfolioTracker</strong>.<br><br>Move <code>Portfolio_Tracker_Demo.html</code> into this folder.` },
-      { icon: '🍎', heading: 'Mac — Step 2: Tell Chrome where to save files',
-        text: `In Chrome, paste this into the address bar and press Enter:<br><br><code>chrome://settings/downloads</code><br><br>Turn <strong>ON</strong> the toggle: <em>"Ask where to save each file before downloading"</em><br><br><strong>Mac extra step:</strong> The first time the tracker auto-saves, Chrome shows a bar saying <em>"Allow this site to download multiple files?"</em> — click <strong>Allow</strong>. This only appears once.<br><br>If you missed it: Chrome menu (⋮) → <strong>Settings → Privacy and security → Site settings → Additional permissions → Automatic downloads</strong> → add the tracker to the Allowed list.` },
-      { icon: '🍎', heading: 'Mac — Step 3: Link your data file',
-        text: `Open the tracker from your <strong>PortfolioTracker</strong> folder in Finder (not from Downloads).<br><br>Click <strong>▶ Start Free Trial</strong>. In the header click <strong>⛁ Data ▾ → Link / Create File</strong>.<br><br>Navigate to your <strong>PortfolioTracker</strong> folder. Type <strong>portfolio_data.json</strong> → click <strong>Save</strong>.<br><br>The dot turns <strong>green ●</strong>.` },
-      { icon: '🍎', heading: 'Mac — If Chrome loses access after restart',
-        text: `Mac Chrome resets file write permissions when you restart the browser — this is a Mac security feature, not a bug.<br><br>You will see an amber banner at the bottom of the screen: <em>"Auto-save permission lost"</em>.<br><br>Click <strong>🔓 Restore Access</strong> → Chrome asks you to confirm — click <strong>Allow</strong>. Auto-save resumes immediately.<br><br>If the banner does not appear, click <strong>⛁ Data ▾ → Link / Create File</strong> and relink your file.` },
-      { icon: '🍎', heading: 'Mac — Step 4: Create a desktop alias',
-        text: `Open your <strong>PortfolioTracker</strong> folder in Finder. Hold <strong>Cmd + Opt</strong> and drag <code>Portfolio_Tracker_Demo.html</code> to your Desktop.<br><br>This creates an alias shortcut. Always open the tracker from here — not from Downloads or Safari.` },
-      { icon: '🦁', heading: 'Brave (Windows) — Step 1: Create your working folder',
-        text: `Open <strong>File Explorer</strong> (press <strong>Win + E</strong>). Click <strong>Documents</strong> in the left sidebar.<br><br>Right-click in empty space → <strong>New → Folder</strong> → name it <strong>PortfolioTracker</strong>.<br><br>Move <code>Portfolio_Tracker_Demo.html</code> into this folder. This is your permanent home — never move it after setup.` },
-      { icon: '🦁', heading: 'Brave (Windows) — Step 2: Tell Brave where to save files',
-        text: `In Brave, paste this into the address bar and press Enter:<br><br><code>brave://settings/downloads</code><br><br>Turn <strong>ON</strong> the toggle: <em>"Ask where to save each file before downloading"</em><br><br>This ensures your data file saves to your working folder instead of disappearing into Downloads.<br><br><strong>Also check Brave Shields:</strong> Click the <strong>lion icon 🦁</strong> in the address bar while the tracker is open → make sure Shields is set to <strong>Standard</strong> (not Aggressive). Aggressive Shields blocks live price updates.` },
-      { icon: '🦁', heading: 'Brave (Windows) — Step 3: Link your data file',
-        text: `Open the tracker from your <strong>PortfolioTracker</strong> folder (not from Downloads or a bookmark).<br><br>Click <strong>▶ Explore the Demo</strong> on the welcome screen.<br><br>In the header click <strong>⛁ Data ▾ → Link / Create File</strong>.<br><br>A Save dialog opens — navigate to your <strong>PortfolioTracker</strong> folder. Type <strong>portfolio_data.json</strong> as the filename → click <strong>Save</strong>.<br><br>The status dot in the header turns <strong>green ●</strong> — auto-save is now active. If Brave asks <em>"Allow this site to save files?"</em> click <strong>Allow</strong>.` },
-      { icon: '🦁', heading: 'Brave (Windows) — Step 4: Create a desktop shortcut',
-        text: `Open your <strong>PortfolioTracker</strong> folder in File Explorer. Right-click <code>Portfolio_Tracker_Demo.html</code> → <strong>Send to → Desktop (create shortcut)</strong>.<br><br>Always open the tracker from this desktop shortcut. Never open it from Downloads or a Brave bookmark — the file link will not reconnect correctly from there.` },
-      { icon: '🦁', heading: 'Brave (Mac) — Step 1: Create your working folder',
-        text: `Open <strong>Finder</strong> (the smiley face in your Dock). Click <strong>Documents</strong> in the left sidebar.<br><br>Press <strong>Cmd + Shift + N</strong> to create a new folder → name it <strong>PortfolioTracker</strong>.<br><br>Move <code>Portfolio_Tracker_Demo.html</code> into this folder.` },
-      { icon: '🦁', heading: 'Brave (Mac) — Step 2: Tell Brave where to save files',
-        text: `In Brave, paste this into the address bar and press Enter:<br><br><code>brave://settings/downloads</code><br><br>Turn <strong>ON</strong> the toggle: <em>"Ask where to save each file before downloading"</em><br><br><strong>Mac extra step:</strong> The first time the tracker auto-saves, Brave may show a bar at the top saying <em>"Allow this site to download multiple files?"</em> — click <strong>Allow</strong>. This only appears once.<br><br>If you missed it: click the <strong>lion icon 🦁</strong> in the address bar → <strong>Site settings</strong> → scroll to <strong>Automatic downloads</strong> → set to <strong>Allow</strong>.<br><br><strong>Also check Shields:</strong> Click the lion icon 🦁 → set Shields to <strong>Standard</strong> so prices and live data load correctly.` },
-      { icon: '🦁', heading: 'Brave (Mac) — Step 3: Link your data file',
-        text: `Open the tracker from your <strong>PortfolioTracker</strong> folder in Finder (not from Downloads).<br><br>Click <strong>▶ Explore the Demo</strong>. In the header click <strong>⛁ Data ▾ → Link / Create File</strong>.<br><br>Navigate to your <strong>PortfolioTracker</strong> folder. Type <strong>portfolio_data.json</strong> → click <strong>Save</strong>.<br><br>The dot turns <strong>green ●</strong>. If the dot stays grey, close and reopen the tracker from the same folder.` },
-      { icon: '🦁', heading: 'Brave (Mac) — If Brave loses access after restart',
-        text: `Like Chrome on Mac, Brave may reset file write permissions when you restart the browser — this is a Mac security feature.<br><br>You will see an amber banner: <em>"Auto-save permission lost"</em>.<br><br>Click <strong>🔓 Restore Access</strong> → Brave asks you to confirm → click <strong>Allow</strong>. Auto-save resumes immediately.<br><br>If the banner does not appear: click <strong>⛁ Data ▾ → Link / Create File</strong> and relink your <code>portfolio_data.json</code> file.` },
-      { icon: '🦁', heading: 'Brave (Mac) — Step 4: Create a desktop alias',
-        text: `Open your <strong>PortfolioTracker</strong> folder in Finder. Hold <strong>Cmd + Opt</strong> and drag <code>Portfolio_Tracker_Demo.html</code> to your Desktop.<br><br>This creates an alias shortcut. Always open the tracker from here — not from Downloads.` },
-      { icon: '🔧', heading: 'Fix: Data file is saving to the wrong folder',
-        text: `1. Click <strong>⛁ Data ▾ → Save / Export Backup</strong> — save a copy somewhere safe first.<br>2. Click <strong>⛁ Data ▾ → ⚠ Reset Data Link</strong> to clear the wrong link.<br>3. Click <strong>⛁ Data ▾ → Link / Create File</strong> → navigate to your <strong>PortfolioTracker</strong> folder → save as <code>portfolio_data.json</code>.<br>4. The dot turns <strong>green ●</strong> — done.` },
-      { icon: '🔧', heading: 'Fix: Numbered copies appearing (autosave (1).json, (2).json…)',
-        text: `This happens when Chrome does not have <em>"Ask where to save"</em> turned on, so copies pile up in Downloads instead of overwriting the linked file.<br><br>1. Find the <strong>highest-numbered copy</strong> — that is your most recent data.<br>2. Click <strong>⛁ Data ▾ → Import Backup</strong> → select that file to restore your data.<br>3. Delete all the numbered copies from your Downloads folder.<br>4. Enable "Ask where to save": paste <code>chrome://settings/downloads</code> in Chrome → turn on the toggle.<br>5. Click <strong>⛁ Data ▾ → Link / Create File</strong> → save to your <strong>PortfolioTracker</strong> folder.` },
-      { icon: '🔧', heading: 'Fix: Status dot is grey or orange — data not saving',
-        text: `<strong>Grey dot</strong> means no file is linked. Click <strong>⛁ Data ▾ → Link / Create File</strong> → navigate to your working folder → select your existing <code>portfolio_data.json</code>.<br><br><strong>Orange dot</strong> or the amber <em>"Auto-save permission lost"</em> banner means the file is linked but Chrome lost write access. Click <strong>🔓 Restore Access</strong> in the banner, or use <strong>⛁ Data ▾ → Link / Create File</strong> to relink.` },
-      { icon: '🔧', heading: 'Fix: I cleared my browser cache and lost my data',
-        text: `If you had a linked file, your data is safe — the <code>portfolio_data.json</code> file on your computer is the permanent copy. Browser cache clearing only removes the browser's temporary copy.<br><br>Click <strong>⛁ Data ▾ → Import Backup</strong> → select your <code>portfolio_data.json</code> file → then relink it via <strong>⛁ Data ▾ → Link / Create File</strong>.` },
-    ]
-  }
-
-};
-
-// ── Search ─────────────────────────────────────────────────────────────────
-function helpStripTags(text) {
-  return text.replace(/\[img:\d+\]/g, ' ').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-}
-
-function helpHighlight(text, query) {
-  if(!query) return text;
-  const escaped = query.replace(/[-.*+?^${}()|[\]\\]/g, '\\$&');
-  return text.replace(new RegExp('(' + escaped + ')', 'gi'),
-    '<mark style="background:#f59e0b33;color:inherit;border-radius:2px;padding:0 2px;">$1</mark>');
-}
-
-function helpSearch(query) {
-  const resultsEl = document.getElementById('helpSearchResults');
-  const contentEl = document.getElementById('helpModalContent');
-  const clearBtn  = document.getElementById('helpSearchClear');
-  query = (query || '').trim();
-  if(!query) { helpSearchClear(); return; }
-  clearBtn.style.display = '';
-  contentEl.style.display = 'none';
-  resultsEl.style.display = '';
-  const q = query.toLowerCase();
-  const matches = [];
-  Object.entries(HELP_CONTENT).forEach(([tab, data]) => {
-    data.sections.forEach((s, idx) => {
-      const clean = helpStripTags(s.text);
-      if((s.heading + ' ' + clean).toLowerCase().includes(q)) {
-        const pos     = clean.toLowerCase().indexOf(q);
-        const start   = Math.max(0, pos - 60);
-        const end     = Math.min(clean.length, pos + 100);
-        const snippet = (start > 0 ? '…' : '') + clean.slice(start, end) + (end < clean.length ? '…' : '');
-        matches.push({ tab, idx, heading: s.heading, snippet, icon: s.icon });
-      }
-    });
-  });
-  if(!matches.length) {
-    resultsEl.innerHTML = `<div style="padding:20px;text-align:center;color:var(--text3);font-size:12px;">No results for <strong>${query}</strong></div>`;
-    return;
-  }
-  resultsEl.innerHTML = matches.map(m => `
-    <div onclick="helpSearchGoTo('${m.tab}',${m.idx})"
-      style="padding:10px 14px;border:1px solid var(--border);border-radius:6px;margin-bottom:6px;cursor:pointer;background:var(--bg2);"
-      onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='var(--bg2)'">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-        <span>${m.icon}</span>
-        <span style="font-size:11px;font-weight:700;color:var(--accent2);">${TAB_LABELS[m.tab]||m.tab}</span>
-        <span style="color:var(--text3);font-size:10px;">›</span>
-        <span style="font-size:11px;font-weight:700;color:var(--text1);">${helpHighlight(m.heading, query)}</span>
-      </div>
-      <div style="font-size:11px;color:var(--text3);line-height:1.6;">${helpHighlight(m.snippet, query)}</div>
-    </div>`).join('');
-}
-
-function helpSearchGoTo(tab, sectionIdx) {
-  helpSearchClear();
-  openHelpModal(tab);
-  setTimeout(() => {
-    const details = document.querySelectorAll('#helpModalContent details');
-    if(details[sectionIdx]) {
-      details[sectionIdx].open = true;
-      details[sectionIdx].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-  }, 80);
-}
-
-function helpSearchClear() {
-  const input     = document.getElementById('helpSearchInput');
-  const resultsEl = document.getElementById('helpSearchResults');
-  const contentEl = document.getElementById('helpModalContent');
-  const clearBtn  = document.getElementById('helpSearchClear');
-  if(input)     input.value = '';
-  if(resultsEl) resultsEl.style.display = 'none';
-  if(contentEl) contentEl.style.display = '';
-  if(clearBtn)  clearBtn.style.display  = 'none';
-}
-
-// ── What's New content — keyed by version string ─────────────────────────────
 const WHATS_NEW = {
+  '47.34': {
+    headline: "Version 47.34",
+    summary: "LP Pools — Active Ratio highlighted in blue for instant at-a-glance identification. Mac column alignment fixed.",
+    items: [
+      { icon: '🔵', title: "Active Ratio — blue highlight",
+        text: "The Live Ratio column now has a distinct blue background, making it instantly distinguishable from the grey-tinted Low and High range columns at a glance." },
+      { icon: '🖥', title: "Mac column alignment fixed",
+        text: "Sticky table headers now align correctly with data columns on Mac. The fix uses scrollbar-gutter:stable so header and body share the same layout width on all platforms." },
+    ]
+  },
+
   '47.32': {
     headline: "Version 47.32 — What's New",
     summary:  'Version bump to ensure all demo users receive the full set of recent updates.',
@@ -15799,6 +15542,322 @@ const WHATS_NEW = {
     ]
   }
 };
+
+const HELP_CONTENT = {
+  overview: {
+    title: '⛁ Portfolio Tracker — Overview',
+    sections: [
+      { icon: '🎯', heading: 'What this tracker does',
+        text: `The Portfolio Tracker is a single self-contained HTML file that runs entirely in your browser — no server, no installation, no account required. It solves the core challenge of managing a complex digital asset portfolio across multiple wallets, liquidity pools, staking vaults, and speculative positions, all in one place with live prices.<br><br>Your data never leaves your machine. Everything is stored in your browser's local storage and a linked .json backup file on your own drive.` },
+      { icon: '📂', heading: 'The seven tabs — what each does',
+        text: `<strong>📊 Summary</strong> — Portfolio command center. Total value, deployed capital, P&L across all areas, and the IL Break-Even Calculator for modeling new positions before committing capital.<br><br><strong>🔁 LP Pools</strong> — Tracks concentrated liquidity positions (Uniswap v3, Aerodrome, Orca, Beefy vaults). Live pricing, impermanent loss calculation, yield logging, and the Beat HODL? scorecard.<br><br><strong>🏦 Vaults</strong> — Single-asset yield positions: staking, lending, LSTs. Tracks APY, yield earned, and net result vs entry value.<br><br><strong>💼 Holdings</strong> — Spot tokens across all wallets and chains. Cost basis, P&L, allocation %, and per-holding price alerts (buy trigger, stop loss, T1/T2/T3).<br><br><strong>⚡ Hedge</strong> — Calculates optimal perpetual short positions on Hyperliquid to protect BTC, ETH, and SOL exposure. Live IV from Deribit, funding rates from Hyperliquid, and a 5-step formula produce a regime-based hedge ratio. Performance chart shows hedge effectiveness over time.<br><br><strong>📁 History</strong> — Archives all closed pools, rebalances, yield logs, and transactions. Full editing capability on historical entries. Tax-ready CSV export.<br><br><strong>💎 GEMs</strong> — Watchlist for speculative tokens. Buy triggers, stop losses, three take-profit tiers, Vol/MC momentum signals, and sparklines.` },
+      { icon: '🔑', heading: 'Key concepts to understand',
+        text: `<strong>Beat HODL?</strong> — The fundamental LP question: has the yield earned by providing liquidity outweighed the impermanent loss vs simply holding the tokens? Shown as ✓ YES / ✗ NO on every pool.<br><br><strong>Hedge ratio</strong> — The percentage of your crypto exposure protected by a short position. Hard capped at 60% — you always retain meaningful upside exposure. The formula uses implied volatility, 7-day trend, and funding rate to recommend the optimal ratio automatically.<br><br><strong>Net carry</strong> — Pool yield earned minus annual funding cost on the hedge. Positive carry means the hedge is net profitable.<br><br><strong>Funded From Holdings</strong> — When adding capital to a pool or vault, this feature auto-deducts the source tokens from your Holdings and logs Transfer transactions — keeping all balances correct without manual editing.<br><br><strong>Backup envelope</strong> — Your .json backup file contains everything: portfolio data, hedge chart history, activation token, Pushover keys, and settings. Linking the backup file on any machine restores the complete tracker instantly.` },
+      { icon: '🚀', heading: 'Getting started — four steps',
+        text: `<strong>1. Open in Chrome, Brave, or Edge</strong> — double-click the HTML file. Brave works identically to Chrome. Firefox is not recommended (File System API limitations).<br><br><strong>2. Link your backup file</strong> — click ⛁ Data ▾ → Link / Change File → select or create a .json file in the same folder. Auto-save activates immediately (every 7 minutes, silently).<br><br><strong>3. Add your first position</strong> — go to the tab that matches what you want to track. Click the + button. For LP Pools: enter both token symbols, current quantities, entry value, and your price range.<br><br><strong>4. Refresh prices</strong> — click ↻ Refresh in the header. Prices update from CoinGecko and the live header bar populates. From here, everything is live.` },
+      { icon: '🦁', heading: 'Using Brave Browser',
+        text: `The tracker works identically in Brave as in Chrome — all features are supported. However, Brave's built-in <strong>Shields</strong> feature may block external data requests depending on your Shields setting.<br><br><strong>If prices aren't loading, or live hedge/CPI data isn't updating:</strong><br>Click the <strong>lion icon</strong> (🦁) in the address bar → set Shields to <strong>Standard</strong> (not Aggressive), or turn Shields off for this page.<br><br><strong>Affected by Aggressive Shields:</strong> CoinGecko prices · Hyperliquid funding/IV · FRED CPI rate · Formspree feedback · imgbb screenshot uploads.<br><br><strong>Not affected:</strong> All stored data, Holdings, Pools, Vaults, GEMs, History — these are local and always available regardless of Shields setting.` },
+      { icon: '⛁', heading: 'Data protection & the backup file',
+        text: `<strong>How your data is stored</strong> — All data lives in two places: your browser's localStorage (fast, automatic) and a .json backup file on your own drive (permanent, portable).<br><br><strong>Linking a backup file</strong> — Click ⛁ Data ▾ → Link / Create File. Select an existing .json or create a new one. Once linked, the tracker auto-saves every 7 minutes and on every tab switch. A green dot in the header confirms the link is active.<br><br><strong>Import Backup</strong> — Loads data from a .json file into the tracker. Use this to restore after a cache clear or on a new machine. After importing, you will be prompted to link the same file for auto-save — click OK and select the same file to reconnect everything in one step.<br><br><strong>Save / Export Backup</strong> — If a file is linked, saves to it immediately and optionally downloads a dated copy. If no file is linked, downloads a dated .json to your Downloads folder as a manual backup.<br><br><strong>Unlink File</strong> — Disconnects the current backup file without deleting any data. Your data stays safe in localStorage. Re-link at any time using Link / Create File.<br><br><strong>Reset Data Link</strong> — Use only if the tracker is saving to the wrong folder (e.g. a stale path from a previous machine). Clears the saved file path and forces you to re-link. Data is not affected.<br><br><strong>After a cache clear</strong> — localStorage is wiped. Re-open the tracker, click ⛁ Data ▾ → Import Backup, select your .json file, then link it when prompted. Everything restores in under a minute.<br><br><strong>Moving to a new machine</strong> — Copy the tracker folder (HTML file + .json backup + help_img/ folder) to the new machine. Open in Chrome, import and link the backup. Activation, settings, and all history restore automatically.` },
+      { icon: '❓', heading: 'Common first-time questions',
+        text: `<strong>Why isn't a token price loading?</strong> CoinGecko may be rate-limited — wait 60 seconds and click ↻ Refresh. If a specific token always shows — , its CoinGecko ID may be wrong — edit the entry and search for the correct ID.<br><br><strong>How do I activate the tracker?</strong> Your Install ID is shown on the activation screen. Send it to the author and an activation code will be returned. The code is stored in your backup file and restores automatically on any future import.<br><br><strong>What is the Hedge tab for?</strong> If you hold BTC, ETH, or SOL in pools or vaults, the Hedge tab helps you size a protective short position on Hyperliquid that offsets downside risk while keeping your upside exposure. It is entirely optional — all other tabs function independently.<br><br><strong>Is my data safe?</strong> Yes — no data ever leaves your machine. The only external calls are to CoinGecko (prices), Deribit (implied volatility), Hyperliquid (funding rates), and a Cloudflare Worker (help content sync only). No portfolio data is transmitted in any of these calls.` },
+    ]
+  },
+  summary: {
+    title: '📊 Summary Tab',
+    sections: [
+      { icon: '📋', heading: 'What this tab does',
+        text: `Provides a bird's-eye view of your entire portfolio — total value, deployed capital, overall P&L, and a breakdown by area (Pools, Vaults, Holdings, GEMs).` },
+      { icon: '⚙️', heading: 'How it functions',
+        text: `All values are calculated in real time from live prices via CoinGecko. The IL Break-Even Calculator lets you model impermanent loss scenarios for any pool type before committing capital.` },
+      { icon: '✏️', heading: 'How to enter data',
+        text: `No data entry here — this tab reads from all other tabs. Set your Inception Date by clicking the date field to track portfolio-wide performance from a specific start date.` },
+      { icon: '➡️', heading: 'Further actions',
+        text: `Use the IL Calculator to model new positions before adding them. Click ↻ Refresh in the header to update all live prices.` },
+      { icon: '📊', heading: 'How to interpret',
+        text: `Deployed = what you put in. Current = what it's worth now. Overall P&L = current minus deployed. Each area card shows its own deployed vs current vs P&L.` },
+      { icon: '❓', heading: 'Common questions',
+        text: `<strong>Why does P&L show — ?</strong> Prices haven't loaded yet — click Refresh.<br><strong>Why doesn't it match my pool totals exactly?</strong> Pool P&L includes yield; Holdings P&L is price appreciation only.` },
+    ]
+  },
+  pools: {
+    title: '🔁 LP Pools Tab',
+    sections: [
+      { icon: '📋', heading: 'What this tab does',
+        text: `Tracks all active liquidity pool positions — token quantities, live values, yield harvested, range status, IL vs HODL comparison, and annualized returns.` },
+      { icon: '⚙️', heading: 'How it functions',
+        text: `Live prices fetch from CoinGecko. The ratio between Token A and Token B is compared to your set range (Low/High) to determine range status. IL is calculated using the pool model you select (v2, v3, Curve, Balancer).` },
+      { icon: '✏️', heading: 'How to enter data',
+        text: `Click <strong>+ Add Pool</strong>. Enter both token symbols, current quantities, entry value, and your price range. Use ✎ to edit any row. Click ▶ on a row to log a yield harvest inline.` },
+      { icon: '➡️', heading: 'Further actions',
+        text: `Log yield harvests regularly using the ▶ expand panel.<br><br><strong>Closing a pool:</strong> Click ✎ → Close / Rebalance → Close Position. The close dialog shows the exact token quantities the tracker has on record — <strong>edit these fields to match what the platform actually returned to your wallet</strong> before confirming. This is especially important if you previously used Rebalance (which resets quantities to zero).<br><br><strong>Rebalancing a pool:</strong> Click ✎ → Close / Rebalance → Rebalance. This archives the old leg and re-opens the pool modal for you to enter fresh quantities. Any yield you log while in the rebalanced state will appear in the new leg's yield history.` },
+      { icon: '📊', heading: 'How to interpret',
+        text: `<strong>Range badge:</strong> In Range · Watch (within 20% of boundary) · Act Now (within 10%) · OUT OF RANGE.<br><strong>Net/Ann%:</strong> Total return including yield, annualized.<br><strong>Beat HODL?</strong> Pool+Yield vs simply holding the tokens.` },
+      { icon: '❓', heading: 'Common questions',
+        text: `<strong>Why is Live Ratio showing — ?</strong> A token price failed to load — try Refresh.<br><strong>What pool model should I use?</strong> Uniswap v3/Orca = v3, Uniswap v2/Sushi = v2, Curve/Beefy stable pairs = Curve, Balancer = Balancer.<br><br><strong>I rebalanced and then closed — why were the wrong quantities returned to Holdings?</strong> When you use Rebalance, the pool's tracked quantities are reset to zero. If you later close without entering new quantities, the tracker has nothing to return. Always enter the actual received quantities in the close dialog's Token A / Token B fields before confirming the close.<br><br><strong>The Closed Pool yield log is empty after I closed — where is my yield?</strong> When filtering by pool name in the Yield Log → Closed Pools tab, yield from all legs (rebalances + final close) is shown together. If yield still appears missing, select "All Pools" in the dropdown to confirm it's there, then narrow back to the specific pool.` },
+    ]
+  },
+  vaults: {
+    title: '🏦 Vaults Tab',
+    sections: [
+      { icon: '📋', heading: 'What this tab does',
+        text: `Tracks single-asset yield positions — staking, lending vaults, LSTs, and any strategy where you deposit one token and earn yield on it over time.` },
+      { icon: '⚙️', heading: 'How it functions',
+        text: `Current value = Qty × Live Price. If you enter an APY, it estimates yield earned based on days since entry. You can override this with actual yield logged.` },
+      { icon: '✏️', heading: 'How to enter data',
+        text: `Click <strong>+ Add Vault</strong>. Enter the token, platform, quantity, APY (optional), entry date, and entry value. Update Qty when your staked amount changes. Enter actual Yield Earned $ when you harvest.` },
+      { icon: '➡️', heading: 'Further actions',
+        text: `Update yield earned periodically. If you add more capital, edit the vault and adjust qty and entry value. Use Close via the Edit modal to archive to History when exiting.` },
+      { icon: '📊', heading: 'How to interpret',
+        text: `<strong>Ann. Return:</strong> Combines price appreciation + yield, annualized. EST means it's using your APY estimate rather than logged yield.<br><strong>Yield APR</strong> = pure yield return excluding price movement.` },
+      { icon: '❓', heading: 'Common questions',
+        text: `<strong>Why is Current showing — ?</strong> Token price not loaded — check the CoinGecko ID is correct.<br><strong>My vault shows a loss — why?</strong> The token price may have fallen since entry. Entry value reflects what you deposited, not what it's worth now.` },
+    ]
+  },
+  holdings: {
+    title: '💼 Holdings Tab',
+    sections: [
+      { icon: '📋', heading: 'What this tab does',
+        text: `Tracks all spot holdings — tokens held in wallets, exchanges, or hardware devices. Shows live price, 24h change, average cost basis, current value, allocation %, and unrealized P&L.` },
+      { icon: '⚙️', heading: 'How it functions',
+        text: `Each row is one token/wallet/chain combination. Average cost updates automatically using weighted average when you buy more. The Group button clusters holdings by wallet for a cleaner view.` },
+      { icon: '✏️', heading: 'How to enter data',
+        text: `Click <strong>+ Add Holding</strong> or use Buy/Sell/Swap/Transfer actions on an existing row. For buys, enter qty and price — cost basis is calculated automatically. For stablecoins, price locks at $1.` },
+      { icon: '➡️', heading: 'Further actions',
+        text: `Use the 🔔 alert button on any row to set price alerts (buy trigger, stop loss, TP1/2/3). Use Swap to record token-to-token trades. Use Transfer to move between wallets while preserving cost basis.` },
+      { icon: '📊', heading: 'How to interpret',
+        text: `<strong>Avg Cost:</strong> Your blended entry price across all purchases.<br><strong>Alloc %:</strong> This holding as a percentage of total spot portfolio value.<br><strong>P&L $/%:</strong> Unrealized gain/loss vs your cost basis.` },
+      { icon: '❓', heading: 'Common questions',
+        text: `<strong>Why does a token show — for price?</strong> The CoinGecko ID may be wrong — edit and search for the correct token.<br><strong>How do I record a sale?</strong> Use the Sell action on the holding row — it reduces qty and logs the transaction.` },
+    ]
+  },
+  hedge: {
+    title: '⚡ Hedge Tab',
+    sections: [
+      { icon: '📋', heading: 'What this tab does',
+        text: `Calculates optimal short hedge sizes for BTC, ETH, and SOL to protect your LP and vault positions from downside price risk. Tracks open shorts on Hyperliquid and monitors funding rates.` },
+      { icon: '⚙️', heading: 'How it functions',
+        text: `The optimal ratio is calculated from IV (implied volatility), 7-day trend, funding rate, your pool yield APY, and BTC/asset stability signals. Funding rates and IV fetch live from Hyperliquid and Deribit.` },
+      { icon: '✏️', heading: 'How to enter data',
+        text: `Use the slider on each asset card to set your hedge ratio. Click <strong>+ Open Position</strong> to log a short — enter asset, margin ($), leverage, and entry price. Log HL deposits/withdrawals via the HL Deposit/Withdraw button.` },
+      { icon: '➡️', heading: 'Further actions',
+        text: `Click ↻ Refresh to fetch latest funding rates and IV. Close positions via the Close button on Open Positions. Check the calculation detail (▶ Show) on each card to understand how the ratio was derived.` },
+      { icon: '📊', heading: 'How to interpret',
+        text: `<strong>Funding Rate:</strong> Negative = shorts paying longs (costs you). Positive = longs paying shorts (you earn).<br><strong>Rate / Funding column:</strong> Current 8hr rate · cumulative net earned or paid.<br><strong>Net carry:</strong> Annual pool yield minus annual funding cost — positive means hedging is net profitable.` },
+      { icon: '❓', heading: 'Common questions',
+        text: `<strong>Why is funding rate showing — ?</strong> Click Refresh — Hyperliquid data fetches on demand.<br><strong>What does negative net carry mean?</strong> Funding cost exceeds pool yield — consider reducing hedge ratio.<br><strong>What is the Limit Buy checkbox?</strong> Signals recovery conviction and reduces the recommended hedge by ~18%.` },
+    ]
+  },
+  history: {
+    title: '📁 History Tab',
+    sections: [
+      { icon: '📋', heading: 'What this tab does',
+        text: `Archives all closed and rebalanced pool positions, yield harvest logs, and transactions. Your permanent record for performance analysis and tax reporting.` },
+      { icon: '⚙️', heading: 'How it functions',
+        text: `Positions are auto-archived when you Close or Rebalance from the LP Pools tab. Yield entries are linked to their pool. The Loss Status flag lets you mark positions where funds were lost to hacks, mismanagement, or theft.<br><br><strong>Rebalance + Close creates two history legs:</strong> If you Rebalance a pool and later Close it, two records appear in Closed Pools — one for the rebalance leg and one for the close leg. In the Yield Log → Closed Pools tab, selecting the pool name from the dropdown shows yield from <em>both</em> legs combined, so nothing is hidden.` },
+      { icon: '✏️', heading: 'How to enter data',
+        text: `Use ⚙ on any history row to edit dates, name, type, and Loss Status. To mark a loss: click ⚙, set Loss Status (Unrecoverable / Partial / Legal Action), and add a note describing what happened.` },
+      { icon: '➡️', heading: 'Further actions',
+        text: `Add yield entries to closed pools via ➕ Add Yield Entry. Export to CSV for tax reporting. Update Loss Status if funds are partially recovered or legal proceedings conclude.` },
+      { icon: '📊', heading: 'How to interpret',
+        text: `<strong>Net Result:</strong> Exit value + yield - entry value.<br><strong>Beat HODL?</strong> Did pool + yield outperform simply holding the tokens?<br><strong>Loss badges:</strong> ⚠ Unrecoverable · 🔶 Partial · ⚖️ Legal Action · ✅ Recovered.` },
+      { icon: '❓', heading: 'Common questions',
+        text: `<strong>How do I record a hack or theft?</strong> Close the vault/pool at $0 exit value, then edit the history entry and set Loss Status to Unrecoverable with a note.<br><strong>Can I change the loss status later?</strong> Yes — fully editable at any time via the ⚙ button.` },
+    ]
+  },
+  gems: {
+    title: '💎 GEMs Tab',
+    sections: [
+      { icon: '📋', heading: 'What this tab does',
+        text: `Watchlist for speculative tokens — tracks live price, 24h change, Vol/MC momentum, entry price, targets (T1/T2/T3), stop loss, and buy triggers. Sends Pushover alerts when prices hit your levels.` },
+      { icon: '⚙️', heading: 'How it functions',
+        text: `Prices fetch from CoinGecko. Vol/MC (Volume/Market Cap ratio) is tracked over 1hr, 24hr, and 48hr windows to detect momentum shifts before price moves. Sparklines show 7-day price history at a glance.` },
+      { icon: '✏️', heading: 'How to enter data',
+        text: `Click <strong>+ Add GEM</strong> and search for the token. Set your entry price, qty held, and targets. Use the ▶ expand panel on any row to set Stop Loss, T1/T2/T3, and Add trigger inline.` },
+      { icon: '➡️', heading: 'Further actions',
+        text: `Set up Pushover in Settings (⚙ icon) for phone alerts. Use ✔ Executed? to confirm TP sells and auto-update your qty. The thesis editor (📝) lets you record your investment case for each token.` },
+      { icon: '📊', heading: 'How to interpret',
+        text: `<strong>Vol/MC columns (1h/24h/48h):</strong> % change in volume-to-market-cap ratio vs that window. Rising Vol/MC often precedes price moves.<br><strong>Alert % badge:</strong> Custom mover alert threshold — fires when 24h move exceeds this %.` },
+      { icon: '❓', heading: 'Common questions',
+        text: `<strong>Why is live price showing — ?</strong> The CoinGecko ID is wrong — edit and search again.<br><strong>What's the difference between Alert In and T1?</strong> Alert In fires when price drops TO your level (buy). T1/T2/T3 fire when price rises TO your target (sell).<br><strong>How do I get phone alerts?</strong> Install Pushover app, create account, enter User Key and App Token in Settings.` },
+    ]
+  },
+  setup: {
+    title: '⚙ Setup & Data Guide',
+    sections: [
+      { icon: '🪟', heading: 'Windows — Step 1: Create your working folder',
+        text: `Open <strong>File Explorer</strong> (press Win + E). Navigate to <strong>Documents</strong>. Right-click in empty space → <strong>New → Folder</strong> → name it <strong>PortfolioTracker</strong>.<br><br>Move <code>Portfolio_Tracker_Demo.html</code> into this folder. This is your permanent home for the tracker — never move it after setup.` },
+      { icon: '🪟', heading: 'Windows — Step 2: Tell Chrome where to save files',
+        text: `In Chrome, paste this into the address bar and press Enter:<br><br><code>chrome://settings/downloads</code><br><br>Turn <strong>ON</strong> the toggle: <em>"Ask where to save each file before downloading"</em><br><br>Edge users: use <code>edge://settings/downloads</code> instead.<br><br>This ensures your data file saves to your working folder rather than disappearing into Downloads.` },
+      { icon: '🪟', heading: 'Windows — Step 3: Link your data file',
+        text: `Open the tracker from your <strong>PortfolioTracker</strong> folder (not from Downloads or a browser bookmark).<br><br>Click <strong>▶ Start Free Trial</strong> on the activation screen.<br><br>In the header click <strong>⛁ Data ▾ → Link / Create File</strong>.<br><br>Navigate to your <strong>PortfolioTracker</strong> folder. Type <strong>portfolio_data.json</strong> as the filename → click <strong>Save</strong>.<br><br>The status dot in the header turns <strong>green ●</strong> — auto-save is now active every 7 minutes.` },
+      { icon: '🪟', heading: 'Windows — Step 4: Create a desktop shortcut',
+        text: `Open your <strong>PortfolioTracker</strong> folder in File Explorer. Right-click <code>Portfolio_Tracker_Demo.html</code> → <strong>Send to → Desktop (create shortcut)</strong>.<br><br>Always open the tracker via this shortcut. Never open it from Downloads or a browser bookmark — the file link won't work correctly from there.` },
+      { icon: '🍎', heading: 'Mac — Step 1: Create your working folder',
+        text: `Open <strong>Finder</strong> (the smiley face icon in your Dock). Click <strong>Documents</strong> in the left sidebar.<br><br>Press <strong>Cmd + Shift + N</strong> to create a new folder → name it <strong>PortfolioTracker</strong>.<br><br>Move <code>Portfolio_Tracker_Demo.html</code> into this folder.` },
+      { icon: '🍎', heading: 'Mac — Step 2: Tell Chrome where to save files',
+        text: `In Chrome, paste this into the address bar and press Enter:<br><br><code>chrome://settings/downloads</code><br><br>Turn <strong>ON</strong> the toggle: <em>"Ask where to save each file before downloading"</em><br><br><strong>Mac extra step:</strong> The first time the tracker auto-saves, Chrome shows a bar saying <em>"Allow this site to download multiple files?"</em> — click <strong>Allow</strong>. This only appears once.<br><br>If you missed it: Chrome menu (⋮) → <strong>Settings → Privacy and security → Site settings → Additional permissions → Automatic downloads</strong> → add the tracker to the Allowed list.` },
+      { icon: '🍎', heading: 'Mac — Step 3: Link your data file',
+        text: `Open the tracker from your <strong>PortfolioTracker</strong> folder in Finder (not from Downloads).<br><br>Click <strong>▶ Start Free Trial</strong>. In the header click <strong>⛁ Data ▾ → Link / Create File</strong>.<br><br>Navigate to your <strong>PortfolioTracker</strong> folder. Type <strong>portfolio_data.json</strong> → click <strong>Save</strong>.<br><br>The dot turns <strong>green ●</strong>.` },
+      { icon: '🍎', heading: 'Mac — If Chrome loses access after restart',
+        text: `Mac Chrome resets file write permissions when you restart the browser — this is a Mac security feature, not a bug.<br><br>You will see an amber banner at the bottom of the screen: <em>"Auto-save permission lost"</em>.<br><br>Click <strong>🔓 Restore Access</strong> → Chrome asks you to confirm — click <strong>Allow</strong>. Auto-save resumes immediately.<br><br>If the banner does not appear, click <strong>⛁ Data ▾ → Link / Create File</strong> and relink your file.` },
+      { icon: '🍎', heading: 'Mac — Step 4: Create a desktop alias',
+        text: `Open your <strong>PortfolioTracker</strong> folder in Finder. Hold <strong>Cmd + Opt</strong> and drag <code>Portfolio_Tracker_Demo.html</code> to your Desktop.<br><br>This creates an alias shortcut. Always open the tracker from here — not from Downloads or Safari.` },
+      { icon: '🦁', heading: 'Brave (Windows) — Step 1: Create your working folder',
+        text: `Open <strong>File Explorer</strong> (press <strong>Win + E</strong>). Click <strong>Documents</strong> in the left sidebar.<br><br>Right-click in empty space → <strong>New → Folder</strong> → name it <strong>PortfolioTracker</strong>.<br><br>Move <code>Portfolio_Tracker_Demo.html</code> into this folder. This is your permanent home — never move it after setup.` },
+      { icon: '🦁', heading: 'Brave (Windows) — Step 2: Tell Brave where to save files',
+        text: `In Brave, paste this into the address bar and press Enter:<br><br><code>brave://settings/downloads</code><br><br>Turn <strong>ON</strong> the toggle: <em>"Ask where to save each file before downloading"</em><br><br>This ensures your data file saves to your working folder instead of disappearing into Downloads.<br><br><strong>Also check Brave Shields:</strong> Click the <strong>lion icon 🦁</strong> in the address bar while the tracker is open → make sure Shields is set to <strong>Standard</strong> (not Aggressive). Aggressive Shields blocks live price updates.` },
+      { icon: '🦁', heading: 'Brave (Windows) — Step 3: Link your data file',
+        text: `Open the tracker from your <strong>PortfolioTracker</strong> folder (not from Downloads or a bookmark).<br><br>Click <strong>▶ Explore the Demo</strong> on the welcome screen.<br><br>In the header click <strong>⛁ Data ▾ → Link / Create File</strong>.<br><br>A Save dialog opens — navigate to your <strong>PortfolioTracker</strong> folder. Type <strong>portfolio_data.json</strong> as the filename → click <strong>Save</strong>.<br><br>The status dot in the header turns <strong>green ●</strong> — auto-save is now active. If Brave asks <em>"Allow this site to save files?"</em> click <strong>Allow</strong>.` },
+      { icon: '🦁', heading: 'Brave (Windows) — Step 4: Create a desktop shortcut',
+        text: `Open your <strong>PortfolioTracker</strong> folder in File Explorer. Right-click <code>Portfolio_Tracker_Demo.html</code> → <strong>Send to → Desktop (create shortcut)</strong>.<br><br>Always open the tracker from this desktop shortcut. Never open it from Downloads or a Brave bookmark — the file link will not reconnect correctly from there.` },
+      { icon: '🦁', heading: 'Brave (Mac) — Step 1: Create your working folder',
+        text: `Open <strong>Finder</strong> (the smiley face in your Dock). Click <strong>Documents</strong> in the left sidebar.<br><br>Press <strong>Cmd + Shift + N</strong> to create a new folder → name it <strong>PortfolioTracker</strong>.<br><br>Move <code>Portfolio_Tracker_Demo.html</code> into this folder.` },
+      { icon: '🦁', heading: 'Brave (Mac) — Step 2: Tell Brave where to save files',
+        text: `In Brave, paste this into the address bar and press Enter:<br><br><code>brave://settings/downloads</code><br><br>Turn <strong>ON</strong> the toggle: <em>"Ask where to save each file before downloading"</em><br><br><strong>Mac extra step:</strong> The first time the tracker auto-saves, Brave may show a bar at the top saying <em>"Allow this site to download multiple files?"</em> — click <strong>Allow</strong>. This only appears once.<br><br>If you missed it: click the <strong>lion icon 🦁</strong> in the address bar → <strong>Site settings</strong> → scroll to <strong>Automatic downloads</strong> → set to <strong>Allow</strong>.<br><br><strong>Also check Shields:</strong> Click the lion icon 🦁 → set Shields to <strong>Standard</strong> so prices and live data load correctly.` },
+      { icon: '🦁', heading: 'Brave (Mac) — Step 3: Link your data file',
+        text: `Open the tracker from your <strong>PortfolioTracker</strong> folder in Finder (not from Downloads).<br><br>Click <strong>▶ Explore the Demo</strong>. In the header click <strong>⛁ Data ▾ → Link / Create File</strong>.<br><br>Navigate to your <strong>PortfolioTracker</strong> folder. Type <strong>portfolio_data.json</strong> → click <strong>Save</strong>.<br><br>The dot turns <strong>green ●</strong>. If the dot stays grey, close and reopen the tracker from the same folder.` },
+      { icon: '🦁', heading: 'Brave (Mac) — If Brave loses access after restart',
+        text: `Like Chrome on Mac, Brave may reset file write permissions when you restart the browser — this is a Mac security feature.<br><br>You will see an amber banner: <em>"Auto-save permission lost"</em>.<br><br>Click <strong>🔓 Restore Access</strong> → Brave asks you to confirm → click <strong>Allow</strong>. Auto-save resumes immediately.<br><br>If the banner does not appear: click <strong>⛁ Data ▾ → Link / Create File</strong> and relink your <code>portfolio_data.json</code> file.` },
+      { icon: '🦁', heading: 'Brave (Mac) — Step 4: Create a desktop alias',
+        text: `Open your <strong>PortfolioTracker</strong> folder in Finder. Hold <strong>Cmd + Opt</strong> and drag <code>Portfolio_Tracker_Demo.html</code> to your Desktop.<br><br>This creates an alias shortcut. Always open the tracker from here — not from Downloads.` },
+      { icon: '🔧', heading: 'Fix: Data file is saving to the wrong folder',
+        text: `1. Click <strong>⛁ Data ▾ → Save / Export Backup</strong> — save a copy somewhere safe first.<br>2. Click <strong>⛁ Data ▾ → ⚠ Reset Data Link</strong> to clear the wrong link.<br>3. Click <strong>⛁ Data ▾ → Link / Create File</strong> → navigate to your <strong>PortfolioTracker</strong> folder → save as <code>portfolio_data.json</code>.<br>4. The dot turns <strong>green ●</strong> — done.` },
+      { icon: '🔧', heading: 'Fix: Numbered copies appearing (autosave (1).json, (2).json…)',
+        text: `This happens when Chrome does not have <em>"Ask where to save"</em> turned on, so copies pile up in Downloads instead of overwriting the linked file.<br><br>1. Find the <strong>highest-numbered copy</strong> — that is your most recent data.<br>2. Click <strong>⛁ Data ▾ → Import Backup</strong> → select that file to restore your data.<br>3. Delete all the numbered copies from your Downloads folder.<br>4. Enable "Ask where to save": paste <code>chrome://settings/downloads</code> in Chrome → turn on the toggle.<br>5. Click <strong>⛁ Data ▾ → Link / Create File</strong> → save to your <strong>PortfolioTracker</strong> folder.` },
+      { icon: '🔧', heading: 'Fix: Status dot is grey or orange — data not saving',
+        text: `<strong>Grey dot</strong> means no file is linked. Click <strong>⛁ Data ▾ → Link / Create File</strong> → navigate to your working folder → select your existing <code>portfolio_data.json</code>.<br><br><strong>Orange dot</strong> or the amber <em>"Auto-save permission lost"</em> banner means the file is linked but Chrome lost write access. Click <strong>🔓 Restore Access</strong> in the banner, or use <strong>⛁ Data ▾ → Link / Create File</strong> to relink.` },
+      { icon: '🔧', heading: 'Fix: I cleared my browser cache and lost my data',
+        text: `If you had a linked file, your data is safe — the <code>portfolio_data.json</code> file on your computer is the permanent copy. Browser cache clearing only removes the browser's temporary copy.<br><br>Click <strong>⛁ Data ▾ → Import Backup</strong> → select your <code>portfolio_data.json</code> file → then relink it via <strong>⛁ Data ▾ → Link / Create File</strong>.` },
+    ]
+  }
+,
+  whatsNew: {
+    title: "✦ What's New — Full Changelog",
+    sections: [
+      { icon: '✦', heading: 'v47.32  — CURRENT',
+        text: `<em style="color:var(--text3);">Version bump to ensure all demo users receive the full set of recent updates.</em><br><br><strong>✅ All recent updates now delivered</strong><br>This version ensures all demo users see the complete set of recent improvements: pool close wallet dropdown with Token B override, per-token transaction logging on close and rebalance, independent Hedge ratio alert pill, Brave browser setup guide, qty auto-mirror on new pool entry, CPI benchmark badge, screenshot paste in feedback, and hedge ratio alert banner on Summary page.` },
+      { icon: '○', heading: 'v47.31',
+        text: `<em style="color:var(--text3);">Pool close redesigned with wallet dropdown, per-token transaction logging, rebalance exit logging, Brave browser support, and qty auto-mirror on new pool entry.</em><br><br><strong>📤 Pool Close — wallet dropdown with Token B override</strong><br>The Close/Rebalance modal now uses a wallet dropdown pre-filled with the pool default DeFi wallet — same as the entry side. A "Token B returns to different wallet?" toggle adds a second wallet selector for the edge case where tokens go to different wallets on exit.<br><br><strong>📋 Per-token transaction logging on close and rebalance</strong><br>Each token now gets its own transaction log entry when a pool is closed or rebalanced — showing the exact qty, price at exit, and destination wallet. Previously a single combined entry was logged. Rebalances now also log the exit side before resetting for the new leg.<br><br><strong>🦁 Brave browser — full setup guide and compatibility note</strong><br>The Help → Setup & Data Guide now includes step-by-step Brave instructions for both Windows and Mac — matching the Chrome guide exactly. A new Brave Browser section in the Overview tab explains Shields settings and which features require Standard mode.<br><br><strong>🔢 New pool entry — qty auto-mirrors between Entry and Current fields</strong><br>When adding a new pool, typing a quantity in either the Qty at Entry or Current Qty field now automatically fills the other if it is blank. At the moment of first entry they are always equal, so there is no longer any need to type the same number twice. Auto-mirror is disabled when editing an existing pool.` },
+      { icon: '○', heading: 'v47.30',
+        text: `<em style="color:var(--text3);">Hedge ratio alert — Summary page and phone alerts now notify when the suggested hedge ratio shifts significantly from your current position.</em><br><br><strong>⚖ Hedge Ratio Alert — know when to rebalance your hedge</strong><br>When the model suggested hedge ratio for BTC, ETH, or SOL shifts more than 10 percentage points from your current ratio, a banner appears on the Summary page showing the current vs suggested ratio and the reason (IV change, trend shift, funding rate). A Pushover phone alert fires simultaneously. Alerts are throttled to once per 4 hours per asset to avoid noise.` },
+      { icon: '○', heading: 'v47.29',
+        text: `<em style="color:var(--text3);">CPI benchmark badge — pool rows now show whether annualized net return beats inflation, fetched live from FRED.</em><br><br><strong>📊 CPI Benchmark Badge — beat inflation at a glance</strong><br>Each pool row now shows a small ▲CPI (green) or ▼CPI (red) badge next to the annualized return, comparing your net return against the current CPI inflation rate. The rate is fetched automatically from the Federal Reserve FRED database on startup and cached for 24 hours. You can also set a manual rate or refresh it live in Settings → CPI Benchmark Badge. Only shown for pools open 7+ days.` },
+      { icon: '○', heading: 'v47.28',
+        text: `<em style="color:var(--text3);">Feedback modal upgraded — paste a screenshot directly into the form and it uploads automatically with your message.</em><br><br><strong>📸 Feedback — paste screenshot directly in the modal</strong><br>The Feedback modal now includes a paste zone for screenshots. Take a screenshot (Cmd+Shift+4 on Mac, Win+Shift+S on Windows), click the dashed box, and press Cmd+V / Ctrl+V. A thumbnail preview appears instantly. When you send feedback the screenshot uploads automatically to imgbb and the link is included in the email — no extra steps needed.` },
+      { icon: '○', heading: 'v47.27',
+        text: `<em style="color:var(--text3);">Demo feedback channel — send questions, bug reports or suggestions directly to the developer via GitHub.</em><br><br><strong>📬 Feedback button — send questions or reports from within the app</strong><br>A new Feedback button in the header opens a short form where you can choose a type (Question, Bug Report, Suggestion), write your message, and optionally add your name. Clicking Open GitHub pre-fills a GitHub issue with your message and the current version number — just hit Submit. A screenshot tip is shown in the modal explaining how to capture and attach a screenshot directly in GitHub before submitting.` },
+      { icon: '○', heading: 'v47.26',
+        text: `<em style="color:var(--text3);">Funded From Holdings redesigned — cleaner layout, default wallet pre-filled, optional per-token wallet override.</em><br><br><strong>📤 Funded From Holdings — redesigned for clarity</strong><br>The Funded From Holdings section in Add Capital now shows two simple qty fields (one per token) followed by a single wallet dropdown pre-filled with the pool\'s default DeFi wallet — consistent with how other modals handle wallet selection. For the edge case where Token B comes from a different source, a "Token B from different wallet?" toggle reveals a second wallet selector. The old freeform three-column grid that clipped off the right edge of the modal has been removed entirely.` },
+      { icon: '○', heading: 'v47.25',
+        text: `<em style="color:var(--text3);">Add Capital redesigned for natural token-first input, yield log now groups multi-token harvests into single rows.</em><br><br><strong>➕ Add Capital — enter token quantities, not dollars</strong><br>The LP Add Capital modal now asks for the qty of each token you added (e.g. 0.5 AAVE + 0.02 WETH) — matching exactly what the platform shows you. The dollar value is calculated automatically from live prices and shown as "Calculated $ Added" before you confirm, so you can verify the number looks right without doing any arithmetic yourself. The new total entry $ is also shown as a read-only confirmation.<br><br><strong>📋 Yield log — multi-token harvests shown as one row</strong><br>When two tokens are harvested from the same pool on the same date (e.g. AAVE + WETH from an AAVE/WETH pool), they now appear as a single combined row in the History yield log rather than two separate rows. Token symbol and quantity are shown side by side, with a combined USD total. Individual edit and delete buttons are still available for each token entry. This makes the log much easier to scan, especially when searching back through many months of harvests.` },
+      { icon: '○', heading: 'v47.23',
+        text: `<em style="color:var(--text3);">Data integrity improvements, startup reliability fixes, and a built-in update check that works from any local file.</em><br><br><strong>🛡️ Data integrity — embedded backup always current</strong><br>The HTML file now updates its own embedded data snapshot on every save via the new Link App File feature (💾 Data ▾ → Auto-Update App File). Previously the snapshot was frozen at the time the file was built, meaning a reboot with cleared browser storage would silently restore stale data — resurrecting closed pools, old vault balances, and positions that had been rebalanced. Link the HTML file once and it stays permanently in sync.<br><br><strong>🔄 Startup reliability — backup file always loads on open</strong><br>On startup the app now always compares your linked backup file against browser storage and loads whichever is newer. Previously a hidden file:// protocol restriction caused the backup file to be completely ignored on startup when running as a local file, meaning browser storage (which clears on reboot) was the only source of truth. The backup file is now always authoritative.<br><br><strong>⬆ Built-in update check — works from any local file</strong><br>A new Update button in the header and Check for Update entry in the Data menu open the download page directly. These work from file:// without any network fetch, so all users can check for new versions regardless of how the app is opened. The link is also visible on the activation screen before login.` },
+      { icon: '○', heading: 'v47.22',
+        text: `<em style="color:var(--text3);">Stability and accuracy improvements — pool actions now always apply to the correct pool, and adding funds to a vault pool is simpler.</em><br><br><strong>🔒 Pool and vault actions always apply to the right pool</strong><br>When you open a pool or vault to edit it, all actions — Save, Add Capital, Close, Flip ratio — are now locked to that specific pool from the moment you open it. A previous issue could cause these actions to apply to a different pool if you had updated another pool in the same session.<br><br><strong>➕ Adding funds to a vault pool is now simpler</strong><br>The Add Capital screen for Beefy-style vault pools previously asked for the same dollar amount in two places, which was confusing. It now asks only for the token quantity you deposited, the current pool value shown on the platform, and which wallet the funds came from. Everything else is calculated automatically.` },
+      { icon: '○', heading: 'v47.21',
+        text: `<em style="color:var(--text3);">Your settings and data are now remembered more reliably — even after a browser update or cache clear. A bug that caused closed pools and vaults to reappear has also been fixed.</em><br><br><strong>🔒 Your settings are now remembered after browser updates</strong><br>Things like your PIN, notification keys, and default wallet are now stored in a way that survives browser cache clears and app updates. You should no longer need to re-enter them when loading a new version.<br><br><strong>👻 Closed pools and vaults no longer reappear</strong><br>Some users saw pools or vaults they had already closed come back after loading a new version of the app. This has been fixed — closed positions stay closed.<br><br><strong>🔑 PIN lock is more reliable</strong><br>If you use a PIN to protect the app, it will now be remembered correctly even after clearing your browser cache. Your lock screen will work as expected every time.<br><br><strong>✅ General stability improvements</strong><br>Under the hood, the app now saves all your important settings to a single secure location rather than several separate ones. This makes restoring your data after any browser housekeeping much more consistent.` },
+      { icon: '○', heading: 'v47.16',
+        text: `<em style="color:var(--text3);">Close / Rebalance flow fixed — returned token quantities are now editable, closed pool yield shows correctly across all legs, and the 7-day trial is now tamper-resistant.</em><br><br><strong>🔁 Close dialog — confirm exact returned quantities</strong><br>When closing an LP pool, the close dialog now shows editable Token A and Token B quantity fields pre-filled with the tracker values. Edit these to match exactly what the platform returned to your wallet before confirming — especially important after a Rebalance, which previously reset quantities to zero and caused Holdings to receive nothing on close.<br><br><strong>📋 Closed pool yield log — all legs shown together</strong><br>When a pool has been rebalanced and then closed, it creates two history records. The Yield Log → Closed Pools filter now shows yield from all legs (Rebalance + Close) together when you select a pool name — nothing is hidden in a separate record. The dropdown also deduplicates so each pool appears only once.<br><br><strong>🔒 Demo trial — triple-stamped against cache resets</strong><br>The 7-day trial start date is now stored in three places: localStorage, IndexedDB, and the backup file. If localStorage is cleared, the trial clock is restored from IndexedDB or backup on next open — so clearing browser cache no longer resets the trial to day one.` },
+      { icon: '○', heading: 'v47.15',
+        text: `<em style="color:var(--text3);">Beefy vault HODL baseline now calculates correctly using LP token price — both pools now correctly show Beat HODL ✓ Yes.</em><br><br><strong>🏦 Beefy vault HODL baseline fixed — LP token price formula</strong><br>The HODL baseline for like-pair Beefy vaults (cbETH/ETH, msETH/WETH) was previously calculated using the raw ETH price, which is wrong — these vaults issue LP tokens whose price moves independently of ETH. The correct formula is: original LP tokens deposited × current LP token price (= current value ÷ current LP token count). This now matches Beefy\'s own Position Performance figures exactly, and both pools correctly show Beat HODL ✓ Yes.<br><br><strong>🔧 Self-heal logic removed</strong><br>A "self-heal" block was automatically overwriting entryPriceA on every load, replacing the correct ETH price at deposit with a calculated LP token price. This corrupted the HODL formula and fought against correct manual data entry. It has been removed — entryPriceA is set once at deposit and never touched by the app again.<br><br><strong>⏱️ HODL baseline no longer flashes wrong value on startup</strong><br>The app previously seeded prices from the saved backup before CoinGecko responded, causing the HODL baseline to briefly show a wrong value. Prices now start empty and the HODL baseline shows — until the first successful price fetch, then displays the correct figure.` },
+      { icon: '○', heading: 'v47.07',
+        text: `<em style="color:var(--text3);">Vault-mode pools (Beefy etc) no longer show a misleading IL / Beat HODL calculation.</em><br><br><strong>🏦 Vault-mode pools: IL and Beat HODL now show N/A</strong><br>Beefy and other vault-mode pools had no LP impermanent loss — they hold a single token with auto-compounding yield, not a two-token ratio position. Previously the IL and Beat HODL columns were calculated using stale or inapplicable entry prices, producing misleading results like -80% IL. They now correctly show — (N/A) since the HODL comparison does not apply to single-asset vaults.` },
+      { icon: '○', heading: 'v47.06',
+        text: `<em style="color:var(--text3);">Vault Edit modal now shows Current Value $ instead of Yield Earned — just enter what the platform shows.</em><br><br><strong>🏦 Vault edit: enter Current Value instead of Yield Earned</strong><br>The Edit Vault modal now shows a Current Value $ field instead of Yield Earned $. Enter the total value shown on your platform (e.g. $10,250) and the app back-calculates yield automatically as Current Value minus Entry Value. A live price estimate is shown as a reference. The field is only shown when editing an existing vault — not when adding a new one.` },
+      { icon: '○', heading: 'v47.05',
+        text: `<em style="color:var(--text3);">Single-instance enforcement and PIN display race condition fixed.</em><br><br><strong>🪟 Only one instance can run at a time</strong><br>Opening the tracker in a second tab now detects the existing instance via BroadcastChannel. The duplicate tab shows an "Already open" message with a Close button, while the original tab is focused. Works on file:// and http:// in Chrome and Edge.<br><br><strong>🔒 PIN screen no longer disappears on startup</strong><br>A race condition caused the PIN lock screen to flash away before the user entered their PIN. Fixed by moving visibility restoration exclusively into hideLock() and initPIN().` },
+      { icon: '○', heading: 'v47.04',
+        text: `<em style="color:var(--text3);">Rebalance now clears all old token quantities and opens the Edit modal so you enter fresh numbers for the new leg.</em><br><br><strong>⇄ Rebalance clears all entry fields and prompts for new quantities</strong><br>After archiving the old leg, all quantity, value, and range fields are now cleared to zero/blank. The Edit modal reopens immediately so you can enter the new Token A and B quantities for the new position. Entry Qty and Current Qty start equal (as they should at pool entry) and diverge naturally as the pool runs. Entry prices are set to current live prices at the moment of rebalance.` },
+      { icon: '○', heading: 'v47.03',
+        text: `<em style="color:var(--text3);">IL Calculator: Holding Period and Monthly Yield fields are now side by side, bringing the Calculate button into view without scrolling.</em><br><br><strong>⚖️ Calculate button always visible on Summary tab</strong><br>The Holding Period and Monthly Yield $ fields in the IL Break-Even Calculator are now on a single row side by side. This saves enough vertical space to bring the Calculate → button into view on a standard screen without scrolling — all fields and labels are still present.` },
+      { icon: '○', heading: 'v47.02',
+        text: `<em style="color:var(--text3);">Data menu now scrolls so Export Backup button is always visible; file:// notice expanded with Python server auto-save setup guide.</em><br><br><strong>💾 Data menu always fully visible</strong><br>The Data ▾ dropdown now has a max-height with internal scrolling, so the Export Backup Now button and file:// notice are never pushed off-screen regardless of window height.<br><br><strong>🖥️ Auto-save setup guide built into the app</strong><br>The file:// warning section now includes a step-by-step guide to enable full auto-save: run "python -m http.server 8080" from your tracker folder, then open http://localhost:8080/ in Chrome. Both the command and URL have one-click copy buttons. This unlocks auto-save every 7 minutes, save-on-tab-switch, and the ⛁ Link / Create File feature.` },
+      { icon: '○', heading: 'v47.01',
+        text: `<em style="color:var(--text3);">IDB persistence fix: hedge chart history, Pushover keys, and DeFi wallet now survive browser cache clears.</em><br><br><strong>🛡️ Hedge chart history survives cache clears</strong><br>The hedge performance chart history (HPC) is now mirrored to IndexedDB in addition to localStorage. IndexedDB is not cleared when you wipe browser cache — so your chart history will be restored automatically the next time you open the tracker, even after a full cache clear.<br><br><strong>🔔 Pushover keys survive cache clears</strong><br>Pushover User Key and App Token are now stored in IndexedDB as well as localStorage. After a cache clear, both keys are automatically restored into DB.settings within 1 second of startup — no need to re-enter them.<br><br><strong>👛 DeFi wallet setting survives cache clears</strong><br>The DeFi Wallet selection (Settings → Wallets) is now mirrored to IndexedDB. It will be restored automatically on next startup if localStorage was cleared.<br><br><strong>💾 Backup import now also writes to IDB</strong><br>When you import a backup .json file, the hedge chart history and Pushover keys inside it are now also written to IndexedDB immediately — so they persist through any subsequent cache clear without needing another import.` },
+      { icon: '○', heading: 'v47.00',
+        text: `<em style="color:var(--text3);">Push notification overhaul: separate cooldowns per alert type, per-pool alert tiers, GEM notification fixes, and hedge modal auto-fill.</em><br><br><strong>🔔 Separate cooldowns per alert type</strong><br>Pool Out of Range, Act Now (≤5%), Watch (≤15%), and GEM/Holdings alerts now each have their own cooldown setting in Settings → Phone Alerts. Defaults: Out 30 min, Act Now 20 min, Watch 60 min, GEM 20 min. Previously all alerts shared one timer — Watch was repeating as often as urgent alerts.<br><br><strong>🏊 Per-pool alert tier: Silent / Standard / Sensitive</strong><br>Each pool now has an Alert Tier setting in the pool edit modal and during Add Pool setup. Silent = no Pushover at all (ideal for Beefy/auto-managed vaults). Standard = global cooldowns. Sensitive = cooldowns halved (use for volatile pairs like ETH/USDC near range edge).<br><br><strong>💎 GEM 24h mover alerts fixed</strong><br>A bug caused GEM up/down mover alerts to never re-fire after their first send — the condition-clear reset was calling .delete() on a plain object (a silent no-op). Fixed. GEM alerts now correctly re-fire after their cooldown elapses.<br><br><strong>⚡ Hedge alert engine fixed</strong><br>The hedge TP/SL/liquidation alert section was using Set-style .has()/.add()/.delete() API on a plain object — all silently broken. Converted to the shared alert system with proper cooldown support.<br><br><strong>💰 Hedge modal: Margin $ ↔ Hedge $ auto-fill</strong><br>The Add Hedge Position modal now shows both Margin $ (your collateral) and Hedge Size $ (notional = margin × leverage) with live auto-fill between them. Enter either and the other updates instantly. Short qty also auto-calculates from Hedge $ ÷ Entry price. Example: Margin $1,000 at 3× → Hedge $3,000 auto-filled.<br><br><strong>📈 Hedge chart now builds history across sessions</strong><br>The Hedge Performance Chart accumulates price history between sessions using IV-adaptive sampling (1–10 min intervals based on current volatility, plus a 0.5% spot-move trigger). The 1H / 6H / 1D / 7D / All time windows are now meaningful as history grows over days and weeks.<br><br><strong>📖 Live help documentation site</strong><br>A full help site is now live at jdgoldstein.github.io/portfoliotracker-help — searchable, dark mode, tab-by-tab documentation, FAQ, and changelog. The tracker syncs help content in the background on startup.<br><br><strong>⛁ Versioned backup envelope (v2)</strong><br>Backup files now use a structured envelope: { db, hpcHistory, schemaVersion: 2 }. Hedge chart history travels with your backup and restores automatically on import. Feed data (CoinGecko prices, hedgeCache) is no longer written to backup files — keeps files clean and small.<br><br><strong>⏱ Auto-save every 7 minutes, silently</strong><br>Auto-save interval reduced from 10 to 7 minutes. No more toast notification on every auto-save tick — the timestamp is visible in the ⛁ menu.` }
+    ]
+  }
+};
+
+// ── Search ─────────────────────────────────────────────────────────────────
+function helpStripTags(text) {
+  return text.replace(/\[img:\d+\]/g, ' ').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function helpHighlight(text, query) {
+  if(!query) return text;
+  const escaped = query.replace(/[-.*+?^${}()|[\]\\]/g, '\\$&');
+  return text.replace(new RegExp('(' + escaped + ')', 'gi'),
+    '<mark style="background:#f59e0b33;color:inherit;border-radius:2px;padding:0 2px;">$1</mark>');
+}
+
+function helpSearch(query) {
+  const resultsEl = document.getElementById('helpSearchResults');
+  const contentEl = document.getElementById('helpModalContent');
+  const clearBtn  = document.getElementById('helpSearchClear');
+  query = (query || '').trim();
+  if(!query) { helpSearchClear(); return; }
+  clearBtn.style.display = '';
+  contentEl.style.display = 'none';
+  resultsEl.style.display = '';
+  const q = query.toLowerCase();
+  const matches = [];
+  Object.entries(HELP_CONTENT).forEach(([tab, data]) => {
+    data.sections.forEach((s, idx) => {
+      const clean = helpStripTags(s.text);
+      if((s.heading + ' ' + clean).toLowerCase().includes(q)) {
+        const pos     = clean.toLowerCase().indexOf(q);
+        const start   = Math.max(0, pos - 60);
+        const end     = Math.min(clean.length, pos + 100);
+        const snippet = (start > 0 ? '…' : '') + clean.slice(start, end) + (end < clean.length ? '…' : '');
+        matches.push({ tab, idx, heading: s.heading, snippet, icon: s.icon });
+      }
+    });
+  });
+  if(!matches.length) {
+    resultsEl.innerHTML = `<div style="padding:20px;text-align:center;color:var(--text3);font-size:12px;">No results for <strong>${query}</strong></div>`;
+    return;
+  }
+  resultsEl.innerHTML = matches.map(m => `
+    <div onclick="helpSearchGoTo('${m.tab}',${m.idx})"
+      style="padding:10px 14px;border:1px solid var(--border);border-radius:6px;margin-bottom:6px;cursor:pointer;background:var(--bg2);"
+      onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='var(--bg2)'">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+        <span>${m.icon}</span>
+        <span style="font-size:11px;font-weight:700;color:var(--accent2);">${TAB_LABELS[m.tab]||m.tab}</span>
+        <span style="color:var(--text3);font-size:10px;">›</span>
+        <span style="font-size:11px;font-weight:700;color:var(--text1);">${helpHighlight(m.heading, query)}</span>
+      </div>
+      <div style="font-size:11px;color:var(--text3);line-height:1.6;">${helpHighlight(m.snippet, query)}</div>
+    </div>`).join('');
+}
+
+function helpSearchGoTo(tab, sectionIdx) {
+  helpSearchClear();
+  openHelpModal(tab);
+  setTimeout(() => {
+    const details = document.querySelectorAll('#helpModalContent details');
+    if(details[sectionIdx]) {
+      details[sectionIdx].open = true;
+      details[sectionIdx].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, 80);
+}
+
+function helpSearchClear() {
+  const input     = document.getElementById('helpSearchInput');
+  const resultsEl = document.getElementById('helpSearchResults');
+  const contentEl = document.getElementById('helpModalContent');
+  const clearBtn  = document.getElementById('helpSearchClear');
+  if(input)     input.value = '';
+  if(resultsEl) resultsEl.style.display = 'none';
+  if(contentEl) contentEl.style.display = '';
+  if(clearBtn)  clearBtn.style.display  = 'none';
+}
+
+// ── What's New content — keyed by version string ─────────────────────────────
 
 // ── GitHub Help Sync (read-only — demo receives updates, cannot push) ──────────
 const HELP_WORKER_URL = 'https://broad-scene-ee15.jdgoldstein.workers.dev';
@@ -16131,6 +16190,7 @@ function helpFmt(textareaId, action) {
   } catch(e) {}
 })();
 
+
 function helpZoomImg(src) {
   const el = document.getElementById('imgZoomOverlay');
   if(!el) return;
@@ -16141,39 +16201,33 @@ function helpZoomImg(src) {
 
 function openHelpModal(tab) {
   // Default to overview if no tab specified or tab not found
-  if(!tab || (!HELP_CONTENT[tab] && tab !== 'whatsNew' && tab !== 'setup')) tab = 'overview';
-  const data = HELP_CONTENT[tab];
-  if(!data && tab !== 'whatsNew' && tab !== 'setup') return;
+  if(!tab || !HELP_CONTENT[tab]) tab = 'overview';
+
+  // Always clear search when switching tabs
+  const _si = document.getElementById('helpSearchInput');
+  const _sr = document.getElementById('helpSearchResults');
+  const _sc = document.getElementById('helpSearchClear');
+  if(_si) _si.value = '';
+  if(_sr) _sr.style.display = 'none';
+  if(_sc) _sc.style.display = 'none';
+
   _helpEditTab  = tab;
   _helpEditMode = false;
+
+  const data = HELP_CONTENT[tab];
+  if(!data) return;
   const eb = document.getElementById('helpEditToggleBtn');
   if(eb) {
-    eb.textContent='✏ Edit'; eb.style.background=''; eb.style.color=''; eb.style.borderColor='';
     // Edit/export hidden in demo — read-only for all tabs
-    const isEditable = false;
-    eb.style.display = isEditable ? '' : 'none';
+    eb.style.display = 'none';
+    const expBtn = document.querySelector('#helpModal button[onclick="exportHelpToGitHub()"]');
+    if(expBtn) expBtn.style.display = 'none';
   }
   document.getElementById('helpModalContent').style.display = '';
   const ep = document.getElementById('helpEditPanel');
   if(ep) ep.style.display = 'none';
 
-  // Render tab navigation bar
   _renderHelpTabNav(tab);
-
-  // Handle What's New tab
-  if(tab === 'whatsNew') {
-    document.getElementById('helpModalTitle').textContent = "✦ What's New — Full Changelog";
-    _helpEditMode = false;
-    const ep2 = document.getElementById('helpEditPanel');
-    if(ep2) ep2.style.display = 'none';
-    document.getElementById('helpModalContent').style.display = '';
-    _renderWhatsNew();
-    document.getElementById('helpModal').classList.add('open');
-    return;
-  }
-
-  // Setup tab handled by HELP_CONTENT like other tabs
-
   document.getElementById('helpModalTitle').textContent = data.title;
 
   function processImgTags(text, tabKey) {
