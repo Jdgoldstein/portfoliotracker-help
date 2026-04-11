@@ -15373,6 +15373,16 @@ const TAB_LABELS = {
 };
 
 const WHATS_NEW = {
+  '47.34': {
+    headline: "Version 47.34",
+    summary:  "International CPI benchmark — 17 countries with auto-fetch or manual entry.",
+    items: [
+      { icon: '🌍', title: "International CPI — 17 Countries",
+        text: "Settings now has a Country dropdown for CPI benchmarking. Auto-fetch from FRED (USA), Bank of Canada, ONS (UK), ECB (Eurozone), and ABS (Australia). Manual entry with direct link to national stats office for New Zealand, Japan, Switzerland, Singapore, Norway, Sweden, Denmark, Mexico, Brazil, South Africa, India, and Other." },
+      { icon: '🔄', title: "Update banner — no more downgrade prompts",
+        text: "The update banner now only fires when the server version is strictly newer than the local version. Previously it could incorrectly offer a downgrade if help-content.json lagged behind the app version." },
+    ]
+  },
   '47.35': {
     headline: "Version 47.35",
     summary:  "International CPI support — 17 countries with auto-fetch or manual entry and direct links to national statistics offices.",
@@ -15993,6 +16003,7 @@ async function fetchHelpContent() {
 
     if (data && data.tabs) {
       Object.entries(data.tabs).forEach(([tab, tabData]) => {
+        if (tab === 'whatsNew') return; // built locally — never overwrite from remote
         if (HELP_CONTENT[tab] && tabData.sections) {
           const remoteText = JSON.stringify(tabData.sections);
           const localText  = JSON.stringify(HELP_CONTENT[tab].sections);
@@ -16082,7 +16093,6 @@ function checkWhatsNew() {
   try {
     const seen = localStorage.getItem(WHATS_NEW_KEY);
     if(seen !== APP_VERSION && WHATS_NEW[APP_VERSION]) {
-      // Mark as seen immediately so it won't show again even if user just closes
       try { localStorage.setItem(WHATS_NEW_KEY, APP_VERSION); } catch(e) {}
       setTimeout(() => openHelpModal('whatsNew'), 1200);
     }
