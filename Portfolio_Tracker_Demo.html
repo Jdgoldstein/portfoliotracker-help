@@ -129,12 +129,12 @@ input[type="date"] { color-scheme: dark; }
 .card-sub{font-size:calc(var(--fs-base) - 2px);color:#4a5168;margin-top:3px;}
 
 /* ── TABLE WRAP ── */
-.tbl-wrap{overflow-x:auto;overflow-y:visible;border:2px solid #7a9abf;border-radius:var(--radius);box-shadow:0 2px 8px rgba(0,0,0,0.12);max-width:100%;width:100%;scrollbar-gutter:stable;}
+.tbl-wrap{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 180px);border:2px solid #7a9abf;border-radius:var(--radius);box-shadow:0 2px 8px rgba(0,0,0,0.12);max-width:100%;width:100%;}
 #tab-pools .tbl-wrap table{table-layout:auto;}
-#tab-pools table{table-layout:auto;}
-#tab-pools table th,#tab-pools table td{padding:3px 4px;}
+#tab-pools table{table-layout:fixed;width:100%;}
+#tab-pools table th,#tab-pools table td{padding:3px 4px;overflow:hidden;text-overflow:ellipsis;}
 #tab-pools table input.cell-in.narrow{width:56px;}
-#tab-pools thead th{font-size:var(--fs-th);white-space:normal;line-height:1.2;will-change:transform;}
+#tab-pools thead th{font-size:var(--fs-th);white-space:normal;line-height:1.2;}
 #tab-pools tbody td{font-size:var(--fs-mono);}
 #tab-pools tfoot td{font-size:var(--fs-mono);}
 #tab-vaults .tbl-wrap table{table-layout:auto;}
@@ -578,7 +578,7 @@ thead th.sort-asc,thead th.sort-desc{background:#a8bcd8;color:#0a1628;}
 .yield-log table thead th{background:rgba(10,124,74,.04);top:auto;position:static;}
 
 /* ── TABS ── */
-.tab-bar{display:flex;gap:0;background:#e8edf5;border-bottom:2px solid #93aac5;margin-bottom:0;padding:0 8px;position:sticky;top:48px;z-index:190;}
+.tab-bar{display:flex;gap:0;background:#e8edf5;border-bottom:2px solid #93aac5;margin-bottom:0;padding:0 8px;}
 .tab{padding:10px 14px;cursor:pointer;font-size:var(--fs-base);font-weight:700;color:#2c3a4a;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s;letter-spacing:.05em;text-transform:uppercase;}
 .tab:hover{color:#0f1923;background:rgba(0,0,0,0.05);}
 .tab.on{color:#0a5c38;border-bottom-color:#0a7c4a;background:rgba(255,255,255,0.6);}
@@ -819,7 +819,6 @@ body.dark .theme-toggle-knob { left: 20px; }
 body.dark tbody td { color: var(--text) !important; }
 body.dark tbody td.left { color: var(--text) !important; }
 body.dark tfoot td { background: #1e2a44 !important; color: var(--text) !important; border-top-color: #4a6080 !important; }
-body.dark thead th.ratio-col { background:rgba(59,130,246,0.32) !important; }
 body.dark thead th { background: #1a2438 !important; border-bottom-color: #4a6080 !important; }
 body.dark thead th.sort-asc, body.dark thead th.sort-desc { background: #243050 !important; color: var(--text) !important; }
 body.dark .tbl-wrap { border-color: #3a5070 !important; }
@@ -1129,7 +1128,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 <!-- HEADER -->
 <div id="header" style="visibility:hidden;">
   <div class="logo">PORTFOLIO <small>TRACKER</small></div>
-  <span id="versionBadge" style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-left:4px;align-self:flex-end;padding-bottom:2px;">v47.34</span>
+  <span id="versionBadge" style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-left:4px;align-self:flex-end;padding-bottom:2px;">v47.35</span>
   <span id="privacyBadge">🙈 VALUES MASKED</span>
   <div class="header-stats" id="hdrStats"></div>
   <div class="header-right">
@@ -1481,22 +1480,22 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
       <table>
         <thead>
           <tr>
-            <th class="left" style="min-width:28px;padding:4px 2px;"></th>
-            <th class="left" style="min-width:80px;padding:4px 5px;">Pool</th>
-            <th title="Annual Percentage Rate — informational only, not used in calculations" style="color:var(--accent);min-width:44px;">APR %</th>
-            <th title="Entry date — click to edit" style="min-width:38px;padding:2px 1px;">Date</th>
-            <th title="USD value when position opened" style="min-width:72px;">Entry $</th>
-            <th title="Current quantity of Token A" style="min-width:80px;background:rgba(74,158,255,0.07);">Qty A</th>
-            <th title="Current quantity of Token B" style="min-width:80px;background:rgba(74,158,255,0.07);">Qty B</th>
-            <th title="Range low boundary" style="min-width:72px;background:rgba(167,139,250,0.10);">Low</th>
-            <th title="Current live ratio between the two tokens" class="ratio-col" style="min-width:72px;background:rgba(59,130,246,0.22);">Live Ratio</th>
-            <th title="Range high boundary" style="min-width:72px;background:rgba(167,139,250,0.10);">High</th>
-            <th title="Range status based on live ratio vs low/high" style="min-width:80px;">Range</th>
-            <th title="Auto-calculated: Tok A qty × price + Tok B qty × price" style="min-width:80px;">Current $</th>
-            <th title="Total yield harvested — click the 🌾 button to log a harvest" style="cursor:help;min-width:80px;background:rgba(10,124,74,0.07);color:var(--accent);">🌾 Yield</th>
-            <th title="Net Result + annualized return" style="min-width:120px;">Net / Ann%</th>
-            <th title="Impermanent loss vs HODL value" style="min-width:100px;">IL / HODL</th>
-            <th title="Does Current + Yield beat HODL value?" style="min-width:80px;">HODL?</th>
+            <th class="left" style="width:28px;padding:4px 2px;"></th>
+            <th class="left" style="width:160px;padding:4px 5px;">Pool</th>
+            <th title="Annual Percentage Rate — informational only, not used in calculations" style="color:var(--accent);width:44px;">APR %</th>
+            <th title="Entry date — click to edit" style="width:38px;padding:2px 1px;">Date</th>
+            <th title="USD value when position opened" style="width:72px;">Entry $</th>
+            <th title="Current quantity of Token A" style="width:80px;background:rgba(74,158,255,0.07);">Qty A</th>
+            <th title="Current quantity of Token B" style="width:80px;background:rgba(74,158,255,0.07);">Qty B</th>
+            <th title="Range low boundary" style="width:72px;background:rgba(167,139,250,0.07);">Low</th>
+            <th title="Current live ratio between the two tokens" style="width:72px;">Live Ratio</th>
+            <th title="Range high boundary" style="width:72px;background:rgba(167,139,250,0.07);">High</th>
+            <th title="Range status based on live ratio vs low/high" style="width:80px;">Range</th>
+            <th title="Auto-calculated: Tok A qty × price + Tok B qty × price" style="width:80px;">Current $</th>
+            <th title="Total yield harvested — click the 🌾 button to log a harvest" style="cursor:help;width:80px;background:rgba(10,124,74,0.07);color:var(--accent);">🌾 Yield</th>
+            <th title="Net Result + annualized return" style="width:120px;">Net / Ann%</th>
+            <th title="Impermanent loss vs HODL value" style="width:100px;">IL / HODL</th>
+            <th title="Does Current + Yield beat HODL value?" style="width:80px;">HODL?</th>
           </tr>
         </thead>
         <tbody id="poolBody"></tbody>
@@ -3421,19 +3420,43 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     <!-- ── CPI Benchmark ────────────────────────────────────────────── -->
     <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:14px;">
       <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;font-weight:600;">📊 CPI Benchmark Badge</div>
-      <div class="form-grid cols2">
-        <div class="field">
+      <div class="form-grid cols2" style="margin-bottom:10px;">
+        <div class="field" style="margin-bottom:0;">
+          <label>Country / Region</label>
+          <select id="al-cpiCountry" onchange="onCpiCountryChange()"
+            style="width:100%;padding:6px 8px;background:var(--bg2);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:12px;">
+            <option value="US">🇺🇸 United States (FRED)</option>
+            <option value="CA">🇨🇦 Canada (Bank of Canada)</option>
+            <option value="GB">🇬🇧 United Kingdom (ONS)</option>
+            <option value="EU">🇪🇺 Eurozone (ECB)</option>
+            <option value="AU">🇦🇺 Australia (ABS)</option>
+            <option value="NZ">🇳🇿 New Zealand (Stats NZ)</option>
+            <option value="JP">🇯🇵 Japan (manual)</option>
+            <option value="CH">🇨🇭 Switzerland (manual)</option>
+            <option value="SG">🇸🇬 Singapore (manual)</option>
+            <option value="NO">🇳🇴 Norway (manual)</option>
+            <option value="SE">🇸🇪 Sweden (manual)</option>
+            <option value="DK">🇩🇰 Denmark (manual)</option>
+            <option value="MX">🇲🇽 Mexico (manual)</option>
+            <option value="BR">🇧🇷 Brazil (manual)</option>
+            <option value="ZA">🇿🇦 South Africa (manual)</option>
+            <option value="IN">🇮🇳 India (manual)</option>
+            <option value="OTHER">🌐 Other (manual)</option>
+          </select>
+        </div>
+        <div class="field" style="margin-bottom:0;">
           <label>CPI / Inflation Rate <span style="font-weight:400;color:var(--text3);font-size:10px;">(annual %)</span></label>
           <div style="display:flex;align-items:center;gap:6px;">
-            <input id="al-cpiRate" type="number" min="0" max="30" step="0.1" placeholder="3.5"
+            <input id="al-cpiRate" type="number" min="0" max="100" step="0.1" placeholder="3.5"
               oninput="saveCpiRate()"
               style="width:72px;">
             <span style="font-size:11px;color:var(--text3);">%</span>
-            <button class="btn sm" onclick="fetchBenchmarks(true)" style="font-size:10px;padding:2px 8px;">↻ Fetch live</button>
+            <button class="btn sm" id="cpiFetchBtn" onclick="fetchBenchmarks(true)" style="font-size:10px;padding:2px 8px;">↻ Fetch live</button>
           </div>
-          <div class="hint" id="cpiRateHint">Green badge on pool rows when annualized net return beats this rate. Auto-fetched from FRED (St. Louis Fed) on startup.</div>
         </div>
       </div>
+      <div class="hint" id="cpiRateHint">Green badge on pool rows when annualized net return beats this rate.</div>
+      <div id="cpiManualLink" style="display:none;margin-top:8px;font-size:11px;color:var(--text3);line-height:1.6;"></div>
     </div>
 
     <!-- ── Default DeFi Wallet ──────────────────────────────────────── -->
@@ -3589,7 +3612,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 // Secrets assembled at runtime — not stored as plain literals
 const ACT_SECRET = (()=>{const p=['CPF_TR','ACKER_','2026_D','ELTA7_','WHISKE','Y'];return p.join('');})();
 const ACT_MASTER = (()=>{const p=['CPF_MA','STER_O','VERRID','E_KEY_','ZULU9'];return p.join('');})();
-const APP_VERSION  = '47.34';           // bumped on each release
+const APP_VERSION  = '47.35';           // bumped on each release
 const WHATS_NEW_KEY = 'cpf_seen_ver';   // localStorage: last version user saw What's New
 const ACT_STORE    = 'cpf_activation_v1';
 const ACT_ID_STORE = 'cpf_install_id';
@@ -5252,32 +5275,17 @@ function renderPools() {
           return `<input class="cell-in narrow" value="${p.tokAQty||''}" onfocus="this.dataset.orig=this.value" onblur="if(this.value!==''&&this.value!==this.dataset.orig)inlinePool('${p.id}','tokAQty',+this.value)" style="width:70px;text-align:right;" title="Current qty of ${p.tokASym}">`;
         })()}
       </td>
-      <td style="background:rgba(74,158,255,0.05);">
-        ${(()=>{
-          const isLikePair = p.vaultMode && p.tokAGeckoId && p.tokBGeckoId && p.tokAGeckoId === p.tokBGeckoId;
-          if(isLikePair) {
-            // Like-pair vault: Token B is same asset as A — show dash, total is in Token A
-            return `<span style="color:var(--text3);font-size:10px;" title="Same asset as Token A — total shown in QTY A">—</span>`;
-          }
-          if(p.vaultMode) {
-            return `<div style="font-size:calc(var(--fs-mono) - 2px);color:var(--text3);margin-bottom:2px;">wrapped</div>`
-              + `<span style="font-family:var(--mono);font-size:var(--fs-mono);color:var(--text3);">vault</span>`;
-          }
-          return `<div style="font-size:calc(var(--fs-mono) - 2px);color:var(--accent2);margin-bottom:2px">${p.tokBSym||''}</div>`
-            + `<input class="cell-in narrow" value="${p.tokBQty||''}" onfocus="this.dataset.orig=this.value" onblur="if(this.value!==''&&this.value!==this.dataset.orig)inlinePool('${p.id}','tokBQty',+this.value)" style="width:70px;text-align:right;" title="Current qty of ${p.tokBSym}">`;
-        })()}
-      </td>
-      <td style="background:rgba(167,139,250,0.08);overflow:hidden;">${p.vaultMode ? '' : `<input class="cell-in narrow" value="${p.rangeLow ? qf(p.rangeLow) : ''}" onfocus="this.dataset.orig=this.value" onblur="if(this.value!==''&&this.value!==this.dataset.orig)inlinePool('${p.id}','rangeLow',+this.value)" style="width:100%;text-align:right;" title="${p.rangeLow||''}">`}</td>
-      <td class="ratio-col" style="text-align:right;overflow:hidden;background:rgba(59,130,246,0.22);">
+      <td style="background:rgba(167,139,250,0.05);overflow:hidden;">${p.vaultMode ? '' : `<input class="cell-in narrow" value="${p.rangeLow ? qf(p.rangeLow) : ''}" onfocus="this.dataset.orig=this.value" onblur="if(this.value!==''&&this.value!==this.dataset.orig)inlinePool('${p.id}','rangeLow',+this.value)" style="width:100%;text-align:right;" title="${p.rangeLow||''}">`}</td>
+      <td style="text-align:right;overflow:hidden;background:rgba(74,158,255,0.07);border-left:2px solid rgba(74,158,255,0.25);border-right:2px solid rgba(74,158,255,0.25);">
         ${p.vaultMode
           ? `<span style="font-size:10px;color:var(--text3);font-style:italic;">auto</span>`
-          : ratio ? `<span style="font-family:var(--mono);font-size:var(--fs-mono);font-weight:600">${ratio < 0.0001 ? ratio.toExponential(2) : ratio.toPrecision(4)}</span>` : '<span class="neu">—</span>'}
+          : ratio ? `<span style="font-family:var(--mono);font-size:var(--fs-mono);font-weight:700;color:#4a9eff;">${ratio < 0.0001 ? ratio.toExponential(2) : ratio.toPrecision(4)}</span>` : '<span class="neu">—</span>'}
         ${!p.vaultMode ? `<div style="font-size:9px;color:var(--text3);margin-top:1px;line-height:1.3">
           ${pctLow!==null?`${(pctLow*100).toFixed(1)}%lo`:''}
           ${pctHigh!==null?` ${(pctHigh*100).toFixed(1)}%hi`:''}
         </div>` : ''}
       </td>
-      <td style="background:rgba(167,139,250,0.08);overflow:hidden;">${p.vaultMode ? '' : `<input class="cell-in narrow" value="${p.rangeHigh ? qf(p.rangeHigh) : ''}" onfocus="this.dataset.orig=this.value" onblur="if(this.value!==''&&this.value!==this.dataset.orig)inlinePool('${p.id}','rangeHigh',+this.value)" style="width:100%;text-align:right;" title="${p.rangeHigh||''}">`}</td>
+      <td style="background:rgba(167,139,250,0.05);overflow:hidden;">${p.vaultMode ? '' : `<input class="cell-in narrow" value="${p.rangeHigh ? qf(p.rangeHigh) : ''}" onfocus="this.dataset.orig=this.value" onblur="if(this.value!==''&&this.value!==this.dataset.orig)inlinePool('${p.id}','rangeHigh',+this.value)" style="width:100%;text-align:right;" title="${p.rangeHigh||''}">`}</td>
       <td>${p.vaultMode ? `<span class="badge b-neutral" style="background:rgba(74,158,255,0.1);color:#4a9eff;border-color:rgba(74,158,255,0.3);">Vault</span>` : rangeBadge(status)}</td>
       <td class="${cur!==null?cc(cur-p.entryValue):''}">${$f(cur,2)}</td>
       <td class="yield-cell-highlight" style="text-align:center;padding:3px 4px;">
@@ -13238,7 +13246,7 @@ function openModal(id) {
 function closeModal(id) {
   document.getElementById(id).classList.remove('open');
   if(id === 'welcomeModal') localStorage.setItem('cpf_seen', '1');
-  if(id === 'helpModal') { helpSearchClear(); try { if(_helpEditTab === 'whatsNew') localStorage.setItem(WHATS_NEW_KEY, APP_VERSION); } catch(e){} }
+  if(id === 'helpModal') helpSearchClear();
 }
 // Modals require explicit Close/Cancel — click-away is disabled to prevent data loss
 // document.querySelectorAll('.overlay').forEach(o => {
@@ -14400,36 +14408,85 @@ const FRED_API_KEY   = '296dfd085a59469431f2709ce6bdabaf';
 const FRED_CPI_URL   = `https://api.stlouisfed.org/fred/series/observations?series_id=CPIAUCSL&api_key=${FRED_API_KEY}&file_type=json&sort_order=desc&limit=13`;
 const CPI_CACHE_HRS  = 24;
 
+// ── CPI data sources by country ───────────────────────────────────────────────
+const CPI_SOURCES = {
+  US: { name:'United States', flag:'🇺🇸', source:'FRED (St. Louis Fed)', auto:true,
+    fetch: async()=>{ const res=await fetch(FRED_CPI_URL); if(!res.ok) throw new Error('FRED error'); const data=await res.json(); const obs=(data.observations||[]).filter(o=>o.value!=='.'); if(obs.length<13) throw new Error('Not enough data'); return Math.round(((parseFloat(obs[0].value)-parseFloat(obs[12].value))/parseFloat(obs[12].value))*1000)/10; }},
+  CA: { name:'Canada', flag:'🇨🇦', source:'Bank of Canada', auto:true,
+    fetch: async()=>{ const res=await fetch('https://www.bankofcanada.ca/valet/observations/CPIALL/json?recent=13'); if(!res.ok) throw new Error('BoC error'); const data=await res.json(); const obs=(data.observations||[]).filter(o=>o.CPIALL?.v); if(obs.length<13) throw new Error('Not enough data'); return Math.round(((parseFloat(obs[obs.length-1].CPIALL.v)-parseFloat(obs[0].CPIALL.v))/parseFloat(obs[0].CPIALL.v))*1000)/10; }},
+  GB: { name:'United Kingdom', flag:'🇬🇧', source:'ONS', auto:true,
+    fetch: async()=>{ const res=await fetch('https://api.ons.gov.uk/v1/datasets/cpih01/timeseries/l55o/data'); if(!res.ok) throw new Error('ONS error'); const data=await res.json(); const months=(data.months||[]).slice(-13); if(months.length<13) throw new Error('Not enough data'); return Math.round(((parseFloat(months[months.length-1].value)-parseFloat(months[0].value))/parseFloat(months[0].value))*1000)/10; }},
+  EU: { name:'Eurozone', flag:'🇪🇺', source:'ECB', auto:true,
+    fetch: async()=>{ const res=await fetch('https://data-api.ecb.europa.eu/service/data/ICP/M.U2.N.000000.4.ANR?lastNObservations=1&format=jsondata'); if(!res.ok) throw new Error('ECB error'); const data=await res.json(); const series=data.dataSets?.[0]?.series?.['0:0:0:0:0:0']?.observations; if(!series) throw new Error('No data'); const vals=Object.values(series); return Math.round(parseFloat(vals[vals.length-1][0])*10)/10; }},
+  AU: { name:'Australia', flag:'🇦🇺', source:'ABS', auto:true,
+    fetch: async()=>{ const res=await fetch('https://api.data.abs.gov.au/data/CPI/1.10001.10.Q?startPeriod=2023-Q1&format=jsondata'); if(!res.ok) throw new Error('ABS error'); const data=await res.json(); const obs=data.dataSets?.[0]?.series?.['0:0:0:0']?.observations; if(!obs) throw new Error('No data'); const vals=Object.entries(obs).sort((a,b)=>+a[0]-+b[0]); if(vals.length<5) throw new Error('Not enough data'); return Math.round(((parseFloat(vals[vals.length-1][1][0])-parseFloat(vals[vals.length-5][1][0]))/parseFloat(vals[vals.length-5][1][0]))*1000)/10; }},
+  NZ: { name:'New Zealand', flag:'🇳🇿', source:'Stats NZ', auto:false, link:'https://www.stats.govt.nz/topics/consumers-price-index', hint:'Visit Stats NZ → Consumers Price Index → check the latest annual rate and enter above.' },
+  JP: { name:'Japan', flag:'🇯🇵', source:'Statistics Bureau of Japan', auto:false, link:'https://www.stat.go.jp/english/data/cpi/index.html', hint:'Visit Statistics Bureau of Japan → Consumer Price Index → check latest annual CPI and enter above.' },
+  CH: { name:'Switzerland', flag:'🇨🇭', source:'Swiss Federal Statistical Office', auto:false, link:'https://www.bfs.admin.ch/bfs/en/home/statistics/prices/consumer-price-index.html', hint:'Visit Swiss FSO CPI page → check the latest annual rate and enter above.' },
+  SG: { name:'Singapore', flag:'🇸🇬', source:'Singapore Dept of Statistics', auto:false, link:'https://www.singstat.gov.sg/find-data/search-by-theme/economy/prices-and-price-indices/latest-data', hint:'Visit SingStat → Consumer Price Index → check the latest annual CPI and enter above.' },
+  NO: { name:'Norway', flag:'🇳🇴', source:'Statistics Norway (SSB)', auto:false, link:'https://www.ssb.no/en/priser-og-prisindekser/konsumpriser/statistikk/konsumprisindeksen', hint:'Visit SSB → Consumer Price Index → check the latest 12-month rate and enter above.' },
+  SE: { name:'Sweden', flag:'🇸🇪', source:'Statistics Sweden (SCB)', auto:false, link:'https://www.scb.se/en/finding-statistics/statistics-by-subject-area/prices-and-consumption/consumer-price-index/consumer-price-index-cpi/', hint:'Visit SCB → CPI → check the latest annual rate and enter above.' },
+  DK: { name:'Denmark', flag:'🇩🇰', source:'Statistics Denmark', auto:false, link:'https://www.dst.dk/en/Statistik/emner/oekonomi/priser-og-prisindeks/forbrugerprisindeks', hint:'Visit Statistics Denmark → Consumer Price Index → check the latest annual figure and enter above.' },
+  MX: { name:'Mexico', flag:'🇲🇽', source:'INEGI', auto:false, link:'https://www.inegi.org.mx/temas/inpc/', hint:'Visit INEGI → INPC → check the latest annual CPI rate and enter above.' },
+  BR: { name:'Brazil', flag:'🇧🇷', source:'IBGE (IPCA)', auto:false, link:'https://www.ibge.gov.br/en/statistics/economic/prices-and-costs/9173-extended-national-consumer-price-index.html', hint:'Visit IBGE → IPCA → check the latest 12-month rate and enter above.' },
+  ZA: { name:'South Africa', flag:'🇿🇦', source:'Stats SA', auto:false, link:'http://www.statssa.gov.za/?page_id=1854&PPN=P0141', hint:'Visit Stats SA → CPI → check the latest annual rate and enter above.' },
+  IN: { name:'India', flag:'🇮🇳', source:'MOSPI', auto:false, link:'https://mospi.gov.in/web/mospi/inflation', hint:'Visit MOSPI → Inflation → CPI → check the latest annual rate and enter above.' },
+  OTHER: { name:'Other', flag:'🌐', source:'Your national statistics office', auto:false, link:null, hint:'Search for your national statistics office CPI or inflation rate and enter the annual % above.' },
+};
+
 async function fetchBenchmarks(manual=false) {
-  const last = DB.settings._cpiFetchedAt || 0;
+  const last    = DB.settings._cpiFetchedAt || 0;
+  const country = DB.settings.cpiCountry || 'US';
+  const src     = CPI_SOURCES[country] || CPI_SOURCES.US;
   if(!manual && Date.now() - last < CPI_CACHE_HRS * 3600000) return;
+  if(!src.auto) { _updateCpiHint(country); return; }
   try {
-    const res  = await fetch(FRED_CPI_URL);
-    if(!res.ok) throw new Error('FRED error ' + res.status);
-    const data = await res.json();
-    const obs  = (data.observations || []).filter(o => o.value !== '.');
-    if(obs.length < 13) throw new Error('Not enough CPI data');
-    const latest = parseFloat(obs[0].value);
-    const year   = parseFloat(obs[12].value);
-    const cpiAnn = ((latest - year) / year) * 100;
-    DB.settings.cpiRate       = Math.round(cpiAnn * 10) / 10;
+    const rate = await src.fetch();
+    DB.settings.cpiRate       = rate;
     DB.settings._cpiFetchedAt = Date.now();
     persist();
     const el = document.getElementById('al-cpiRate');
-    if(el) el.value = DB.settings.cpiRate;
-    const hint = document.getElementById('cpiRateHint');
-    if(hint) hint.textContent = `Live CPI: ${DB.settings.cpiRate}% — fetched from FRED ${new Date().toLocaleDateString()}. Green badge when pool beats this rate.`;
-    if(manual) toast(`✓ CPI rate updated: ${DB.settings.cpiRate}%`);
+    if(el) el.value = rate;
+    _updateCpiHint(country);
+    if(manual) toast(`✓ CPI updated: ${rate}% (${src.flag} ${src.name})`);
     renderPools();
   } catch(e) {
     if(!DB.settings.cpiRate) DB.settings.cpiRate = 3.5;
-    if(manual) toast(`⚠ Could not fetch CPI — using ${DB.settings.cpiRate}%`, true);
+    _updateCpiHint(country);
+    if(manual) toast(`⚠ Could not fetch ${src.name} CPI — enter rate manually`, true);
   }
+}
+
+function _updateCpiHint(country) {
+  const src      = CPI_SOURCES[country] || CPI_SOURCES.US;
+  const hintEl   = document.getElementById('cpiRateHint');
+  const linkEl   = document.getElementById('cpiManualLink');
+  const fetchBtn = document.getElementById('cpiFetchBtn');
+  if(src.auto) {
+    if(hintEl) hintEl.textContent = DB.settings._cpiFetchedAt
+      ? `Live ${src.flag} CPI: ${DB.settings.cpiRate}% — fetched from ${src.source} ${new Date(DB.settings._cpiFetchedAt).toLocaleDateString()}. Green badge when pool beats this rate.`
+      : `Auto-fetched from ${src.source} on startup. Green badge when pool beats this rate.`;
+    if(linkEl) linkEl.style.display = 'none';
+    if(fetchBtn) fetchBtn.style.display = '';
+  } else {
+    if(hintEl) hintEl.textContent = `Enter ${src.flag} ${src.name} annual CPI % above. Green badge when pool beats this rate.`;
+    if(linkEl) { linkEl.style.display = ''; linkEl.innerHTML = src.link ? `📊 ${src.hint}<br><a href="${src.link}" target="_blank" rel="noopener" style="color:var(--accent2);text-decoration:none;">→ ${src.source} CPI page ↗</a>` : `📊 ${src.hint}`; }
+    if(fetchBtn) fetchBtn.style.display = 'none';
+  }
+}
+
+function onCpiCountryChange() {
+  const country = document.getElementById('al-cpiCountry')?.value || 'US';
+  DB.settings.cpiCountry    = country;
+  DB.settings._cpiFetchedAt = 0;
+  persist();
+  _updateCpiHint(country);
+  fetchBenchmarks(true);
 }
 
 function saveCpiRate() {
   const val = parseFloat(document.getElementById('al-cpiRate').value);
-  if(!isNaN(val) && val >= 0 && val <= 30) {
+  if(!isNaN(val) && val >= 0 && val <= 100) {
     DB.settings.cpiRate = Math.round(val * 10) / 10;
     persist();
     renderPools();
@@ -14443,10 +14500,9 @@ function openSettingsModal() {
   if(moverEl) moverEl.value = DB.settings.gemMoverPct || 10;
   const cpiEl = document.getElementById('al-cpiRate');
   if(cpiEl) cpiEl.value = DB.settings.cpiRate ?? 3.5;
-  const hint = document.getElementById('cpiRateHint');
-  if(hint && DB.settings._cpiFetchedAt) {
-    hint.textContent = `Live CPI: ${DB.settings.cpiRate}% — fetched from FRED ${new Date(DB.settings._cpiFetchedAt).toLocaleDateString()}. Green badge when pool beats this rate.`;
-  }
+  const cpiCountryEl = document.getElementById('al-cpiCountry');
+  if(cpiCountryEl) cpiCountryEl.value = DB.settings.cpiCountry || 'US';
+  _updateCpiHint(DB.settings.cpiCountry || 'US');
   const pushKey   = DB.settings.pushKey   || localStorage.getItem('cpf_pushKey')   || '';
   const pushToken = DB.settings.pushToken || localStorage.getItem('cpf_pushToken') || '';
   if(!DB.settings.pushKey   && pushKey)   { DB.settings.pushKey   = pushKey;   vaultSet('pushKey',   pushKey);   }
@@ -15316,17 +15372,26 @@ const TAB_LABELS = {
 };
 
 const WHATS_NEW = {
-  '47.34': {
-    headline: "Version 47.34",
-    summary: "LP Pools — Active Ratio highlighted in blue for instant at-a-glance identification. Mac column alignment fixed.",
+  '47.35': {
+    headline: "Version 47.35",
+    summary:  "International CPI support — 17 countries with auto-fetch or manual entry and direct links to national statistics offices.",
     items: [
-      { icon: '🔵', title: "Active Ratio — blue highlight",
-        text: "The Live Ratio column now has a distinct blue background, making it instantly distinguishable from the grey-tinted Low and High range columns at a glance." },
-      { icon: '🖥', title: "Mac column alignment fixed",
-        text: "Sticky table headers now align correctly with data columns on Mac. The fix uses scrollbar-gutter:stable so header and body share the same layout width on all platforms." },
+      { icon: '\U0001f30d', title: "International CPI Benchmark — 17 countries",
+        text: "Settings now has a Country dropdown for CPI. Auto-fetch: USA (FRED), Canada (Bank of Canada), UK (ONS), Eurozone (ECB), Australia (ABS). Manual entry with direct link to national stats office: New Zealand, Japan, Switzerland, Singapore, Norway, Sweden, Denmark, Mexico, Brazil, South Africa, India, and Other." },
     ]
   },
-
+  '47.33': {
+    headline: "Version 47.33",
+    summary:  "Help system stabilised — full changelog, What's New tab, and GitHub export all working correctly.",
+    items: [
+      { icon: '✦', title: "What's New tab fixed",
+        text: "What's New now renders identically to all other tabs. Edit button works on all tabs. No content bleed." },
+      { icon: '⬆', title: "GitHub export — full changelog",
+        text: "Export to GitHub now builds a complete changelog from all WHATS_NEW entries for the help site." },
+      { icon: '🌐', title: "GitHub help site — newest first",
+        text: "The GitHub Pages help site now shows What's New sorted newest-first." },
+    ]
+  },
   '47.32': {
     headline: "Version 47.32 — What's New",
     summary:  'Version bump to ensure all demo users receive the full set of recent updates.',
@@ -15751,7 +15816,11 @@ const HELP_CONTENT = {
   whatsNew: {
     title: "✦ What's New — Full Changelog",
     sections: [
-      { icon: '✦', heading: 'v47.32  — CURRENT',
+      { icon: '✦', heading: 'v47.35  — CURRENT',
+        text: `<em style="color:var(--text3);">International CPI support — 17 countries with auto-fetch or manual entry and direct links to national statistics offices.</em><br><br><strong>🌍 International CPI Benchmark — 17 countries</strong><br>Settings → CPI Benchmark Badge now has a Country dropdown. Auto-fetch works for USA (FRED), Canada (Bank of Canada), UK (ONS), Eurozone (ECB), and Australia (ABS). For all other countries the Fetch button is replaced by a direct link to that country's national statistics CPI page. Countries covered: USA, Canada, UK, Eurozone, Australia, New Zealand, Japan, Switzerland, Singapore, Norway, Sweden, Denmark, Mexico, Brazil, South Africa, India, and Other.` },
+      { icon: '○', heading: 'v47.33',
+        text: `<em style="color:var(--text3);">Help system fully stabilised — What's New, Edit button, and GitHub export all working correctly.</em><br><br><strong>✦ What's New tab — fully fixed</strong><br>What's New now renders as a standard HELP_CONTENT tab, identical to all other tabs. No more content bleed, Edit button works on all tabs.<br><br><strong>⬆ GitHub export — full changelog populated</strong><br>The Export to GitHub function now builds a complete changelog from all WHATS_NEW entries so the GitHub Pages help site shows full version history.<br><br><strong>🌐 GitHub help site — What's New sorted newest-first</strong><br>The GitHub Pages help site now reads What's New from the exported tab sections, correctly sorted newest-first.` },,
+      { icon: '○', heading: 'v47.32',
         text: `<em style="color:var(--text3);">Version bump to ensure all demo users receive the full set of recent updates.</em><br><br><strong>✅ All recent updates now delivered</strong><br>This version ensures all demo users see the complete set of recent improvements: pool close wallet dropdown with Token B override, per-token transaction logging on close and rebalance, independent Hedge ratio alert pill, Brave browser setup guide, qty auto-mirror on new pool entry, CPI benchmark badge, screenshot paste in feedback, and hedge ratio alert banner on Summary page.` },
       { icon: '○', heading: 'v47.31',
         text: `<em style="color:var(--text3);">Pool close redesigned with wallet dropdown, per-token transaction logging, rebalance exit logging, Brave browser support, and qty auto-mirror on new pool entry.</em><br><br><strong>📤 Pool Close — wallet dropdown with Token B override</strong><br>The Close/Rebalance modal now uses a wallet dropdown pre-filled with the pool default DeFi wallet — same as the entry side. A "Token B returns to different wallet?" toggle adds a second wallet selector for the edge case where tokens go to different wallets on exit.<br><br><strong>📋 Per-token transaction logging on close and rebalance</strong><br>Each token now gets its own transaction log entry when a pool is closed or rebalanced — showing the exact qty, price at exit, and destination wallet. Previously a single combined entry was logged. Rebalances now also log the exit side before resetting for the new leg.<br><br><strong>🦁 Brave browser — full setup guide and compatibility note</strong><br>The Help → Setup & Data Guide now includes step-by-step Brave instructions for both Windows and Mac — matching the Chrome guide exactly. A new Brave Browser section in the Overview tab explains Shields settings and which features require Standard mode.<br><br><strong>🔢 New pool entry — qty auto-mirrors between Entry and Current fields</strong><br>When adding a new pool, typing a quantity in either the Qty at Entry or Current Qty field now automatically fills the other if it is blank. At the moment of first entry they are always equal, so there is no longer any need to type the same number twice. Auto-mirror is disabled when editing an existing pool.` },
@@ -16012,7 +16081,6 @@ function checkWhatsNew() {
   try {
     const seen = localStorage.getItem(WHATS_NEW_KEY);
     if(seen !== APP_VERSION && WHATS_NEW[APP_VERSION]) {
-      try { localStorage.setItem(WHATS_NEW_KEY, APP_VERSION); } catch(e) {}
       setTimeout(() => openWhatsNewModal(), 1200);
     }
   } catch(e) {}
