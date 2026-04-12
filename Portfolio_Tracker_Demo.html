@@ -1017,74 +1017,76 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 <div id="activationLock">
   <div class="act-box">
     <div class="act-logo">PORTFOLIO TRACKER <span style="font-size:9px;opacity:.5;" id="actLogoVer"></span></div>
-
-    <!-- State: checking -->
-    <div id="actStateChecking" style="text-align:center;padding:20px 0;">
-      <div style="font-size:28px;margin-bottom:12px;">⏳</div>
-      <div style="font-size:14px;color:#3df5a0;font-weight:600;margin-bottom:6px;">Verifying access…</div>
-      <div style="font-size:11px;color:#3a5060;">Contacting authorisation server</div>
+    <div class="act-title">🔐 Activation Required</div>
+    <div class="act-sub">
+      If you have an existing backup file, link it below — activation is automatic if it contains your licence.<br>
+      Otherwise request a code by email.
     </div>
 
-    <!-- State: approved -->
-    <div id="actStateApproved" style="display:none;text-align:center;padding:20px 0;">
-      <div style="font-size:28px;margin-bottom:12px;">✅</div>
-      <div style="font-size:14px;color:#3df5a0;font-weight:600;margin-bottom:6px;" id="actApprovedName">Access Approved</div>
-      <div style="font-size:11px;color:#3a6050;">Opening tracker…</div>
-    </div>
-
-    <!-- State: pending (not yet registered) -->
-    <div id="actStatePending" style="display:none;">
-      <div class="act-title">📋 Access Request</div>
-      <div class="act-sub">
-        Your Installation ID has not yet been approved.<br>
-        Share it with the tracker administrator to request access.
-      </div>
-      <div class="act-id-box">
-        <div class="act-id-label">Your Installation ID</div>
-        <div class="act-id-val" id="actInstallId">——————</div>
-        <div class="act-id-copy" onclick="actCopyId()">📋 Copy to clipboard</div>
-      </div>
-      <button class="act-btn" onclick="actRequestAccess()"
-        style="background:rgba(96,168,240,.1);border-color:rgba(96,168,240,.3);color:#70b8ff;margin-bottom:10px;">
-        ✉ Request Access via Feedback
+    <!-- Reconnect = fastest path for returning users after browser restart -->
+    <div id="actReconnectSection" style="display:none;margin-bottom:10px;">
+      <button class="act-btn" onclick="actReconnectBackup()" id="actReconnectBtn"
+        style="background:rgba(61,245,160,.15);border-color:rgba(61,245,160,.5);color:#3df5a0;font-size:13px;">
+        🔑 Reconnect Backup — One Click Unlock
       </button>
-      <button class="act-btn" onclick="demoValidateNow()"
-        style="background:rgba(61,245,160,.05);border-color:rgba(61,245,160,.2);color:#3df5a0;font-size:12px;">
-        ↻ Check again
-      </button>
-      <div class="act-err" id="actErr"></div>
-      <div style="margin-top:14px;text-align:center;">
-        <a href="https://jdgoldstein.github.io/portfoliotracker-help/START_HERE.html" target="_blank" rel="noopener"
-          style="font-size:11px;color:#4a8070;text-decoration:none;opacity:0.8;">
-          ⬆ Check for a newer version
-        </a>
+      <div id="actReconnectHint" style="font-size:10px;color:#3a6050;text-align:center;margin-top:4px;">
+        Your backup file was found. Click above to restore access.
       </div>
     </div>
 
-    <!-- State: revoked -->
-    <div id="actStateRevoked" style="display:none;text-align:center;padding:20px 0;">
-      <div style="font-size:28px;margin-bottom:12px;">🚫</div>
-      <div style="font-size:14px;color:#f87171;font-weight:600;margin-bottom:6px;">Access Revoked</div>
-      <div style="font-size:11px;color:#3a5060;">Contact the administrator if you believe this is an error.</div>
+    <!-- Link backup = primary unlock path for returning users -->
+    <button class="act-btn" onclick="actLinkBackup()" style="background:rgba(61,245,160,.1);border-color:rgba(61,245,160,.3);color:#3df5a0;margin-bottom:6px;">
+      ⛁ Link Backup File — Auto-Unlock
+    </button>
+    <div id="actFileStatus" style="font-size:10px;color:#3a4a60;text-align:center;margin-bottom:12px;min-height:16px;"></div>
+
+    <!-- Divider -->
+    <div style="margin:4px 0 10px;display:flex;align-items:center;gap:8px;">
+      <div style="flex:1;height:1px;background:#1e3050;"></div>
+      <span style="font-size:10px;color:#3a4a60;">first time? request a code</span>
+      <div style="flex:1;height:1px;background:#1e3050;"></div>
     </div>
 
-    <!-- State: offline (no internet, no cached token) -->
-    <div id="actStateOffline" style="display:none;text-align:center;padding:20px 0;">
-      <div style="font-size:28px;margin-bottom:12px;">📡</div>
-      <div style="font-size:14px;color:#f59e0b;font-weight:600;margin-bottom:8px;">No Internet Connection</div>
-      <div style="font-size:11px;color:#3a5060;margin-bottom:16px;">
-        A connection is needed to verify access.<br>
-        Connect to the internet and try again.
-      </div>
-      <button class="act-btn" onclick="demoValidateNow()"
-        style="background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.3);color:#f59e0b;">
-        ↻ Try Again
-      </button>
+    <div class="act-id-box">
+      <div class="act-id-label">Your Installation ID</div>
+      <div class="act-id-val" id="actInstallId">——————</div>
+      <div class="act-id-copy" onclick="actCopyId()">📋 Copy to clipboard</div>
     </div>
 
-    <div class="act-footer" style="margin-top:16px;">
-      Access is verified daily via secure server.<br>
-      <span style="color:#5a7090;">Your data is stored locally — nothing is sent to our servers.</span>
+    <button class="act-btn" onclick="actEmailRequest()" style="background:rgba(96,168,240,.1);border-color:rgba(96,168,240,.3);color:#70b8ff;margin-bottom:10px;">
+      ✉ Request Activation Code by Email
+    </button>
+
+    <div id="actEmailFallback" style="display:none;background:rgba(96,168,240,.06);border:1px solid rgba(96,168,240,.2);border-radius:6px;padding:10px 12px;margin-bottom:10px;font-size:11px;color:#70b8ff;line-height:1.7;">
+      If your email client didn't open, send a manual email to:<br>
+      <strong id="actEmailFallbackAddr" style="font-family:monospace;font-size:12px;color:#a0d0ff;user-select:all;"></strong><br>
+      <span style="color:#5a8a9f;">Include your Installation ID shown above.</span>
+    </div>
+
+    <div style="margin:4px 0 10px;display:flex;align-items:center;gap:8px;">
+      <div style="flex:1;height:1px;background:#1e3050;"></div>
+      <span style="font-size:10px;color:#3a4a60;">enter code when received</span>
+      <div style="flex:1;height:1px;background:#1e3050;"></div>
+    </div>
+
+    <input class="act-input" id="actCodeInput" placeholder="ENTER ACTIVATION CODE" maxlength="20"
+      oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')"
+      onkeydown="if(event.key==='Enter')actSubmit()">
+    <button class="act-btn" onclick="actSubmit()">Activate →</button>
+
+    <div class="act-err" id="actErr"></div>
+
+    <div style="margin-top:14px;text-align:center;">
+      <a href="https://jdgoldstein.github.io/portfoliotracker-help/START_HERE.html" target="_blank" rel="noopener"
+        style="font-size:11px;color:#4a8070;text-decoration:none;opacity:0.8;">
+        ⬆ Check for a newer version
+      </a>
+    </div>
+    <div class="act-footer">
+      After activating, link your backup file — future versions activate automatically.<br>
+      Each code is unique to this machine.<br><br>
+      <span style="color:#5a7090;">💡 <strong style="color:#4a8070;">Pro tip:</strong> Use <em>⊕ Install App</em> in the header to install as a desktop app.
+      After that, opening the app (or double-clicking your backup file) will unlock it automatically — no clicks required.</span>
     </div>
   </div>
 </div>
@@ -4492,9 +4494,8 @@ async function tapToOpenHandler() {
       }
     } else if(DEMO_MODE) {
       // Restore trial timestamp from IDB/backup if localStorage was cleared
-      // Worker-based validation (replaces date-based trial)
-      const _demoOk = await demoValidate();
-      if(false && demoTrialExpired()) { // legacy check disabled
+      await demoRestoreTrialIfCleared();
+      if(demoTrialExpired()) {
         await showActivationScreen();
       } else {
         if(demoWelcomeSeen()) {
@@ -22166,140 +22167,14 @@ async function actLinkBackup() {
 
 const DEMO_MODE        = true;
 const DEMO_SEEN_KEY    = 'cpf_demo_welcome_seen';
-// ── Worker-based Demo Validation ─────────────────────────────────────────────
-const DEMO_TOKEN_KEY    = 'cpf_demo_token_v1';
-const DEMO_TOKEN_EXP    = 'cpf_demo_token_exp';
-const VALIDATE_ENDPOINT = HELP_WORKER_URL + '/validate';
-
-async function demoGetCachedToken() {
-  try {
-    // Check vault first (survives localStorage clears)
-    if(_vaultCache?.demoToken && _vaultCache?.demoTokenExp) {
-      if(Date.now() < _vaultCache.demoTokenExp) return _vaultCache.demoToken;
-    }
-    const vToken = await vaultGet('demoToken');
-    const vExp   = await vaultGet('demoTokenExp');
-    if(vToken && vExp && Date.now() < parseInt(vExp)) return vToken;
-    // localStorage fallback
-    const lsToken = localStorage.getItem(DEMO_TOKEN_KEY);
-    const lsExp   = parseInt(localStorage.getItem(DEMO_TOKEN_EXP) || '0');
-    if(lsToken && Date.now() < lsExp) return lsToken;
-  } catch(e) {}
-  return null;
-}
-
-async function demoCacheToken(token, expiresAt) {
-  try {
-    localStorage.setItem(DEMO_TOKEN_KEY, token);
-    localStorage.setItem(DEMO_TOKEN_EXP, String(expiresAt));
-    await vaultSet('demoToken', token);
-    await vaultSet('demoTokenExp', String(expiresAt));
-  } catch(e) {}
-}
-
-async function demoClearToken() {
-  try {
-    localStorage.removeItem(DEMO_TOKEN_KEY);
-    localStorage.removeItem(DEMO_TOKEN_EXP);
-    await vaultSet('demoToken', null);
-    await vaultSet('demoTokenExp', null);
-  } catch(e) {}
-}
-
-function demoShowState(state) {
-  ['actStateChecking','actStateApproved','actStatePending',
-   'actStateRevoked','actStateOffline'].forEach(id => {
-    const el = document.getElementById(id);
-    if(el) el.style.display = id === state ? '' : 'none';
-  });
-}
-
-async function demoValidate() {
-  // 1. Check cached token first
-  const cached = await demoGetCachedToken();
-  if(cached) {
-    // Cached token valid — enter app silently
-    hideActivationScreen();
-    return true;
-  }
-  // 2. Show checking state and call worker
-  demoShowState('actStateChecking');
-  return await demoValidateNow();
-}
-
-async function demoValidateNow() {
-  demoShowState('actStateChecking');
-  try {
-    const installId = await getInstallId();
-    // Update Install ID display
-    const idEl = document.getElementById('actInstallId');
-    if(idEl) idEl.textContent = installId;
-
-    // Build HMAC sig (same as help-sync, reuses ACT_SECRET)
-    const sig = await buildHelpSig(installId);
-
-    const res = await fetch(VALIDATE_ENDPOINT, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ installId, sig }),
-    });
-
-    const data = await res.json();
-
-    if(data.ok && data.token) {
-      // Approved — cache token and enter app
-      await demoCacheToken(data.token, data.expires);
-      const nameEl = document.getElementById('actApprovedName');
-      if(nameEl) nameEl.textContent = `Welcome, ${data.name}!`;
-      demoShowState('actStateApproved');
-      setTimeout(() => {
-        hideActivationScreen();
-      }, 1200);
-      return true;
-    }
-
-    if(data.reason === 'revoked') {
-      await demoClearToken();
-      demoShowState('actStateRevoked');
-      return false;
-    }
-
-    // Not registered yet — show pending state with Install ID
-    demoShowState('actStatePending');
-    const idEl2 = document.getElementById('actInstallId');
-    if(idEl2) idEl2.textContent = installId;
-    return false;
-
-  } catch(e) {
-    // Network error — check for cached token one more time
-    const cached = await demoGetCachedToken();
-    if(cached) {
-      hideActivationScreen();
-      return true;
-    }
-    // Truly offline with no cached token
-    demoShowState('actStateOffline');
-    return false;
-  }
-}
-
-function actRequestAccess() {
-  // Open the feedback modal pre-filled with Install ID
-  getInstallId().then(id => {
-    const fb = document.getElementById('feedbackBody');
-    if(fb) fb.value = 'Hi, I would like to request access to the Portfolio Tracker demo.\n\nMy Installation ID is: ' + id;
-    openModal('feedbackModal');
-  });
-}
-
 const DEMO_EXPIRES     = '2026-05-09';  // ← update this date with each new demo release
 
-function demoExpired()        { return false; } // replaced by worker validation
+function demoExpired()        { return new Date() > new Date(DEMO_EXPIRES); }
 function demoWelcomeSeen()    { return !!localStorage.getItem(DEMO_SEEN_KEY); }
 function demoMarkWelcomeSeen(){ localStorage.setItem(DEMO_SEEN_KEY, '1'); }
-function demoRestoreTrialIfCleared() { return Promise.resolve(); }
-function demoStartTrial()     {}
-function demoTrialExpired()   { return false; } // replaced by worker validation
+function demoRestoreTrialIfCleared() { return Promise.resolve(); } // no-op — no longer needed
+function demoStartTrial()     {}  // no-op — no longer needed
+function demoTrialExpired()   { return demoExpired(); }
 
 // ── Trial start timestamp — triple-stamped: localStorage + IDB + embedded backup ──
 function demoInjectBanner() {
@@ -22310,7 +22185,9 @@ function demoInjectBanner() {
   const expired = demoExpired();
   const colour = expired ? '#cc2200' : '#0a7c4a';
   b.style.cssText = `position:fixed;top:0;left:0;right:0;z-index:1000;background:${colour};color:#fff;text-align:center;padding:5px 12px;font-size:11px;font-weight:600;font-family:var(--sans);display:flex;align-items:center;justify-content:center;gap:16px;cursor:pointer;`;
-  const label = `📊 PORTFOLIO TRACKER DEMO v${APP_VERSION}`;
+  const label = expired
+    ? `🔑 DEMO EXPIRED — Click to activate`
+    : `🔑 DEMO v${APP_VERSION} — Expires ${DEMO_EXPIRES} · Click to activate`;
   b.innerHTML = `<span>${label}</span>`;
   b.addEventListener('click', () => showActivationScreen());
   document.body.prepend(b);
