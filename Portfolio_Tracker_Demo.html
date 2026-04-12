@@ -4470,7 +4470,26 @@ async function tapToOpenHandler() {
   }
 }
 
-const DEMO_MODE = true; // defined early — referenced by bootActivationCheck
+const DEMO_MODE      = true; // defined early — referenced by bootActivationCheck
+const DEMO_TRIAL_KEY = 'cpf_demo_trial_start';
+const DEMO_TRIAL_DAYS = 7;
+
+function demoTrialStart() {
+  if(!localStorage.getItem(DEMO_TRIAL_KEY)) {
+    localStorage.setItem(DEMO_TRIAL_KEY, String(Date.now()));
+  }
+}
+
+function demoTrialDaysLeft() {
+  const start = parseInt(localStorage.getItem(DEMO_TRIAL_KEY) || '0');
+  if(!start) return DEMO_TRIAL_DAYS; // never started — full trial available
+  const elapsed = (Date.now() - start) / (1000 * 60 * 60 * 24);
+  return Math.max(0, DEMO_TRIAL_DAYS - elapsed);
+}
+
+function demoTrialActive() {
+  return demoTrialDaysLeft() > 0;
+}
 
 (async function bootActivationCheck() {
   function _bootFallback(e) {
@@ -4483,52 +4502,26 @@ const DEMO_MODE = true; // defined early — referenced by bootActivationCheck
     if(m) m.style.visibility = '';
   }
   try {
-    // ── Step 1: Load vault FIRST — before auth, before PIN, before anything ──
+    // ── Step 1: Load vault FIRST ──────────────────────────────────────────────
     await vaultLoad();
 
-    // ── Step 2: Restore PIN into localStorage from vault (sync read path) ────
-    await pinRestoreFromVault();
+    // ── Step 2: Restore PIN ───────────────────────────────────────────────────
+    try { await pinRestoreFromVault(); } catch(e) {}
 
-    const ok = await checkActivation();
-    if(ok) {
-      if(fsFileHandle) {
-        let perm;
-        try { perm = await fsFileHandle.queryPermission({mode:'readwrite'}); } catch(e) { perm = 'prompt'; }
-        if(perm === 'granted') {
-          renderAll(); fetchPrices();
-          initPIN();
-        } else {
-          _tapToOpenHandle = fsFileHandle;
-          const overlay = document.getElementById('tapToOpen');
-          const fileEl  = document.getElementById('tapToOpenFile');
-          if(fileEl) fileEl.textContent = fsFileHandle.name || '';
-          if(overlay) overlay.style.display = 'flex';
-          const onKey = (e) => { document.removeEventListener('keydown', onKey, true); tapToOpenHandler(); };
-          document.addEventListener('keydown', onKey, true);
-        }
+    // ── Demo: skip checkActivation, go straight to worker validation ──────────
+    const _demoOk = await demoValidate();
+    if(_demoOk) {
+      if(demoWelcomeSeen()) {
+        demoStartTrial();
+        renderAll(); fetchPrices(); fetchBenchmarks(); fetchHedgeData(false);
+        initFileProtocolUI(); initHelpSync(); initPIN();
+        checkWhatsNew();
+        setTimeout(demoInjectBanner, 300);
       } else {
-        renderAll(); fetchPrices();
-        initPIN();
+        demoShowWelcomeModal();
       }
-    } else if(DEMO_MODE) {
-      // Worker-based validation — must pass before entering app
-      const _demoOk = await demoValidate();
-      if(_demoOk) {
-        // Approved — enter app
-        if(demoWelcomeSeen()) {
-          demoStartTrial();
-          renderAll(); fetchPrices(); fetchBenchmarks(); fetchHedgeData(false); initFileProtocolUI(); initHelpSync(); initPIN();
-          checkWhatsNew();
-          setTimeout(demoInjectBanner, 300);
-        } else {
-          demoShowWelcomeModal();
-        }
-      }
-      // If not ok, demoValidate() already showed the appropriate screen
-      // (pending, revoked, or offline) — nothing more to do here
-    } else {
-      await showActivationScreen();
     }
+    // If not ok, demoValidate() already showed the appropriate screen
   } catch(e) {
     _bootFallback(e);
   }
@@ -22451,20 +22444,66 @@ async function demoValidateNow() {
       return false;
     }
 
-    // Not registered yet — show pending state with Install ID
+    // Not registered yet
+    if(demoTrialActive()) {
+      // Within trial period — let them in with a reminder
+      demoTrialStart();
+      const daysLeft = Math.ceil(demoTrialDaysLeft());
+      hideActivationScreen();
+      setTimeout(() => {
+        const b = document.createElement('div');
+        b.id = 'demoTrialBanner';
+        b.style.cssText = 'position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:400;background:#1c1407;border:1px solid rgba(245,158,11,0.5);border-radius:10px;padding:12px 20px;box-shadow:0 4px 20px rgba(0,0,0,0.4);display:flex;align-items:center;gap:12px;max-width:560px;width:calc(100vw - 48px);font-family:var(--sans);';
+        b.innerHTML = `<span style="font-size:20px;">⏳</span>
+          <div style="flex:1;font-size:11px;color:var(--text3);line-height:1.6;">
+            <strong style="color:var(--warn);">Trial mode — ${daysLeft} day${daysLeft===1?'':'s'} remaining</strong><br>
+            Your access is pending registration. Send your Install ID to the administrator to activate your account.<br>
+            <span style="font-family:var(--mono);color:var(--accent);font-size:12px;font-weight:700;">${installId}</span>
+          </div>
+          <button onclick="document.getElementById('demoTrialBanner').remove()" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;padding:0;">✕</button>`;
+        document.body.appendChild(b);
+      }, 1000);
+      return true;
+    }
+    // Trial expired and not registered — show pending screen
     demoShowState('actStatePending');
     const idEl2 = document.getElementById('actInstallId');
     if(idEl2) idEl2.textContent = installId;
     return false;
 
   } catch(e) {
-    // Network error — check for cached token one more time
+    // Network error — check cached token first
     const cached = await demoGetCachedToken();
     if(cached) {
       hideActivationScreen();
       return true;
     }
-    // Truly offline with no cached token
+    // No cached token — fall back to 7-day trial
+    if(demoTrialActive()) {
+      const daysLeft = Math.ceil(demoTrialDaysLeft());
+      demoTrialStart(); // stamp start time if not already set
+      hideActivationScreen();
+      // Show a non-blocking reminder banner
+      setTimeout(() => {
+        const b = document.createElement('div');
+        b.id = 'demoTrialBanner';
+        b.style.cssText = 'position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:400;background:#1c1407;border:1px solid rgba(245,158,11,0.5);border-radius:10px;padding:12px 20px;box-shadow:0 4px 20px rgba(0,0,0,0.4);display:flex;align-items:center;gap:12px;max-width:560px;width:calc(100vw - 48px);font-family:var(--sans);';
+        b.innerHTML = `<span style="font-size:20px;">⏳</span>
+          <div style="flex:1;font-size:11px;color:var(--text3);line-height:1.6;">
+            <strong style="color:var(--warn);">Trial mode — ${daysLeft} day${daysLeft===1?'':'s'} remaining</strong><br>
+            Could not reach the validation server. Your Install ID is shown below — send it to the administrator to register.<br>
+            <span style="font-family:var(--mono);color:var(--accent);font-size:12px;font-weight:700;" id="demoTrialInstallId">loading…</span>
+          </div>
+          <button onclick="document.getElementById('demoTrialBanner').remove()" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;padding:0;">✕</button>`;
+        document.body.appendChild(b);
+        getInstallId().then(id => {
+          const el = document.getElementById('demoTrialInstallId');
+          if(el) el.textContent = id;
+        });
+      }, 1000);
+      return true;
+    }
+    // Trial expired and no cached token — show offline screen
     demoShowState('actStateOffline');
     return false;
   }
