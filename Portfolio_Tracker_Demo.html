@@ -4509,22 +4509,21 @@ async function tapToOpenHandler() {
         initPIN();
       }
     } else if(DEMO_MODE) {
-      // Restore trial timestamp from IDB/backup if localStorage was cleared
-      // Worker-based validation (replaces date-based trial)
+      // Worker-based validation — must pass before entering app
       const _demoOk = await demoValidate();
-      if(false && demoTrialExpired()) { // legacy check disabled
-        await showActivationScreen();
-      } else {
+      if(_demoOk) {
+        // Approved — enter app
         if(demoWelcomeSeen()) {
           demoStartTrial();
           renderAll(); fetchPrices(); fetchBenchmarks(); fetchHedgeData(false); initFileProtocolUI(); initHelpSync(); initPIN();
           checkWhatsNew();
           setTimeout(demoInjectBanner, 300);
-          if(!IS_FILE_PROTOCOL) setTimeout(_showNoBackupBanner, 2000);
         } else {
           demoShowWelcomeModal();
         }
       }
+      // If not ok, demoValidate() already showed the appropriate screen
+      // (pending, revoked, or offline) — nothing more to do here
     } else {
       await showActivationScreen();
     }
@@ -22407,7 +22406,8 @@ async function demoValidate() {
     hideActivationScreen();
     return true;
   }
-  // 2. Show checking state and call worker
+  // 2. Show activation screen with checking state
+  await showActivationScreen();
   demoShowState('actStateChecking');
   return await demoValidateNow();
 }
