@@ -1118,6 +1118,19 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
   </div>
   <div style="display:flex;gap:10px;margin-top:6px;">
     <button id="pinActionBtn" onclick="pinAction()" style="padding:8px 22px;background:rgba(61,245,160,0.12);border:1px solid rgba(61,245,160,0.3);border-radius:6px;color:#3df5a0;font-size:13px;font-weight:600;cursor:pointer;">Unlock</button>
+    <button id="pinCancelBtn" onclick="pinCancel()" style="display:none;padding:8px 22px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:#8899aa;font-size:13px;font-weight:600;cursor:pointer;">Cancel</button>
+  </div>
+  <div id="pinTimeoutRow" style="display:none;margin-top:14px;text-align:center;">
+    <span style="font-size:11px;color:#8899aa;">Auto-lock after: </span>
+    <select id="pinTimeoutSel" onchange="savePinTimeout()" style="font-size:11px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:4px;color:#e2eaf6;padding:2px 6px;">
+      <option value="1">1 min</option>
+      <option value="5" selected>5 mins</option>
+      <option value="10">10 mins</option>
+      <option value="15">15 mins</option>
+      <option value="30">30 mins</option>
+      <option value="60">60 mins</option>
+      <option value="0">Never</option>
+    </select>
   </div>
 </div>
 <style>
@@ -1129,7 +1142,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 <!-- HEADER -->
 <div id="header" style="visibility:hidden;">
   <div class="logo">PORTFOLIO <small>TRACKER</small></div>
-  <span id="versionBadge" style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-left:4px;align-self:flex-end;padding-bottom:2px;">v47.35</span>
+  <span id="versionBadge" style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-left:4px;align-self:flex-end;padding-bottom:2px;">v47.36</span>
   <span id="privacyBadge">🙈 VALUES MASKED</span>
   <div class="header-stats" id="hdrStats"></div>
   <div class="header-right">
@@ -1369,6 +1382,37 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
   </button>
   <button onclick="document.getElementById('permissionBanner').style.display='none'"
     style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;padding:0 2px;flex-shrink:0;" title="Dismiss">✕</button>
+</div>
+
+<div id="braveMacBanner" style="display:none;position:fixed;top:0;left:0;right:0;
+  z-index:500;background:#1c1407;border-bottom:2px solid rgba(245,158,11,0.6);
+  padding:14px 20px;box-shadow:0 4px 20px rgba(0,0,0,0.4);
+  align-items:flex-start;gap:14px;">
+  <span style="font-size:20px;flex-shrink:0;margin-top:2px;">🦁</span>
+  <div style="flex:1;min-width:0;">
+    <div style="font-size:12px;font-weight:700;color:var(--warn);margin-bottom:6px;">Brave on Mac — numbered backup copies detected</div>
+    <div style="font-size:11px;color:var(--text3);line-height:1.7;">
+      Brave creates numbered copies (<em>portfolio_autosave (1).json, (2).json…</em>) instead of overwriting — this is a Brave-specific behaviour.
+      <strong style="color:var(--text2);">Chrome on Mac</strong> handles this correctly and is recommended.<br><br>
+      <strong style="color:var(--text2);">To link your data file and stop the copies:</strong>&nbsp;
+      <span style="background:rgba(10,124,74,0.12);border:1px solid rgba(10,124,74,0.3);border-radius:4px;padding:1px 6px;">1</span>&nbsp;
+      Click <strong style="color:var(--text2);">Import Backup</strong> below and select any of the numbered copies from your working folder.&nbsp;
+      <span style="background:rgba(10,124,74,0.12);border:1px solid rgba(10,124,74,0.3);border-radius:4px;padding:1px 6px;">2</span>&nbsp;
+      When asked <em>"Link this file?"</em> click OK — the picker opens in your working folder automatically.&nbsp;
+      <span style="background:rgba(10,124,74,0.12);border:1px solid rgba(10,124,74,0.3);border-radius:4px;padding:1px 6px;">3</span>&nbsp;
+      Dot turns <strong style="color:#0a7c4a;">green</strong> → copies stop → auto-save works correctly.<br>
+      <em style="color:var(--text3);font-size:10px;">Can't link directly? Always Import first — it puts the file picker in the right folder, making Link easy.</em>
+    </div>
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <button class="btn sm primary" onclick="document.getElementById('braveMacImportInput').click();" style="font-size:11px;">⛁ Import Backup</button>
+      <input type="file" id="braveMacImportInput" accept=".json" style="display:none"
+        onchange="importJSON(event);document.getElementById('braveMacBanner').style.display='none';">
+      <a href="https://www.google.com/chrome/" target="_blank" rel="noopener" class="btn sm" style="font-size:11px;text-decoration:none;">⬇ Get Chrome</a>
+      <button class="btn sm" onclick="document.getElementById('braveMacBanner').style.display='none';localStorage.setItem('cpf_brave_mac_dismissed','1');" style="font-size:11px;color:var(--text3);">Dismiss forever</button>
+    </div>
+  </div>
+  <button onclick="document.getElementById('braveMacBanner').style.display='none';"
+    style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;padding:0 2px;flex-shrink:0;margin-top:2px;" title="Close">✕</button>
 </div>
 
 <div id="main" style="visibility:hidden;">
@@ -3593,6 +3637,36 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
       📈 MOVER — 24h change exceeds your alert % threshold<br>
       ⚠ POOL RANGE — LP pool goes out of range
     </div>
+    <!-- ── PIN Protection ──────────────────────────────────────────────── -->
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:14px;">
+      <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;font-weight:600;">🔒 PIN Protection</div>
+      <div class="form-grid cols2" style="margin-bottom:10px;">
+        <div class="field" style="margin-bottom:0;">
+          <label>Auto-lock timeout</label>
+          <select id="settingsPinTimeout" onchange="savePinTimeoutFromSettings()"
+            style="width:100%;padding:6px 8px;background:var(--bg2);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-size:12px;">
+            <option value="1">1 minute</option>
+            <option value="5">5 minutes</option>
+            <option value="10">10 minutes</option>
+            <option value="15">15 minutes</option>
+            <option value="30">30 minutes</option>
+            <option value="60">60 minutes</option>
+            <option value="0">Never auto-lock</option>
+          </select>
+          <div class="hint">How long before the tracker locks itself after inactivity.</div>
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>PIN actions</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn sm" onclick="pinSetupFromSettings()" id="settingsPinSetBtn" style="font-size:11px;">🔒 Set PIN</button>
+            <button class="btn sm" onclick="pinChangeFromSettings()" id="settingsPinChangeBtn" style="display:none;font-size:11px;">🔄 Change PIN</button>
+            <button class="btn sm danger" onclick="pinRemoveFromSettings()" id="settingsPinRemoveBtn" style="display:none;font-size:11px;">✕ Remove PIN</button>
+          </div>
+          <div class="hint" id="settingsPinStatus">No PIN set — tracker is unprotected.</div>
+        </div>
+      </div>
+    </div>
+
     <div class="modal-actions">
       <button class="btn primary" onclick="closeModal('alertModal')">Done</button>
     </div>
@@ -3613,7 +3687,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 // Secrets assembled at runtime — not stored as plain literals
 const ACT_SECRET = (()=>{const p=['CPF_TR','ACKER_','2026_D','ELTA7_','WHISKE','Y'];return p.join('');})();
 const ACT_MASTER = (()=>{const p=['CPF_MA','STER_O','VERRID','E_KEY_','ZULU9'];return p.join('');})();
-const APP_VERSION  = '47.35';           // bumped on each release
+const APP_VERSION  = '47.36';           // bumped on each release
 const WHATS_NEW_KEY = 'cpf_seen_ver';   // localStorage: last version user saw What's New
 const ACT_STORE    = 'cpf_activation_v1';
 const ACT_ID_STORE = 'cpf_install_id';
@@ -4255,7 +4329,26 @@ async function tapToOpenHandler() {
     try { ok = await checkActivation(); } catch(e) { console.warn('cpf: checkActivation error:', e); }
     if(overlay) overlay.style.display = 'none';
     if(ok) {
-      try { updateFsStatus(); fsStartAutoSave(); renderAll(); fetchPrices(); fetchBenchmarks(); fetchHedgeData(false); initFileProtocolUI(); initHelpSync(); checkWhatsNew(); } catch(e){}
+      try { updateFsStatus(); fsStartAutoSave(); renderAll(); fetchPrices(); fetchBenchmarks(); fetchHedgeData(false); initFileProtocolUI(); initHelpSync(); checkWhatsNew();
+    // Warn Mac+Brave users about numbered backup copies
+    if(IS_MAC && IS_BRAVE && !localStorage.getItem('cpf_brave_mac_dismissed')) {
+      const bb = document.getElementById('braveMacBanner');
+      if(bb) bb.style.display = 'flex';
+    }
+    // Inject Mac auto-export toggle into Data menu (Mac only)
+    if(IS_MAC) {
+      const exportBtn = document.querySelector('button[onclick*="exportJSON"]');
+      if(exportBtn && exportBtn.parentNode) {
+        const tog = document.createElement('button');
+        tog.id = 'macAutoExportToggle';
+        tog.className = 'btn ghost';
+        tog.style.cssText = 'display:block;width:100%;text-align:left;padding:4px 14px 7px;border:none;border-radius:0;font-size:11px;background:none;';
+        tog.onclick = toggleMacAutoExport;
+        exportBtn.parentNode.insertBefore(tog, exportBtn.nextSibling);
+        _updateMacAutoExportMenuItem();
+      }
+    }
+  } catch(e){}
       initPIN();
     } else {
       _tapExit(true);
@@ -4590,7 +4683,7 @@ function persist() {
   // If running on Mac with no linked backup file, silently download a .json
   // to the Chrome downloads folder every AUTO_EXPORT_MINS minutes.
   // User should set Chrome → Settings → Downloads to their working folder.
-  if(IS_MAC && !fsFileHandle) {
+  if(IS_MAC && !fsFileHandle && !localStorage.getItem('cpf_mac_autoexport_off')) {
     const now = Date.now();
     const msSinceLastExport = now - _lastAutoExport;
     if(msSinceLastExport >= AUTO_EXPORT_MINS * 60 * 1000) {
@@ -4600,9 +4693,34 @@ function persist() {
   }
 }
 
+function toggleMacAutoExport() {
+  const off = localStorage.getItem('cpf_mac_autoexport_off');
+  if(off) {
+    localStorage.removeItem('cpf_mac_autoexport_off');
+    toast('✓ Mac auto-export enabled — backup copies will download every 7 minutes');
+  } else {
+    localStorage.setItem('cpf_mac_autoexport_off', '1');
+    toast('✓ Mac auto-export disabled — use ⛁ Save / Export Backup to save manually');
+  }
+  _updateMacAutoExportMenuItem();
+}
+
+function _updateMacAutoExportMenuItem() {
+  const el = document.getElementById('macAutoExportToggle');
+  if(!el) return;
+  const off = localStorage.getItem('cpf_mac_autoexport_off');
+  el.textContent = off ? '⬇ Mac Auto-Export: OFF (click to enable)' : '⬇ Mac Auto-Export: ON (click to disable)';
+  el.style.color  = off ? 'var(--warn)' : 'var(--accent)';
+}
+
 function _macAutoExport() {
   // Silent background export — no toast, no user interaction needed.
   // Downloads portfolio_autosave.json to Chrome's download folder.
+  // On Brave, show a warning since Brave numbers copies instead of overwriting.
+  if(IS_BRAVE && !localStorage.getItem('cpf_brave_mac_dismissed')) {
+    const bb = document.getElementById('braveMacBanner');
+    if(bb) bb.style.display = 'flex';
+  }
   try {
     const toExport = Object.assign({}, DB, { savedAt: Date.now(), backupType: 'mac_auto' });
     delete toExport.prices;
@@ -4638,7 +4756,8 @@ const SK_BACKUP = 'cpf_v15_backup'; // redundant copy key
 // On Mac, showSaveFilePicker is blocked on file:// protocol. Instead we
 // auto-download the backup JSON to the user's Chrome download folder every
 // AUTO_EXPORT_MINS minutes, but only when no fsFileHandle is linked.
-const IS_MAC = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+const IS_MAC   = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+const IS_BRAVE = !!(navigator.brave && typeof navigator.brave.isBrave === 'function');
 const AUTO_EXPORT_MINS = 7;
 let _lastAutoExport = 0; // timestamp of last auto-export download
 
@@ -14518,6 +14637,7 @@ function openSettingsModal() {
   const cpiCountryEl = document.getElementById('al-cpiCountry');
   if(cpiCountryEl) cpiCountryEl.value = DB.settings.cpiCountry || 'US';
   _updateCpiHint(DB.settings.cpiCountry || 'US');
+  _updateSettingsPinUI();
   const pushKey   = DB.settings.pushKey   || localStorage.getItem('cpf_pushKey')   || '';
   const pushToken = DB.settings.pushToken || localStorage.getItem('cpf_pushToken') || '';
   if(!DB.settings.pushKey   && pushKey)   { DB.settings.pushKey   = pushKey;   vaultSet('pushKey',   pushKey);   }
@@ -14936,7 +15056,8 @@ function ilCalc() {
 // ─── PIN LOCK ────────────────────────────────────────────────────────────────
 const PIN_KEY   = 'cpf_pin_hash';
 const PIN_SET   = 'cpf_pin_set';
-const LOCK_MINS = 5;
+const LOCK_MINS_DEFAULT = 5;
+let LOCK_MINS = parseInt(localStorage.getItem('cpf_lock_mins') ?? '5', 10);
 let pinBuffer = '', pinMode = 'unlock', pinTemp = '', lockTimer = null;
 function pinHasPIN()  {
   if(_vaultCache && 'pinSet' in _vaultCache) return !!_vaultCache.pinSet;
@@ -14985,18 +15106,28 @@ function showLock(msg='') {
     </button>`).join('');
   document.getElementById('pinLock').classList.add('active');
   document.getElementById('lockBtn').style.display = 'none';
+  const cancelBtn = document.getElementById('pinCancelBtn');
+  if(cancelBtn) cancelBtn.style.display = (pinMode !== 'unlock') ? '' : 'none';
+  const timeoutRow = document.getElementById('pinTimeoutRow');
+  const timeoutSel = document.getElementById('pinTimeoutSel');
+  if(timeoutRow) timeoutRow.style.display = (pinMode === 'unlock') ? '' : 'none';
+  if(timeoutSel) timeoutSel.value = (LOCK_MINS === 0 ? '0' : String(LOCK_MINS));
 }
 function hideLock() {
   document.getElementById('pinLock').classList.remove('active');
   document.getElementById('header').style.visibility = '';
   document.getElementById('main').style.visibility   = '';
   if(pinHasPIN()) document.getElementById('lockBtn').style.display = '';
+  const cancelBtn = document.getElementById('pinCancelBtn');
+  if(cancelBtn) cancelBtn.style.display = 'none';
+  const timeoutRow = document.getElementById('pinTimeoutRow');
+  if(timeoutRow) timeoutRow.style.display = 'none';
   resetLockTimer();
 }
 function lockApp() { clearTimeout(lockTimer); showLock(); }
 function resetLockTimer() {
   clearTimeout(lockTimer);
-  if(pinHasPIN()) lockTimer = setTimeout(() => showLock('Locked after inactivity'), LOCK_MINS * 60 * 1000);
+  if(pinHasPIN() && LOCK_MINS > 0) lockTimer = setTimeout(() => showLock('Locked after inactivity'), LOCK_MINS * 60 * 1000);
 }
 ['click','keydown'].forEach(ev =>
   document.addEventListener(ev, resetLockTimer, {passive:true})
@@ -15022,7 +15153,7 @@ async function pinAction() {
     document.getElementById('pinActionBtn').textContent='Confirm';
   } else if(pinMode==='setup2') {
     if(pinBuffer===pinTemp) {
-      await pinSave(pinBuffer); toast('✓ PIN set — tracker is now protected'); hideLock();
+      await pinSave(pinBuffer); toast('✓ PIN set — tracker is now protected'); hideLock(); _updateSettingsPinUI();
     } else {
       pinTemp=''; pinBuffer=''; pinMode='setup1'; updatePinDots();
       pinShake("PINs didn't match — start again");
@@ -15035,6 +15166,70 @@ function pinShake(msg) {
   el.textContent=msg; el.style.color='#ff6b6b';
   setTimeout(()=>{ el.style.color='#8899aa'; el.textContent=pinMode==='unlock'?'Enter your PIN to continue':'Create a PIN (4–6 digits)'; }, 1800);
 }
+function pinCancel() {
+  pinBuffer = ''; pinTemp = ''; pinMode = 'unlock';
+  hideLock();
+  toast('PIN setup cancelled');
+}
+
+function savePinTimeout() {
+  const sel = document.getElementById('pinTimeoutSel');
+  if(!sel) return;
+  LOCK_MINS = parseInt(sel.value, 10);
+  localStorage.setItem('cpf_lock_mins', String(LOCK_MINS));
+  resetLockTimer();
+  const settingsSel = document.getElementById('settingsPinTimeout');
+  if(settingsSel) settingsSel.value = sel.value;
+  toast(LOCK_MINS === 0 ? '✓ Auto-lock disabled' : `✓ Auto-lock set to ${LOCK_MINS} min${LOCK_MINS===1?'':'s'}`);
+}
+
+function savePinTimeoutFromSettings() {
+  const sel = document.getElementById('settingsPinTimeout');
+  if(!sel) return;
+  LOCK_MINS = parseInt(sel.value, 10);
+  localStorage.setItem('cpf_lock_mins', String(LOCK_MINS));
+  resetLockTimer();
+  const lockSel = document.getElementById('pinTimeoutSel');
+  if(lockSel) lockSel.value = sel.value;
+  toast(LOCK_MINS === 0 ? '✓ Auto-lock disabled' : `✓ Auto-lock set to ${LOCK_MINS} min${LOCK_MINS===1?'':'s'}`);
+}
+
+function _updateSettingsPinUI() {
+  const has = pinHasPIN();
+  const setBtn     = document.getElementById('settingsPinSetBtn');
+  const changeBtn  = document.getElementById('settingsPinChangeBtn');
+  const removeBtn  = document.getElementById('settingsPinRemoveBtn');
+  const status     = document.getElementById('settingsPinStatus');
+  const timeoutSel = document.getElementById('settingsPinTimeout');
+  if(setBtn)    setBtn.style.display    = has ? 'none' : '';
+  if(changeBtn) changeBtn.style.display = has ? '' : 'none';
+  if(removeBtn) removeBtn.style.display = has ? '' : 'none';
+  if(status)    status.textContent      = has ? '✓ PIN is set — tracker is protected.' : 'No PIN set — tracker is unprotected.';
+  if(timeoutSel) timeoutSel.value = String(LOCK_MINS === 0 ? '0' : LOCK_MINS);
+}
+
+function pinSetupFromSettings() {
+  closeModal('alertModal');
+  showLock('Create a PIN to protect your tracker');
+}
+
+function pinChangeFromSettings() {
+  closeModal('alertModal');
+  pinBuffer = ''; pinTemp = ''; pinMode = 'setup1'; updatePinDots();
+  showLock('Enter a new PIN');
+}
+
+async function pinRemoveFromSettings() {
+  if(!confirm('Remove PIN protection? The tracker will be unprotected.')) return;
+  await pinClearAll();
+  LOCK_MINS = 5;
+  localStorage.setItem('cpf_lock_mins', '5');
+  const lb = document.getElementById('lockBtn');
+  if(lb) { lb.style.display = ''; lb.textContent = '🔒 Set PIN'; lb.onclick = () => showLock('Create a PIN to protect your tracker'); }
+  _updateSettingsPinUI();
+  toast('✓ PIN removed — tracker is now unprotected');
+}
+
 function pinDisable() {
   if(!pinHasPIN()) { toast('No PIN is set', true); return; }
   if(confirm('Remove PIN protection?')) { pinClearAll(); document.getElementById('lockBtn').style.display='none'; toast('PIN removed'); }
@@ -15387,6 +15582,22 @@ const TAB_LABELS = {
 };
 
 const WHATS_NEW = {
+  '47.36': {
+    headline: "Version 47.36",
+    summary:  "PIN improvements, Mac+Brave fix, and activation reliability on file replace.",
+    items: [
+      { icon: '🔒', title: "PIN — Cancel mid-setup",
+        text: "A Cancel button now appears on the PIN screen whenever you are creating or changing a PIN, so you can back out without being stuck. The Cancel button does not appear on the unlock screen." },
+      { icon: '⏱', title: "PIN — Adjustable auto-lock timeout",
+        text: "Auto-lock timeout is now adjustable from 1 minute to 60 minutes, or Never. The setting appears both on the lock screen itself (after unlocking) and in Settings, and is saved permanently." },
+      { icon: '⚙', title: "PIN — Settings section",
+        text: "Settings now has a dedicated PIN Protection section with Set PIN, Change PIN, and Remove PIN buttons, plus the timeout dropdown. Status line shows whether a PIN is currently active." },
+      { icon: '🦁', title: "Mac + Brave — numbered copies fix",
+        text: "Brave on Mac creates numbered backup copies instead of overwriting. The app now detects this and shows a banner with a 3-step fix: Import a copy, link it, dot goes green. Mac Auto-Export can be toggled off from the Data menu once properly linked." },
+      { icon: '🔑', title: "Activation — reliable on file replace",
+        text: "Replacing the HTML file on disk no longer requires manually re-entering the activation code. After navigating to the backup file, the app automatically reads the licence from the JSON and activates without prompting." },
+    ]
+  },
   '47.34': {
     headline: "Version 47.34",
     summary:  "International CPI benchmark — 17 countries with auto-fetch or manual entry.",
@@ -15841,7 +16052,9 @@ const HELP_CONTENT = {
   whatsNew: {
     title: "✦ What's New — Full Changelog",
     sections: [
-      { icon: '✦', heading: 'v47.35  — CURRENT',
+      { icon: '✦', heading: 'v47.36  — CURRENT',
+        text: `<em style="color:var(--text3);">PIN improvements, Mac+Brave fix, and activation reliability on file replace.</em><br><br><strong>🔒 PIN — Cancel mid-setup</strong><br>A Cancel button now appears when creating or changing a PIN so you can back out without being stuck.<br><br><strong>⏱ PIN — Adjustable auto-lock timeout</strong><br>Timeout is now adjustable (1–60 mins or Never) from both the lock screen and Settings, and is saved permanently.<br><br><strong>⚙ PIN — Settings section</strong><br>Settings has a new PIN Protection section with Set, Change, and Remove PIN buttons plus the timeout dropdown.<br><br><strong>🦁 Mac + Brave — numbered copies fix</strong><br>Brave on Mac creates numbered backup copies instead of overwriting. The app now detects this and shows a clear fix banner.<br><br><strong>🔑 Activation — reliable on file replace</strong><br>Replacing the HTML file no longer requires re-entering the activation code — the app reads the licence from the JSON automatically after navigation.` },
+      { icon: '○', heading: 'v47.35',
         text: `<em style="color:var(--text3);">International CPI support — 17 countries with auto-fetch or manual entry and direct links to national statistics offices.</em><br><br><strong>🌍 International CPI Benchmark — 17 countries</strong><br>Settings → CPI Benchmark Badge now has a Country dropdown. Auto-fetch works for USA (FRED), Canada (Bank of Canada), UK (ONS), Eurozone (ECB), and Australia (ABS). For all other countries the Fetch button is replaced by a direct link to that country's national statistics CPI page. Countries covered: USA, Canada, UK, Eurozone, Australia, New Zealand, Japan, Switzerland, Singapore, Norway, Sweden, Denmark, Mexico, Brazil, South Africa, India, and Other.` },
       { icon: '○', heading: 'v47.33',
         text: `<em style="color:var(--text3);">Help system fully stabilised — What's New, Edit button, and GitHub export all working correctly.</em><br><br><strong>✦ What's New tab — fully fixed</strong><br>What's New now renders as a standard HELP_CONTENT tab, identical to all other tabs. No more content bleed, Edit button works on all tabs.<br><br><strong>⬆ GitHub export — full changelog populated</strong><br>The Export to GitHub function now builds a complete changelog from all WHATS_NEW entries so the GitHub Pages help site shows full version history.<br><br><strong>🌐 GitHub help site — What's New sorted newest-first</strong><br>The GitHub Pages help site now reads What's New from the exported tab sections, correctly sorted newest-first.` },,
@@ -16538,7 +16751,9 @@ function demoStartAndEnter() {
   // On Mac with no linked file, trigger first auto-export after 10s so Chrome's
   // "Allow downloads?" prompt fires immediately rather than 7 minutes later.
   if(IS_MAC && !fsFileHandle) {
-    setTimeout(() => { _lastAutoExport = 0; _macAutoExport(); _lastAutoExport = Date.now(); }, 10000);
+    if(!localStorage.getItem('cpf_mac_autoexport_off')) {
+      setTimeout(() => { _lastAutoExport = 0; _macAutoExport(); _lastAutoExport = Date.now(); }, 10000);
+    }
   }
 }
 
