@@ -75,8 +75,8 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:va
   padding:0 10px;height:48px;gap:8px;
   box-shadow:0 1px 4px rgba(0,0,0,0.06);
 }
-.logo{font-family:var(--mono);font-size:16px;color:var(--accent);letter-spacing:.06em;white-space:nowrap;font-weight:700;}
-.logo small{color:var(--text3);font-size:11px;margin-left:6px;font-weight:400;}
+.logo{font-family:var(--mono);font-size:13px;color:var(--accent);letter-spacing:.06em;white-space:nowrap;}
+.logo small{color:var(--text3);font-size:10px;margin-left:6px;}
 .header-stats{display:flex;gap:4px;flex:1 1 0;justify-content:center;flex-wrap:wrap;overflow:hidden;min-width:0;}
 .hstat{text-align:center;min-width:0;flex-shrink:1;}
 .hstat-label{font-size:9px;color:#1a2438;text-transform:uppercase;letter-spacing:.06em;font-weight:600;white-space:nowrap;}
@@ -1140,7 +1140,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 <!-- HEADER -->
 <div id="header" style="visibility:hidden;">
   <div class="logo">PORTFOLIO <small>TRACKER</small></div>
-  <span id="versionBadge" style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-left:2px;align-self:flex-end;padding-bottom:2px;font-weight:600;">v47.37</span>
+  <span id="versionBadge" style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-left:4px;align-self:flex-end;padding-bottom:2px;">v47.36</span>
   <span id="privacyBadge">🙈 VALUES MASKED</span>
   <div class="header-stats" id="hdrStats"></div>
   <div class="header-right">
@@ -1201,24 +1201,6 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
           <div id="dataMenuBackupRow" style="padding:4px 14px 8px;display:flex;align-items:center;gap:8px;">
             <span id="fsStatusDot2" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#b86800;flex-shrink:0;"></span>
             <button class="btn sm primary" onclick="linkBackupFile();toggleDataMenu()" style="font-size:11px;">⛁ Link / Create File</button>
-          </div>
-          <!-- File status detail panel -->
-          <div id="fsStatusDetail" style="display:none;margin:0 14px 8px;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;font-size:10px;line-height:1.8;">
-            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
-              <span id="fsDetailDot" style="display:inline-block;width:8px;height:8px;border-radius:50%;flex-shrink:0;background:#b86800;"></span>
-              <span id="fsDetailStatus" style="font-weight:700;color:var(--text2);">No file linked</span>
-            </div>
-            <div id="fsDetailName" style="color:var(--text2);font-family:var(--mono);word-break:break-all;"></div>
-            <div id="fsDetailPath" style="color:var(--text3);font-family:var(--mono);word-break:break-all;margin-top:1px;"></div>
-            <div id="fsDetailLinked" style="color:var(--text3);"></div>
-            <div id="fsDetailSaved" style="color:var(--text3);"></div>
-            <div id="fsDetailWarn" style="display:none;margin-top:4px;padding:4px 6px;background:rgba(204,34,0,0.1);border:1px solid rgba(204,34,0,0.3);border-radius:4px;color:#f87171;font-weight:600;"></div>
-            <div id="fsDetailUserPath" style="margin-top:6px;display:none;">
-              <div style="color:var(--text3);margin-bottom:2px;">📁 Folder (type or paste path):</div>
-              <input id="fsUserPath" type="text" placeholder="e.g. C:\Users\John\PortfolioTracker\"
-                style="width:100%;box-sizing:border-box;background:var(--bg2);border:1px solid var(--border2);border-radius:4px;padding:3px 6px;font-family:var(--mono);font-size:10px;color:var(--text);"
-                oninput="fsUserPathSave(this.value)">
-            </div>
           </div>
           <div style="padding:0 14px 6px;font-size:10px;color:var(--text3);line-height:1.4;">Connect a .json file for auto-save every 7 min. Creates one if it doesn't exist yet.</div>
           <div style="padding:2px 14px 6px;">
@@ -3797,7 +3779,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 // Secrets assembled at runtime — not stored as plain literals
 const ACT_SECRET = (()=>{const p=['CPF_TR','ACKER_','2026_D','ELTA7_','WHISKE','Y'];return p.join('');})();
 const ACT_MASTER = (()=>{const p=['CPF_MA','STER_O','VERRID','E_KEY_','ZULU9'];return p.join('');})();
-const APP_VERSION  = '47.37';           // bumped on each release
+const APP_VERSION  = '47.36';           // bumped on each release
 const WHATS_NEW_KEY = 'cpf_seen_ver';   // localStorage: last version user saw What's New
 const ACT_STORE    = 'cpf_activation_v1';
 const ACT_ID_STORE = 'cpf_install_id';
@@ -4470,27 +4452,6 @@ async function tapToOpenHandler() {
   }
 }
 
-const DEMO_MODE      = true; // defined early — referenced by bootActivationCheck
-const DEMO_TRIAL_KEY = 'cpf_demo_trial_start';
-const DEMO_TRIAL_DAYS = 7;
-
-function demoTrialStart() {
-  if(!localStorage.getItem(DEMO_TRIAL_KEY)) {
-    localStorage.setItem(DEMO_TRIAL_KEY, String(Date.now()));
-  }
-}
-
-function demoTrialDaysLeft() {
-  const start = parseInt(localStorage.getItem(DEMO_TRIAL_KEY) || '0');
-  if(!start) return DEMO_TRIAL_DAYS; // never started — full trial available
-  const elapsed = (Date.now() - start) / (1000 * 60 * 60 * 24);
-  return Math.max(0, DEMO_TRIAL_DAYS - elapsed);
-}
-
-function demoTrialActive() {
-  return demoTrialDaysLeft() > 0;
-}
-
 (async function bootActivationCheck() {
   function _bootFallback(e) {
     console.error('cpf: bootActivationCheck failed:', e);
@@ -4502,26 +4463,53 @@ function demoTrialActive() {
     if(m) m.style.visibility = '';
   }
   try {
-    // ── Step 1: Load vault FIRST ──────────────────────────────────────────────
+    // ── Step 1: Load vault FIRST — before auth, before PIN, before anything ──
     await vaultLoad();
 
-    // ── Step 2: Restore PIN ───────────────────────────────────────────────────
-    try { await pinRestoreFromVault(); } catch(e) {}
+    // ── Step 2: Restore PIN into localStorage from vault (sync read path) ────
+    await pinRestoreFromVault();
 
-    // ── Demo: skip checkActivation, go straight to worker validation ──────────
-    const _demoOk = await demoValidate();
-    if(_demoOk) {
-      if(demoWelcomeSeen()) {
-        demoStartTrial();
-        renderAll(); fetchPrices(); fetchBenchmarks(); fetchHedgeData(false);
-        initFileProtocolUI(); initHelpSync(); initPIN();
-        checkWhatsNew();
-        setTimeout(demoInjectBanner, 300);
+    const ok = await checkActivation();
+    if(ok) {
+      if(fsFileHandle) {
+        let perm;
+        try { perm = await fsFileHandle.queryPermission({mode:'readwrite'}); } catch(e) { perm = 'prompt'; }
+        if(perm === 'granted') {
+          renderAll(); fetchPrices();
+          initPIN();
+        } else {
+          _tapToOpenHandle = fsFileHandle;
+          const overlay = document.getElementById('tapToOpen');
+          const fileEl  = document.getElementById('tapToOpenFile');
+          if(fileEl) fileEl.textContent = fsFileHandle.name || '';
+          if(overlay) overlay.style.display = 'flex';
+          const onKey = (e) => { document.removeEventListener('keydown', onKey, true); tapToOpenHandler(); };
+          document.addEventListener('keydown', onKey, true);
+        }
       } else {
-        demoShowWelcomeModal();
+        renderAll(); fetchPrices();
+        initPIN();
       }
+    } else if(DEMO_MODE) {
+      // Restore trial timestamp from IDB/backup if localStorage was cleared
+      // Worker-based validation (replaces date-based trial)
+      const _demoOk = await demoValidate();
+      if(false && demoTrialExpired()) { // legacy check disabled
+        await showActivationScreen();
+      } else {
+        if(demoWelcomeSeen()) {
+          demoStartTrial();
+          renderAll(); fetchPrices(); fetchBenchmarks(); fetchHedgeData(false); initFileProtocolUI(); initHelpSync(); initPIN();
+          checkWhatsNew();
+          setTimeout(demoInjectBanner, 300);
+          if(!IS_FILE_PROTOCOL) setTimeout(_showNoBackupBanner, 2000);
+        } else {
+          demoShowWelcomeModal();
+        }
+      }
+    } else {
+      await showActivationScreen();
     }
-    // If not ok, demoValidate() already showed the appropriate screen
   } catch(e) {
     _bootFallback(e);
   }
@@ -14041,7 +14029,6 @@ function _unpackBackup(raw) {
 }
 
 function importJSON(e) {
-  _fsBackupVerified = true;
   const file = e.target.files[0];
   if(!file) return;
   const reader = new FileReader();
@@ -14311,9 +14298,7 @@ async function restoreFsHandleFromIDB() {
 }
 
 let fsFileHandle  = null;
-let htmlFileHandle = null;
-// Write guard — prevents seed/stale data from overwriting a legitimate backup.
-let _fsBackupVerified = false; // handle to this HTML file — used to keep _embeddedBackup in sync
+let htmlFileHandle = null; // handle to this HTML file — used to keep _embeddedBackup in sync
 let fsAutoTimer   = null;
 let fsLastSaved   = null;
 let fsSaveQueued  = false;
@@ -14462,9 +14447,7 @@ async function fsActivate(handle, mode) {
   if(perm!=='granted') { toast('Write permission denied.',true); return; }
   fsFileHandle = handle;
   storeHandleIDB('fsFileHandle', handle);
-  let _fullPath = handle.name;
-  try { const _pf = await handle.getFile(); if(_pf.path) _fullPath = _pf.path; } catch(e) {}
-  fsMetaSave({ name: handle.name, fullPath: _fullPath, linkedAt: new Date().toISOString() });
+  fsMetaSave({ name: handle.name, fullPath: handle.name, linkedAt: new Date().toISOString() });
   // Hide the no-backup banner if it was showing
   const _nb = document.getElementById('noBackupBanner');
   if(_nb) _nb.style.display = 'none';
@@ -14693,10 +14676,6 @@ function updateAppFileLinkUI() {
 
 async function fsWriteNow(fromGesture=false) {
   if(!fsFileHandle) return false;
-  if(!_fsBackupVerified) {
-    console.warn('cpf: fsWriteNow blocked — backup not yet verified');
-    return false;
-  }
   try {
     // Always query first — avoids triggering Chrome's permission prompt unnecessarily.
     let perm = await fsFileHandle.queryPermission({mode:'readwrite'});
@@ -14877,10 +14856,8 @@ function updateFsStatus() {
     ];
     if(btn) btn.title = tipLines.join('\n');
     if(text){ text.style.display = 'none'; text.title = ''; }
-    const _dotColor = _fsBackupVerified ? '#0a7c4a' : '#f59e0b';
-    const _dotTitle = _fsBackupVerified ? 'Backup active — ' + name : 'File linked but not yet verified';
-    if(dot){ dot.style.background=_dotColor; dot.title=_dotTitle; }
-    if(dot2){ dot2.style.background=_dotColor; dot2.title=_dotTitle; }
+    if(dot){ dot.style.background='#0a7c4a'; dot.title = 'Backup active — ' + name; }
+    if(dot2){ dot2.style.background='#0a7c4a'; dot2.title = 'Backup active'; }
     if(menuBtn) menuBtn.style.borderColor='rgba(10,124,74,0.5)';
     if(backupNameEl){ backupNameEl.style.display='block'; backupNameEl.textContent='📄 '+name+' · saved '+savedShort; }
     if(backupRowEl){ const b=backupRowEl.querySelector('button'); if(b) b.textContent='⛁ Change File'; }
@@ -14915,125 +14892,9 @@ function updateFsStatus() {
       if(bb) bb.style.display = 'flex';
     }
   }
-  _updateFsDetailPanel();
-}
-
-function _updateFsDetailPanel() {
-  const panel   = document.getElementById('fsStatusDetail');
-  const dot     = document.getElementById('fsDetailDot');
-  const status  = document.getElementById('fsDetailStatus');
-  const nameEl  = document.getElementById('fsDetailName');
-  const pathEl  = document.getElementById('fsDetailPath');
-  const linkedEl= document.getElementById('fsDetailLinked');
-  const savedEl = document.getElementById('fsDetailSaved');
-  const warnEl  = document.getElementById('fsDetailWarn');
-  const userPathWrap = document.getElementById('fsDetailUserPath');
-  const userPathInput= document.getElementById('fsUserPath');
-  if(!panel) return;
-
-  panel.style.display = 'block';
-
-  if(!fsFileHandle) {
-    if(dot)    { dot.style.background = '#b86800'; }
-    if(status) { status.textContent = 'No file linked'; status.style.color = 'var(--warn)'; }
-    if(nameEl) nameEl.textContent = '';
-    if(pathEl) pathEl.textContent = '';
-    if(linkedEl) linkedEl.textContent = '';
-    if(savedEl)  savedEl.textContent = '';
-    if(warnEl)   warnEl.style.display = 'none';
-    if(userPathWrap) userPathWrap.style.display = 'none';
-    return;
-  }
-
-  const meta     = fsMetaLoad();
-  const name     = fsFileHandle.name || meta.name || '?';
-  const fullPath = meta.fullPath && meta.fullPath !== name ? meta.fullPath : null;
-  const userPath = localStorage.getItem('cpf_user_folder_path') || '';
-
-  // Determine dot colour and status text
-  const verified = _fsBackupVerified;
-  if(dot)    dot.style.background = verified ? '#0a7c4a' : '#f59e0b';
-  if(status) {
-    status.textContent  = verified ? '✓ Linked & verified' : '⚠ Linked — not yet verified';
-    status.style.color  = verified ? 'var(--accent)' : 'var(--warn)';
-  }
-
-  // Filename
-  if(nameEl) nameEl.innerHTML = '📄 <strong>' + name + '</strong>';
-
-  // Full path (from File.path if captured, or user-entered folder)
-  if(pathEl) {
-    if(fullPath && fullPath !== name) {
-      pathEl.textContent = '📁 ' + fullPath;
-      pathEl.style.color = 'var(--accent)';
-    } else if(userPath) {
-      pathEl.textContent = '📁 ' + userPath + name;
-      pathEl.style.color = 'var(--text3)';
-    } else {
-      pathEl.textContent = '📁 Folder unknown — type path below';
-      pathEl.style.color = 'var(--text3)';
-    }
-  }
-
-  // Linked / saved timestamps
-  if(linkedEl && meta.linkedAt) {
-    const ld = new Date(meta.linkedAt);
-    linkedEl.textContent = '🔗 Linked: ' + ld.toLocaleDateString([],{month:'numeric',day:'numeric',year:'2-digit'})
-      + ' ' + ld.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-  }
-  const savedDate = fsLastSaved || (meta.lastSaved ? new Date(meta.lastSaved) : null);
-  if(savedEl) {
-    if(savedDate) {
-      const isToday = savedDate.toDateString() === new Date().toDateString();
-      savedEl.textContent = '💾 Last saved: ' + (isToday
-        ? 'today ' + savedDate.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})
-        : savedDate.toLocaleDateString([],{month:'numeric',day:'numeric',year:'2-digit'})
-          + ' ' + savedDate.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
-    } else {
-      savedEl.textContent = '💾 Not yet saved this session';
-    }
-  }
-
-  // Warning: numbered copy or manual export filename
-  if(warnEl) {
-    const numCopy   = /\(\d+\)\.json$/i.test(name);
-    const isBackup  = /backup.*\d{4}[-_]\d{2}[-_]\d{2}/i.test(name);
-    const isAutoSave= name === 'portfolio_autosave.json';
-    if(numCopy) {
-      warnEl.style.display = 'block';
-      warnEl.textContent   = '⚠ Numbered copy detected — this may be a Brave download duplicate, not your working file. Re-link to your original file.';
-    } else if(isBackup) {
-      warnEl.style.display = 'block';
-      warnEl.textContent   = '⚠ This looks like a dated manual backup, not a live working file. Changes will save here but consider re-linking to your main file.';
-    } else if(isAutoSave) {
-      warnEl.style.display = 'block';
-      warnEl.textContent   = 'ℹ Linked to auto-save file — this is correct for Mac Chrome.';
-      warnEl.style.borderColor = 'rgba(10,124,74,0.3)';
-      warnEl.style.background  = 'rgba(10,124,74,0.08)';
-      warnEl.style.color       = 'var(--accent)';
-    } else {
-      warnEl.style.display = 'none';
-    }
-  }
-
-  // User path input — show when full path not auto-captured
-  if(userPathWrap) {
-    const hasAutoPath = fullPath && fullPath !== name;
-    userPathWrap.style.display = hasAutoPath ? 'none' : 'block';
-    if(userPathInput && userPath) userPathInput.value = userPath;
-  }
-}
-
-function fsUserPathSave(val) {
-  try { localStorage.setItem('cpf_user_folder_path', val.trim()); } catch(e) {}
-  // Refresh path display
-  const pathEl = document.getElementById('fsDetailPath');
-  const name   = fsFileHandle ? fsFileHandle.name : '';
-  if(pathEl && name) pathEl.textContent = '📁 ' + val.trim() + name;
 }
 
 function toggleDataMenu() {
-  setTimeout(_updateFsDetailPanel, 50);
   const menu = document.getElementById('dataMenu');
   if(!menu) return;
 
@@ -15687,31 +15548,24 @@ function renderSummary() {
     : '';
 
   el.innerHTML = hedgeBannerHtml + `
-    <div style="background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--border2);border-radius:10px;padding:8px 14px;margin-bottom:6px;display:flex;align-items:stretch;gap:0;box-shadow:0 2px 12px rgba(0,0,0,.2);flex-wrap:nowrap;overflow:hidden;">
-
-      <!-- Total Portfolio Value -->
+    <div style="background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--border2);border-radius:10px;padding:8px 14px;margin-bottom:6px;display:flex;align-items:center;gap:0;flex-wrap:wrap;box-shadow:0 2px 12px rgba(0,0,0,.2);">
       <div style="padding:4px 16px 4px 0;border-right:1px solid var(--border);margin-right:16px;flex-shrink:0;">
         <div style="font-size:calc(var(--fs-base) - 3px);font-weight:600;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;margin-bottom:1px;">Total Portfolio Value</div>
         <div class="prv" style="font-family:var(--mono);font-size:calc(var(--fs-mono) + 8px);font-weight:500;line-height:1.1;">${$f(totalCurrent)}</div>
         <div style="font-size:calc(var(--fs-base) - 3px);color:var(--text3);margin-top:2px;">${DB.pools.length}p · ${DB.vaults.length}v · ${DB.holdings.length}h · ${DB.gems.filter(g=>g.qty&&g.qty>0).length} GEMs</div>
       </div>
-
-      <!-- All summary stats in one row -->
-      <div style="display:flex;gap:0;flex:1 1 0;align-items:stretch;flex-wrap:wrap;min-width:0;">
-
-        <div style="padding:4px 14px;border-right:1px solid var(--border);" ${tip('Total capital put in across all positions\n= Pool entries + Vault entries + Holdings cost basis + GEM cost')}>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start;padding:4px 0;">
+        <div ${tip('Total capital put in across all positions\n= Pool entries + Vault entries + Holdings cost basis + GEM cost')}>
           <div style="font-size:calc(var(--fs-base) - 3px);font-weight:600;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;margin-bottom:1px;">Deployed</div>
           <div class="prv" style="font-family:var(--mono);font-size:var(--fs-mono);font-weight:600;">${$f(totalDeployed)}</div>
         </div>
-
-        <div style="padding:4px 14px;border-right:1px solid var(--border);" ${tip('Overall P&L across all positions (since each entry date)\n\nPools:    ' + tf(poolPnl) + ' (' + tf(poolCur) + ' cur + ' + tf(poolYield) + ' yield - ' + tf(poolIn) + ' in)\nVaults:   ' + tf(vaultPnl) + ' (' + tf(vaultCur) + ' cur + ' + tf(vaultYield) + ' yield - ' + tf(vaultIn) + ' in)\nHoldings: ' + tf(holdPnl) + ' (' + tf(holdVal) + ' cur - ' + tf(holdCost) + ' cost)\nGEMs:     ' + (gemCost>0 ? tf(gemPnl||0)+' ('+tf(gemVal)+' cur - '+tf(gemCost)+' cost)' : 'no funded positions') + '\n─────────────────────\nTotal: ' + tf(totalPnl) + '\n\nNote: each position measured from its own entry date')}>
+        <div ${tip('Overall P&L across all positions (since each entry date)\n\nPools:    ' + tf(poolPnl) + ' (' + tf(poolCur) + ' cur + ' + tf(poolYield) + ' yield - ' + tf(poolIn) + ' in)\nVaults:   ' + tf(vaultPnl) + ' (' + tf(vaultCur) + ' cur + ' + tf(vaultYield) + ' yield - ' + tf(vaultIn) + ' in)\nHoldings: ' + tf(holdPnl) + ' (' + tf(holdVal) + ' cur - ' + tf(holdCost) + ' cost)\nGEMs:     ' + (gemCost>0 ? tf(gemPnl||0)+' ('+tf(gemVal)+' cur - '+tf(gemCost)+' cost)' : 'no funded positions') + '\n─────────────────────\nTotal: ' + tf(totalPnl) + '\n\nNote: each position measured from its own entry date')}>
           <div style="font-size:calc(var(--fs-base) - 3px);font-weight:600;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;margin-bottom:1px;">Overall P&amp;L</div>
           <div class="prv ${cc(totalPnl)}" style="font-family:var(--mono);font-size:var(--fs-mono);font-weight:600;">${$f(totalPnl)}</div>
           ${totalPct!==null?`<div class="prv ${cc(totalPct)}" style="font-family:var(--mono);font-size:calc(var(--fs-base) - 2px);margin-top:1px;">${pf(totalPct)}</div>`:''}
         </div>
-
         ${incDate ? `
-        <div style="padding:4px 14px;border-right:1px solid var(--border);" ${tip('Portfolio P&L since inception (' + incDate + ')\n= Current total - total deployed\n\n' + tf(totalCurrent) + ' current - ' + tf(totalDeployed) + ' deployed = ' + tf(totalPnl) + '\nOver ' + incDays + ' days\n\nClick date to change.')}>
+        <div ${tip('Portfolio P&L since inception (' + incDate + ')\n= Current total - total deployed\n\n' + tf(totalCurrent) + ' current - ' + tf(totalDeployed) + ' deployed = ' + tf(totalPnl) + '\nOver ' + incDays + ' days\n\nClick date to change.')}>
           <div style="font-size:calc(var(--fs-base) - 3px);font-weight:600;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;margin-bottom:1px;">Since Inception</div>
           <div class="prv ${cc(totalPnl)}" style="font-family:var(--mono);font-size:var(--fs-mono);font-weight:600;">${$f(totalPnl)}</div>
           ${incPctHtml}
@@ -15719,35 +15573,25 @@ function renderSummary() {
             <input type="date" value="${incDate}" style="font-family:var(--mono);font-size:9px;background:transparent;border:none;color:var(--text3);padding:0;cursor:pointer;width:82px;" onchange="DB.settings.inceptionDate=this.value;persist();renderSummary();">· ${incDays}d
           </div>
         </div>` : `
-        <div style="padding:4px 14px;border-right:1px solid var(--border);">
+        <div>
           <div style="font-size:calc(var(--fs-base) - 3px);font-weight:600;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;margin-bottom:1px;">Since Inception</div>
           <input type="date" style="font-family:var(--mono);font-size:10px;background:var(--bg3);border:1px dashed var(--border);border-radius:4px;color:var(--text2);padding:2px 5px;cursor:pointer;" onchange="DB.settings.inceptionDate=this.value;persist();renderSummary();">
           <div style="font-size:9px;color:var(--text3);margin-top:1px;">set start date</div>
         </div>`}
-
-        <div style="padding:4px 14px;border-right:1px solid var(--border);" ${tip('LP Pools + Vaults: current live value\n= Pool token values + logged yield + vault values + vault yield')}>
-          <div style="font-size:calc(var(--fs-base) - 3px);font-weight:600;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;margin-bottom:1px;">LP + Vaults</div>
-          <div class="prv" style="font-family:var(--mono);font-size:var(--fs-mono);font-weight:600;">${$f(poolValue + vaultValue)}</div>
-          <div class="prv ${cc(poolPnl+vaultPnl)}" style="font-size:calc(var(--fs-base) - 2px);margin-top:1px;">P&amp;L ${$f(poolPnl+vaultPnl)}</div>
-        </div>
-
-        <div style="padding:4px 14px;border-right:1px solid var(--border);" ${tip('Spot Holdings P&L\n= ' + tf(holdVal) + ' live value - ' + tf(holdCost) + ' avg cost basis = ' + tf(holdPnl))}>
+        <div ${tip('Spot Holdings P&L\n= ' + tf(holdVal) + ' live value - ' + tf(holdCost) + ' avg cost basis = ' + tf(holdPnl))}>
           <div style="font-size:calc(var(--fs-base) - 3px);font-weight:600;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;margin-bottom:1px;">Holdings</div>
           <div class="prv" style="font-family:var(--mono);font-size:var(--fs-mono);font-weight:600;">${$f(holdVal)}</div>
           <div class="prv ${cc(holdPnl)}" style="font-size:calc(var(--fs-base) - 2px);margin-top:1px;">P&amp;L ${$f(holdPnl)}</div>
         </div>
-
-        <div style="padding:4px 14px;border-right:1px solid var(--border);" ${tip(gemCost>0 ? 'GEMs P&L\n= ' + tf(gemVal) + ' current - ' + tf(gemCost) + ' cost = ' + tf(gemPnl||0) : 'No funded GEM positions yet')}>
+        <div ${tip(gemCost>0 ? 'GEMs P&L\n= ' + tf(gemVal) + ' current - ' + tf(gemCost) + ' cost = ' + tf(gemPnl||0) : 'No funded GEM positions yet')}>
           <div style="font-size:calc(var(--fs-base) - 3px);font-weight:600;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;margin-bottom:1px;">GEMs</div>
           <div class="prv" style="font-family:var(--mono);font-size:var(--fs-mono);font-weight:600;">${$f(gemVal||0)}</div>
           <div class="prv ${cc(gemPnl||0)}" style="font-size:calc(var(--fs-base) - 2px);margin-top:1px;">${gemCost>0?'P&amp;L '+$f(gemPnl||0):DB.gems.filter(g=>!g.qty||g.qty===0).length+' watching'}</div>
         </div>
-
-        <div style="padding:4px 14px;margin-left:auto;font-size:calc(var(--fs-base) - 3px);color:var(--text3);text-align:right;display:flex;flex-direction:column;justify-content:center;">
+        <div style="margin-left:auto;font-size:calc(var(--fs-base) - 3px);color:var(--text3);text-align:right;align-self:center;">
           ${priceLastFetched?priceLastFetched.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'—'}<br>
           <span style="cursor:pointer;color:var(--accent2);" onclick="fetchPrices()">↻ refresh</span>
         </div>
-
       </div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr${DB.gems.length?' 0.6fr':''};gap:6px;margin-bottom:6px;">
@@ -16543,25 +16387,7 @@ const TAB_LABELS = {
 };
 
 const WHATS_NEW = {
-  '47.37': {
-    headline: "Version 47.37",
-    summary:  "File safety, header redesign, file status panel, and activation hardening.",
-    items: [
-      { icon: '🛡', title: "Write guard — backup file protected from seed data",
-        text: "The app now refuses to write to your backup JSON until it has successfully read from it first. This prevents the embedded seed data from ever overwriting your real data when replacing the HTML file." },
-      { icon: '📁', title: "File status panel in Data menu",
-        text: "The Data menu now shows a full status panel: filename, full folder path (auto-captured at link time), linked date, last saved time, and warning badges for numbered Brave copies or dated manual backups. A manual folder path field is available as fallback." },
-      { icon: '🟡', title: "Three-state file connection dot",
-        text: "The connection dot now has three states: green (linked and verified — data was read), amber (linked but not yet verified), and orange (no file linked). This makes it clear whether auto-save is truly safe to use." },
-      { icon: '📊', title: "Header redesigned — stats moved to Summary tab",
-        text: "The header is now a clean single row with a larger logo. All portfolio stats (LP+Vaults, Deployed, Overall P&L, Since Inception, Holdings, GEMs) are consolidated into the Summary tab top line in tab order, giving every other tab more usable screen space." },
-      { icon: '🔑', title: "Activation hardening",
-        text: "Install ID is now stable across file replacements — reads from vault first, never recomputes unless missing. checkActivation seeds the ID from the token itself on fresh installs, eliminating the mismatch that required re-entering the activation code." },
-      { icon: '⚠', title: "Reconnect banner on file handle loss",
-        text: "When the app opens after a file replacement and detects a previously linked file is now disconnected, it shows a prominent amber banner naming the file and offering a one-click relink — rather than silently rendering with stale data." },
-    ]
-  },
-  '47.37': {
+  '47.36': {
     headline: "Version 47.36",
     summary:  "PIN improvements, Mac+Brave fix, and activation reliability on file replace.",
     items: [
@@ -17013,9 +16839,7 @@ const HELP_CONTENT = {
   whatsNew: {
     title: "✦ What\'s New — Full Changelog",
     sections: [
-      { icon: '✦', heading: 'v47.37  — CURRENT',
-        text: `<em style="color:var(--text3);">File safety, header redesign, file status panel, and activation hardening.</em><br><br><strong>🛡 Write guard</strong><br>The app refuses to write to your backup JSON until it has successfully read from it — prevents seed data from ever overwriting real data.<br><br><strong>📁 File status panel</strong><br>Data menu now shows filename, full path, linked date, last saved, and warning badges for numbered Brave copies or dated manual backups.<br><br><strong>🟡 Three-state connection dot</strong><br>Green = linked and verified, Amber = linked but unverified, Orange = no file linked.<br><br><strong>📊 Header redesign</strong><br>Clean single-row header with larger logo. All stats moved to Summary tab top line in tab order — more screen space on every other tab.<br><br><strong>🔑 Activation hardening</strong><br>Install ID stable across file replacements. Seeds from token on fresh install — no more activation prompt on file replace.<br><br><strong>⚠ Reconnect banner</strong><br>Prominent amber banner when file handle is lost after replacement, with one-click relink.` },
-      { icon: '○', heading: 'v47.36',
+      { icon: '✦', heading: 'v47.36  — CURRENT',
         text: `<em style="color:var(--text3);">PIN improvements, Mac+Brave fix, and activation reliability on file replace.</em><br><br><strong>🔒 PIN — Cancel mid-setup</strong><br>A Cancel button now appears when creating or changing a PIN so you can back out without being stuck.<br><br><strong>⏱ PIN — Adjustable auto-lock timeout</strong><br>Timeout is now adjustable (1–60 mins or Never) from both the lock screen and Settings, and is saved permanently.<br><br><strong>⚙ PIN — Settings section</strong><br>Settings has a new PIN Protection section with Set, Change, and Remove PIN buttons plus the timeout dropdown.<br><br><strong>🦁 Mac + Brave — numbered copies fix</strong><br>Brave on Mac creates numbered backup copies instead of overwriting. The app now detects this and shows a clear fix banner.<br><br><strong>🔑 Activation — reliable on file replace</strong><br>Replacing the HTML file no longer requires re-entering the activation code — the app reads the licence from the JSON automatically after navigation.` },
       { icon: '○', heading: 'v47.35',
         text: `<em style="color:var(--text3);">International CPI support — 17 countries with auto-fetch or manual entry and direct links to national statistics offices.</em><br><br><strong>🌍 International CPI Benchmark — 17 countries</strong><br>Settings → CPI Benchmark Badge now has a Country dropdown. Auto-fetch works for USA (FRED), Canada (Bank of Canada), UK (ONS), Eurozone (ECB), and Australia (ABS). For all other countries the Fetch button is replaced by a direct link to that country's national statistics CPI page. Countries covered: USA, Canada, UK, Eurozone, Australia, New Zealand, Japan, Switzerland, Singapore, Norway, Sweden, Denmark, Mexico, Brazil, South Africa, India, and Other.` },
@@ -17738,7 +17562,6 @@ async function actLinkBackup() {
         prices = DB.prices||{};
         localStorage.setItem(SK, JSON.stringify(DB));
       }
-      _fsBackupVerified = true;
     } catch(e){}
     // Now check if backup contains valid licence
     await actCheckAfterLink();
@@ -21220,7 +21043,7 @@ const TAB_LABELS = {
 };
 
 const WHATS_NEW = {
-  '47.37': {
+  '47.36': {
     headline: "Version 47.36",
     summary:  "PIN improvements, Mac+Brave fix, and activation reliability on file replace.",
     items: [
@@ -21690,9 +21513,7 @@ const HELP_CONTENT = {
   whatsNew: {
     title: "✦ What's New — Full Changelog",
     sections: [
-      { icon: '✦', heading: 'v47.37',
-        text: `<em style="color:var(--text3);">File safety, header redesign, file status panel, and activation hardening.</em><br><br><strong>🛡 Write guard</strong><br>The app refuses to write to your backup JSON until it has successfully read from it — prevents seed data from ever overwriting real data.<br><br><strong>📁 File status panel</strong><br>Data menu now shows filename, full path, linked date, last saved, and warning badges for numbered Brave copies or dated manual backups.<br><br><strong>🟡 Three-state connection dot</strong><br>Green = linked and verified, Amber = linked but unverified, Orange = no file linked.<br><br><strong>📊 Header redesign</strong><br>Clean single-row header with larger logo. All stats moved to Summary tab top line in tab order — more screen space on every other tab.<br><br><strong>🔑 Activation hardening</strong><br>Install ID stable across file replacements. Seeds from token on fresh install — no more activation prompt on file replace.<br><br><strong>⚠ Reconnect banner</strong><br>Prominent amber banner when file handle is lost after replacement, with one-click relink.` },
-      { icon: '○', heading: 'v47.36',
+      { icon: '✦', heading: 'v47.36  — CURRENT',
         text: `<em style="color:var(--text3);">PIN improvements, Mac+Brave fix, and activation reliability on file replace.</em><br><br><strong>🔒 PIN — Cancel mid-setup</strong><br>A Cancel button now appears when creating or changing a PIN so you can back out without being stuck.<br><br><strong>⏱ PIN — Adjustable auto-lock timeout</strong><br>Timeout is now adjustable (1–60 mins or Never) from both the lock screen and Settings, and is saved permanently.<br><br><strong>⚙ PIN — Settings section</strong><br>Settings has a new PIN Protection section with Set, Change, and Remove PIN buttons plus the timeout dropdown.<br><br><strong>🦁 Mac + Brave — numbered copies fix</strong><br>Brave on Mac creates numbered backup copies instead of overwriting. The app now detects this and shows a clear fix banner.<br><br><strong>🔑 Activation — reliable on file replace</strong><br>Replacing the HTML file no longer requires re-entering the activation code — the app reads the licence from the JSON automatically after navigation.` },
       { icon: '○', heading: 'v47.35',
         text: `<em style="color:var(--text3);">International CPI support — 17 countries with auto-fetch or manual entry and direct links to national statistics offices.</em><br><br><strong>🌍 International CPI Benchmark — 17 countries</strong><br>Settings → CPI Benchmark Badge now has a Country dropdown. Auto-fetch works for USA (FRED), Canada (Bank of Canada), UK (ONS), Eurozone (ECB), and Australia (ABS). For all other countries the Fetch button is replaced by a direct link to that country's national statistics CPI page. Countries covered: USA, Canada, UK, Eurozone, Australia, New Zealand, Japan, Switzerland, Singapore, Norway, Sweden, Denmark, Mexico, Brazil, South Africa, India, and Other.` },
@@ -22343,7 +22164,7 @@ async function actLinkBackup() {
 }
 
 
-// DEMO_MODE = true; (defined early near bootActivationCheck)
+const DEMO_MODE        = true;
 const DEMO_SEEN_KEY    = 'cpf_demo_welcome_seen';
 // ── Worker-based Demo Validation ─────────────────────────────────────────────
 const DEMO_TOKEN_KEY    = 'cpf_demo_token_v1';
@@ -22401,8 +22222,7 @@ async function demoValidate() {
     hideActivationScreen();
     return true;
   }
-  // 2. Show activation screen with checking state
-  await showActivationScreen();
+  // 2. Show checking state and call worker
   demoShowState('actStateChecking');
   return await demoValidateNow();
 }
@@ -22444,66 +22264,20 @@ async function demoValidateNow() {
       return false;
     }
 
-    // Not registered yet
-    if(demoTrialActive()) {
-      // Within trial period — let them in with a reminder
-      demoTrialStart();
-      const daysLeft = Math.ceil(demoTrialDaysLeft());
-      hideActivationScreen();
-      setTimeout(() => {
-        const b = document.createElement('div');
-        b.id = 'demoTrialBanner';
-        b.style.cssText = 'position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:400;background:#1c1407;border:1px solid rgba(245,158,11,0.5);border-radius:10px;padding:12px 20px;box-shadow:0 4px 20px rgba(0,0,0,0.4);display:flex;align-items:center;gap:12px;max-width:560px;width:calc(100vw - 48px);font-family:var(--sans);';
-        b.innerHTML = `<span style="font-size:20px;">⏳</span>
-          <div style="flex:1;font-size:11px;color:var(--text3);line-height:1.6;">
-            <strong style="color:var(--warn);">Trial mode — ${daysLeft} day${daysLeft===1?'':'s'} remaining</strong><br>
-            Your access is pending registration. Send your Install ID to the administrator to activate your account.<br>
-            <span style="font-family:var(--mono);color:var(--accent);font-size:12px;font-weight:700;">${installId}</span>
-          </div>
-          <button onclick="document.getElementById('demoTrialBanner').remove()" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;padding:0;">✕</button>`;
-        document.body.appendChild(b);
-      }, 1000);
-      return true;
-    }
-    // Trial expired and not registered — show pending screen
+    // Not registered yet — show pending state with Install ID
     demoShowState('actStatePending');
     const idEl2 = document.getElementById('actInstallId');
     if(idEl2) idEl2.textContent = installId;
     return false;
 
   } catch(e) {
-    // Network error — check cached token first
+    // Network error — check for cached token one more time
     const cached = await demoGetCachedToken();
     if(cached) {
       hideActivationScreen();
       return true;
     }
-    // No cached token — fall back to 7-day trial
-    if(demoTrialActive()) {
-      const daysLeft = Math.ceil(demoTrialDaysLeft());
-      demoTrialStart(); // stamp start time if not already set
-      hideActivationScreen();
-      // Show a non-blocking reminder banner
-      setTimeout(() => {
-        const b = document.createElement('div');
-        b.id = 'demoTrialBanner';
-        b.style.cssText = 'position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:400;background:#1c1407;border:1px solid rgba(245,158,11,0.5);border-radius:10px;padding:12px 20px;box-shadow:0 4px 20px rgba(0,0,0,0.4);display:flex;align-items:center;gap:12px;max-width:560px;width:calc(100vw - 48px);font-family:var(--sans);';
-        b.innerHTML = `<span style="font-size:20px;">⏳</span>
-          <div style="flex:1;font-size:11px;color:var(--text3);line-height:1.6;">
-            <strong style="color:var(--warn);">Trial mode — ${daysLeft} day${daysLeft===1?'':'s'} remaining</strong><br>
-            Could not reach the validation server. Your Install ID is shown below — send it to the administrator to register.<br>
-            <span style="font-family:var(--mono);color:var(--accent);font-size:12px;font-weight:700;" id="demoTrialInstallId">loading…</span>
-          </div>
-          <button onclick="document.getElementById('demoTrialBanner').remove()" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;padding:0;">✕</button>`;
-        document.body.appendChild(b);
-        getInstallId().then(id => {
-          const el = document.getElementById('demoTrialInstallId');
-          if(el) el.textContent = id;
-        });
-      }, 1000);
-      return true;
-    }
-    // Trial expired and no cached token — show offline screen
+    // Truly offline with no cached token
     demoShowState('actStateOffline');
     return false;
   }
