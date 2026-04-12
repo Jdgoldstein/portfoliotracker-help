@@ -4470,6 +4470,8 @@ async function tapToOpenHandler() {
   }
 }
 
+const DEMO_MODE = true; // defined early — referenced by bootActivationCheck
+
 (async function bootActivationCheck() {
   function _bootFallback(e) {
     console.error('cpf: bootActivationCheck failed:', e);
@@ -22348,7 +22350,7 @@ async function actLinkBackup() {
 }
 
 
-const DEMO_MODE        = true;
+// DEMO_MODE = true; (defined early near bootActivationCheck)
 const DEMO_SEEN_KEY    = 'cpf_demo_welcome_seen';
 // ── Worker-based Demo Validation ─────────────────────────────────────────────
 const DEMO_TOKEN_KEY    = 'cpf_demo_token_v1';
