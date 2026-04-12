@@ -75,8 +75,8 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:va
   padding:0 10px;height:48px;gap:8px;
   box-shadow:0 1px 4px rgba(0,0,0,0.06);
 }
-.logo{font-family:var(--mono);font-size:13px;color:var(--accent);letter-spacing:.06em;white-space:nowrap;}
-.logo small{color:var(--text3);font-size:10px;margin-left:6px;}
+.logo{font-family:var(--mono);font-size:16px;color:var(--accent);letter-spacing:.06em;white-space:nowrap;font-weight:700;}
+.logo small{color:var(--text3);font-size:11px;margin-left:6px;font-weight:400;}
 .header-stats{display:flex;gap:4px;flex:1 1 0;justify-content:center;flex-wrap:wrap;overflow:hidden;min-width:0;}
 .hstat{text-align:center;min-width:0;flex-shrink:1;}
 .hstat-label{font-size:9px;color:#1a2438;text-transform:uppercase;letter-spacing:.06em;font-weight:600;white-space:nowrap;}
@@ -1017,76 +1017,74 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 <div id="activationLock">
   <div class="act-box">
     <div class="act-logo">PORTFOLIO TRACKER <span style="font-size:9px;opacity:.5;" id="actLogoVer"></span></div>
-    <div class="act-title">🔐 Activation Required</div>
-    <div class="act-sub">
-      If you have an existing backup file, link it below — activation is automatic if it contains your licence.<br>
-      Otherwise request a code by email.
+
+    <!-- State: checking -->
+    <div id="actStateChecking" style="text-align:center;padding:20px 0;">
+      <div style="font-size:28px;margin-bottom:12px;">⏳</div>
+      <div style="font-size:14px;color:#3df5a0;font-weight:600;margin-bottom:6px;">Verifying access…</div>
+      <div style="font-size:11px;color:#3a5060;">Contacting authorisation server</div>
     </div>
 
-    <!-- Reconnect = fastest path for returning users after browser restart -->
-    <div id="actReconnectSection" style="display:none;margin-bottom:10px;">
-      <button class="act-btn" onclick="actReconnectBackup()" id="actReconnectBtn"
-        style="background:rgba(61,245,160,.15);border-color:rgba(61,245,160,.5);color:#3df5a0;font-size:13px;">
-        🔑 Reconnect Backup — One Click Unlock
+    <!-- State: approved -->
+    <div id="actStateApproved" style="display:none;text-align:center;padding:20px 0;">
+      <div style="font-size:28px;margin-bottom:12px;">✅</div>
+      <div style="font-size:14px;color:#3df5a0;font-weight:600;margin-bottom:6px;" id="actApprovedName">Access Approved</div>
+      <div style="font-size:11px;color:#3a6050;">Opening tracker…</div>
+    </div>
+
+    <!-- State: pending (not yet registered) -->
+    <div id="actStatePending" style="display:none;">
+      <div class="act-title">📋 Access Request</div>
+      <div class="act-sub">
+        Your Installation ID has not yet been approved.<br>
+        Share it with the tracker administrator to request access.
+      </div>
+      <div class="act-id-box">
+        <div class="act-id-label">Your Installation ID</div>
+        <div class="act-id-val" id="actInstallId">——————</div>
+        <div class="act-id-copy" onclick="actCopyId()">📋 Copy to clipboard</div>
+      </div>
+      <button class="act-btn" onclick="actRequestAccess()"
+        style="background:rgba(96,168,240,.1);border-color:rgba(96,168,240,.3);color:#70b8ff;margin-bottom:10px;">
+        ✉ Request Access via Feedback
       </button>
-      <div id="actReconnectHint" style="font-size:10px;color:#3a6050;text-align:center;margin-top:4px;">
-        Your backup file was found. Click above to restore access.
+      <button class="act-btn" onclick="demoValidateNow()"
+        style="background:rgba(61,245,160,.05);border-color:rgba(61,245,160,.2);color:#3df5a0;font-size:12px;">
+        ↻ Check again
+      </button>
+      <div class="act-err" id="actErr"></div>
+      <div style="margin-top:14px;text-align:center;">
+        <a href="https://jdgoldstein.github.io/portfoliotracker-help/START_HERE.html" target="_blank" rel="noopener"
+          style="font-size:11px;color:#4a8070;text-decoration:none;opacity:0.8;">
+          ⬆ Check for a newer version
+        </a>
       </div>
     </div>
 
-    <!-- Link backup = primary unlock path for returning users -->
-    <button class="act-btn" onclick="actLinkBackup()" style="background:rgba(61,245,160,.1);border-color:rgba(61,245,160,.3);color:#3df5a0;margin-bottom:6px;">
-      ⛁ Link Backup File — Auto-Unlock
-    </button>
-    <div id="actFileStatus" style="font-size:10px;color:#3a4a60;text-align:center;margin-bottom:12px;min-height:16px;"></div>
-
-    <!-- Divider -->
-    <div style="margin:4px 0 10px;display:flex;align-items:center;gap:8px;">
-      <div style="flex:1;height:1px;background:#1e3050;"></div>
-      <span style="font-size:10px;color:#3a4a60;">first time? request a code</span>
-      <div style="flex:1;height:1px;background:#1e3050;"></div>
+    <!-- State: revoked -->
+    <div id="actStateRevoked" style="display:none;text-align:center;padding:20px 0;">
+      <div style="font-size:28px;margin-bottom:12px;">🚫</div>
+      <div style="font-size:14px;color:#f87171;font-weight:600;margin-bottom:6px;">Access Revoked</div>
+      <div style="font-size:11px;color:#3a5060;">Contact the administrator if you believe this is an error.</div>
     </div>
 
-    <div class="act-id-box">
-      <div class="act-id-label">Your Installation ID</div>
-      <div class="act-id-val" id="actInstallId">——————</div>
-      <div class="act-id-copy" onclick="actCopyId()">📋 Copy to clipboard</div>
+    <!-- State: offline (no internet, no cached token) -->
+    <div id="actStateOffline" style="display:none;text-align:center;padding:20px 0;">
+      <div style="font-size:28px;margin-bottom:12px;">📡</div>
+      <div style="font-size:14px;color:#f59e0b;font-weight:600;margin-bottom:8px;">No Internet Connection</div>
+      <div style="font-size:11px;color:#3a5060;margin-bottom:16px;">
+        A connection is needed to verify access.<br>
+        Connect to the internet and try again.
+      </div>
+      <button class="act-btn" onclick="demoValidateNow()"
+        style="background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.3);color:#f59e0b;">
+        ↻ Try Again
+      </button>
     </div>
 
-    <button class="act-btn" onclick="actEmailRequest()" style="background:rgba(96,168,240,.1);border-color:rgba(96,168,240,.3);color:#70b8ff;margin-bottom:10px;">
-      ✉ Request Activation Code by Email
-    </button>
-
-    <div id="actEmailFallback" style="display:none;background:rgba(96,168,240,.06);border:1px solid rgba(96,168,240,.2);border-radius:6px;padding:10px 12px;margin-bottom:10px;font-size:11px;color:#70b8ff;line-height:1.7;">
-      If your email client didn't open, send a manual email to:<br>
-      <strong id="actEmailFallbackAddr" style="font-family:monospace;font-size:12px;color:#a0d0ff;user-select:all;"></strong><br>
-      <span style="color:#5a8a9f;">Include your Installation ID shown above.</span>
-    </div>
-
-    <div style="margin:4px 0 10px;display:flex;align-items:center;gap:8px;">
-      <div style="flex:1;height:1px;background:#1e3050;"></div>
-      <span style="font-size:10px;color:#3a4a60;">enter code when received</span>
-      <div style="flex:1;height:1px;background:#1e3050;"></div>
-    </div>
-
-    <input class="act-input" id="actCodeInput" placeholder="ENTER ACTIVATION CODE" maxlength="20"
-      oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')"
-      onkeydown="if(event.key==='Enter')actSubmit()">
-    <button class="act-btn" onclick="actSubmit()">Activate →</button>
-
-    <div class="act-err" id="actErr"></div>
-
-    <div style="margin-top:14px;text-align:center;">
-      <a href="https://jdgoldstein.github.io/portfoliotracker-help/START_HERE.html" target="_blank" rel="noopener"
-        style="font-size:11px;color:#4a8070;text-decoration:none;opacity:0.8;">
-        ⬆ Check for a newer version
-      </a>
-    </div>
-    <div class="act-footer">
-      After activating, link your backup file — future versions activate automatically.<br>
-      Each code is unique to this machine.<br><br>
-      <span style="color:#5a7090;">💡 <strong style="color:#4a8070;">Pro tip:</strong> Use <em>⊕ Install App</em> in the header to install as a desktop app.
-      After that, opening the app (or double-clicking your backup file) will unlock it automatically — no clicks required.</span>
+    <div class="act-footer" style="margin-top:16px;">
+      Access is verified daily via secure server.<br>
+      <span style="color:#5a7090;">Your data is stored locally — nothing is sent to our servers.</span>
     </div>
   </div>
 </div>
@@ -1142,7 +1140,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 <!-- HEADER -->
 <div id="header" style="visibility:hidden;">
   <div class="logo">PORTFOLIO <small>TRACKER</small></div>
-  <span id="versionBadge" style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-left:4px;align-self:flex-end;padding-bottom:2px;">v47.36</span>
+  <span id="versionBadge" style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-left:2px;align-self:flex-end;padding-bottom:2px;font-weight:600;">v47.36</span>
   <span id="privacyBadge">🙈 VALUES MASKED</span>
   <div class="header-stats" id="hdrStats"></div>
   <div class="header-right">
@@ -1203,6 +1201,24 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
           <div id="dataMenuBackupRow" style="padding:4px 14px 8px;display:flex;align-items:center;gap:8px;">
             <span id="fsStatusDot2" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#b86800;flex-shrink:0;"></span>
             <button class="btn sm primary" onclick="linkBackupFile();toggleDataMenu()" style="font-size:11px;">⛁ Link / Create File</button>
+          </div>
+          <!-- File status detail panel -->
+          <div id="fsStatusDetail" style="display:none;margin:0 14px 8px;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;font-size:10px;line-height:1.8;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+              <span id="fsDetailDot" style="display:inline-block;width:8px;height:8px;border-radius:50%;flex-shrink:0;background:#b86800;"></span>
+              <span id="fsDetailStatus" style="font-weight:700;color:var(--text2);">No file linked</span>
+            </div>
+            <div id="fsDetailName" style="color:var(--text2);font-family:var(--mono);word-break:break-all;"></div>
+            <div id="fsDetailPath" style="color:var(--text3);font-family:var(--mono);word-break:break-all;margin-top:1px;"></div>
+            <div id="fsDetailLinked" style="color:var(--text3);"></div>
+            <div id="fsDetailSaved" style="color:var(--text3);"></div>
+            <div id="fsDetailWarn" style="display:none;margin-top:4px;padding:4px 6px;background:rgba(204,34,0,0.1);border:1px solid rgba(204,34,0,0.3);border-radius:4px;color:#f87171;font-weight:600;"></div>
+            <div id="fsDetailUserPath" style="margin-top:6px;display:none;">
+              <div style="color:var(--text3);margin-bottom:2px;">📁 Folder (type or paste path):</div>
+              <input id="fsUserPath" type="text" placeholder="e.g. C:\Users\John\PortfolioTracker\"
+                style="width:100%;box-sizing:border-box;background:var(--bg2);border:1px solid var(--border2);border-radius:4px;padding:3px 6px;font-family:var(--mono);font-size:10px;color:var(--text);"
+                oninput="fsUserPathSave(this.value)">
+            </div>
           </div>
           <div style="padding:0 14px 6px;font-size:10px;color:var(--text3);line-height:1.4;">Connect a .json file for auto-save every 7 min. Creates one if it doesn't exist yet.</div>
           <div style="padding:2px 14px 6px;">
@@ -4494,8 +4510,9 @@ async function tapToOpenHandler() {
       }
     } else if(DEMO_MODE) {
       // Restore trial timestamp from IDB/backup if localStorage was cleared
-      await demoRestoreTrialIfCleared();
-      if(demoTrialExpired()) {
+      // Worker-based validation (replaces date-based trial)
+      const _demoOk = await demoValidate();
+      if(false && demoTrialExpired()) { // legacy check disabled
         await showActivationScreen();
       } else {
         if(demoWelcomeSeen()) {
@@ -14030,6 +14047,7 @@ function _unpackBackup(raw) {
 }
 
 function importJSON(e) {
+  _fsBackupVerified = true;
   const file = e.target.files[0];
   if(!file) return;
   const reader = new FileReader();
@@ -14299,7 +14317,9 @@ async function restoreFsHandleFromIDB() {
 }
 
 let fsFileHandle  = null;
-let htmlFileHandle = null; // handle to this HTML file — used to keep _embeddedBackup in sync
+let htmlFileHandle = null;
+// Write guard — prevents seed/stale data from overwriting a legitimate backup.
+let _fsBackupVerified = false; // handle to this HTML file — used to keep _embeddedBackup in sync
 let fsAutoTimer   = null;
 let fsLastSaved   = null;
 let fsSaveQueued  = false;
@@ -14448,7 +14468,9 @@ async function fsActivate(handle, mode) {
   if(perm!=='granted') { toast('Write permission denied.',true); return; }
   fsFileHandle = handle;
   storeHandleIDB('fsFileHandle', handle);
-  fsMetaSave({ name: handle.name, fullPath: handle.name, linkedAt: new Date().toISOString() });
+  let _fullPath = handle.name;
+  try { const _pf = await handle.getFile(); if(_pf.path) _fullPath = _pf.path; } catch(e) {}
+  fsMetaSave({ name: handle.name, fullPath: _fullPath, linkedAt: new Date().toISOString() });
   // Hide the no-backup banner if it was showing
   const _nb = document.getElementById('noBackupBanner');
   if(_nb) _nb.style.display = 'none';
@@ -14677,6 +14699,10 @@ function updateAppFileLinkUI() {
 
 async function fsWriteNow(fromGesture=false) {
   if(!fsFileHandle) return false;
+  if(!_fsBackupVerified) {
+    console.warn('cpf: fsWriteNow blocked — backup not yet verified');
+    return false;
+  }
   try {
     // Always query first — avoids triggering Chrome's permission prompt unnecessarily.
     let perm = await fsFileHandle.queryPermission({mode:'readwrite'});
@@ -14857,8 +14883,10 @@ function updateFsStatus() {
     ];
     if(btn) btn.title = tipLines.join('\n');
     if(text){ text.style.display = 'none'; text.title = ''; }
-    if(dot){ dot.style.background='#0a7c4a'; dot.title = 'Backup active — ' + name; }
-    if(dot2){ dot2.style.background='#0a7c4a'; dot2.title = 'Backup active'; }
+    const _dotColor = _fsBackupVerified ? '#0a7c4a' : '#f59e0b';
+    const _dotTitle = _fsBackupVerified ? 'Backup active — ' + name : 'File linked but not yet verified';
+    if(dot){ dot.style.background=_dotColor; dot.title=_dotTitle; }
+    if(dot2){ dot2.style.background=_dotColor; dot2.title=_dotTitle; }
     if(menuBtn) menuBtn.style.borderColor='rgba(10,124,74,0.5)';
     if(backupNameEl){ backupNameEl.style.display='block'; backupNameEl.textContent='📄 '+name+' · saved '+savedShort; }
     if(backupRowEl){ const b=backupRowEl.querySelector('button'); if(b) b.textContent='⛁ Change File'; }
@@ -14893,9 +14921,125 @@ function updateFsStatus() {
       if(bb) bb.style.display = 'flex';
     }
   }
+  _updateFsDetailPanel();
+}
+
+function _updateFsDetailPanel() {
+  const panel   = document.getElementById('fsStatusDetail');
+  const dot     = document.getElementById('fsDetailDot');
+  const status  = document.getElementById('fsDetailStatus');
+  const nameEl  = document.getElementById('fsDetailName');
+  const pathEl  = document.getElementById('fsDetailPath');
+  const linkedEl= document.getElementById('fsDetailLinked');
+  const savedEl = document.getElementById('fsDetailSaved');
+  const warnEl  = document.getElementById('fsDetailWarn');
+  const userPathWrap = document.getElementById('fsDetailUserPath');
+  const userPathInput= document.getElementById('fsUserPath');
+  if(!panel) return;
+
+  panel.style.display = 'block';
+
+  if(!fsFileHandle) {
+    if(dot)    { dot.style.background = '#b86800'; }
+    if(status) { status.textContent = 'No file linked'; status.style.color = 'var(--warn)'; }
+    if(nameEl) nameEl.textContent = '';
+    if(pathEl) pathEl.textContent = '';
+    if(linkedEl) linkedEl.textContent = '';
+    if(savedEl)  savedEl.textContent = '';
+    if(warnEl)   warnEl.style.display = 'none';
+    if(userPathWrap) userPathWrap.style.display = 'none';
+    return;
+  }
+
+  const meta     = fsMetaLoad();
+  const name     = fsFileHandle.name || meta.name || '?';
+  const fullPath = meta.fullPath && meta.fullPath !== name ? meta.fullPath : null;
+  const userPath = localStorage.getItem('cpf_user_folder_path') || '';
+
+  // Determine dot colour and status text
+  const verified = _fsBackupVerified;
+  if(dot)    dot.style.background = verified ? '#0a7c4a' : '#f59e0b';
+  if(status) {
+    status.textContent  = verified ? '✓ Linked & verified' : '⚠ Linked — not yet verified';
+    status.style.color  = verified ? 'var(--accent)' : 'var(--warn)';
+  }
+
+  // Filename
+  if(nameEl) nameEl.innerHTML = '📄 <strong>' + name + '</strong>';
+
+  // Full path (from File.path if captured, or user-entered folder)
+  if(pathEl) {
+    if(fullPath && fullPath !== name) {
+      pathEl.textContent = '📁 ' + fullPath;
+      pathEl.style.color = 'var(--accent)';
+    } else if(userPath) {
+      pathEl.textContent = '📁 ' + userPath + name;
+      pathEl.style.color = 'var(--text3)';
+    } else {
+      pathEl.textContent = '📁 Folder unknown — type path below';
+      pathEl.style.color = 'var(--text3)';
+    }
+  }
+
+  // Linked / saved timestamps
+  if(linkedEl && meta.linkedAt) {
+    const ld = new Date(meta.linkedAt);
+    linkedEl.textContent = '🔗 Linked: ' + ld.toLocaleDateString([],{month:'numeric',day:'numeric',year:'2-digit'})
+      + ' ' + ld.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  }
+  const savedDate = fsLastSaved || (meta.lastSaved ? new Date(meta.lastSaved) : null);
+  if(savedEl) {
+    if(savedDate) {
+      const isToday = savedDate.toDateString() === new Date().toDateString();
+      savedEl.textContent = '💾 Last saved: ' + (isToday
+        ? 'today ' + savedDate.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})
+        : savedDate.toLocaleDateString([],{month:'numeric',day:'numeric',year:'2-digit'})
+          + ' ' + savedDate.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
+    } else {
+      savedEl.textContent = '💾 Not yet saved this session';
+    }
+  }
+
+  // Warning: numbered copy or manual export filename
+  if(warnEl) {
+    const numCopy   = /\(\d+\)\.json$/i.test(name);
+    const isBackup  = /backup.*\d{4}[-_]\d{2}[-_]\d{2}/i.test(name);
+    const isAutoSave= name === 'portfolio_autosave.json';
+    if(numCopy) {
+      warnEl.style.display = 'block';
+      warnEl.textContent   = '⚠ Numbered copy detected — this may be a Brave download duplicate, not your working file. Re-link to your original file.';
+    } else if(isBackup) {
+      warnEl.style.display = 'block';
+      warnEl.textContent   = '⚠ This looks like a dated manual backup, not a live working file. Changes will save here but consider re-linking to your main file.';
+    } else if(isAutoSave) {
+      warnEl.style.display = 'block';
+      warnEl.textContent   = 'ℹ Linked to auto-save file — this is correct for Mac Chrome.';
+      warnEl.style.borderColor = 'rgba(10,124,74,0.3)';
+      warnEl.style.background  = 'rgba(10,124,74,0.08)';
+      warnEl.style.color       = 'var(--accent)';
+    } else {
+      warnEl.style.display = 'none';
+    }
+  }
+
+  // User path input — show when full path not auto-captured
+  if(userPathWrap) {
+    const hasAutoPath = fullPath && fullPath !== name;
+    userPathWrap.style.display = hasAutoPath ? 'none' : 'block';
+    if(userPathInput && userPath) userPathInput.value = userPath;
+  }
+}
+
+function fsUserPathSave(val) {
+  try { localStorage.setItem('cpf_user_folder_path', val.trim()); } catch(e) {}
+  // Refresh path display
+  const pathEl = document.getElementById('fsDetailPath');
+  const name   = fsFileHandle ? fsFileHandle.name : '';
+  if(pathEl && name) pathEl.textContent = '📁 ' + val.trim() + name;
 }
 
 function toggleDataMenu() {
+  setTimeout(_updateFsDetailPanel, 50);
   const menu = document.getElementById('dataMenu');
   if(!menu) return;
 
@@ -15549,24 +15693,31 @@ function renderSummary() {
     : '';
 
   el.innerHTML = hedgeBannerHtml + `
-    <div style="background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--border2);border-radius:10px;padding:8px 14px;margin-bottom:6px;display:flex;align-items:center;gap:0;flex-wrap:wrap;box-shadow:0 2px 12px rgba(0,0,0,.2);">
+    <div style="background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--border2);border-radius:10px;padding:8px 14px;margin-bottom:6px;display:flex;align-items:stretch;gap:0;box-shadow:0 2px 12px rgba(0,0,0,.2);flex-wrap:nowrap;overflow:hidden;">
+
+      <!-- Total Portfolio Value -->
       <div style="padding:4px 16px 4px 0;border-right:1px solid var(--border);margin-right:16px;flex-shrink:0;">
         <div style="font-size:calc(var(--fs-base) - 3px);font-weight:600;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;margin-bottom:1px;">Total Portfolio Value</div>
         <div class="prv" style="font-family:var(--mono);font-size:calc(var(--fs-mono) + 8px);font-weight:500;line-height:1.1;">${$f(totalCurrent)}</div>
         <div style="font-size:calc(var(--fs-base) - 3px);color:var(--text3);margin-top:2px;">${DB.pools.length}p · ${DB.vaults.length}v · ${DB.holdings.length}h · ${DB.gems.filter(g=>g.qty&&g.qty>0).length} GEMs</div>
       </div>
-      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start;padding:4px 0;">
-        <div ${tip('Total capital put in across all positions\n= Pool entries + Vault entries + Holdings cost basis + GEM cost')}>
+
+      <!-- All summary stats in one row -->
+      <div style="display:flex;gap:0;flex:1 1 0;align-items:stretch;flex-wrap:wrap;min-width:0;">
+
+        <div style="padding:4px 14px;border-right:1px solid var(--border);" ${tip('Total capital put in across all positions\n= Pool entries + Vault entries + Holdings cost basis + GEM cost')}>
           <div style="font-size:calc(var(--fs-base) - 3px);font-weight:600;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;margin-bottom:1px;">Deployed</div>
           <div class="prv" style="font-family:var(--mono);font-size:var(--fs-mono);font-weight:600;">${$f(totalDeployed)}</div>
         </div>
-        <div ${tip('Overall P&L across all positions (since each entry date)\n\nPools:    ' + tf(poolPnl) + ' (' + tf(poolCur) + ' cur + ' + tf(poolYield) + ' yield - ' + tf(poolIn) + ' in)\nVaults:   ' + tf(vaultPnl) + ' (' + tf(vaultCur) + ' cur + ' + tf(vaultYield) + ' yield - ' + tf(vaultIn) + ' in)\nHoldings: ' + tf(holdPnl) + ' (' + tf(holdVal) + ' cur - ' + tf(holdCost) + ' cost)\nGEMs:     ' + (gemCost>0 ? tf(gemPnl||0)+' ('+tf(gemVal)+' cur - '+tf(gemCost)+' cost)' : 'no funded positions') + '\n─────────────────────\nTotal: ' + tf(totalPnl) + '\n\nNote: each position measured from its own entry date')}>
+
+        <div style="padding:4px 14px;border-right:1px solid var(--border);" ${tip('Overall P&L across all positions (since each entry date)\n\nPools:    ' + tf(poolPnl) + ' (' + tf(poolCur) + ' cur + ' + tf(poolYield) + ' yield - ' + tf(poolIn) + ' in)\nVaults:   ' + tf(vaultPnl) + ' (' + tf(vaultCur) + ' cur + ' + tf(vaultYield) + ' yield - ' + tf(vaultIn) + ' in)\nHoldings: ' + tf(holdPnl) + ' (' + tf(holdVal) + ' cur - ' + tf(holdCost) + ' cost)\nGEMs:     ' + (gemCost>0 ? tf(gemPnl||0)+' ('+tf(gemVal)+' cur - '+tf(gemCost)+' cost)' : 'no funded positions') + '\n─────────────────────\nTotal: ' + tf(totalPnl) + '\n\nNote: each position measured from its own entry date')}>
           <div style="font-size:calc(var(--fs-base) - 3px);font-weight:600;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;margin-bottom:1px;">Overall P&amp;L</div>
           <div class="prv ${cc(totalPnl)}" style="font-family:var(--mono);font-size:var(--fs-mono);font-weight:600;">${$f(totalPnl)}</div>
           ${totalPct!==null?`<div class="prv ${cc(totalPct)}" style="font-family:var(--mono);font-size:calc(var(--fs-base) - 2px);margin-top:1px;">${pf(totalPct)}</div>`:''}
         </div>
+
         ${incDate ? `
-        <div ${tip('Portfolio P&L since inception (' + incDate + ')\n= Current total - total deployed\n\n' + tf(totalCurrent) + ' current - ' + tf(totalDeployed) + ' deployed = ' + tf(totalPnl) + '\nOver ' + incDays + ' days\n\nClick date to change.')}>
+        <div style="padding:4px 14px;border-right:1px solid var(--border);" ${tip('Portfolio P&L since inception (' + incDate + ')\n= Current total - total deployed\n\n' + tf(totalCurrent) + ' current - ' + tf(totalDeployed) + ' deployed = ' + tf(totalPnl) + '\nOver ' + incDays + ' days\n\nClick date to change.')}>
           <div style="font-size:calc(var(--fs-base) - 3px);font-weight:600;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;margin-bottom:1px;">Since Inception</div>
           <div class="prv ${cc(totalPnl)}" style="font-family:var(--mono);font-size:var(--fs-mono);font-weight:600;">${$f(totalPnl)}</div>
           ${incPctHtml}
@@ -15574,25 +15725,35 @@ function renderSummary() {
             <input type="date" value="${incDate}" style="font-family:var(--mono);font-size:9px;background:transparent;border:none;color:var(--text3);padding:0;cursor:pointer;width:82px;" onchange="DB.settings.inceptionDate=this.value;persist();renderSummary();">· ${incDays}d
           </div>
         </div>` : `
-        <div>
+        <div style="padding:4px 14px;border-right:1px solid var(--border);">
           <div style="font-size:calc(var(--fs-base) - 3px);font-weight:600;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;margin-bottom:1px;">Since Inception</div>
           <input type="date" style="font-family:var(--mono);font-size:10px;background:var(--bg3);border:1px dashed var(--border);border-radius:4px;color:var(--text2);padding:2px 5px;cursor:pointer;" onchange="DB.settings.inceptionDate=this.value;persist();renderSummary();">
           <div style="font-size:9px;color:var(--text3);margin-top:1px;">set start date</div>
         </div>`}
-        <div ${tip('Spot Holdings P&L\n= ' + tf(holdVal) + ' live value - ' + tf(holdCost) + ' avg cost basis = ' + tf(holdPnl))}>
+
+        <div style="padding:4px 14px;border-right:1px solid var(--border);" ${tip('LP Pools + Vaults: current live value\n= Pool token values + logged yield + vault values + vault yield')}>
+          <div style="font-size:calc(var(--fs-base) - 3px);font-weight:600;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;margin-bottom:1px;">LP + Vaults</div>
+          <div class="prv" style="font-family:var(--mono);font-size:var(--fs-mono);font-weight:600;">${$f(poolValue + vaultValue)}</div>
+          <div class="prv ${cc(poolPnl+vaultPnl)}" style="font-size:calc(var(--fs-base) - 2px);margin-top:1px;">P&amp;L ${$f(poolPnl+vaultPnl)}</div>
+        </div>
+
+        <div style="padding:4px 14px;border-right:1px solid var(--border);" ${tip('Spot Holdings P&L\n= ' + tf(holdVal) + ' live value - ' + tf(holdCost) + ' avg cost basis = ' + tf(holdPnl))}>
           <div style="font-size:calc(var(--fs-base) - 3px);font-weight:600;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;margin-bottom:1px;">Holdings</div>
           <div class="prv" style="font-family:var(--mono);font-size:var(--fs-mono);font-weight:600;">${$f(holdVal)}</div>
           <div class="prv ${cc(holdPnl)}" style="font-size:calc(var(--fs-base) - 2px);margin-top:1px;">P&amp;L ${$f(holdPnl)}</div>
         </div>
-        <div ${tip(gemCost>0 ? 'GEMs P&L\n= ' + tf(gemVal) + ' current - ' + tf(gemCost) + ' cost = ' + tf(gemPnl||0) : 'No funded GEM positions yet')}>
+
+        <div style="padding:4px 14px;border-right:1px solid var(--border);" ${tip(gemCost>0 ? 'GEMs P&L\n= ' + tf(gemVal) + ' current - ' + tf(gemCost) + ' cost = ' + tf(gemPnl||0) : 'No funded GEM positions yet')}>
           <div style="font-size:calc(var(--fs-base) - 3px);font-weight:600;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;margin-bottom:1px;">GEMs</div>
           <div class="prv" style="font-family:var(--mono);font-size:var(--fs-mono);font-weight:600;">${$f(gemVal||0)}</div>
           <div class="prv ${cc(gemPnl||0)}" style="font-size:calc(var(--fs-base) - 2px);margin-top:1px;">${gemCost>0?'P&amp;L '+$f(gemPnl||0):DB.gems.filter(g=>!g.qty||g.qty===0).length+' watching'}</div>
         </div>
-        <div style="margin-left:auto;font-size:calc(var(--fs-base) - 3px);color:var(--text3);text-align:right;align-self:center;">
+
+        <div style="padding:4px 14px;margin-left:auto;font-size:calc(var(--fs-base) - 3px);color:var(--text3);text-align:right;display:flex;flex-direction:column;justify-content:center;">
           ${priceLastFetched?priceLastFetched.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'—'}<br>
           <span style="cursor:pointer;color:var(--accent2);" onclick="fetchPrices()">↻ refresh</span>
         </div>
+
       </div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr${DB.gems.length?' 0.6fr':''};gap:6px;margin-bottom:6px;">
@@ -17563,6 +17724,7 @@ async function actLinkBackup() {
         prices = DB.prices||{};
         localStorage.setItem(SK, JSON.stringify(DB));
       }
+      _fsBackupVerified = true;
     } catch(e){}
     // Now check if backup contains valid licence
     await actCheckAfterLink();
@@ -22167,14 +22329,140 @@ async function actLinkBackup() {
 
 const DEMO_MODE        = true;
 const DEMO_SEEN_KEY    = 'cpf_demo_welcome_seen';
+// ── Worker-based Demo Validation ─────────────────────────────────────────────
+const DEMO_TOKEN_KEY    = 'cpf_demo_token_v1';
+const DEMO_TOKEN_EXP    = 'cpf_demo_token_exp';
+const VALIDATE_ENDPOINT = HELP_WORKER_URL + '/validate';
+
+async function demoGetCachedToken() {
+  try {
+    // Check vault first (survives localStorage clears)
+    if(_vaultCache?.demoToken && _vaultCache?.demoTokenExp) {
+      if(Date.now() < _vaultCache.demoTokenExp) return _vaultCache.demoToken;
+    }
+    const vToken = await vaultGet('demoToken');
+    const vExp   = await vaultGet('demoTokenExp');
+    if(vToken && vExp && Date.now() < parseInt(vExp)) return vToken;
+    // localStorage fallback
+    const lsToken = localStorage.getItem(DEMO_TOKEN_KEY);
+    const lsExp   = parseInt(localStorage.getItem(DEMO_TOKEN_EXP) || '0');
+    if(lsToken && Date.now() < lsExp) return lsToken;
+  } catch(e) {}
+  return null;
+}
+
+async function demoCacheToken(token, expiresAt) {
+  try {
+    localStorage.setItem(DEMO_TOKEN_KEY, token);
+    localStorage.setItem(DEMO_TOKEN_EXP, String(expiresAt));
+    await vaultSet('demoToken', token);
+    await vaultSet('demoTokenExp', String(expiresAt));
+  } catch(e) {}
+}
+
+async function demoClearToken() {
+  try {
+    localStorage.removeItem(DEMO_TOKEN_KEY);
+    localStorage.removeItem(DEMO_TOKEN_EXP);
+    await vaultSet('demoToken', null);
+    await vaultSet('demoTokenExp', null);
+  } catch(e) {}
+}
+
+function demoShowState(state) {
+  ['actStateChecking','actStateApproved','actStatePending',
+   'actStateRevoked','actStateOffline'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.style.display = id === state ? '' : 'none';
+  });
+}
+
+async function demoValidate() {
+  // 1. Check cached token first
+  const cached = await demoGetCachedToken();
+  if(cached) {
+    // Cached token valid — enter app silently
+    hideActivationScreen();
+    return true;
+  }
+  // 2. Show checking state and call worker
+  demoShowState('actStateChecking');
+  return await demoValidateNow();
+}
+
+async function demoValidateNow() {
+  demoShowState('actStateChecking');
+  try {
+    const installId = await getInstallId();
+    // Update Install ID display
+    const idEl = document.getElementById('actInstallId');
+    if(idEl) idEl.textContent = installId;
+
+    // Build HMAC sig (same as help-sync, reuses ACT_SECRET)
+    const sig = await buildHelpSig(installId);
+
+    const res = await fetch(VALIDATE_ENDPOINT, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ installId, sig }),
+    });
+
+    const data = await res.json();
+
+    if(data.ok && data.token) {
+      // Approved — cache token and enter app
+      await demoCacheToken(data.token, data.expires);
+      const nameEl = document.getElementById('actApprovedName');
+      if(nameEl) nameEl.textContent = `Welcome, ${data.name}!`;
+      demoShowState('actStateApproved');
+      setTimeout(() => {
+        hideActivationScreen();
+      }, 1200);
+      return true;
+    }
+
+    if(data.reason === 'revoked') {
+      await demoClearToken();
+      demoShowState('actStateRevoked');
+      return false;
+    }
+
+    // Not registered yet — show pending state with Install ID
+    demoShowState('actStatePending');
+    const idEl2 = document.getElementById('actInstallId');
+    if(idEl2) idEl2.textContent = installId;
+    return false;
+
+  } catch(e) {
+    // Network error — check for cached token one more time
+    const cached = await demoGetCachedToken();
+    if(cached) {
+      hideActivationScreen();
+      return true;
+    }
+    // Truly offline with no cached token
+    demoShowState('actStateOffline');
+    return false;
+  }
+}
+
+function actRequestAccess() {
+  // Open the feedback modal pre-filled with Install ID
+  getInstallId().then(id => {
+    const fb = document.getElementById('feedbackBody');
+    if(fb) fb.value = 'Hi, I would like to request access to the Portfolio Tracker demo.\n\nMy Installation ID is: ' + id;
+    openModal('feedbackModal');
+  });
+}
+
 const DEMO_EXPIRES     = '2026-05-09';  // ← update this date with each new demo release
 
-function demoExpired()        { return new Date() > new Date(DEMO_EXPIRES); }
+function demoExpired()        { return false; } // replaced by worker validation
 function demoWelcomeSeen()    { return !!localStorage.getItem(DEMO_SEEN_KEY); }
 function demoMarkWelcomeSeen(){ localStorage.setItem(DEMO_SEEN_KEY, '1'); }
-function demoRestoreTrialIfCleared() { return Promise.resolve(); } // no-op — no longer needed
-function demoStartTrial()     {}  // no-op — no longer needed
-function demoTrialExpired()   { return demoExpired(); }
+function demoRestoreTrialIfCleared() { return Promise.resolve(); }
+function demoStartTrial()     {}
+function demoTrialExpired()   { return false; } // replaced by worker validation
 
 // ── Trial start timestamp — triple-stamped: localStorage + IDB + embedded backup ──
 function demoInjectBanner() {
@@ -22185,9 +22473,7 @@ function demoInjectBanner() {
   const expired = demoExpired();
   const colour = expired ? '#cc2200' : '#0a7c4a';
   b.style.cssText = `position:fixed;top:0;left:0;right:0;z-index:1000;background:${colour};color:#fff;text-align:center;padding:5px 12px;font-size:11px;font-weight:600;font-family:var(--sans);display:flex;align-items:center;justify-content:center;gap:16px;cursor:pointer;`;
-  const label = expired
-    ? `🔑 DEMO EXPIRED — Click to activate`
-    : `🔑 DEMO v${APP_VERSION} — Expires ${DEMO_EXPIRES} · Click to activate`;
+  const label = `📊 PORTFOLIO TRACKER DEMO v${APP_VERSION}`;
   b.innerHTML = `<span>${label}</span>`;
   b.addEventListener('click', () => showActivationScreen());
   document.body.prepend(b);
