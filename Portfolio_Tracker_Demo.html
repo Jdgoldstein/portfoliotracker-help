@@ -18090,11 +18090,53 @@ function _helpEditRender(tab) {
 }
 </script>
 
+<div class="overlay" id="helpModal">
+  <div class="modal" style="max-width:92vw;width:860px;max-height:92vh;display:flex;flex-direction:column;">
+    <div class="modal-title" style="display:flex;align-items:center;justify-content:space-between;">
+      <span id="helpModalTitle">? HELP</span>
+      <button id="helpEditToggleBtn" class="btn sm" onclick="toggleHelpEditMode()"
+        style="font-size:11px;padding:3px 10px;margin-left:12px;" title="Edit help content for this tab">✏ Edit</button>
+      <button class="btn sm" onclick="exportHelpToGitHub()"
+        style="font-size:11px;padding:3px 10px;margin-left:6px;color:var(--accent2);border-color:rgba(0,102,204,.3);"
+        title="Export all help content as help-content.json — upload to GitHub to publish changes">⬆ Export to GitHub</button>
+    </div>
+    <div style="padding:0 0 12px 0;position:relative;">
+      <input id="helpSearchInput" type="text" placeholder="🔍  Search all help content…"
+        oninput="helpSearch(this.value)"
+        style="width:100%;box-sizing:border-box;padding:8px 12px 8px 36px;font-family:var(--mono);font-size:12px;border:1px solid var(--border2);border-radius:6px;background:var(--bg3);color:var(--text1);">
+      <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;">🔍</span>
+      <button id="helpSearchClear" onclick="helpSearchClear()" style="display:none;position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);font-size:14px;">✕</button>
+    </div>
+    <div id="helpSearchResults" style="display:none;overflow-y:auto;max-height:50vh;font-size:var(--fs-base);"></div>
+    <div id="helpModalContent" style="font-size:var(--fs-base);line-height:1.8;color:var(--text2);overflow-y:auto;flex:1;padding-right:4px;"></div>
+
+    <!-- ── HELP EDITOR PANEL ── -->
+    <div id="helpEditPanel" style="display:none;flex:1;overflow-y:auto;padding-right:4px;">
+      <div style="background:rgba(10,124,74,0.06);border:1px solid rgba(10,124,74,0.2);border-radius:6px;padding:10px 14px;margin-bottom:12px;font-size:11px;color:var(--text2);line-height:1.7;">
+        <strong>Editing help for the current tab.</strong> Each section has a heading and body text.<br>
+        Use <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;">&lt;strong&gt;bold&lt;/strong&gt;</code> for bold,
+        <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;">&lt;br&gt;</code> for line breaks,
+        <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;"></code> to insert image 1, etc.
+      </div>
+      <div id="helpEditSections"></div>
+      <div style="margin-top:12px;display:flex;gap:8px;justify-content:space-between;align-items:center;flex-wrap:wrap;">
+        <div style="font-size:10px;color:var(--text3);line-height:1.5;max-width:340px;">
+          After saving, click <strong style="color:var(--accent2);">⬆ Export to GitHub</strong> in the header to download
+          <code style="background:var(--bg3);padding:1px 4px;border-radius:3px;font-size:10px;">help-content.json</code>
+          — then upload it to your GitHub repo to publish to all users.
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn sm" onclick="helpEditAddSection()" style="color:var(--accent);border-color:var(--accent);">+ Add Section</button>
+          <button class="btn primary" onclick="helpEditSave()">✓ Save Changes</button>
+        </div>
+      </div>
+    </div>
     <div class="modal-actions" style="margin-top:16px;flex-shrink:0;">
       <button class="btn primary" onclick="closeModal('helpModal')">Close</button>
     </div>
   </div>
 </div>
+
 
 <!-- ── WHAT'S NEW MODAL ── -->
 <div class="overlay" id="whatsNewModal">
