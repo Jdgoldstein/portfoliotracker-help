@@ -2286,9 +2286,9 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
           <input type="hidden" id="pm-tokA-sym">
         </div>
         <div class="field"><label>Qty at Entry</label><input id="pm-tokA-qtyEntry" type="number" step="any" placeholder="0"
-          onchange="if(!editingPoolId){const p=document.getElementById('pm-tokA-qty');if(p&&!p.value)p.value=this.value;}"></div>
+          onchange="const p=document.getElementById('pm-tokA-qty');if(p&&!p.value)p.value=this.value;"></div>
         <div class="field"><label>Current Qty</label><input id="pm-tokA-qty" type="number" step="any" placeholder="0"
-          onchange="if(!editingPoolId){const p=document.getElementById('pm-tokA-qtyEntry');if(p&&!p.value)p.value=this.value;}"></div>
+          onchange="const p=document.getElementById('pm-tokA-qtyEntry');if(p&&!p.value)p.value=this.value;"></div>
       </div>
     </div>
     <!-- Token B -->
@@ -2303,9 +2303,9 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
           <input type="hidden" id="pm-tokB-sym">
         </div>
         <div class="field"><label>Qty at Entry</label><input id="pm-tokB-qtyEntry" type="number" step="any" placeholder="0"
-          onchange="if(!editingPoolId){const p=document.getElementById('pm-tokB-qty');if(p&&!p.value)p.value=this.value;}"></div>
+          onchange="const p=document.getElementById('pm-tokB-qty');if(p&&!p.value)p.value=this.value;"></div>
         <div class="field"><label>Current Qty</label><input id="pm-tokB-qty" type="number" step="any" placeholder="0"
-          onchange="if(!editingPoolId){const p=document.getElementById('pm-tokB-qtyEntry');if(p&&!p.value)p.value=this.value;}"></div>
+          onchange="const p=document.getElementById('pm-tokB-qtyEntry');if(p&&!p.value)p.value=this.value;"></div>
       </div>
     </div>
     <!-- Range -->
