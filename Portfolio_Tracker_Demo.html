@@ -3,7 +3,10 @@
   ============================================================
   CRYPTO TRACKER — BUG FIX LOG (for future Claude sessions)
   ============================================================
-  VERSION: V47.14  (fixed from V47.11)
+  VERSION: V47.50  (fixed from V47.15)
+  GITHUB:  V47.50
+  NOTE: All saves go to linked working-directory backup file.
+         Seed data is read-only. File writes occur on all protocols.
   DATE:    2026-03-31
 
   BUG: cbETH/ETH, msETH/WETH vault HODL baseline showed wrong value.
@@ -103,7 +106,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
-body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:var(--fs-base);min-height:100vh;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:var(--fs-base);min-height:100vh;overflow-x:hidden;}
 
 /* ── SCROLLBAR ── */
 ::-webkit-scrollbar{width:5px;height:5px;}
@@ -1805,6 +1808,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     <!-- History sub-tabs -->
     <div class="tab-bar" style="margin-bottom:10px;border-bottom:1px solid var(--border);background:var(--bg3);border-radius:var(--radius) var(--radius) 0 0;padding:0 8px;">
       <div class="tab on" id="htab-pools-btn" onclick="switchHistTab('pools')" style="font-size:11px;padding:6px 12px;">🔒 Closed Pools</div>
+      <div class="tab" id="htab-active-btn" onclick="switchHistTab('active')" style="font-size:11px;padding:6px 12px;">🔁 Active Pools</div>
       <div class="tab" id="htab-vaults-btn" onclick="switchHistTab('vaults')" style="font-size:11px;padding:6px 12px;">🏦 Closed Vaults</div>
       <div class="tab" id="htab-yield-btn" onclick="switchHistTab('yield')" style="font-size:11px;padding:6px 12px;">🌾 Yield Log</div>
       <div class="tab" id="htab-txns-btn" onclick="switchHistTab('txns')" style="font-size:11px;padding:6px 12px;">💸 Transactions</div>
@@ -1818,9 +1822,10 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
           <span class="section-sub">Auto-logged when you close or rebalance a pool</span>
         </div>
         <div class="section-actions">
-          <button class="btn sm primary" onclick="switchHistTab('yield');setTimeout(()=>switchYieldTab('closed','add'),50);" title="Add a yield entry to a closed pool">➕ Add Yield Entry</button>
+          <button class="btn sm primary" onclick="openAddHistoryModal()" title="Manually add a closed or rebalanced pool entry">➕ Add Entry</button>
+          <button class="btn sm ghost" onclick="switchHistTab('yield');setTimeout(()=>switchYieldTab('closed','add'),50);" title="Add a yield entry to a closed pool">📋 Add Yield</button>
+          <button class="btn sm ghost" onclick="showDeletedHistory()" title="View and restore deleted history entries" style="color:var(--text3);">♻ Bin</button>
           <button class="btn sm ghost" onclick="exportCSV('history')" title="Export closed pools to CSV">⬇ CSV</button>
-
         </div>
       </div>
       <div id="hist-loss-summary" style="display:none;padding:8px 12px;margin-bottom:8px;background:rgba(204,34,0,0.06);border:1px solid rgba(204,34,0,0.2);border-radius:var(--radius);font-size:11px;font-family:var(--mono);"></div>
@@ -1828,8 +1833,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
         <table>
           <thead>
             <tr id="histHead">
-              <th class="left sortable" onclick="sortHistory('name')">Pool</th>
-              <th class="left sortable" onclick="sortHistory('platform')">Platform</th>
+              <th class="left sortable" onclick="sortHistory('name')" style="min-width:130px;">Pool · Platform</th>
               <th class="sortable" onclick="sortHistory('type')">Type</th>
               <th class="sortable" onclick="sortHistory('entryDate')">Entry Date</th>
               <th class="sortable" onclick="sortHistory('closeDate')">Close Date</th>
@@ -1841,7 +1845,6 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
               <th class="sortable" onclick="sortHistory('hodlValue')">HODL $</th>
               <th>Beat HODL?</th>
               <th class="sortable" onclick="sortHistory('annReturn')">Ann. %</th>
-              <th class="left">Notes</th>
               <th></th>
             </tr>
           </thead>
@@ -1849,6 +1852,36 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
         </table>
       </div>
     </div>
+
+    <!-- Sub-tab: Active Pools -->
+    <div id="htab-active" class="htab-panel" style="display:none;">
+      <div class="section-head">
+        <div>
+          <span class="section-title">Active Pools</span>
+          <span class="section-sub">Currently open LP positions — click ↩ Restore to reopen a mistakenly closed pool</span>
+        </div>
+        <div class="section-actions">
+          <button class="btn sm ghost" onclick="switchTab('pools')" title="Go to LP Pools tab">🔁 LP Pools Tab</button>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th class="left" style="min-width:140px;">Pool</th>
+              <th class="left">Platform</th>
+              <th class="left">Network</th>
+              <th>Entry Date</th>
+              <th>Entry $</th>
+              <th>Type</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="activePoolsHistBody"></tbody>
+        </table>
+      </div>
+    </div>
+
 
     <!-- Sub-tab: Closed Vaults -->
     <div id="htab-vaults" class="htab-panel" style="display:none;">
@@ -1983,6 +2016,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
       <div id="ytab-closed" style="display:none;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);">
           <div style="display:flex;align-items:center;gap:10px;">
+            <button class="btn sm ghost" id="ytab-back-btn" onclick="switchHistTab('pools')" style="display:none;font-size:11px;padding:3px 8px;color:var(--accent2);border-color:rgba(0,102,204,0.3);">← Back to Closed Pools</button>
             <span style="font-size:13px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.05em;">Closed Pool Yield</span>
             <span style="font-size:11px;color:var(--text3);">Harvests from closed or rebalanced pools</span>
           </div>
@@ -2376,7 +2410,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
         </div>
       </div>
       <div style="flex:1;"></div>
-      <button class="btn" onclick="closeModal('poolModal')">Cancel</button>
+      <button class="btn" onclick="cancelPoolModal(document.getElementById('poolModalId').value)">Cancel</button>
       <button class="btn primary" onclick="savePool(document.getElementById('poolModalId').value)">Save Pool</button>
     </div>
   </div>
@@ -3525,25 +3559,27 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 
 <!-- BACKUP CHOICE MODAL -->
 <div class="overlay" id="backupChoiceModal">
-  <div class="modal" style="max-width:420px;text-align:center;">
+  <div class="modal" style="max-width:460px;text-align:center;">
     <div class="modal-title">⛁ LINK BACKUP FILE</div>
-    <p style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:16px;">
-      Your portfolio data is auto-saved to a <strong>.json</strong> file every 10 minutes.<br>
-      Link a file now so your data is never lost.
+    <p style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:12px;">
+      Your portfolio data is saved to a <strong>.json</strong> file in your working folder.<br>
+      All saves go there — not to browser cache. Link or create a file to protect your data.
     </p>
-    <div style="background:rgba(10,124,74,0.06);border:1px solid rgba(10,124,74,0.2);border-radius:6px;padding:10px 14px;margin-bottom:16px;text-align:left;font-size:11px;color:var(--text2);line-height:1.8;">
-      💡 <strong>First time?</strong> Click <em>Create New Backup File</em> below.<br>
-      A browser Save dialog will open — navigate to the <strong>same folder</strong> as this HTML file (or a <code>data</code> subfolder inside it), then click Save.<br>
-      The file will be created automatically and linked.
+    <!-- Browser compatibility warning — shown dynamically -->
+    <div id="browserCompatWarning" style="display:none;background:rgba(184,104,0,0.08);border:1px solid rgba(184,104,0,0.35);border-radius:6px;padding:10px 14px;margin-bottom:12px;text-align:left;font-size:11px;color:#92400e;line-height:1.7;"></div>
+    <div style="background:rgba(10,124,74,0.06);border:1px solid rgba(10,124,74,0.2);border-radius:6px;padding:10px 14px;margin-bottom:14px;text-align:left;font-size:11px;color:var(--text2);line-height:1.8;">
+      💡 <strong>New user?</strong> Click <em>Create New Backup File</em> — a Save dialog opens.<br>
+      Navigate to your <strong>working folder</strong> (same folder as this HTML file), name the file, and click Save. The file is created there and auto-linked.<br><br>
+      ⚠ <strong>Updating from a previous version?</strong> Export your backup from <em>💾 Data ▾ → Save / Export Backup</em> first, then reconnect to that file here after updating.
     </div>
     <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px;">
       <button class="btn primary" style="padding:10px 16px;font-size:13px;font-weight:700;" onclick="fsCreateNew()">
         ✨ Create New Backup File
-        <div style="font-size:10px;font-weight:400;margin-top:3px;opacity:.85;">First time setup — navigate to your tracker folder and click Save</div>
+        <div style="font-size:10px;font-weight:400;margin-top:3px;opacity:.85;">New user — choose your working folder and click Save</div>
       </button>
       <button class="btn" style="padding:10px 16px;font-size:12px;" onclick="fsLinkExisting()">
         📂 Link Existing Backup File
-        <div style="font-size:10px;font-weight:400;margin-top:2px;opacity:.8;">Already have a .json backup? Connect it here</div>
+        <div style="font-size:10px;font-weight:400;margin-top:2px;opacity:.8;">Returning user — navigate to your working folder and select your .json file</div>
       </button>
     </div>
     <button class="btn ghost" onclick="closeModal('backupChoiceModal')">Cancel</button>
@@ -3556,7 +3592,8 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     <div class="modal-title" style="color:var(--warn);">⚠ BACKUP FILE DISCONNECTED</div>
     <p style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:12px;">
       Your browser cache was cleared, which severed the connection to your backup file.<br><br>
-      <strong>You must reconnect your backup file before continuing</strong> — this ensures your data loads from the correct location and auto-save resumes properly.
+      <strong>You must reconnect your backup file before continuing</strong> — this ensures your data loads from the correct location and auto-save resumes properly.<br><br>
+      <span style="color:var(--warn);font-size:11px;">⚠ <strong>Updating from a previous version?</strong> Always export your backup from <em>💾 Data ▾ → Save / Export Backup</em> before installing a new version, then reconnect here.</span>
     </p>
     <div id="forceRelinkFileName" style="display:none;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 12px;margin-bottom:14px;font-family:var(--mono);font-size:11px;color:var(--accent);word-break:break-all;"></div>
     <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:8px;">
@@ -3570,6 +3607,108 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
       </button>
     </div>
     <div style="font-size:10px;color:var(--text3);line-height:1.5;">No cancel — reconnection is required to proceed safely.</div>
+  </div>
+</div>
+
+<!-- DELETED HISTORY MODAL -->
+<!-- HISTORY NOTE MODAL -->
+<div class="overlay" id="histNoteModal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-title">📝 POSITION NOTE</div>
+    <div id="histNoteModalName" style="font-size:12px;color:var(--text2);margin-bottom:12px;font-weight:600;"></div>
+    <textarea id="histNoteModalText"
+      style="width:100%;height:160px;font-family:var(--sans);font-size:13px;line-height:1.6;
+             padding:10px 12px;border:1px solid var(--border2);border-radius:var(--radius);
+             background:var(--bg3);color:var(--text);resize:vertical;"
+      placeholder="Add notes about this position — strategy, lessons, context…"></textarea>
+    <div class="modal-actions" style="margin-top:14px;">
+      <button class="btn primary" onclick="saveHistNote()">💾 Save Note</button>
+      <button class="btn ghost" onclick="clearHistNote()" style="color:var(--text3);">Clear</button>
+      <button class="btn" onclick="closeModal('histNoteModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="overlay" id="deletedHistoryModal">
+  <div class="modal" style="max-width:680px;">
+    <div class="modal-title">♻ HISTORY BIN — Deleted Entries</div>
+    <p style="font-size:11px;color:var(--text3);margin-bottom:14px;line-height:1.6;">These entries were deleted but can be restored at any time. Use ↩ Restore to bring one back, or ✕ Remove to permanently delete it.</p>
+    <div class="tbl-wrap" style="margin-bottom:14px;">
+      <table>
+        <thead>
+          <tr>
+            <th class="left">Pool · Platform</th>
+            <th>Type</th>
+            <th>Entry Date</th>
+            <th>Close Date</th>
+            <th>Deleted On</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="deletedHistBody"></tbody>
+      </table>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('deletedHistoryModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD HISTORY ENTRY MODAL -->
+<div class="overlay" id="addHistoryModal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-title">➕ ADD CLOSED POOL ENTRY</div>
+    <p style="font-size:11px;color:var(--text3);margin-bottom:14px;line-height:1.6;">Manually record a pool that was closed or rebalanced. All fields except Pool Name are optional.</p>
+    <div class="form-grid cols2">
+      <div class="field">
+        <label>Pool Name *</label>
+        <input id="ahm-name" placeholder="e.g. WETH / USDC">
+      </div>
+      <div class="field">
+        <label>Platform</label>
+        <input id="ahm-platform" placeholder="e.g. Uniswap">
+      </div>
+    </div>
+    <div class="form-grid cols3">
+      <div class="field">
+        <label>Type</label>
+        <select id="ahm-type" style="width:100%;padding:6px 8px;background:var(--bg2);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-size:12px;">
+          <option value="Close">Close</option>
+          <option value="Rebalance">Rebalance</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Entry Date</label>
+        <input id="ahm-entryDate" type="date">
+      </div>
+      <div class="field">
+        <label>Close Date</label>
+        <input id="ahm-closeDate" type="date">
+      </div>
+    </div>
+    <div class="form-grid cols3">
+      <div class="field">
+        <label>Entry $ Value</label>
+        <input id="ahm-entryVal" type="number" step="any" placeholder="0">
+      </div>
+      <div class="field">
+        <label>Exit $ Value</label>
+        <input id="ahm-exitVal" type="number" step="any" placeholder="0">
+      </div>
+      <div class="field">
+        <label>Yield $ Total</label>
+        <input id="ahm-yield" type="number" step="any" placeholder="0">
+      </div>
+    </div>
+    <div class="field">
+      <label>Notes</label>
+      <input id="ahm-notes" placeholder="optional">
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('addHistoryModal')">Cancel</button>
+      <button class="btn primary" onclick="saveAddHistory()">➕ Add Entry</button>
+    </div>
   </div>
 </div>
 
@@ -3816,8 +3955,53 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
       </div>
     </div>
 
+    <!-- ── Registration ─────────────────────────────────────────────────── -->
+    <div style="background:var(--bg3);border:1px solid rgba(96,168,240,.2);border-radius:var(--radius);padding:14px;margin-bottom:14px;">
+      <div style="font-size:10px;color:#70b8ff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;font-weight:600;">🔐 Registration</div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:10px;">
+        Your Install ID: <span id="settingsInstallId" style="font-family:var(--mono);color:var(--accent);font-size:11px;">——</span>
+      </div>
+      <button class="btn sm" onclick="showRegistrationScreen()" style="font-size:11px;">📋 Show Registration Screen</button>
+      <div class="hint" style="margin-top:6px;">Register to receive your activation code.</div>
+    </div>
+
     <div class="modal-actions">
       <button class="btn primary" onclick="closeModal('alertModal')">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── REGISTRATION MODAL ─────────────────────────────────────────────────── -->
+<div class="overlay" id="registrationModal">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-title">📋 Register for Access</div>
+    <p style="font-size:12px;color:var(--text3);margin-bottom:14px;line-height:1.6;">
+      Fill in your details below. You'll receive an activation code by email once your registration is reviewed.
+    </p>
+    <div class="field">
+      <label>Your Name <span style="color:var(--warn);">*</span></label>
+      <input id="reg-name" placeholder="e.g. Jane Smith" style="font-size:12px;">
+    </div>
+    <div class="field">
+      <label>Email Address <span style="color:var(--warn);">*</span></label>
+      <input id="reg-email" type="email" placeholder="your@email.com" style="font-size:12px;">
+    </div>
+    <div class="field">
+      <label>Phone <span style="color:#f87171;font-weight:700;">*</span></label>
+      <input id="reg-phone" type="tel" placeholder="e.g. +1-401-555-0123" style="font-size:12px;">
+    </div>
+    <div class="field">
+      <label>How did you hear about this? <span style="font-weight:400;color:var(--text3);font-size:10px;">(optional)</span></label>
+      <input id="reg-referral" placeholder="e.g. from a friend, social media…" style="font-size:12px;">
+    </div>
+    <div class="field">
+      <label>Install ID <span style="font-weight:400;color:var(--text3);font-size:10px;">(auto-filled)</span></label>
+      <input id="reg-install-id" readonly style="font-size:11px;font-family:var(--mono);background:var(--bg2);color:var(--text3);">
+    </div>
+    <div id="reg-status" style="display:none;font-size:12px;padding:8px 10px;border-radius:5px;margin-bottom:10px;"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('registrationModal')">Cancel</button>
+      <button class="btn primary" id="reg-submit-btn" onclick="submitRegistration()">📬 Submit Registration</button>
     </div>
   </div>
 </div>
@@ -3839,7 +4023,7 @@ const ACT_MASTER = (()=>{const p=['CPF_MA','STER_O','VERRID','E_KEY_','ZULU9'];r
 const ACT_STORE    = 'cpf_activation_v1';
 const ACT_ID_STORE = 'cpf_install_id';
 const ACT_VER      = 'v30';
-const APP_VERSION  = '47.43';           // bumped on each release
+const APP_VERSION  = '47.50';           // bumped on each release
 const WHATS_NEW_KEY = 'cpf_seen_ver';   // localStorage: last version user saw What's New
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -4659,6 +4843,42 @@ function demoTrialExpired()   { return demoExpired(); }
                     (typeof DEMO_MODE !== 'undefined' && DEMO_MODE);
     if(_isDemo) {
       clearTimeout(window._diagRevealTimer); // boot succeeded — cancel safety net
+
+      // ── Check Worker for activation status ───────────────────────────────
+      // If the user's Install ID has been activated by admin, bypass trial expiry.
+      let workerActivated = false;
+      try {
+        const _installId = await getInstallId();
+        if(_installId) {
+          const _res = await Promise.race([
+            fetch(HELP_WORKER_URL + '/register', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ installId: _installId, name: '_check_', email: '_check_@check.com', _checkOnly: true })
+            }),
+            new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 4000))
+          ]);
+          if(_res.ok) {
+            const _data = await _res.json();
+            // already_active means admin has activated this Install ID
+            workerActivated = (_data.status === 'already_active');
+          }
+        }
+      } catch(e) { /* network unavailable — fall through to trial check */ }
+
+      if(workerActivated) {
+        // Fully activated — reveal app, no trial banner
+        const _h = document.getElementById('header');
+        const _m = document.getElementById('main');
+        if(_h) _h.style.visibility = '';
+        if(_m) _m.style.visibility = '';
+        renderAll(); fetchPrices(); fetchBenchmarks(); fetchHedgeData(false); initFileProtocolUI(); initHelpSync(); initPIN();
+        checkWhatsNew();
+        if(!IS_FILE_PROTOCOL) setTimeout(_showNoBackupBanner, 2000);
+        return;
+      }
+
+      // ── Fall through to trial check if not worker-activated ──────────────
       if(demoTrialExpired()) {
         await showActivationScreen();
       } else {
@@ -4688,7 +4908,8 @@ function demoTrialExpired()   { return demoExpired(); }
         let perm;
         try { perm = await fsFileHandle.queryPermission({mode:'readwrite'}); } catch(e) { perm = 'prompt'; }
         if(perm === 'granted') {
-          // Permission still live — go straight to PIN, nothing to do
+          // Permission still live — reveal UI and go straight to PIN
+          hideActivationScreen();
           renderAll(); fetchPrices();
           initPIN();
         } else {
@@ -4711,16 +4932,26 @@ function demoTrialExpired()   { return demoExpired(); }
           // Had a file before — cache was cleared. Force relink before rendering
           // so the user cannot proceed with a broken/unknown backup connection.
           showForceRelinkModal();
-          // Render behind the modal so the app is ready when they relink
+          // Reveal UI behind the modal so the app is ready when they relink
+          hideActivationScreen();
           renderAll(); fetchPrices();
           initPIN();
         } else if(!IS_FILE_PROTOCOL) {
           // Never had a file — new user, show the standard create-file banner
+          hideActivationScreen();
           renderAll(); fetchPrices();
           initPIN();
           setTimeout(_showNoBackupBanner, 1500);
+        } else if(_loadedFromSeed) {
+          // localStorage was empty — seed data loaded as temporary placeholder.
+          // Force backup reconnect before user can interact, on ALL protocols.
+          showFileProtocolRecoveryModal();
+          hideActivationScreen();
+          renderAll(); fetchPrices();
+          initPIN();
         } else {
-          // File protocol — just render
+          // localStorage had data but no file handle — just render
+          hideActivationScreen();
           renderAll(); fetchPrices();
           initPIN();
         }
@@ -4776,6 +5007,7 @@ function sanitiseDB(db) {
   if(!db.volMcSnaps)       db.volMcSnaps       = {};
   if(!db.hedgePositions)   db.hedgePositions   = [];   // active short positions
   if(!db.hedgeClosed)      db.hedgeClosed      = [];   // closed/archived positions
+  if(!db.historyDeleted)   db.historyDeleted   = [];   // soft-deleted history entries
   if(!db.hlAccount)        db.hlAccount        = { deposits:[], withdrawals:[] };
   if(!db.hedgeCache)       db.hedgeCache       = {};   // IV + funding cache
   // Ensure every history entry has a yieldLog array (older records predate this field)
@@ -4876,6 +5108,13 @@ function load() {
     window._embeddedBackup = {"pools":[{"id":"p1","name":"ETH / USDC","platform":"Uniswap","network":"Ethereum","subtitle":"","entryDate":"2026-01-15","entryValue":12000,"tokASym":"ETH","tokAGeckoId":"ethereum","tokAQtyEntry":4.2,"tokAQty":4.1,"tokBSym":"USDC","tokBGeckoId":"usd-coin","tokBQtyEntry":8400,"tokBQty":8650,"rangeLow":1800,"rangeHigh":2800,"liveRatio":null,"rewardTokSym":"","rewardTokId":"","vaultMode":false,"notes":"","alertActNowPct":5,"alertWatchPct":15,"poolType":"uni_v3","ampCoeff":200,"weightA":80,"defaultWallet":"Demo Wallet","yieldLog":[{"date":"2026-02-01","tokSym":"ETH","tokId":"ethereum","qty":0.08,"usd":192.0,"action":"Yield Harvest","dest":"holdings","wallet":"Demo Wallet","notes":""},{"date":"2026-03-01","tokSym":"ETH","tokId":"ethereum","qty":0.09,"usd":198.0,"action":"Yield Harvest","dest":"holdings","wallet":"Demo Wallet","notes":""}],"invertRatio":false,"entryPriceA":2000.0,"entryPriceB":1.0,"aprPct":"8.4"},{"id":"p2","name":"SOL / USDC","platform":"Orca","network":"Solana","subtitle":"","entryDate":"2026-02-01","entryValue":8500,"tokASym":"SOL","tokAGeckoId":"solana","tokAQtyEntry":65.0,"tokAQty":62.0,"tokBSym":"USDC","tokBGeckoId":"usd-coin","tokBQtyEntry":4250,"tokBQty":4480,"rangeLow":55,"rangeHigh":180,"liveRatio":null,"rewardTokSym":"","rewardTokId":"","vaultMode":false,"notes":"","alertActNowPct":5,"alertWatchPct":15,"poolType":"uni_v3","ampCoeff":200,"weightA":80,"defaultWallet":"Demo Wallet","yieldLog":[{"date":"2026-02-15","tokSym":"SOL","tokId":"solana","qty":0.9,"usd":117.0,"action":"Yield Harvest","dest":"holdings","wallet":"Demo Wallet","notes":""},{"date":"2026-03-15","tokSym":"SOL","tokId":"solana","qty":1.1,"usd":121.0,"action":"Yield Harvest","dest":"holdings","wallet":"Demo Wallet","notes":""}],"invertRatio":false,"entryPriceA":130.0,"entryPriceB":1.0,"aprPct":"18.2"},{"id":"p3","name":"wBTC / ETH","platform":"Uniswap","network":"Ethereum","subtitle":"","entryDate":"2026-01-20","entryValue":25000,"tokASym":"wBTC","tokAGeckoId":"wrapped-bitcoin","tokAQtyEntry":0.29,"tokAQty":0.28,"tokBSym":"ETH","tokBGeckoId":"ethereum","tokBQtyEntry":5.8,"tokBQty":6.1,"rangeLow":14.0,"rangeHigh":22.0,"liveRatio":null,"rewardTokSym":"","rewardTokId":"","vaultMode":false,"notes":"","alertActNowPct":5,"alertWatchPct":10,"poolType":"uni_v3","ampCoeff":200,"weightA":80,"defaultWallet":"Demo Wallet","yieldLog":[{"date":"2026-02-10","tokSym":"wBTC","tokId":"wrapped-bitcoin","qty":0.004,"usd":340.0,"action":"Yield Harvest","dest":"holdings","wallet":"Demo Wallet","notes":""}],"invertRatio":false,"entryPriceA":86000.0,"entryPriceB":2000.0,"aprPct":"6.1"},{"id":"p4","name":"cbETH / ETH","platform":"Beefy","network":"Base","subtitle":"Beefy Vault","entryDate":"2026-01-10","entryValue":18000,"tokASym":"cbETH","tokAGeckoId":"ethereum","tokAQtyEntry":4.5,"tokAQty":4.52,"tokBSym":"ETH","tokBGeckoId":"ethereum","tokBQtyEntry":0,"tokBQty":0,"rangeLow":0.995,"rangeHigh":1.005,"liveRatio":1,"rewardTokSym":"","rewardTokId":"","vaultMode":true,"notes":"","alertActNowPct":null,"alertWatchPct":null,"poolType":"curve","ampCoeff":200,"weightA":80,"defaultWallet":"Demo Wallet","yieldLog":[],"invertRatio":false,"entryPriceA":2000.0,"entryPriceB":2000.0,"manualCurrentValue":18420,"aprPct":"6.8"}],"vaults":[{"id":"v1","name":"USDC Lending","platform":"Aave","tokSym":"USDC","tokGeckoId":"usd-coin","qty":10000,"apy":0.062,"entryDate":"2026-01-01","entryValue":10000,"yieldEarned":310.0,"notes":""},{"id":"v2","name":"stETH Vault","platform":"Lido","tokSym":"stETH","tokGeckoId":"staked-ether","qty":3.5,"apy":0.038,"entryDate":"2025-11-01","entryValue":8400,"yieldEarned":198.0,"notes":""}],"holdings":[{"id":"h1","sym":"BTC","geckoId":"bitcoin","cat":"L1","chain":"Bitcoin","wallet":"Hardware Wallet","avgCost":42000,"qty":0.85},{"id":"h2","sym":"ETH","geckoId":"ethereum","cat":"L1","chain":"Ethereum","wallet":"Hardware Wallet","avgCost":1800,"qty":6.2},{"id":"h3","sym":"SOL","geckoId":"solana","cat":"L1","chain":"Solana","wallet":"Hardware Wallet","avgCost":95,"qty":42.0},{"id":"h4","sym":"USDC","geckoId":"usd-coin","cat":"Stablecoin","chain":"Ethereum","wallet":"Hardware Wallet","avgCost":1,"qty":3200},{"id":"h5","sym":"AAVE","geckoId":"aave","cat":"DeFi","chain":"Ethereum","wallet":"Hardware Wallet","avgCost":95,"qty":18.0},{"id":"h6","sym":"UNI","geckoId":"uniswap","cat":"DeFi","chain":"Ethereum","wallet":"Hardware Wallet","avgCost":7.2,"qty":220.0},{"id":"h7","sym":"LINK","geckoId":"chainlink","cat":"DeFi","chain":"Ethereum","wallet":"Hardware Wallet","avgCost":12.5,"qty":85.0},{"id":"h8","sym":"MATIC","geckoId":"matic-network","cat":"L2","chain":"Polygon","wallet":"Software Wallet","avgCost":0.65,"qty":1800},{"id":"h9","sym":"ARB","geckoId":"arbitrum","cat":"L2","chain":"Arbitrum","wallet":"Software Wallet","avgCost":1.1,"qty":950},{"id":"h10","sym":"OP","geckoId":"optimism","cat":"L2","chain":"Optimism","wallet":"Software Wallet","avgCost":1.8,"qty":620},{"id":"h11","sym":"PAXG","geckoId":"pax-gold","cat":"Gold","chain":"Ethereum","wallet":"Hardware Wallet","avgCost":1950,"qty":1.2,"alerts":{"buyMore":1800,"stopLoss":1700,"t1":2400,"t2":2800,"t3":3200}},{"id":"h12","sym":"USDT","geckoId":"tether","cat":"Stablecoin","chain":"Ethereum","wallet":"Software Wallet","avgCost":1,"qty":1500}],"history":[{"id":"hist1","name":"BNB / USDC","platform":"PancakeSwap","type":"Close","entryDate":"2025-10-01","closeDate":"2026-01-05","days":96,"entryValue":6000,"exitValue":6420,"yieldTotal":380,"netResult":800,"hodlValue":6200,"annReturn":0.51,"notes":"Good run, closed to rebalance","yieldLog":[]},{"id":"hist2","name":"AAVE / WETH","platform":"Uniswap","type":"Rebalance","entryDate":"2025-11-15","closeDate":"2026-02-10","days":87,"entryValue":9500,"exitValue":9800,"yieldTotal":620,"netResult":920,"hodlValue":9650,"annReturn":0.41,"notes":"Range tightened, rebalanced","yieldLog":[]}],"gems":[{"id":"g1","sym":"ARB","geckoId":"arbitrum","risk":null,"entryPrice":1.05,"qty":500,"totalCost":525,"entryDate":"2026-01-10","t1":1.5,"t2":2.0,"t3":2.8,"alertIn":0.95,"alertOut":3.0,"contract":"","chain":"ethereum","notes":"L2 scaling play","alertPct":10},{"id":"g2","sym":"OP","geckoId":"optimism","risk":null,"entryPrice":1.75,"qty":400,"totalCost":700,"entryDate":"2026-01-20","t1":2.5,"t2":3.2,"t3":4.0,"alertIn":1.5,"alertOut":4.5,"contract":"","chain":"ethereum","notes":"Superchain momentum","alertPct":10},{"id":"g3","sym":"PENDLE","geckoId":"pendle","risk":null,"entryPrice":null,"qty":null,"totalCost":null,"entryDate":"","t1":null,"t2":null,"t3":null,"alertIn":null,"alertOut":null,"contract":"","chain":"ethereum","notes":"Yield tokenisation \u2014 watching","alertPct":null},{"id":"g4","sym":"EIGEN","geckoId":"eigenlayer","risk":null,"entryPrice":null,"qty":null,"totalCost":null,"entryDate":"","t1":null,"t2":null,"t3":null,"alertIn":null,"alertOut":null,"contract":"","chain":"ethereum","notes":"Restaking narrative","alertPct":null},{"id":"g5","sym":"JTO","geckoId":"jito-governance-token","risk":null,"entryPrice":2.1,"qty":300,"totalCost":630,"entryDate":"2026-02-05","t1":3.0,"t2":4.0,"t3":5.5,"alertIn":1.8,"alertOut":6.0,"contract":"","chain":"other","notes":"Solana MEV / liquid staking","alertPct":15}],"transactions":[],"hedgePositions":[],"hedgeClosed":[],"hlAccount":{"deposits":[],"withdrawals":[]},"hedgeCache":{},"settings":{"gemMoverPct":10,"poolActNowPct":10,"poolWatchPct":20,"volMcSnapMins":10,"poolActNowCooldownMins":20,"poolWatchCooldownMins":60,"poolOutCooldownMins":30,"gemCooldownMins":20},"volMcSnaps":{},"_lic":"","savedAt":1776096978609};
     if(window._embeddedBackup && (window._embeddedBackup.pools || window._embeddedBackup.gems || window._embeddedBackup.holdings)) {
       const parsed = sanitiseDB(window._embeddedBackup);
+      // Preserve any historyDeleted bin entries that exist in localStorage
+      try {
+        const existing = JSON.parse(localStorage.getItem(SK) || localStorage.getItem(SK_BACKUP) || '{}');
+        if(Array.isArray(existing.historyDeleted) && existing.historyDeleted.length) {
+          parsed.historyDeleted = existing.historyDeleted;
+        }
+      } catch(e) {}
       // Persist to localStorage so subsequent loads are instant
       try { localStorage.setItem(SK, JSON.stringify(parsed)); } catch(e) {}
       try { localStorage.setItem(SK_BACKUP, JSON.stringify(parsed)); } catch(e) {}
@@ -4982,8 +5221,9 @@ function persist() {
   // defiWallet are always current in the hardened store, not just localStorage
   vaultSyncFromDB().catch(() => {});
 
-  // File system write only works on http/https — skip entirely on file://
-  if(!IS_FILE_PROTOCOL && fsFileHandle) {
+  // Always attempt file write — works on file://, http://, and https://
+  // IS_FILE_PROTOCOL gate removed: working-directory saves must happen on all protocols
+  if(fsFileHandle) {
     fsFileHandle.queryPermission({mode:'readwrite'}).then(perm => {
       if(perm === 'granted') {
         fsWriteNow(true).catch(()=>{});
@@ -6352,11 +6592,112 @@ function grpToggle(key) {
 }
 
 // ─── RENDER HISTORY ─────────────────────────────────────────────────────────
+function softDeleteHistory(id) {
+  const h = DB.history.find(x => x.id === id);
+  if(!h) return;
+  const deleted = JSON.parse(JSON.stringify(h));
+  deleted._deletedAt = new Date().toISOString().slice(0,10);
+  DB.history = DB.history.filter(x => x.id !== id);
+  DB.historyDeleted = DB.historyDeleted || [];
+  DB.historyDeleted.push(deleted);
+  persist(); renderHistory(); renderHeader();
+  toast(`"${h.name}" deleted — <a href="#" onclick="event.preventDefault();restoreHistory('${id}')" style="color:var(--accent);text-decoration:underline;font-weight:700;">Undo</a> · <a href="#" onclick="event.preventDefault();showDeletedHistory()" style="color:var(--text3);text-decoration:underline;">View bin</a>`, false, 8000);
+}
+function restoreHistory(id) {
+  DB.historyDeleted = DB.historyDeleted || [];
+  const h = DB.historyDeleted.find(x => x.id === id);
+  if(!h) { toast('Entry not found in bin', true); return; }
+  DB.historyDeleted = DB.historyDeleted.filter(x => x.id !== id);
+  const restored = JSON.parse(JSON.stringify(h));
+  delete restored._deletedAt;
+  DB.history.push(restored);
+  DB.history.sort((a,b) => (b.closeDate||'').localeCompare(a.closeDate||''));
+  persist(); renderHistory(); renderHeader();
+  closeModal('deletedHistoryModal');
+  toast(`✓ "${restored.name}" restored`);
+}
+function showDeletedHistory() {
+  DB.historyDeleted = DB.historyDeleted || [];
+  const tbody = document.getElementById('deletedHistBody');
+  if(!DB.historyDeleted.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:20px;">Bin is empty — deleted entries appear here.</td></tr>';
+  } else {
+    tbody.innerHTML = DB.historyDeleted.slice().reverse().map(h => `
+      <tr>
+        <td class="left" style="font-weight:700;color:var(--text);">${h.name}<div style="font-size:10px;color:var(--text3);font-weight:400;">${h.platform||''}</div></td>
+        <td><span class="badge ${h.type==='Close'?'b-oor':'b-watch'}">${h.type||'—'}</span></td>
+        <td style="font-size:11px;">${h.entryDate||'—'}</td>
+        <td style="font-size:11px;">${h.closeDate||'—'}</td>
+        <td style="font-size:11px;color:var(--text3);">${h._deletedAt||'—'}</td>
+        <td><div style="display:flex;gap:4px;">
+          <button class="btn sm primary" onclick="restoreHistory('${h.id}')">↩ Restore</button>
+          <button class="btn sm danger" onclick="permanentDeleteHistory('${h.id}')">✕ Remove</button>
+        </div></td>
+      </tr>`).join('');
+  }
+  document.getElementById('deletedHistoryModal').classList.add('open');
+}
+function permanentDeleteHistory(id) {
+  if(!confirm('Permanently delete this entry? It cannot be recovered.')) return;
+  DB.historyDeleted = (DB.historyDeleted||[]).filter(x => x.id !== id);
+  persist(); showDeletedHistory();
+  toast('Entry permanently deleted');
+}
 function deleteHistory(id) {
   if(!confirm('Delete this history entry? This cannot be undone.')) return;
   DB.history = DB.history.filter(h => h.id !== id);
   persist(); renderHistory(); renderHeader();
   toast('History entry deleted');
+}
+function openAddHistoryModal() {
+  const today = new Date().toISOString().slice(0,10);
+  document.getElementById('ahm-name').value      = '';
+  document.getElementById('ahm-platform').value  = '';
+  document.getElementById('ahm-type').value      = 'Close';
+  document.getElementById('ahm-entryDate').value = '';
+  document.getElementById('ahm-closeDate').value = today;
+  document.getElementById('ahm-entryVal').value  = '';
+  document.getElementById('ahm-exitVal').value   = '';
+  document.getElementById('ahm-yield').value     = '';
+  document.getElementById('ahm-notes').value     = '';
+  document.getElementById('addHistoryModal').classList.add('open');
+}
+function saveAddHistory() {
+  const name = document.getElementById('ahm-name').value.trim();
+  if(!name) { toast('Pool name is required', true); return; }
+  const entryVal  = parseFloat(document.getElementById('ahm-entryVal').value) || 0;
+  const exitVal   = parseFloat(document.getElementById('ahm-exitVal').value)  || 0;
+  const yieldVal  = parseFloat(document.getElementById('ahm-yield').value)    || 0;
+  const entryDate = document.getElementById('ahm-entryDate').value;
+  const closeDate = document.getElementById('ahm-closeDate').value;
+  const days = (entryDate && closeDate)
+    ? Math.round((new Date(closeDate) - new Date(entryDate)) / 86400000)
+    : null;
+  const netResult = (exitVal - entryVal) + yieldVal;
+  const annReturn = (days > 0 && entryVal > 0)
+    ? (netResult / entryVal) * (365 / days)
+    : null;
+  const h = {
+    id: uid(),
+    name,
+    platform:   document.getElementById('ahm-platform').value.trim(),
+    type:       document.getElementById('ahm-type').value,
+    entryDate,
+    closeDate,
+    days,
+    entryValue: entryVal,
+    exitValue:  exitVal,
+    yieldTotal: yieldVal,
+    netResult,
+    hodlValue:  0,
+    annReturn,
+    notes:      document.getElementById('ahm-notes').value.trim(),
+    yieldLog:   [],
+  };
+  DB.history.push(h);
+  persist(); renderHistory(); renderHeader();
+  closeModal('addHistoryModal');
+  toast(`✓ "${name}" added to history`);
 }
 function clearAllHistory() {
   if(!confirm('Delete ALL history entries? This cannot be undone.')) return;
@@ -6414,6 +6755,34 @@ function histSaveNotes(id, val) {
   h.notes = val.trim();
   persist();
 }
+// ─── HISTORY NOTE MODAL ─────────────────────────────────────────────────────
+let _histNoteId = null;
+function openHistNoteModal(id) {
+  const h = DB.history.find(x => x.id === id);
+  if(!h) return;
+  _histNoteId = id;
+  const nameEl = document.getElementById('histNoteModalName');
+  if(nameEl) nameEl.textContent = h.name + (h.platform ? ' · ' + h.platform : '') + ' — ' + (h.type || '');
+  const ta = document.getElementById('histNoteModalText');
+  if(ta) ta.value = h.notes || '';
+  document.getElementById('histNoteModal').classList.add('open');
+  setTimeout(() => { if(ta) ta.focus(); }, 80);
+}
+function saveHistNote() {
+  if(!_histNoteId) return;
+  const h = DB.history.find(x => x.id === _histNoteId);
+  if(!h) return;
+  h.notes = (document.getElementById('histNoteModalText').value || '').trim();
+  persist();
+  renderHistory();
+  closeModal('histNoteModal');
+  toast('Note saved');
+}
+function clearHistNote() {
+  const ta = document.getElementById('histNoteModalText');
+  if(ta) ta.value = '';
+}
+
 
 
 // ─── HISTORY SORT FUNCTIONS ──────────────────────────────────────────────────
@@ -6561,9 +6930,16 @@ function renderHistory() {
                    : h.lossStatus === 'recovered'      ? 'background:rgba(22,163,74,0.04);border-left:3px solid #16a34a;'
                    : '';
     return `<tr style="${rowStyle}">
-    <td class="left" style="font-weight:600">${h.name}${vaultBadge}${lossBadge}</td>
-    <td class="left" style="color:#3a4a60">${h.platform||''}</td>
-    <td><span class="badge ${h.type==='Close'?'b-oor':'b-watch'}">${h.type}</span></td>
+    <td class="left" style="min-width:140px;">
+      <span style="font-weight:700;color:var(--text);">${h.name}</span>${vaultBadge}${lossBadge}
+      <div style="font-size:10px;color:var(--accent2);font-weight:600;margin-top:2px;">${h.platform||''}</div>
+    </td>
+    <td>
+      <button onclick="openHistNoteModal('${h.id}')" title="${h.notes ? 'View / edit note' : 'Add a note'}"
+        style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;cursor:pointer;border:1px solid;white-space:nowrap;transition:all .15s;${h.notes ? 'background:rgba(10,124,74,0.15);border-color:rgba(10,124,74,0.5);color:var(--accent);' : 'background:transparent;border-color:var(--border2);color:var(--text3);'}">
+        ${h.type}${h.notes ? ' 📝' : ''}
+      </button>
+    </td>
     <td>${h.entryDate||'—'}</td>
     <td>${h.closeDate||'—'}</td>
     <td>${days||'—'}</td>
@@ -6574,15 +6950,15 @@ function renderHistory() {
     <td>${isVault ? '<span style="color:var(--text3)">—</span>' : $f(h.hodlValue)}</td>
     <td>${isVault ? '<span style="color:var(--text3);font-size:10px;">N/A</span>' : beatBadge(h.exitValue, h.yieldTotal, h.hodlValue)}</td>
     <td class="${annYield!==null?cc(annYield):'neu'}" title="Yield APR = (Yield ÷ Entry) × (365 ÷ Days)">${annYield!==null?pf(annYield):'—'}</td>
-    <td class="left"><input class="cell-in left" value="${(h.notes||'').replace(/"/g,'&quot;')}" onblur="histSaveNotes('${h.id}',this.value)" placeholder="add note…" style="width:140px;font-size:11px;color:var(--text3);background:transparent;border:none;border-bottom:1px dashed var(--border2);"></td>
     <td><div style="display:flex;gap:3px;">
       ${isVault ? '' : yieldBtn}
       ${isVault ? '' : `<button class="btn sm primary" onclick="viewClosedPoolYield('${h.id}')" title="View &amp; edit yield entries for this pool">✎ Yield</button>`}
       <button class="btn sm ghost" onclick="openHistEdit('${h.id}')" title="Edit pool record (name, dates, type)" style="font-size:9px;padding:1px 4px;">⚙</button>
-      <button class="btn sm danger" onclick="deleteHistory('${h.id}')" title="Delete this entry">✕</button>
+      ${isVault ? '' : `<button class="btn sm ghost" onclick="restoreClosedPool('${h.id}')" title="Restore to Active Pools" style="font-size:10px;padding:2px 5px;color:var(--accent);border-color:rgba(10,124,74,0.3);">↩</button>`}
+      <button class="btn sm ghost" onclick="softDeleteHistory('${h.id}')" title="Move to bin (recoverable)" style="color:var(--neg);border-color:rgba(220,50,50,.3);font-size:11px;">✕</button>
     </div></td>
   </tr>
-  ${h.lossNote ? `<tr style="${rowStyle}"><td colspan="15" style="padding:2px 12px 6px;font-size:10px;color:var(--text3);font-style:italic;">📝 ${h.lossNote}</td></tr>` : ''}`;
+  ${h.lossNote ? `<tr style="${rowStyle}"><td colspan="13" style="padding:2px 12px 6px;font-size:10px;color:var(--text3);font-style:italic;">📝 ${h.lossNote}</td></tr>` : ''}`;
   }).join('');
   updateSortArrows('histHead', histSortKey, histSortDir);
 }
@@ -7334,6 +7710,7 @@ function savePool(id) {
       }
     });
   }
+  _rebalanceSnapshot = null;
   persist(); closeModal('poolModal'); fetchPrices(); renderHoldings(); toast('Pool saved');
 }
 function flipPool(id) {
@@ -7364,6 +7741,24 @@ function rebalanceFromModal(id) {
   const resolvedId = id || document.getElementById('poolModalId')?.value;
   closeModal('poolModal');
   if(resolvedId) setTimeout(()=>openCloseModal(resolvedId), 80);
+}
+
+// Snapshot saved before a rebalance zeros the pool — restored if user cancels
+let _rebalanceSnapshot = null;
+
+function cancelPoolModal(id) {
+  if(_rebalanceSnapshot && _rebalanceSnapshot.id === id) {
+    const idx = DB.pools.findIndex(x => x.id === id);
+    if(idx >= 0) {
+      DB.pools[idx] = JSON.parse(JSON.stringify(_rebalanceSnapshot));
+      DB.history = DB.history.filter(h => h.id !== _rebalanceSnapshot._archivedHistId);
+      persist();
+      renderAll();
+      toast('Rebalance cancelled — pool restored to previous values.');
+    }
+    _rebalanceSnapshot = null;
+  }
+  closeModal('poolModal');
 }
 
 // ─── ADD CAPITAL TO POOL ─────────────────────────────────────────────────────
@@ -7942,6 +8337,53 @@ function clAddReturnRow() {
   container.appendChild(row);
 }
 
+function restoreClosedPool(histId) {
+  const h = DB.history.find(x => x.id === histId);
+  if(!h) { toast('Entry not found', true); return; }
+  if(!confirm(`Restore "${h.name}" as an active pool?\n\nThis will move it back from History to LP Pools. You can edit quantities and range after restoring.`)) return;
+  // Reconstruct a pool object from the history entry
+  const restored = {
+    id: uid(),
+    name:         h.name,
+    platform:     h.platform || '',
+    network:      '',
+    subtitle:     '',
+    entryDate:    h.entryDate || today(),
+    entryValue:   h.entryValue || 0,
+    tokASym:      h.tokASym || '',
+    tokAGeckoId:  h.tokAGeckoId || '',
+    tokAQtyEntry: 0,
+    tokAQty:      0,
+    tokBSym:      h.tokBSym || '',
+    tokBGeckoId:  h.tokBGeckoId || '',
+    tokBQtyEntry: 0,
+    tokBQty:      0,
+    rangeLow:     null,
+    rangeHigh:    null,
+    liveRatio:    null,
+    rewardTokSym: h.rewardTokSym || '',
+    rewardTokId:  h.rewardTokId  || '',
+    vaultMode:    false,
+    notes:        h.notes || '',
+    alertActNowPct: 5,
+    alertWatchPct:  15,
+    poolType:     'uni_v3',
+    ampCoeff:     200,
+    weightA:      80,
+    defaultWallet:'',
+    yieldLog:     [...(h.yieldLog||[])],
+    invertRatio:  false,
+    entryPriceA:  null,
+    entryPriceB:  null,
+  };
+  DB.pools.push(restored);
+  // Remove from history
+  DB.history = DB.history.filter(x => x.id !== histId);
+  persist(); renderHistory(); renderActivePoolsHistTab(); renderPools(); renderHeader();
+  toast(`✓ "${h.name}" restored to Active Pools — edit quantities and range to match current position.`);
+  setTimeout(() => switchTab('pools'), 1200);
+}
+
 function archivePool(type) {
   const poolId = document.getElementById('cl-idx').value;
   const p = DB.pools.find(x=>x.id===poolId);
@@ -8214,6 +8656,11 @@ function doRebalance() {
   }
 
   // ── Reset pool for new leg ────────────────────────────────────────────────
+
+  // Save snapshot BEFORE zeroing so Cancel can restore
+  const archivedHistId = DB.history[DB.history.length - 1]?.id;
+  _rebalanceSnapshot = Object.assign(JSON.parse(JSON.stringify(p)), { _archivedHistId: archivedHistId });
+
   p.entryValue    = 0;
   p.entryDate     = rebalDate;
   p.tokAQtyEntry  = 0;
@@ -9306,11 +9753,12 @@ function saveYieldAdd() {
 
 // Switch history subtab
 function switchHistTab(tab) {
-  ['pools','vaults','yield','txns'].forEach(t => {
+  ['pools','active','vaults','yield','txns'].forEach(t => {
     document.getElementById(`htab-${t}`)?.style.setProperty('display', t===tab?'':'none');
     document.getElementById(`htab-${t}-btn`)?.classList.toggle('on', t===tab);
   });
   if(tab==='pools')  renderHistory();
+  if(tab==='active') renderActivePoolsHistTab();
   if(tab==='vaults') renderVaultHistory();
   if(tab==='yield')  {
     switchYieldTab(lastYieldTab);
@@ -9320,6 +9768,29 @@ function switchHistTab(tab) {
     if(f && t && !f.value && !t.value) setTimeout(() => yieldSetPeriod(30), 0);
   }
   if(tab==='txns')   renderTxnTab();
+}
+
+function renderActivePoolsHistTab() {
+  const tbody = document.getElementById('activePoolsHistBody');
+  if(!tbody) return;
+  if(!DB.pools || !DB.pools.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:24px;">No active pools.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = DB.pools.map(p => {
+    const poolTypeLabel = p.vaultMode ? 'Vault' : (p.poolType==='curve'?'Curve':p.poolType==='stable'?'Stable':'Uni v3');
+    return `<tr>
+      <td class="left" style="font-weight:700;color:var(--text);">${p.name}
+        <div style="font-size:10px;color:var(--accent);font-weight:400;margin-top:1px;">${p.tokASym||''}${p.tokBSym?' / '+p.tokBSym:''}</div>
+      </td>
+      <td class="left" style="color:var(--text2);">${p.platform||'—'}</td>
+      <td class="left" style="color:var(--text3);font-size:11px;">${p.network||'—'}</td>
+      <td style="font-family:var(--mono);font-size:11px;">${p.entryDate||'—'}</td>
+      <td style="font-family:var(--mono);font-size:11px;">${p.entryValue!=null?'$'+p.entryValue.toLocaleString():'—'}</td>
+      <td><span style="font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(10,124,74,0.1);color:var(--accent);border:1px solid rgba(10,124,74,0.25);">${poolTypeLabel}</span></td>
+      <td><button class="btn sm primary" onclick="switchTab('pools')" title="Go to LP Pools tab to manage this pool">Open →</button></td>
+    </tr>`;
+  }).join('');
 }
 
 // Switch between Active / Closed yield inner tabs
@@ -9373,6 +9844,8 @@ function viewClosedPoolYield(histId) {
     switchYieldTab('closed');
     const sel = document.getElementById('closedYieldPoolFilter');
     if(sel) { sel.value = closedYieldFilter; renderClosedYieldTab(); }
+    const backBtn = document.getElementById('ytab-back-btn');
+    if(backBtn) backBtn.style.display = histId ? '' : 'none';
   }, 30);
 }
 
@@ -14045,14 +14518,14 @@ function v(id) { return document.getElementById(id)?.value || ''; }
 
 // ─── TOAST ──────────────────────────────────────────────────────────────────
 let toastTimer;
-function toast(msg, err=false) {
+function toast(msg, err=false, duration=3000) {
   const el = document.getElementById('toast');
-  el.textContent = msg;
+  el.innerHTML = msg;
   el.style.borderColor = err ? 'rgba(255,85,85,.3)' : 'rgba(61,245,160,.2)';
   el.style.color = err ? 'var(--danger)' : 'var(--text)';
   el.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+  toastTimer = setTimeout(() => el.classList.remove('show'), duration);
 }
 
 // ─── EXPORT / IMPORT ────────────────────────────────────────────────────────
@@ -14973,6 +15446,50 @@ function fsMetaClear() {
 }
 const FS_INTERVAL = 7 * 60 * 1000; // 7-minute auto-save (user data only, no feed data)
 
+// ─── BROWSER COMPATIBILITY CHECK ─────────────────────────────────────────────
+// Returns null if browser supports File System Access API properly.
+// Returns {short, long} warning strings if not.
+function getBrowserCompatWarning() {
+  const ua = navigator.userAgent;
+  const isFirefox = /Firefox\//.test(ua);
+  const isSafari  = /^((?!chrome|android).)*safari/i.test(ua);
+  const isChrome  = /Chrome\//.test(ua) && !/Edg\//.test(ua);
+  const isEdge    = /Edg\//.test(ua);
+  const isBrave   = !!(navigator.brave && typeof navigator.brave.isBrave === 'function');
+
+  if(isFirefox) return {
+    short: 'Firefox does not support the file system API needed for reliable data saves.',
+    long: 'Firefox does not support the File System Access API. Your data can only be stored in browser cache, which may be lost on restart or when cache is cleared. We strongly recommend Chrome or Edge to avoid data loss. You can still use the app, but auto-save to file will not work.'
+  };
+  if(isSafari && !isChrome) return {
+    short: "Safari's file system support is unreliable — data may be lost on restart.",
+    long: 'Safari supports file saving but loses the file connection on every page reload, making persistent auto-save impossible. Data loss is likely after restart. We strongly recommend Chrome or Edge.'
+  };
+  if(isBrave) return {
+    short: 'Brave Shields may block file access. Set to Standard mode for this site.',
+    long: 'Brave browser with Aggressive Shields blocks the file system API. Go to the Shields panel (lion icon) → set to Standard mode for this page. Without this, file saves will fail silently. See Help → Setup Guide for detailed Brave instructions.'
+  };
+  return null; // Chrome, Edge: fully supported
+}
+
+// Show browser warning in backup choice modal on open
+function linkBackupFileWithBrowserCheck() {
+  const warn = getBrowserCompatWarning();
+  const warnEl = document.getElementById('browserCompatWarning');
+  if(warnEl) {
+    if(warn) {
+      warnEl.innerHTML = '⚠ <strong>Browser compatibility warning:</strong> ' + warn.long +
+        (warn.short.includes('Firefox') || warn.short.includes('Safari')
+          ? '<br><br><a href="https://www.google.com/chrome/" target="_blank" rel="noopener" style="color:var(--accent2);font-weight:700;">→ Download Chrome</a>'
+          : '');
+      warnEl.style.display = '';
+    } else {
+      warnEl.style.display = 'none';
+    }
+  }
+  document.getElementById('backupChoiceModal').classList.add('open');
+}
+
 function fsSupported() {
   return ('showSaveFilePicker' in window && 'showOpenFilePicker' in window);
 }
@@ -15079,9 +15596,40 @@ async function linkBackupFile() {
     if(confirm(msg)) unlinkBackupFile();
     return;
   }
-  // Show clear choice modal instead of confusing confirm()
-  document.getElementById('backupChoiceModal').classList.add('open');
+  // Show clear choice modal with browser check
+  linkBackupFileWithBrowserCheck();
 }
+function showFileProtocolRecoveryModal() {
+  const modal = document.getElementById('forceRelinkModal');
+  if(!modal) { showRecoveryBanner(); return; }
+  const title = modal.querySelector('.modal-title');
+  if(title) { title.textContent = '⚠ NO SAVED DATA FOUND'; title.style.color = 'var(--warn)'; }
+  const para = modal.querySelector('p');
+  if(para) para.innerHTML =
+    'No portfolio data was found on this device.<br><br>' +
+    '<strong>If you have a backup .json file, import it now</strong> — ' +
+    'this restores all your data instantly.<br><br>' +
+    'If this is your first time, click <em>Start Fresh</em> to begin.';
+  const primaryBtn = modal.querySelector('.btn.primary');
+  if(primaryBtn) {
+    primaryBtn.innerHTML = '📂 Import My Backup File (.json)<div style="font-size:10px;font-weight:400;margin-top:3px;opacity:.85;">Select your portfolio_data.json or dated backup file</div>';
+    primaryBtn.onclick = () => {
+      const inp = document.createElement('input');
+      inp.type = 'file'; inp.accept = '.json';
+      inp.onchange = (e) => { importJSON(e); modal.style.display = 'none'; };
+      inp.click();
+    };
+  }
+  const secondBtn = modal.querySelectorAll('.btn')[1];
+  if(secondBtn) {
+    secondBtn.innerHTML = '✨ Start Fresh<div style="font-size:10px;font-weight:400;margin-top:2px;opacity:.8;">Begin with no data</div>';
+    secondBtn.onclick = () => { _loadedFromSeed = false; modal.style.display = 'none'; };
+  }
+  const hint = modal.querySelector('div[style*="No cancel"]');
+  if(hint) hint.textContent = 'Import your backup to restore your data, or start fresh.';
+  modal.style.display = 'flex';
+}
+
 function showForceRelinkModal() {
   const modal = document.getElementById('forceRelinkModal');
   const nameEl = document.getElementById('forceRelinkFileName');
@@ -15103,13 +15651,24 @@ async function forceRelinkExisting() {
   }
 }
 async function forceRelinkCreateNew() {
-  if(!fsSupported()) { toast('File System API requires Chrome, Brave, or Edge.', true); return; }
+  const browserWarn = getBrowserCompatWarning();
+  if(browserWarn) {
+    toast('⚠ ' + browserWarn.short, true);
+    return;
+  }
+  if(!fsSupported()) { toast('File System API requires Chrome or Edge.', true); return; }
   try {
-    const handle = await window.showSaveFilePicker({
-      suggestedName: 'portfolio_data.json',
-      startIn: 'documents',
-      types: [{ description: 'Portfolio Backup (.json)', accept: { 'application/json': ['.json'] } }]
-    });
+    let handle;
+    if('showDirectoryPicker' in window) {
+      const dir = await window.showDirectoryPicker({ mode: 'readwrite', startIn: 'documents' });
+      handle = await dir.getFileHandle('portfolio_data.json', { create: true });
+    } else {
+      handle = await window.showSaveFilePicker({
+        suggestedName: 'portfolio_data.json',
+        startIn: 'documents',
+        types: [{ description: 'Portfolio Backup (.json)', accept: { 'application/json': ['.json'] } }]
+      });
+    }
     document.getElementById('forceRelinkModal').style.display = 'none';
     await fsActivate(handle, 'created');
   } catch(e) {
@@ -15126,12 +15685,22 @@ async function fsLinkExisting() {
 }
 async function fsCreateNew() {
   closeModal('backupChoiceModal');
+  const browserWarn = getBrowserCompatWarning();
+  if(browserWarn) { toast('⚠ ' + browserWarn.short, true); return; }
+  if(!fsSupported()) { toast('File System API requires Chrome or Edge.', true); return; }
   try {
-    const handle = await window.showSaveFilePicker({
-      suggestedName: 'portfolio_data.json',
-      startIn: 'documents',
-      types: [{ description: 'Portfolio Backup (.json)', accept: { 'application/json': ['.json'] } }]
-    });
+    let handle;
+    if('showDirectoryPicker' in window) {
+      toast('Choose the folder where this tracker file lives — your backup will be saved there.', false, 4000);
+      const dir = await window.showDirectoryPicker({ mode: 'readwrite', startIn: 'documents' });
+      handle = await dir.getFileHandle('portfolio_data.json', { create: true });
+    } else {
+      handle = await window.showSaveFilePicker({
+        suggestedName: 'portfolio_data.json',
+        startIn: 'documents',
+        types: [{ description: 'Portfolio Backup (.json)', accept: { 'application/json': ['.json'] } }]
+      });
+    }
     await fsActivate(handle, 'created');
   } catch(e) { if(e.name!=='AbortError') toast('Could not create: '+e.message, true); }
 }
@@ -15167,6 +15736,7 @@ async function fsActivate(handle, mode) {
       if(text && text.trim().length > 10) {
         const _rawParsed = JSON.parse(text);
         const d = _unpackBackup(_rawParsed); // unwrap v2 envelope → flat DB object
+        _fsBackupVerified = true; // file successfully read — dot goes green
         const hasData = d.pools || d.vaults || d.holdings || d.gems;
 
         // ── Load data from file if applicable ──
@@ -15831,9 +16401,119 @@ function saveGemMoverPct() {
   if(inlineInp) inlineInp.value = val;
 }
 // ─── FEEDBACK MODAL ──────────────────────────────────────────────────────────
-const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xbdpenae';
+const FORMSPREE_ENDPOINT          = 'https://formspree.io/f/xbdpenae';  // Feedback form
+const FORMSPREE_REGISTRATION_EP   = 'https://formspree.io/f/mvzdgzga';  // Registration form
 const IMGBB_API_KEY      = 'ab03e5f5abceb7d23cb84bc4452e88fc';
 let _fbImageBase64 = null;
+
+// ── Registration ──────────────────────────────────────────────────────────────
+async function populateSettingsInstallId() {
+  try {
+    const id = await getInstallId();
+    const el = document.getElementById('settingsInstallId');
+    if(el) el.textContent = id || '——';
+  } catch(e) {}
+}
+
+async function showRegistrationScreen() {
+  closeModal('alertModal');
+  // Pre-fill Install ID
+  try {
+    const id = await getInstallId();
+    const idEl = document.getElementById('reg-install-id');
+    if(idEl) idEl.value = id || '';
+  } catch(e) {}
+  // Clear previous values
+  ['reg-name','reg-email','reg-phone','reg-referral'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.value = '';
+  });
+  const status = document.getElementById('reg-status');
+  if(status) status.style.display = 'none';
+  const btn = document.getElementById('reg-submit-btn');
+  if(btn) { btn.disabled = false; btn.textContent = '📬 Submit Registration'; }
+  document.getElementById('registrationModal').classList.add('open');
+}
+
+async function submitRegistration() {
+  const name      = document.getElementById('reg-name').value.trim();
+  const email     = document.getElementById('reg-email').value.trim();
+  const phone     = document.getElementById('reg-phone').value.trim();
+  const referral  = document.getElementById('reg-referral').value.trim();
+  const installId = document.getElementById('reg-install-id').value.trim();
+  const btn       = document.getElementById('reg-submit-btn');
+
+  if(!name)  { showRegStatus('Please enter your name.', 'error'); return; }
+  if(!email) { showRegStatus('Please enter your email address.', 'error'); return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showRegStatus('Please enter a valid email address.', 'error'); return; }
+  if(!phone) { showRegStatus('Please enter your phone number.', 'error'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+  showRegStatus('Sending your registration…', 'info');
+
+  let workerOk = false;
+  let formspreeOk = false;
+
+  // ── 1. Post to Cloudflare Worker (adds as pending user in your panel) ──
+  try {
+    const res = await fetch(HELP_WORKER_URL + '/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        installId: installId,
+        name,
+        email,
+        phone:     phone || '',
+        notes:     referral ? 'Referral: ' + referral : 'Self-registered via Demo',
+      })
+    });
+    const data = await res.json();
+    workerOk = !!(data.ok);
+  } catch(e) { /* network error — fall through to Formspree */ }
+
+  // ── 2. Post to Formspree (sends you an email notification) ──
+  try {
+    const res = await fetch(FORMSPREE_REGISTRATION_EP, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        type:       'Registration Request',
+        name,
+        email,
+        phone:      phone || 'not provided',
+        referral:   referral || 'not specified',
+        install_id: installId,
+        version:    APP_VERSION,
+        worker_saved: workerOk ? 'yes' : 'no — check manually',
+        _subject:   `[Registration] Portfolio Tracker — ${name}`
+      })
+    });
+    const data = await res.json();
+    formspreeOk = !!(data.ok || data.next);
+  } catch(e) { /* network error */ }
+
+  if(workerOk || formspreeOk) {
+    showRegStatus('✓ Registration submitted! You\'ll be notified by email once your access is approved.', 'success');
+    btn.textContent = '✓ Submitted';
+    setTimeout(() => closeModal('registrationModal'), 3500);
+  } else {
+    btn.disabled = false;
+    btn.textContent = '📬 Submit Registration';
+    showRegStatus('Could not send — please check your connection and try again.', 'error');
+  }
+}
+
+function showRegStatus(msg, type) {
+  const el = document.getElementById('reg-status');
+  if(!el) return;
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.style.background = type === 'success' ? 'rgba(10,124,74,.15)' : type === 'error' ? 'rgba(220,38,38,.12)' : 'rgba(96,168,240,.1)';
+  el.style.color      = type === 'success' ? '#3df5a0' : type === 'error' ? '#f87171' : '#70b8ff';
+  el.style.border     = `1px solid ${type === 'success' ? 'rgba(61,245,160,.3)' : type === 'error' ? 'rgba(248,113,113,.3)' : 'rgba(96,168,240,.2)'}`;
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 function openFeedbackModal() {
   const vEl = document.getElementById('fb-version');
@@ -16160,6 +16840,7 @@ function saveCpiRate() {
 }
 
 function openSettingsModal() {
+  populateSettingsInstallId();
   const snapEl = document.getElementById('al-volMcSnapMins');
   if(snapEl) snapEl.value = DB.settings.volMcSnapMins || 10;
   const moverEl = document.getElementById('al-gemMoverPct');
@@ -17260,6 +17941,16 @@ const TAB_LABELS = {
 };
 
 const WHATS_NEW = {
+  '47.50': {
+    headline: "Version 47.50",
+    summary:  "Demo registration pipeline fully connected — phone number now required at registration.",
+    items: [
+      { icon: '🔗', title: "Demo registration pipeline live",
+        text: "The full registration flow is now operational. Submitting the registration form posts to the Cloudflare Worker (storing you as pending) and sends an email notification. You will be contacted once your access is approved." },
+      { icon: '📞', title: "Phone number required at registration",
+        text: "The registration form now requires a phone number before submission, ensuring the app owner has a direct contact method for each demo user." },
+    ]
+  },
   '47.43': {
     headline: "Version 47.43",
     summary:  "Dated backup filename warning changed from alarming red to informational blue.",
@@ -17857,7 +18548,7 @@ function helpSearch(query) {
 }
 
 // ── Help content sync ─────────────────────────────────────────────────────────
-const HELP_WORKER_URL = 'https://broad-scene-ee15.jdgoldstein.workers.dev';
+const HELP_WORKER_URL = 'https://portfoliotrackerregistration.jdgoldstein.workers.dev';
 const HELP_SITE_URL   = 'https://jdgoldstein.github.io/portfoliotracker-help';
 const HELP_CACHE_KEY  = 'pt_help_content_v1';
 const HELP_CACHE_TS   = 'pt_help_ts_v1';
