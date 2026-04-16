@@ -1165,7 +1165,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 <!-- HEADER -->
 <div id="header" style="visibility:hidden;">
   <div class="logo">PORTFOLIO <small>TRACKER</small></div>
-  <span id="versionBadge" style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-left:2px;align-self:flex-end;padding-bottom:2px;font-weight:600;">v47.43</span>
+  <span id="versionBadge" style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-left:2px;align-self:flex-end;padding-bottom:2px;font-weight:600;">v47.50</span>
   <span id="privacyBadge">🙈 VALUES MASKED</span>
   <div class="header-right">
     <div class="price-stamp"><span class="dot" id="priceDot"></span><span id="priceStamp">—</span></div>
@@ -17786,10 +17786,11 @@ function _renderWhatsNew() {
 
 // ── Check + show What's New on version change ─────────────────────────────────
 function checkWhatsNew() {
-  if(typeof DEMO_MODE !== 'undefined' && DEMO_MODE) return; // don't show in demo
   try {
     const seen = localStorage.getItem(WHATS_NEW_KEY);
     if(seen !== APP_VERSION && WHATS_NEW[APP_VERSION]) {
+      // Mark as seen immediately — so closing any way won't re-trigger it
+      localStorage.setItem(WHATS_NEW_KEY, APP_VERSION);
       // Show after a short delay so the tracker finishes rendering first
       setTimeout(() => openWhatsNewModal(), 1200);
     }
@@ -18442,7 +18443,11 @@ Despite our best efforts to support it, Brave's automatic file management behavi
   whatsNew: {
     title: "✦ What\'s New — Full Changelog",
     sections: [
-      { icon: '✦', heading: 'v47.39  — CURRENT',
+      { icon: '✦', heading: 'v47.50  — CURRENT',
+        text: `<em style="color:var(--text3);">Demo registration pipeline fully connected — phone number now required at registration.</em><br><br><strong>🔗 Demo registration pipeline live</strong><br>The full registration flow is now operational. Submitting the registration form posts to the Cloudflare Worker (storing you as pending) and sends an email notification. You will be contacted once your access is approved.<br><br><strong>📞 Phone number required at registration</strong><br>The registration form now requires a phone number before submission, ensuring the app owner has a direct contact method for each demo user.` },
+      { icon: '○', heading: 'v47.48',
+        text: `<em style="color:var(--text3);">Rebalance cancel now fully restores the pool — no more accidental zeroing.</em><br><br><strong>↩ Rebalance Cancel restores pool to previous state</strong><br>When you click ⇄ Close / Rebalance and then proceed to click Rebalance in the close modal, the app archives the old leg and zeros the pool ready for new entry values. If you then cancelled the edit modal without entering new values, the pool was left permanently zeroed. Now a snapshot is saved before zeroing — clicking Cancel restores the pool exactly as it was.` },
+      { icon: '○', heading: 'v47.39',
         text: `<em style="color:var(--text3);">CSV import for Holdings and GEMs, Data menu restructured, Break & Re-link file connection.</em><br><br><strong>📊 Import Holdings from CSV</strong><br>A new CSV import system lets you bring in holdings data from any spreadsheet. Download a template, fill in your data, preview it before committing, then choose Merge (add to existing) or Replace. Cost Per Unit is calculated automatically from Total Cost ÷ Quantity if left blank. Column order doesn't matter — columns are matched by name.<br><br><strong>💎 Import GEMs Watchlist from CSV</strong><br>Share and import curated GEM watchlists. Same staged preview and merge/replace workflow. All price targets (TP1/TP2/TP3), stop loss, and buy trigger fields are supported.<br><br><strong>💾 Data menu restructured</strong><br>The Data dropdown is now organised into three clear sections: Backup & Restore, Import from CSV, and Export to Spreadsheet. Easier to navigate, less cluttered.<br><br><strong>🔗 Break & Re-link — guided reconnect</strong><br>A new "Break & Re-link File" option replaces the plain Reset button. It breaks the current link and immediately walks you through navigating to the correct folder to select the right file — preventing the problem of a convincing-looking green dot on the wrong file.` },
       { icon: '○', heading: 'v47.38',
         text: `<em style="color:var(--text3);">Import fix and Brave browser disclaimer.</em><br><br><strong>🔧 Import review — settings and hedge chart history now restored</strong><br>When using the Import Review modal (shown when importing into a tracker that already has data), settings including Pushover keys and hedge chart history were not being restored — only pool/vault/holdings/gems/history sections were applied. All data from the backup is now fully restored on apply.<br><br><strong>⚠️ Brave browser removed from setup guide</strong><br>Brave's automatic numbered-copy file behavior creates a data-loss risk when users accidentally import old copies over real data. Brave is no longer listed as a supported browser in the setup guide. Chrome or Edge are recommended. A clear warning is shown in Help for users who choose to use Brave anyway.` },
