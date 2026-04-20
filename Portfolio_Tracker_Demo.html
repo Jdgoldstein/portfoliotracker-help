@@ -1165,7 +1165,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 <!-- HEADER -->
 <div id="header" style="visibility:hidden;">
   <div class="logo">PORTFOLIO <small>TRACKER</small></div>
-  <span id="versionBadge" style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-left:2px;align-self:flex-end;padding-bottom:2px;font-weight:600;">v47.50</span>
+  <span id="versionBadge" style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-left:2px;align-self:flex-end;padding-bottom:2px;font-weight:600;">v47.66</span>
   <span id="privacyBadge">🙈 VALUES MASKED</span>
   <div class="header-right">
     <div class="price-stamp"><span class="dot" id="priceDot"></span><span id="priceStamp">—</span></div>
@@ -2886,32 +2886,55 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     <!-- Destination choice — LP pools -->
     <div id="cl-lp-dest" style="background:rgba(10,124,74,0.06);border:1px solid rgba(10,124,74,0.2);border-radius:var(--radius);padding:12px;margin-bottom:12px;">
       <div style="font-size:9px;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;font-weight:700;">📤 Where do closed funds go?</div>
-      <div class="form-grid cols2" style="margin-bottom:8px;">
-        <div class="field" style="margin-bottom:0;">
-          <label>Return funds to</label>
-          <select id="cl-dest" onchange="onCloseDestChange()">
-            <option value="holdings">➕ Holdings — updates token qty & cost basis</option>
-            <option value="cash_internal">💵 Cash — add to stablecoin Holdings row</option>
-            <option value="cash_external">🏦 External — funds left platform (log only)</option>
-          </select>
-          <div class="hint" id="cl-dest-hint" style="color:var(--accent);">Token quantities added back to Holdings at current prices — cost basis updated.</div>
-        </div>
-        <div class="field" id="cl-wallet-field" style="margin-bottom:0;">
-          <label>Token A — Wallet</label>
-          <select id="cl-wallet" style="width:100%;padding:6px 8px;background:var(--bg2);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:12px;">
-          </select>
-        </div>
+      <!-- Stacked (v47.58): was cols2 grid but the wallet select got cut off at narrow widths.
+           Full-width stacked gives both fields room to breathe. -->
+      <div class="field" style="margin-bottom:10px;">
+        <label>Return funds to</label>
+        <select id="cl-dest" onchange="onCloseDestChange()" style="width:100%;">
+          <option value="holdings">➕ Holdings — updates token qty & cost basis</option>
+          <option value="cash_internal">💵 Cash — add to stablecoin Holdings row</option>
+          <option value="cash_external">🏦 External — funds left platform (log only)</option>
+        </select>
+        <div class="hint" id="cl-dest-hint" style="color:var(--accent);">Token quantities added back to Holdings at current prices — cost basis updated.</div>
+      </div>
+      <div class="field" id="cl-wallet-field" style="margin-bottom:0;">
+        <label>Token A — Return Wallet</label>
+        <select id="cl-wallet" style="width:100%;padding:6px 8px;background:var(--bg2);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:12px;">
+        </select>
       </div>
       <!-- Token B wallet override -->
-      <div id="cl-wallet-b-wrap" style="margin-top:4px;">
+      <div id="cl-wallet-b-wrap" style="margin-top:8px;">
         <button type="button" class="btn sm ghost" onclick="clToggleBWallet()" id="cl-wallet-b-btn" style="font-size:10px;padding:2px 8px;">＋ Token B returns to different wallet?</button>
         <div id="cl-wallet-b-row" style="display:none;margin-top:6px;">
           <div class="field" style="margin-bottom:0;">
-            <label id="cl-wallet-b-label" style="font-size:10px;">Token B — Wallet</label>
+            <label id="cl-wallet-b-label" style="font-size:10px;">Token B — Return Wallet</label>
             <select id="cl-wallet-b" style="width:100%;padding:6px 8px;background:var(--bg2);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:12px;">
             </select>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Tokens returning from LP — required inputs, LP pools only -->
+    <div id="cl-lp-returns" style="background:rgba(96,168,240,0.05);border:1px solid rgba(96,168,240,0.25);border-radius:var(--radius);padding:12px;margin-bottom:12px;">
+      <div style="font-size:9px;color:#70b8ff;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;font-weight:700;">📥 Tokens returning from LP <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;margin-left:4px;">— enter exactly what came back from the platform</span></div>
+      <div class="form-grid cols2" style="gap:10px;margin-bottom:8px;">
+        <div class="field" style="margin-bottom:0;">
+          <label style="font-size:10px;"><span id="cl-ret-tokA-label">Token A</span> returned <span style="color:var(--warn);">*</span></label>
+          <input id="cl-ret-tokA" type="number" step="any" placeholder="0" oninput="clUpdateReturnUsd()"
+                 style="font-size:12px;font-family:var(--mono);">
+          <div style="font-size:9px;color:var(--text3);margin-top:2px;">Current: <span id="cl-ret-tokA-current" style="font-family:var(--mono);">—</span></div>
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label style="font-size:10px;"><span id="cl-ret-tokB-label">Token B</span> returned <span style="color:var(--warn);">*</span></label>
+          <input id="cl-ret-tokB" type="number" step="any" placeholder="0" oninput="clUpdateReturnUsd()"
+                 style="font-size:12px;font-family:var(--mono);">
+          <div style="font-size:9px;color:var(--text3);margin-top:2px;">Current: <span id="cl-ret-tokB-current" style="font-family:var(--mono);">—</span></div>
+        </div>
+      </div>
+      <div style="font-size:10px;color:var(--text3);margin-top:4px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.05);">
+        Computed USD return: <strong id="cl-ret-usd" style="color:#70b8ff;font-family:var(--mono);">—</strong>
+        <span style="opacity:0.7;margin-left:6px;">(at live prices — compare to the platform's exit value as a sanity check)</span>
       </div>
     </div>
 
@@ -2992,9 +3015,125 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     </div>
     <div class="modal-actions">
       <button class="btn" onclick="closeModal('closeModal2')">Cancel</button>
-      <button class="btn warn" id="cl-rebalance-btn" onclick="doRebalance()">Rebalance (keep pool, reset entry)</button>
-      <button class="btn primary" id="cl-partial-btn" onclick="doPartialWithdrawal()" style="display:none;" title="Withdraw some funds and reduce position value — keeps pool open">↓ Partial Withdrawal</button>
-      <button class="btn danger" onclick="doClose()">Close Position</button>
+      <button class="btn warn" id="cl-rebalance-btn" onclick="confirmRebalance()">Rebalance (keep pool, reset entry)</button>
+      <button class="btn primary" id="cl-partial-btn" onclick="confirmPartialWithdrawal()" style="display:none;" title="Withdraw some funds and reduce position value — keeps pool open">↓ Partial Withdrawal</button>
+      <button class="btn danger" id="cl-return-btn" onclick="confirmClose()" title="Returns tokens to wallet. Closes pool if full amount entered; partial withdrawal if less.">Return</button>
+    </div>
+    <div id="cl-return-hint" style="font-size:10px;color:var(--text3);margin-top:6px;text-align:right;font-style:italic;">
+      Return closes the pool if you entered the full Current qty; otherwise it's a partial withdrawal (pool stays open).
+    </div>
+  </div>
+</div>
+
+<!-- CLOSE/REBALANCE/PARTIAL CONFIRMATION MODAL (v47.56) -->
+<div class="overlay" id="actionConfirmModal">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-title" id="acm-title">Confirm Action</div>
+    <div id="acm-summary" style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:14px;"></div>
+    <div id="acm-preview" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:14px;font-size:11px;font-family:var(--mono);line-height:1.8;"></div>
+    <div style="font-size:11px;color:var(--text3);line-height:1.5;margin-bottom:12px;">
+      Review the destinations above. Cancel to adjust quantities or wallets; Confirm to proceed.
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="_acmCancel()">Cancel — go back</button>
+      <button class="btn primary" id="acm-confirm-btn" onclick="_acmConfirm()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- REBALANCE NEW-LEG MODAL (v47.64) -->
+<div class="overlay" id="rebalNewLegModal">
+  <div class="modal" style="max-width:620px;">
+    <div class="modal-title">Rebalance — Enter New Leg</div>
+    <input type="hidden" id="rnl-pool-id">
+    <div id="rnl-summary" style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:12px;"></div>
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;margin-bottom:12px;font-size:11px;color:var(--text2);line-height:1.6;">
+      Exit leg complete — tokens are in Holdings. Enter the new position below. Tokens will be deducted from Holdings at live prices. <strong>Cancel</strong> fully reverts the rebalance (pool, Holdings, history).
+    </div>
+    <div style="background:rgba(10,124,74,0.05);border:1px solid rgba(10,124,74,0.22);border-radius:var(--radius);padding:12px;margin-bottom:12px;">
+      <div style="font-size:9px;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;font-weight:700;">📊 New leg position</div>
+      <div class="form-grid cols2">
+        <div class="field" style="margin-bottom:0;">
+          <label><span id="rnl-symA-label">Token A</span> — Qty in Pool</label>
+          <input id="rnl-qtyA" type="number" placeholder="0" min="0" step="any" oninput="_rnlUpdateEstimate()">
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label><span id="rnl-symB-label">Token B</span> — Qty in Pool</label>
+          <input id="rnl-qtyB" type="number" placeholder="0" min="0" step="any" oninput="_rnlUpdateEstimate()">
+        </div>
+      </div>
+      <div class="form-grid cols2" style="margin-top:8px;">
+        <div class="field" style="margin-bottom:0;">
+          <label>Entry $ Value</label>
+          <input id="rnl-entry" type="number" placeholder="0.00" min="0" step="any">
+          <div class="hint" id="rnl-entry-hint" style="margin-top:3px;color:var(--text3);font-size:10px;">Estimate will populate from qtys × live prices</div>
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>Range (optional)</label>
+          <div style="display:flex;gap:4px;">
+            <input id="rnl-rangeLow" type="number" placeholder="Low" step="any" style="flex:1;">
+            <input id="rnl-rangeHigh" type="number" placeholder="High" step="any" style="flex:1;">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:12px;">
+      <div style="font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;font-weight:700;">📥 Source wallets — Holdings deduction</div>
+      <div class="form-grid cols2">
+        <div class="field" style="margin-bottom:0;">
+          <label><span id="rnl-srcAWL-sym">Token A</span> — Source Wallet</label>
+          <select id="rnl-srcA-wallet" style="width:100%;padding:6px 8px;background:var(--bg2);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:12px;"></select>
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label><span id="rnl-srcBWL-sym">Token B</span> — Source Wallet</label>
+          <select id="rnl-srcB-wallet" style="width:100%;padding:6px 8px;background:var(--bg2);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:12px;"></select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="_rnlCancel()" title="Reverts exit leg — tokens go back into pool, Holdings and history restored">Cancel (revert rebalance)</button>
+      <button class="btn primary" onclick="_rnlSave()">Save New Leg</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESTORE BLOCKER MODAL (v47.55) — shown when reversal would drop Holdings below zero -->
+<div class="overlay" id="restoreBlockerModal">
+  <div class="modal" style="max-width:500px;">
+    <div class="modal-title" id="rbm-title" style="color:#dc2626;">Cannot Restore</div>
+    <div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:12px;">
+      This restore cannot proceed because Holdings have changed since the close. Reverting would leave one or more tokens with a negative quantity, or would reference a Holdings row that has been deleted.
+    </div>
+    <div style="background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.25);border-radius:var(--radius);padding:10px 14px;margin-bottom:14px;">
+      <div style="font-size:10px;font-weight:700;color:#ef4444;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Issues blocking reversal</div>
+      <ul id="rbm-blockers" style="font-size:11px;color:var(--text2);line-height:1.6;padding-left:18px;margin:4px 0;"></ul>
+    </div>
+    <div style="font-size:11px;color:var(--text3);line-height:1.6;margin-bottom:12px;">
+      <strong style="color:var(--text2);">What you can do:</strong> either acquire the missing tokens back, manually adjust the relevant Holdings rows before trying again, or import a backup from before the close and work from there.
+    </div>
+    <div class="modal-actions">
+      <button class="btn primary" onclick="closeModal('restoreBlockerModal')">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESTORE WARNING MODAL (v47.55) — shown when transactions exist on affected tokens since close -->
+<div class="overlay" id="restoreWarningModal">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-title" id="rwm-title" style="color:#d97706;">Restore — Review Warnings</div>
+    <div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:12px;">
+      Holdings can be reverted cleanly for this entry, but transactions occurred on affected tokens or wallets since the close. The reversal will undo only the close itself — the subsequent transactions below will remain in place. Review before proceeding.
+    </div>
+    <div style="background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.25);border-radius:var(--radius);padding:10px 14px;margin-bottom:14px;max-height:240px;overflow-y:auto;">
+      <div style="font-size:10px;font-weight:700;color:#d97706;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Transactions since close</div>
+      <ul id="rwm-warnings" style="font-size:11px;color:var(--text2);line-height:1.6;padding-left:18px;margin:4px 0;list-style:none;"></ul>
+    </div>
+    <div style="font-size:11px;color:var(--text3);line-height:1.6;margin-bottom:12px;">
+      After restore, verify your Holdings values match what you expect. Manual adjustment may be needed if any of the above transactions should also be reversed.
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="_cancelRestoreWarning()">Cancel</button>
+      <button class="btn warn" onclick="_confirmRestoreWarning()">Proceed with Restore</button>
     </div>
   </div>
 </div>
@@ -3007,9 +3146,25 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
       For single-asset yield positions — lending vaults, staking, LSTs (e.g. Scallop, Drift, Marinade).<br>
       <span style="color:var(--text3);opacity:0.8;">For Beefy-style LP pools, use the <strong style="color:var(--text2);">LP Pools tab</strong> with <strong style="color:var(--text2);">Vault Mode</strong> enabled instead.</span>
     </div>
-    <div class="form-grid">
+    <div class="form-grid cols3">
       <div class="field"><label>Vault Name</label><input id="vm-name" placeholder="e.g. USDY"></div>
       <div class="field"><label>Platform</label><input id="vm-platform" placeholder="e.g. Scallop"></div>
+      <div class="field"><label>Network / Chain</label>
+        <select id="vm-network" style="width:100%;padding:6px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:12px;">
+          <option value="">— select —</option>
+          <option value="Ethereum">Ethereum</option>
+          <option value="Base">Base</option>
+          <option value="Solana">Solana</option>
+          <option value="Arbitrum">Arbitrum</option>
+          <option value="Optimism">Optimism</option>
+          <option value="Polygon">Polygon</option>
+          <option value="BSC">BSC</option>
+          <option value="Avalanche">Avalanche</option>
+          <option value="Sui">Sui</option>
+          <option value="Bitcoin">Bitcoin</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
     </div>
     <div class="form-grid cols3">
       <div class="field">
@@ -3198,20 +3353,29 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     <!-- ── SWAP fields ── -->
     <div id="hm-swap-fields" style="display:none;">
       <div class="form-grid cols3">
-        <div class="field"><label>Qty to Swap</label><input id="hm-swap-qty" type="number" placeholder="0" min="0"></div>
-        <div class="field"><label>Price at Swap $</label><input id="hm-swap-sell-price" type="number" placeholder="0" min="0"><div class="hint" id="hm-swap-price-hint" style="margin-top:3px;display:none;color:var(--accent);">Stablecoin — locked at $1.00</div></div>
+        <div class="field">
+          <label>Qty to Swap</label>
+          <input id="hm-swap-qty" type="number" placeholder="0" min="0" oninput="updateSwapHint()">
+          <div class="hint" id="hm-swap-from-current" style="margin-top:3px;color:var(--text3);display:none;"></div>
+        </div>
+        <div class="field"><label>Price at Swap $</label><input id="hm-swap-sell-price" type="number" placeholder="0" min="0" oninput="updateSwapHint()" onfocus="_hmTrySourcePrice()"><div class="hint" id="hm-swap-price-hint" style="margin-top:3px;display:none;color:var(--accent);">Stablecoin — locked at $1.00</div></div>
         <div class="field"></div>
       </div>
       <div style="font-size:9px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;color:#b07800;margin:10px 0 6px;">→ Receiving</div>
       <div class="form-grid cols3">
         <div class="field">
           <label>Token</label>
-          <input id="hm-swap-to-search" placeholder="Search token..." oninput="searchToken('hm-swap-to-search','hm-swap-to-results','hm-swap-to-id','hm-swap-to-sym')" autocomplete="off">
+          <input id="hm-swap-to-search" placeholder="Search token..." oninput="searchToken('hm-swap-to-search','hm-swap-to-results','hm-swap-to-id','hm-swap-to-sym'); updateSwapHint()" autocomplete="off">
           <div class="search-results" id="hm-swap-to-results"></div>
           <input type="hidden" id="hm-swap-to-id">
           <input type="hidden" id="hm-swap-to-sym">
+          <div class="hint" id="hm-swap-to-price" style="margin-top:3px;color:var(--text3);display:none;"></div>
         </div>
-        <div class="field"><label>Qty Received</label><input id="hm-swap-to-qty" type="number" placeholder="0" min="0"></div>
+        <div class="field">
+          <label>Qty Received</label>
+          <input id="hm-swap-to-qty" type="number" placeholder="0" min="0" oninput="_hmSwapToQtyInput()">
+          <div class="hint" id="hm-swap-to-qty-hint" style="margin-top:3px;color:var(--text3);display:none;"></div>
+        </div>
         <div class="field">
           <label>Destination Wallet</label>
           <input id="hm-swap-to-wallet" placeholder="e.g. Trezor" list="hm-swap-wallet-options" autocomplete="off">
@@ -3956,13 +4120,16 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     </div>
 
     <!-- ── Registration ─────────────────────────────────────────────────── -->
-    <div style="background:var(--bg3);border:1px solid rgba(96,168,240,.2);border-radius:var(--radius);padding:14px;margin-bottom:14px;">
-      <div style="font-size:10px;color:#70b8ff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;font-weight:600;">🔐 Registration</div>
+    <div id="settingsRegBlock" data-status="unknown" style="background:var(--bg3);border:1px solid rgba(96,168,240,.2);border-radius:var(--radius);padding:14px;margin-bottom:14px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <div style="font-size:10px;color:#70b8ff;text-transform:uppercase;letter-spacing:.08em;font-weight:600;">🔐 Registration</div>
+        <span id="settingsActStatusPill" style="display:none;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;font-family:var(--mono);letter-spacing:.04em;"></span>
+      </div>
       <div style="font-size:11px;color:var(--text3);margin-bottom:10px;">
         Your Install ID: <span id="settingsInstallId" style="font-family:var(--mono);color:var(--accent);font-size:11px;">——</span>
       </div>
-      <button class="btn sm" onclick="showRegistrationScreen()" style="font-size:11px;">📋 Show Registration Screen</button>
-      <div class="hint" style="margin-top:6px;">Register to receive your activation code.</div>
+      <button class="btn sm" id="settingsRegBtn" onclick="showRegistrationScreen()" style="font-size:11px;">📋 Show Registration Screen</button>
+      <div class="hint" id="settingsRegHint" style="margin-top:6px;">Register to receive access approval.</div>
     </div>
 
     <div class="modal-actions">
@@ -4023,7 +4190,7 @@ const ACT_MASTER = (()=>{const p=['CPF_MA','STER_O','VERRID','E_KEY_','ZULU9'];r
 const ACT_STORE    = 'cpf_activation_v1';
 const ACT_ID_STORE = 'cpf_install_id';
 const ACT_VER      = 'v30';
-const APP_VERSION  = '47.50';           // bumped on each release
+const APP_VERSION  = '47.66';           // bumped on each release
 const WHATS_NEW_KEY = 'cpf_seen_ver';   // localStorage: last version user saw What's New
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -4519,6 +4686,24 @@ async function actSubmit() {
   try { localStorage.setItem(ACT_STORE, input); actIdbSave(input); } catch(e){}
   hideActivationScreen();
   errEl.textContent = '';
+
+  // DEMO MODE: remove the "Click to activate" banner and restore header/main
+  // offsets. Without this, the banner stays visible after successful activation,
+  // which is confusing because the user is now fully activated.
+  try {
+    const _isDemo = document.body.getAttribute('data-demo') === '1' ||
+                    (typeof DEMO_MODE !== 'undefined' && DEMO_MODE);
+    if(_isDemo) {
+      const banner = document.getElementById('demoBanner');
+      if(banner) banner.remove();
+      const h = document.getElementById('header'); if(h) h.style.top = '';
+      const m = document.getElementById('main');   if(m) m.style.marginTop = '';
+      // Prevent any future demoInjectBanner() call (e.g. timers queued earlier)
+      // from re-adding the banner for this session.
+      window._demoActivated = true;
+    }
+  } catch(e) { /* non-fatal */ }
+
   renderAll(); fetchPrices();
   initPIN();
 
@@ -4794,6 +4979,90 @@ function demoMarkWelcomeSeen(){ localStorage.setItem(DEMO_SEEN_KEY, '1'); }
 function demoStartTrial()     {}
 function demoTrialExpired()   { return demoExpired(); }
 
+// ── Worker activation check + polling ───────────────────────────────────────
+// Admin activates install IDs via the working-version UI, which posts to the
+// worker. The demo needs to notice when that happens. We check at boot and
+// then poll every 30s while the tab is visible. Polling stops once activated.
+const DEMO_POLL_INTERVAL_MS = 30000;  // 30s — responsive without being chatty
+let _demoPollTimer = null;
+
+async function checkWorkerActivationStatus() {
+  // Returns one of: 'already_active', 'pending', 'new', 'error'
+  try {
+    const installId = await getInstallId();
+    if(!installId) return 'error';
+    const res = await Promise.race([
+      fetch(HELP_WORKER_URL + '/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ installId, name: '_check_', email: '_check_@check.com', _checkOnly: true })
+      }),
+      new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 4000))
+    ]);
+    if(!res.ok) {
+      _reportInfraFailure('checkWorkerActivationStatus', `HTTP ${res.status}`);
+      return 'error';
+    }
+    const data = await res.json();
+    return data.status || 'new';
+  } catch(e) {
+    _reportInfraFailure('checkWorkerActivationStatus', (e && e.message) || String(e));
+    return 'error';
+  }
+}
+
+function handleDemoActivation(isInitialBoot) {
+  // Called when the worker confirms this install ID is activated. Removes the
+  // trial banner, updates layout, sets the session flag, and (for mid-session
+  // activations) shows a celebratory confirmation to the user.
+  try {
+    const banner = document.getElementById('demoBanner');
+    if(banner) banner.remove();
+    const h = document.getElementById('header'); if(h) h.style.top = '';
+    const m = document.getElementById('main');   if(m) m.style.marginTop = '';
+    window._demoActivated = true;
+    stopDemoActivationPolling();
+    // If the Settings modal is currently open, refresh its status pill so the
+    // user doesn't have to close and re-open Settings to see the change.
+    try {
+      const block = document.getElementById('settingsRegBlock');
+      if(block && typeof updateSettingsActivationStatus === 'function') {
+        updateSettingsActivationStatus();
+      }
+    } catch(e) {}
+    if(!isInitialBoot) {
+      // Mid-session activation — user should see this clearly.
+      toast('🎉 Your install ID has just been activated! Demo is now fully unlocked.', false, 9000);
+    }
+  } catch(e) { /* non-fatal */ }
+}
+
+function startDemoActivationPolling() {
+  if(_demoPollTimer) return;                     // already running
+  if(window._demoActivated) return;              // nothing to poll for
+  _demoPollTimer = setInterval(async () => {
+    // Skip poll when tab is hidden — saves worker load and user's bandwidth
+    if(document.hidden) return;
+    if(window._demoActivated) { stopDemoActivationPolling(); return; }
+    const status = await checkWorkerActivationStatus();
+    if(status === 'already_active') handleDemoActivation(false);
+  }, DEMO_POLL_INTERVAL_MS);
+}
+
+function stopDemoActivationPolling() {
+  if(_demoPollTimer) { clearInterval(_demoPollTimer); _demoPollTimer = null; }
+}
+
+// If the user makes the tab visible again after a while, do an immediate
+// check rather than waiting for the next polling tick.
+document.addEventListener('visibilitychange', async () => {
+  if(!DEMO_MODE) return;
+  if(window._demoActivated) return;
+  if(document.hidden) return;
+  const status = await checkWorkerActivationStatus();
+  if(status === 'already_active') handleDemoActivation(false);
+});
+
 // ── Diagnostic: guaranteed reveal after 5s + on-screen error display ─────────
 (function() {
   const _diagReveal = setTimeout(function() {
@@ -4846,28 +5115,12 @@ function demoTrialExpired()   { return demoExpired(); }
 
       // ── Check Worker for activation status ───────────────────────────────
       // If the user's Install ID has been activated by admin, bypass trial expiry.
-      let workerActivated = false;
-      try {
-        const _installId = await getInstallId();
-        if(_installId) {
-          const _res = await Promise.race([
-            fetch(HELP_WORKER_URL + '/register', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ installId: _installId, name: '_check_', email: '_check_@check.com', _checkOnly: true })
-            }),
-            new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 4000))
-          ]);
-          if(_res.ok) {
-            const _data = await _res.json();
-            // already_active means admin has activated this Install ID
-            workerActivated = (_data.status === 'already_active');
-          }
-        }
-      } catch(e) { /* network unavailable — fall through to trial check */ }
+      const _bootStatus = await checkWorkerActivationStatus();
+      const workerActivated = (_bootStatus === 'already_active');
 
       if(workerActivated) {
-        // Fully activated — reveal app, no trial banner
+        // Fully activated — reveal app, no trial banner, no polling needed.
+        window._demoActivated = true;
         const _h = document.getElementById('header');
         const _m = document.getElementById('main');
         if(_h) _h.style.visibility = '';
@@ -4893,6 +5146,9 @@ function demoTrialExpired()   { return demoExpired(); }
           checkWhatsNew();
           setTimeout(demoInjectBanner, 300);
           if(!IS_FILE_PROTOCOL) setTimeout(_showNoBackupBanner, 2000);
+          // Start polling worker for activation status (admin may approve
+          // while demo is running — we want to pick that up automatically).
+          startDemoActivationPolling();
         } else {
           demoShowWelcomeModal();
         }
@@ -5756,6 +6012,47 @@ function daysSince(dateStr) {
 function annReturn(currentVal, entryVal, days) {
   if(!currentVal || !entryVal || !days || entryVal===0) return null;
   return Math.pow(currentVal / entryVal, 365/days) - 1;
+}
+
+// Clean up IEEE 754 float noise in quantity arithmetic (v47.58).
+// Rounds to 10 decimal places — eliminates the 2.0000000000001 / 1.9999999999998
+// type noise without destroying meaningful digits on larger magnitudes (unlike
+// significant-figure rounding which would turn 12345678901.6 into 12345678900).
+function cleanQty(n) {
+  if(n===null || n===undefined || isNaN(n) || !isFinite(n)) return n;
+  if(n === 0) return 0;
+  return Math.round(n * 1e10) / 1e10;
+}
+
+// v47.63: deposit-side validation — see tracker for full explanation.
+function _validateFundingRows(rows) {
+  const requested = new Map();
+  for(const r of rows) {
+    const sym = (r.sym || '').trim().toUpperCase();
+    const qty = +r.qty || 0;
+    const wallet = (r.wallet || '').trim();
+    if(!sym || !qty) continue;
+    if(wallet === '— External / Skip —') continue;
+    const key = `${sym}::${wallet.toLowerCase()}`;
+    requested.set(key, (requested.get(key) || 0) + qty);
+  }
+  const errors = [];
+  for(const [key, wantQty] of requested) {
+    const [sym, walletLower] = key.split('::');
+    const holding = DB.holdings.find(h =>
+      (h.sym || '').toUpperCase() === sym &&
+      (!walletLower || (h.wallet || '').toLowerCase() === walletLower)
+    );
+    const avail = holding ? (holding.qty || 0) : 0;
+    if(!holding) {
+      errors.push(`${sym} not found in ${walletLower || 'any wallet'} — adjust Holdings first`);
+    } else if(wantQty > avail + 1e-9) {
+      const availStr = avail >= 1 ? avail.toFixed(4).replace(/\.?0+$/, '') : avail.toFixed(8).replace(/\.?0+$/, '');
+      const wantStr  = wantQty >= 1 ? wantQty.toFixed(4).replace(/\.?0+$/, '') : wantQty.toFixed(8).replace(/\.?0+$/, '');
+      errors.push(`Not enough ${sym} in ${holding.wallet || 'Holdings'} — need ${wantStr}, have ${availStr}`);
+    }
+  }
+  return errors.length ? { ok: false, errors } : { ok: true };
 }
 
 // ─── FORMAT ─────────────────────────────────────────────────────────────────
@@ -7684,6 +7981,22 @@ function savePool(id) {
 
   }
   if(!p.name) { toast('Pool name required',true); return; }
+
+  // v47.63: deposit-side validation — for NEW pools, check each source row
+  // against Holdings before anything is persisted. Abort cleanly on shortage.
+  if(!resolvedId) {
+    const fundingRows = Array.from(document.querySelectorAll('#pm-sources > div')).map(row => ({
+      sym:    row.querySelector('.pm-src-sym')?.value,
+      qty:    row.querySelector('.pm-src-qty')?.value,
+      wallet: row.querySelector('.pm-src-wallet')?.value,
+    }));
+    const check = _validateFundingRows(fundingRows);
+    if(!check.ok) {
+      toast(`Cannot fund pool: ${check.errors.join(' · ')}`, true);
+      return;
+    }
+  }
+
   if(resolvedId) {
     const i = DB.pools.findIndex(x=>x.id===resolvedId);
     DB.pools[i] = p;
@@ -7710,6 +8023,35 @@ function savePool(id) {
       }
     });
   }
+
+  // Ensure a Holdings row exists for the reward token (e.g. AERO on Aerodrome).
+  // Silent — does nothing if a row already exists at (sym, wallet, chain).
+  // Creates an empty placeholder (qty=0) so the first yield harvest has a
+  // target. Cost basis gets established at first harvest via the existing
+  // weighted-average merge in mergeYieldIntoHoldings.
+  if(p.rewardTokSym && p.rewardTokSym.trim()) {
+    const rSym    = p.rewardTokSym.trim();
+    const rWallet = (p.defaultWallet || '').trim();
+    const rChain  = p.network || '';
+    if(rWallet) {
+      const symU    = rSym.toUpperCase();
+      const walletL = rWallet.toLowerCase();
+      const chainL  = rChain.toLowerCase();
+      const exists = DB.holdings.find(h =>
+        (h.sym||'').toUpperCase() === symU &&
+        (h.wallet||'').toLowerCase() === walletL &&
+        (!rChain || (h.chain||'').toLowerCase() === chainL || !(h.chain||'').trim())
+      );
+      if(!exists) {
+        DB.holdings.push({
+          id: uid(), sym: rSym, geckoId: p.rewardTokId || '',
+          cat: '', chain: rChain, wallet: rWallet,
+          avgCost: 0, qty: 0,
+        });
+      }
+    }
+  }
+
   _rebalanceSnapshot = null;
   persist(); closeModal('poolModal'); fetchPrices(); renderHoldings(); toast('Pool saved');
 }
@@ -7748,17 +8090,158 @@ let _rebalanceSnapshot = null;
 
 function cancelPoolModal(id) {
   if(_rebalanceSnapshot && _rebalanceSnapshot.id === id) {
+    // v47.63: full rollback — also revert Holdings deltas from the exit-side leg.
+    const archivedHist = DB.history.find(h => h.id === _rebalanceSnapshot._archivedHistId);
+    if(archivedHist && Array.isArray(archivedHist.closeUndo) && archivedHist.closeUndo.length > 0) {
+      try {
+        _revApply(archivedHist.closeUndo, archivedHist.closeTxnIds || []);
+      } catch(e) {
+        console.error('Rebalance cancel: Holdings reversion failed', e);
+      }
+    }
     const idx = DB.pools.findIndex(x => x.id === id);
     if(idx >= 0) {
       DB.pools[idx] = JSON.parse(JSON.stringify(_rebalanceSnapshot));
       DB.history = DB.history.filter(h => h.id !== _rebalanceSnapshot._archivedHistId);
       persist();
       renderAll();
-      toast('Rebalance cancelled — pool restored to previous values.');
+      toast('Rebalance cancelled — pool, Holdings, and history restored.');
     }
     _rebalanceSnapshot = null;
   }
   closeModal('poolModal');
+}
+
+// ─── v47.64 REBALANCE NEW-LEG MODAL ─────────────────────────────────────────
+function _openRebalNewLegModal(poolId) {
+  const p = DB.pools.find(x => x.id === poolId);
+  if(!p) return;
+  document.getElementById('rnl-pool-id').value = poolId;
+  document.getElementById('rnl-summary').innerHTML =
+    `<strong>Pool:</strong> ${p.name}<br>Platform: ${p.platform||'—'} · Network: ${p.network||'—'}`;
+  document.getElementById('rnl-symA-label').textContent  = p.tokASym || 'Token A';
+  document.getElementById('rnl-symB-label').textContent  = p.tokBSym || 'Token B';
+  document.getElementById('rnl-srcAWL-sym').textContent  = p.tokASym || 'Token A';
+  document.getElementById('rnl-srcBWL-sym').textContent  = p.tokBSym || 'Token B';
+  document.getElementById('rnl-qtyA').value  = '';
+  document.getElementById('rnl-qtyB').value  = '';
+  document.getElementById('rnl-entry').value = '';
+  document.getElementById('rnl-entry').dataset.autofilled = '';
+  document.getElementById('rnl-rangeLow').value  = '';
+  document.getElementById('rnl-rangeHigh').value = '';
+  _rnlPopulateWalletOptions(p.tokASym, 'rnl-srcA-wallet');
+  _rnlPopulateWalletOptions(p.tokBSym, 'rnl-srcB-wallet');
+  document.getElementById('rebalNewLegModal').classList.add('open');
+}
+
+function _rnlPopulateWalletOptions(sym, selectId) {
+  const select = document.getElementById(selectId);
+  if(!select) return;
+  select.innerHTML = '';
+  const matches = DB.holdings.filter(h => (h.sym||'').toUpperCase() === (sym||'').toUpperCase() && (h.qty||0) > 0);
+  if(!matches.length) {
+    const opt = document.createElement('option');
+    opt.value = '';
+    opt.textContent = `— no ${sym} in any wallet —`;
+    select.appendChild(opt);
+    return;
+  }
+  for(const h of matches) {
+    const qStr = h.qty >= 1 ? h.qty.toFixed(4).replace(/\.?0+$/, '') : h.qty.toFixed(8).replace(/\.?0+$/, '');
+    const opt = document.createElement('option');
+    opt.value = h.wallet || '';
+    opt.textContent = `${h.wallet || '(no wallet)'} — ${qStr} ${sym}`;
+    select.appendChild(opt);
+  }
+}
+
+function _rnlUpdateEstimate() {
+  const poolId = document.getElementById('rnl-pool-id').value;
+  const p = DB.pools.find(x => x.id === poolId);
+  if(!p) return;
+  const qA = +document.getElementById('rnl-qtyA').value || 0;
+  const qB = +document.getElementById('rnl-qtyB').value || 0;
+  const priceA = getPrice(p.tokAGeckoId) || 0;
+  const priceB = getPrice(p.tokBGeckoId) || 0;
+  const est = (qA * priceA) + (qB * priceB);
+  const entryEl = document.getElementById('rnl-entry');
+  const hintEl  = document.getElementById('rnl-entry-hint');
+  if(entryEl && (entryEl.value.trim() === '' || entryEl.dataset.autofilled === '1') && est > 0) {
+    entryEl.value = est.toFixed(2);
+    entryEl.dataset.autofilled = '1';
+    if(hintEl) hintEl.textContent = `Live-price estimate — overtype to set manually`;
+  } else if(hintEl && est > 0) {
+    hintEl.textContent = `Reference: live-price estimate is $${est.toLocaleString('en-US',{maximumFractionDigits:2})}`;
+  }
+}
+
+function _rnlCancel() {
+  const poolId = document.getElementById('rnl-pool-id').value;
+  document.getElementById('rebalNewLegModal').classList.remove('open');
+  cancelPoolModal(poolId);
+}
+
+function _rnlSave() {
+  const poolId = document.getElementById('rnl-pool-id').value;
+  const p = DB.pools.find(x => x.id === poolId);
+  if(!p) { toast('Pool not found', true); return; }
+  const qA = +document.getElementById('rnl-qtyA').value || 0;
+  const qB = +document.getElementById('rnl-qtyB').value || 0;
+  const entry = +document.getElementById('rnl-entry').value || 0;
+  const rLow  = +document.getElementById('rnl-rangeLow').value || null;
+  const rHigh = +document.getElementById('rnl-rangeHigh').value || null;
+  const walletA = (document.getElementById('rnl-srcA-wallet').value || '').trim();
+  const walletB = (document.getElementById('rnl-srcB-wallet').value || '').trim();
+
+  if(qA <= 0 && qB <= 0) { toast('Enter a qty for at least one token', true); return; }
+  if(entry <= 0) { toast('Entry $ value is required', true); return; }
+
+  const check = _validateFundingRows([
+    { sym: p.tokASym, qty: qA, wallet: walletA },
+    { sym: p.tokBSym, qty: qB, wallet: walletB },
+  ]);
+  if(!check.ok) {
+    toast(`Cannot deposit new leg: ${check.errors.join(' · ')}`, true);
+    return;
+  }
+
+  const deduct = (sym, qty, wallet) => {
+    if(!sym || qty <= 0 || !wallet) return;
+    const holding = DB.holdings.find(h =>
+      (h.sym||'').toUpperCase() === sym.toUpperCase() &&
+      (h.wallet||'').toLowerCase() === wallet.toLowerCase()
+    );
+    if(!holding) return;
+    holding.qty = cleanQty(Math.max(0, (holding.qty||0) - qty));
+    logTransaction({
+      date: today(), type: 'Rebalance New Leg', sym,
+      qty, price: getPrice(holding.geckoId) || null, total: null,
+      from: holding.wallet || 'Holdings', to: `Pool: ${p.name}`,
+      notes: `Rebalance new leg — ${qty} ${sym} → ${p.name}`,
+    });
+  };
+  deduct(p.tokASym, qA, walletA);
+  deduct(p.tokBSym, qB, walletB);
+
+  p.tokAQtyEntry = qA;
+  p.tokAQty      = qA;
+  p.tokBQtyEntry = qB;
+  p.tokBQty      = qB;
+  p.entryValue   = entry;
+  p.entryDate    = today();
+  p.entryPriceA  = getPrice(p.tokAGeckoId) || null;
+  p.entryPriceB  = getPrice(p.tokBGeckoId) || null;
+  p.rangeLow     = rLow;
+  p.rangeHigh    = rHigh;
+  p.manualCurrentValue = null;
+  p.liveRatio    = null;
+
+  _rebalanceSnapshot = null;
+
+  persist();
+  document.getElementById('rebalNewLegModal').classList.remove('open');
+  renderAll();
+  toast(`New leg saved — ${qA} ${p.tokASym||''} + ${qB} ${p.tokBSym||''} in ${p.name}`);
 }
 
 // ─── ADD CAPITAL TO POOL ─────────────────────────────────────────────────────
@@ -8101,6 +8584,24 @@ function saveAddCapital() {
   const bAdd = !p.vaultMode ? (+document.getElementById('ac-tokB-qty-add').value || 0) : 0;
   const vaultTokQty = p.vaultMode ? (+document.getElementById('ac-vault-tokqty').value || 0) : 0;
 
+  // v47.63: deposit-side validation — check Holdings BEFORE mutating anything.
+  {
+    const skip = '— Skip / External —';
+    const primaryWallet = (document.getElementById('ac-fund-wallet')?.value||'').trim();
+    const bWalletOverride = document.getElementById('ac-fund-bwallet-row')?.style.display !== 'none'
+      ? (document.getElementById('ac-fund-wallet-b')?.value||'').trim()
+      : primaryWallet;
+    const validationRows = [
+      { sym: p.tokASym, qty: +document.getElementById('ac-fund-tokA-qty')?.value||0, wallet: primaryWallet },
+      { sym: p.tokBSym, qty: +document.getElementById('ac-fund-tokB-qty')?.value||0, wallet: bWalletOverride },
+    ].filter(r => r.wallet !== skip);
+    const check = _validateFundingRows(validationRows);
+    if(!check.ok) {
+      toast(`Cannot add capital: ${check.errors.join(' · ')}`, true);
+      return;
+    }
+  }
+
   // Blended entry date
   let blendedDate = p.entryDate;
   if(p.entryDate && addDate && origValue > 0) {
@@ -8225,6 +8726,310 @@ function mergeYieldIntoHoldings(sym, geckoId, qty, usd, wallet) {
   }
 }
 
+// Pool-close reunification — basis-preserving, wallet-strict, chain-aware.
+//
+// Principle: tokens are fungible. Tokens returning from a closed pool rejoin
+// the existing holding pile at that pile's existing avgCost. Do NOT re-price
+// at today's market — the yield was already booked separately via the pool's
+// yieldLog as it accrued. Re-pricing here would blend today's market into the
+// avgCost and corrupt the running cost basis.
+//
+// Wallet & chain handling (strict — honor the user's explicit choices):
+//   - The user's destination wallet is treated as authoritative. Do NOT silently
+//     redirect tokens to a different wallet just because that wallet happens to
+//     hold the same symbol elsewhere.
+//   - The pool's network (chain) is treated as authoritative. Do NOT silently
+//     merge Solana-USDC returns into an Ethereum-USDC row.
+//
+// Lookup priority:
+//   1. Exact match: same sym + same wallet + same chain → merge, basis preserved.
+//   2. Same sym + same wallet, holding has no chain recorded → merge AND
+//      backfill the chain from the pool. (Graceful for legacy data predating
+//      chain tracking.)
+//   3. No exact match → create a NEW Holdings entry in the user's specified
+//      wallet and chain, using the pool's stored entryPrice as basis. The user
+//      chose that destination; we honor it rather than silently rerouting.
+//   4. If caller passed no wallet at all (unusual) → fall back to any-wallet
+//      same-sym match, for backward compatibility.
+// ═══════════════════════════════════════════════════════════════════════════
+// HOLDINGS REVERSION SYSTEM (v47.55)
+// ─────────────────────────────────────────────────────────────────────────
+// Every destructive action (close, rebalance, partial withdrawal) records
+// the exact Holdings deltas it makes so the user can later restore the pool
+// from History and have Holdings revert precisely to match.
+//
+// Usage pattern:
+//   _revStart();                                  // start a new transaction
+//   returnPoolAssetsToHoldings(...);              // normal work — records deltas
+//   _revAttach(historyEntry, transactionIds);     // attach to history entry
+// ═══════════════════════════════════════════════════════════════════════════
+
+let _revAccumulator = null;  // null when not recording; [] when in a txn
+
+// Begin a reversion-tracked transaction. All Holdings mutations performed via
+// _revRecord() or the instrumented wrappers between now and _revFinalize() are
+// captured. Nesting is not supported — if already recording, this is a no-op.
+function _revStart() {
+  if(_revAccumulator === null) _revAccumulator = [];
+}
+
+// Record a Holdings change by pre/post snapshot. Caller passes the Holdings
+// row that was mutated and the pre-state values. If the row is brand new
+// (didn't exist before), pass prevQty=null and prevAvgCost=null.
+function _revRecord(holdingRow, prevQty, prevAvgCost, prevExisted) {
+  if(_revAccumulator === null) return;
+  _revAccumulator.push({
+    holdingId:   holdingRow.id,
+    sym:         holdingRow.sym,
+    wallet:      holdingRow.wallet || '',
+    chain:       holdingRow.chain || '',
+    prevExisted: prevExisted !== false,
+    prevQty:     prevQty,
+    prevAvgCost: prevAvgCost,
+    newQty:      holdingRow.qty,
+    newAvgCost:  holdingRow.avgCost,
+  });
+}
+
+// Finalize: collapses per-row deltas into a single record per Holdings row,
+// capturing only the earliest prev-state and the final new-state. This
+// simplifies reversal — one restore-to-prev per row, no ordering issues.
+//
+// Example: UNI/AAVE out-of-range close modifies AAVE twice (preserve merge,
+// then overflow blend). Raw accumulator has 2 entries for AAVE. After
+// finalize, one entry captures (prev: 30 @ $100) → (new: 180 @ $91.67).
+function _revFinalize() {
+  const raw = _revAccumulator;
+  _revAccumulator = null;
+  if(!Array.isArray(raw) || raw.length === 0) return [];
+  // Collapse by holdingId
+  const byId = new Map();
+  for(const d of raw) {
+    const existing = byId.get(d.holdingId);
+    if(!existing) {
+      // First time seeing this row — keep as-is (prev values are from before any mutation)
+      byId.set(d.holdingId, { ...d });
+    } else {
+      // Already seen — keep original prev values, update new values to most recent
+      existing.newQty = d.newQty;
+      existing.newAvgCost = d.newAvgCost;
+    }
+  }
+  return Array.from(byId.values());
+}
+
+// Discard (used on error paths so next transaction starts clean).
+function _revDiscard() { _revAccumulator = null; }
+
+// ─────────────────────────────────────────────────────────────────────────
+// Apply the inverse of a reversion log to restore Holdings to pre-action state.
+// Returns {ok, blockers, warnings} — does NOT mutate anything if ok=false.
+//
+// Pre-flight checks (operates on collapsed deltas — one entry per Holdings row):
+//   - For each delta, what is the CURRENT Holdings row's qty? Would reversal
+//     drop it below zero? If yes → blocker (tokens spent since).
+//   - Is there a current row at all? (Row might have been deleted.) If deleted
+//     and we're reversing a non-new-row delta → blocker (row missing).
+//
+// Warning (not blocking): any transaction log entries dated after the close
+// date that touched these (sym, wallet) pairs — suggests user did things since.
+// ─────────────────────────────────────────────────────────────────────────
+function _revPreflight(reversionLog, closeDate) {
+  const blockers = [];
+  const warnings = [];
+  if(!Array.isArray(reversionLog) || reversionLog.length === 0) return { ok: true, blockers, warnings };
+
+  for(const d of reversionLog) {
+    // Find the current Holdings row the delta points to
+    const row = DB.holdings.find(h => h.id === d.holdingId);
+    if(!d.prevExisted) {
+      // Close created this row. Reversal wants to delete it (or reduce qty by d.newQty).
+      // Blocker only if row still exists but qty < the amount we added.
+      if(row && (row.qty || 0) < (d.newQty || 0) - 1e-9) {
+        blockers.push(`${d.sym} in ${d.wallet||'(no wallet)'}: close added ${d.newQty}, but row currently has only ${row.qty} — some may have been spent since.`);
+      }
+      // If row was deleted entirely since the close, that's fine — nothing to undo.
+    } else {
+      // Close modified an existing row. Reverse delta = qty - (newQty - prevQty).
+      // If the row is gone, we can't reverse cleanly.
+      if(!row) {
+        blockers.push(`${d.sym} in ${d.wallet||'(no wallet)'}: Holdings row no longer exists — it may have been deleted since the close. Cannot reverse.`);
+        continue;
+      }
+      const qtyChange = (d.newQty || 0) - (d.prevQty || 0);
+      const newQtyAfterReverse = (row.qty || 0) - qtyChange;
+      if(newQtyAfterReverse < -1e-9) {
+        blockers.push(`${d.sym} in ${d.wallet||'(no wallet)'}: reversal would drop qty to ${newQtyAfterReverse.toFixed(6)} (currently ${row.qty}, close added ${qtyChange}). Some has been spent since the close.`);
+      }
+    }
+  }
+
+  // Warnings: look for transactions in the log that involved these (sym, wallet) pairs
+  // between closeDate and today (excluding the close's own transactions).
+  if(closeDate && Array.isArray(DB.transactions)) {
+    const closeTime = new Date(closeDate + 'T00:00:00').getTime();
+    const pairs = new Set(reversionLog.map(d => `${(d.sym||'').toUpperCase()}|${(d.wallet||'').toLowerCase()}`));
+    DB.transactions.forEach(t => {
+      if(t.reversed) return;  // ignore already-reversed entries
+      if(t.type === 'Pool Close' || t.type === 'Rebalance' || t.type === 'Partial Withdrawal') return; // same-action
+      const tTime = t.date ? new Date(t.date + 'T23:59:59').getTime() : 0;
+      if(tTime < closeTime) return;
+      const tSym = (t.sym||'').toUpperCase();
+      // Transactions don't always have a wallet attached; match on sym alone if wallet missing
+      const anyWalletMatch = [...pairs].some(k => k.startsWith(tSym + '|'));
+      if(anyWalletMatch) {
+        warnings.push(`${t.date} · ${t.type} · ${t.sym}${t.qty?` × ${t.qty}`:''}${t.notes?` — ${t.notes}`:''}`);
+      }
+    });
+  }
+
+  return { ok: blockers.length === 0, blockers, warnings };
+}
+
+// Apply the inverse deltas. Only call after _revPreflight returns ok=true.
+// Deltas are already collapsed to one-per-row by _revFinalize(), so we can
+// apply them in any order — each one simply restores its row to pre-state.
+function _revApply(reversionLog, txnIds) {
+  if(!Array.isArray(reversionLog)) return;
+  for(const d of reversionLog) {
+    const row = DB.holdings.find(h => h.id === d.holdingId);
+    if(!d.prevExisted) {
+      // Close created this row. Either delete it or reduce qty by the amount
+      // the close added (in case user also added to this row after close).
+      if(row) {
+        const addedByClose = d.newQty || 0;
+        const newQty = Math.max(0, (row.qty || 0) - addedByClose);
+        if(newQty < 1e-9) {
+          DB.holdings = DB.holdings.filter(h => h.id !== row.id);
+        } else {
+          row.qty = newQty;
+        }
+      }
+    } else {
+      // Close modified an existing row — restore to pre-close state
+      if(row) {
+        row.qty = d.prevQty;
+        row.avgCost = d.prevAvgCost;
+      }
+    }
+  }
+  // Mark linked transactions as reversed (don't delete — audit trail)
+  if(Array.isArray(txnIds) && txnIds.length) {
+    const idSet = new Set(txnIds);
+    (DB.transactions || []).forEach(t => {
+      if(idSet.has(t.id)) t.reversed = true;
+    });
+  }
+}
+
+function returnPoolAssetsToHoldings(sym, geckoId, qty, wallet, fallbackBasis, chain) {
+  if(!sym || qty <= 0) return;
+  const symU   = sym.toUpperCase();
+  const walletL = (wallet||'').toLowerCase();
+  const chainL  = (chain||'').toLowerCase();
+
+  let match = null;
+
+  if(wallet) {
+    // 1. Exact match: same sym + same wallet (+ same chain, if chain was specified)
+    match = DB.holdings.find(h =>
+      (h.sym||'').toUpperCase() === symU &&
+      (h.wallet||'').toLowerCase() === walletL &&
+      (!chain || (h.chain||'').toLowerCase() === chainL)
+    );
+
+    // 2. Same sym + same wallet, holding has blank chain → backfill
+    //    (Only relevant when caller specified a chain.)
+    if(!match && chain) {
+      match = DB.holdings.find(h =>
+        (h.sym||'').toUpperCase() === symU &&
+        (h.wallet||'').toLowerCase() === walletL &&
+        !(h.chain||'').trim()
+      );
+      if(match) match.chain = chain;  // backfill for legacy data
+    }
+
+    // Strict mode: do NOT fall back to different wallets. If there's no match
+    // in the user's chosen wallet, we'll create a new Holdings entry below.
+  } else {
+    // 4. No wallet specified (legacy caller) — fall back to any sym match.
+    match = DB.holdings.find(h => (h.sym||'').toUpperCase() === symU);
+  }
+
+  if(match) {
+    // Record pre-state for reversion
+    const prevQty = match.qty || 0;
+    const prevAvgCost = match.avgCost || 0;
+    // Reunify: qty grows, avgCost is preserved. Clean float noise from addition.
+    match.qty = cleanQty(prevQty + qty);
+    if(geckoId && !match.geckoId) match.geckoId = geckoId;
+    _revRecord(match, prevQty, prevAvgCost, true);
+  } else {
+    // 3. Create a NEW Holdings entry in the user's specified wallet/chain,
+    //    using fallback basis (pool's entry price for this token).
+    const newRow = {
+      id: uid(), sym, geckoId: geckoId||'',
+      cat: '', chain: chain||'', wallet: wallet||'',
+      avgCost: fallbackBasis || 0, qty,
+    };
+    DB.holdings.push(newRow);
+    _revRecord(newRow, null, null, false);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Split-basis overflow helper, used by close & rebalance.
+// - preservedQty (up to entryQty) rejoins at preserved basis via returnPoolAssetsToHoldings
+// - overflowQty (excess from in-pool conversion) enters at today's market price,
+//   weighted-averaged against the combined pile.
+// Both paths record Holdings deltas for reversion.
+// ─────────────────────────────────────────────────────────────────────────
+function _returnTokenWithOverflow(sym, geckoId, entryQty, returnedQty, wallet, entryPrice, marketPrice, network, skipValue) {
+  if(!sym || returnedQty <= 0 || !wallet || wallet === skipValue) return;
+  const preservedQty = Math.min(returnedQty, entryQty || 0);
+  const overflowQty  = Math.max(0, returnedQty - (entryQty || 0));
+  if(preservedQty > 0) {
+    returnPoolAssetsToHoldings(sym, geckoId, preservedQty, wallet, entryPrice || marketPrice, network);
+  }
+  if(overflowQty > 0) {
+    const symU    = sym.toUpperCase();
+    const walletL = wallet.toLowerCase();
+    const chainL  = (network||'').toLowerCase();
+    let match = DB.holdings.find(h =>
+      (h.sym||'').toUpperCase() === symU &&
+      (h.wallet||'').toLowerCase() === walletL &&
+      (!network || (h.chain||'').toLowerCase() === chainL)
+    );
+    if(!match && network) {
+      match = DB.holdings.find(h =>
+        (h.sym||'').toUpperCase() === symU &&
+        (h.wallet||'').toLowerCase() === walletL &&
+        !(h.chain||'').trim()
+      );
+      if(match) match.chain = network;
+    }
+    if(match) {
+      const prevQty = match.qty || 0;
+      const prevAvgCost = match.avgCost || 0;
+      const existingTotal = prevAvgCost * prevQty;
+      const overflowTotal = (marketPrice || 0) * overflowQty;
+      const newQty = cleanQty(prevQty + overflowQty);
+      match.qty = newQty;
+      match.avgCost = newQty > 0 ? (existingTotal + overflowTotal) / newQty : marketPrice;
+      if(geckoId && !match.geckoId) match.geckoId = geckoId;
+      _revRecord(match, prevQty, prevAvgCost, true);
+    } else {
+      const newRow = {
+        id: uid(), sym, geckoId: geckoId||'',
+        cat: '', chain: network||'', wallet: wallet||'',
+        avgCost: marketPrice || 0, qty: overflowQty,
+      };
+      DB.holdings.push(newRow);
+      _revRecord(newRow, null, null, false);
+    }
+  }
+}
+
 // ─── CLOSE / REBALANCE MODAL ─────────────────────────────────────────────────
 function openCloseModal(poolId) {
   const p = DB.pools.find(x=>x.id===poolId);
@@ -8254,6 +9059,11 @@ function openCloseModal(poolId) {
   document.getElementById('cl-rebalance-btn').style.display = isVault ? 'none' : ''; // rebalance N/A for vault
   document.getElementById('cl-partial-btn').style.display = isVault ? '' : 'none'; // partial withdrawal for vault only
   document.getElementById('cl-partial-section').style.display = isVault ? '' : 'none';
+  // v47.58: Return button is LP-specific
+  const _retHint = document.getElementById('cl-return-hint');
+  if(_retHint) _retHint.style.display = isVault ? 'none' : '';
+  const _retBtn = document.getElementById('cl-return-btn');
+  if(_retBtn) _retBtn.textContent = isVault ? 'Close Vault' : 'Return';
   // Pre-fill new position value with current value
   if(isVault) {
     const curVal = p.manualCurrentValue || p.entryValue || 0;
@@ -8276,16 +9086,41 @@ function openCloseModal(poolId) {
     DB.holdings.filter(h=>syms.includes(h.sym)&&h.wallet).forEach(h=>{wCount[h.wallet]=(wCount[h.wallet]||0)+1;});
     _smartWallet = Object.entries(wCount).sort((a,b)=>b[1]-a[1])[0]?.[0] || _allWallets[0] || '';
   }
-  const _walletOpts = [
-    ...(_smartWallet ? [_smartWallet] : []),
-    ..._allWallets.filter(w=>w!==_smartWallet),
-    '— External / Skip —',
-  ].map((w,i) => `<option value="${w}"${i===0?' selected':''}>${w}${i===0&&_smartWallet?' ✦':''}</option>`).join('');
+  // v47.66: enrich wallet option labels with current Holdings balance per token
+  const _buildWalletOptsFor = (sym) => {
+    const symU = (sym || '').toUpperCase();
+    const orderedWallets = [
+      ...(_smartWallet ? [_smartWallet] : []),
+      ..._allWallets.filter(w => w !== _smartWallet),
+      '— External / Skip —',
+    ];
+    return orderedWallets.map((w, i) => {
+      const isSkip = w === '— External / Skip —';
+      const isSmart = i === 0 && _smartWallet && !isSkip;
+      let label = w + (isSmart ? ' ✦' : '');
+      if(!isSkip && symU) {
+        const holding = DB.holdings.find(h =>
+          (h.sym || '').toUpperCase() === symU &&
+          (h.wallet || '').trim() === w
+        );
+        if(holding) {
+          const q = holding.qty || 0;
+          const qStr = q >= 1 ? q.toFixed(4).replace(/\.?0+$/, '') : q.toFixed(8).replace(/\.?0+$/, '');
+          label += ` — ${qStr} ${sym}`;
+        } else {
+          label += ` — 0 ${sym}`;
+        }
+      }
+      return `<option value="${w}"${i === 0 ? ' selected' : ''}>${label}</option>`;
+    }).join('');
+  };
+  const _walletOptsA = _buildWalletOptsFor(p.tokASym);
+  const _walletOptsB = _buildWalletOptsFor(p.tokBSym);
 
   const clWalletEl = document.getElementById('cl-wallet');
   const clWalletBEl = document.getElementById('cl-wallet-b');
-  if(clWalletEl) clWalletEl.innerHTML = _walletOpts;
-  if(clWalletBEl) clWalletBEl.innerHTML = _walletOpts;
+  if(clWalletEl) clWalletEl.innerHTML = _walletOptsA;
+  if(clWalletBEl) clWalletBEl.innerHTML = _walletOptsB;
 
   // Update Token B label with actual sym
   const clWalletBLabel = document.getElementById('cl-wallet-b-label');
@@ -8308,12 +9143,50 @@ function openCloseModal(poolId) {
   if(isVault) {
     clAddReturnRow();
     document.getElementById('cl-vault-wallet').value = _smartWallet;
+    // Hide LP tokens-returning section in vault mode (vault uses its own row list)
+    const lpR = document.getElementById('cl-lp-returns');
+    if(lpR) lpR.style.display = 'none';
   } else {
     const clDest = document.getElementById('cl-dest');
     if(clDest) clDest.value = 'holdings';
     onCloseDestChange();
+    // Populate & show the LP Tokens Returning section
+    const lpR = document.getElementById('cl-lp-returns');
+    if(lpR) lpR.style.display = '';
+    // Labels
+    const labA = document.getElementById('cl-ret-tokA-label');
+    const labB = document.getElementById('cl-ret-tokB-label');
+    if(labA) labA.textContent = p.tokASym || 'Token A';
+    if(labB) labB.textContent = p.tokBSym || 'Token B';
+    // Current qty hints (v47.56: was "Entry" — now shows last-known stored qty)
+    const curA = document.getElementById('cl-ret-tokA-current');
+    const curB = document.getElementById('cl-ret-tokB-current');
+    if(curA) curA.textContent = (p.tokAQty!=null ? p.tokAQty : '—');
+    if(curB) curB.textContent = (p.tokBQty!=null ? p.tokBQty : '—');
+    // Clear previous input values & USD readout
+    const retA = document.getElementById('cl-ret-tokA');
+    const retB = document.getElementById('cl-ret-tokB');
+    if(retA) retA.value = '';
+    if(retB) retB.value = '';
+    const usdEl = document.getElementById('cl-ret-usd');
+    if(usdEl) usdEl.textContent = '—';
   }
   document.getElementById('closeModal2').classList.add('open');
+}
+
+// Live USD readout for Tokens Returning section. Called on input.
+function clUpdateReturnUsd() {
+  const poolId = document.getElementById('cl-idx')?.value;
+  const p = DB.pools.find(x => x.id === poolId);
+  if(!p) return;
+  const qA = +document.getElementById('cl-ret-tokA')?.value || 0;
+  const qB = +document.getElementById('cl-ret-tokB')?.value || 0;
+  const pA = getPrice(p.tokAGeckoId) || 0;
+  const pB = getPrice(p.tokBGeckoId) || 0;
+  const total = qA*pA + qB*pB;
+  const usdEl = document.getElementById('cl-ret-usd');
+  // v47.66: use $fp (unmasked) to avoid the prv-span showing as literal HTML.
+  if(usdEl) usdEl.textContent = total > 0 ? $fp(total, 2) : '—';
 }
 function clAddReturnRow() {
   const container = document.getElementById('cl-returns');
@@ -8340,48 +9213,173 @@ function clAddReturnRow() {
 function restoreClosedPool(histId) {
   const h = DB.history.find(x => x.id === histId);
   if(!h) { toast('Entry not found', true); return; }
-  if(!confirm(`Restore "${h.name}" as an active pool?\n\nThis will move it back from History to LP Pools. You can edit quantities and range after restoring.`)) return;
-  // Reconstruct a pool object from the history entry
-  const restored = {
-    id: uid(),
-    name:         h.name,
-    platform:     h.platform || '',
-    network:      '',
-    subtitle:     '',
-    entryDate:    h.entryDate || today(),
-    entryValue:   h.entryValue || 0,
-    tokASym:      h.tokASym || '',
-    tokAGeckoId:  h.tokAGeckoId || '',
-    tokAQtyEntry: 0,
-    tokAQty:      0,
-    tokBSym:      h.tokBSym || '',
-    tokBGeckoId:  h.tokBGeckoId || '',
-    tokBQtyEntry: 0,
-    tokBQty:      0,
-    rangeLow:     null,
-    rangeHigh:    null,
-    liveRatio:    null,
-    rewardTokSym: h.rewardTokSym || '',
-    rewardTokId:  h.rewardTokId  || '',
-    vaultMode:    false,
-    notes:        h.notes || '',
-    alertActNowPct: 5,
-    alertWatchPct:  15,
-    poolType:     'uni_v3',
-    ampCoeff:     200,
-    weightA:      80,
-    defaultWallet:'',
-    yieldLog:     [...(h.yieldLog||[])],
-    invertRatio:  false,
-    entryPriceA:  null,
-    entryPriceB:  null,
-  };
+
+  const hasReversion = Array.isArray(h.closeUndo) && h.closeUndo.length > 0;
+
+  // If no reversion data (legacy close from v47.54 or earlier), use old behavior
+  // with an honest warning.
+  if(!hasReversion) {
+    if(!confirm(`Restore "${h.name}"?\n\nNote: This entry was created before Holdings reversion was available (pre-v47.55). The pool will be restored but Holdings will NOT be adjusted — you will need to correct token quantities manually.\n\nProceed?`)) return;
+    return _restorePoolFromHistory(h, /*holdingsReverted*/ false);
+  }
+
+  // Preflight: check whether we can cleanly reverse Holdings.
+  const pf = _revPreflight(h.closeUndo, h.closeDate);
+
+  // Block case: some reverse deltas would produce negative Holdings qty, or
+  // a previously-modified row is now missing.
+  if(!pf.ok) {
+    _showRestoreBlockerModal(h, pf.blockers);
+    return;
+  }
+
+  // Warning case: transactions exist after the close that touched the same
+  // tokens/wallets. Show modal for user to acknowledge before proceeding.
+  if(pf.warnings.length > 0) {
+    _showRestoreWarningModal(h, pf.warnings);
+    return;
+  }
+
+  // Clean case: proceed directly.
+  _doRestoreWithReversion(histId);
+}
+
+// Internal: actually perform the restoration once preflight has passed (or
+// the user has explicitly confirmed past warnings).
+function _doRestoreWithReversion(histId) {
+  const h = DB.history.find(x => x.id === histId);
+  if(!h) { toast('Entry not found', true); return; }
+
+  // Apply Holdings reversal
+  if(Array.isArray(h.closeUndo) && h.closeUndo.length > 0) {
+    _revApply(h.closeUndo, h.closeTxnIds || []);
+  }
+
+  // Handle the three history entry types:
+  if(h.type === 'Partial Withdrawal') {
+    // Restore the pool's state in place (don't create a new pool)
+    const p = DB.pools.find(x => x.id === h.partialPoolId);
+    if(p && h.partialPoolBefore) {
+      p.entryValue         = h.partialPoolBefore.entryValue;
+      p.manualCurrentValue = h.partialPoolBefore.manualCurrentValue;
+      p.tokAQty            = h.partialPoolBefore.tokAQty;
+      p.tokBQty            = h.partialPoolBefore.tokBQty;
+    }
+    DB.history = DB.history.filter(x => x.id !== histId);
+    persist(); renderHistory(); renderActivePoolsHistTab(); renderPools(); renderHeader(); renderHoldings();
+    toast(`✓ Partial withdrawal reverted — pool "${h.name}" restored, Holdings reset.`);
+    return;
+  }
+
+  // Close or Rebalance — restore pool from history
+  _restorePoolFromHistory(h, /*holdingsReverted*/ true);
+}
+
+// Internal: restore a pool from a history entry (without handling reversion —
+// that's already done by the caller). Called by _doRestoreWithReversion for
+// clean cases, and by restoreClosedPool for legacy (pre-reversion) entries.
+//
+// v47.55+: uses h.poolSnapshot when available (complete pool state). Legacy
+// entries fall back to the original reconstruction from top-level fields,
+// which loses range/basis metadata and requires user to re-enter.
+function _restorePoolFromHistory(h, holdingsReverted) {
+  let restored;
+  if(h.poolSnapshot && typeof h.poolSnapshot === 'object') {
+    // Deep-copy the snapshot so the history entry remains immutable
+    restored = JSON.parse(JSON.stringify(h.poolSnapshot));
+    // Give it a fresh id to avoid any collision with other pool IDs
+    restored.id = uid();
+  } else {
+    // Legacy entry — reconstruct from top-level history fields
+    restored = {
+      id: uid(),
+      name:         h.name,
+      platform:     h.platform || '',
+      network:      '',
+      subtitle:     '',
+      entryDate:    h.entryDate || today(),
+      entryValue:   h.entryValue || 0,
+      tokASym:      h.tokASym || '',
+      tokAGeckoId:  h.tokAGeckoId || '',
+      tokAQtyEntry: 0,
+      tokAQty:      0,
+      tokBSym:      h.tokBSym || '',
+      tokBGeckoId:  h.tokBGeckoId || '',
+      tokBQtyEntry: 0,
+      tokBQty:      0,
+      rangeLow:     null,
+      rangeHigh:    null,
+      liveRatio:    null,
+      rewardTokSym: h.rewardTokSym || '',
+      rewardTokId:  h.rewardTokId  || '',
+      vaultMode:    false,
+      notes:        h.notes || '',
+      alertActNowPct: 5,
+      alertWatchPct:  15,
+      poolType:     'uni_v3',
+      ampCoeff:     200,
+      weightA:      80,
+      defaultWallet:'',
+      yieldLog:     [...(h.yieldLog||[])],
+      invertRatio:  false,
+      entryPriceA:  null,
+      entryPriceB:  null,
+    };
+  }
   DB.pools.push(restored);
   // Remove from history
-  DB.history = DB.history.filter(x => x.id !== histId);
-  persist(); renderHistory(); renderActivePoolsHistTab(); renderPools(); renderHeader();
-  toast(`✓ "${h.name}" restored to Active Pools — edit quantities and range to match current position.`);
+  DB.history = DB.history.filter(x => x.id !== h.id);
+  persist(); renderHistory(); renderActivePoolsHistTab(); renderPools(); renderHeader(); renderHoldings();
+  const msg = holdingsReverted
+    ? (h.poolSnapshot
+        ? `✓ "${h.name}" restored — pool and Holdings reverted to pre-close state.`
+        : `✓ "${h.name}" restored — Holdings reverted, but pool metadata (range, entry prices) needs re-entering.`)
+    : `✓ "${h.name}" restored to Active Pools — edit quantities and range to match current position.`;
+  toast(msg);
   setTimeout(() => switchTab('pools'), 1200);
+}
+
+// Internal: show modal explaining why a restore can't proceed.
+function _showRestoreBlockerModal(h, blockers) {
+  const modal = document.getElementById('restoreBlockerModal');
+  if(!modal) {
+    alert(`Cannot restore "${h.name}" — Holdings state has changed since the close:\n\n` + blockers.join('\n\n'));
+    return;
+  }
+  document.getElementById('rbm-title').textContent = `Cannot Restore "${h.name}"`;
+  const listEl = document.getElementById('rbm-blockers');
+  listEl.innerHTML = blockers.map(b => `<li style="margin-bottom:8px;">${b}</li>`).join('');
+  modal.classList.add('open');
+}
+
+// Internal: show modal warning about transactions since close.
+let _pendingRestoreHistId = null;
+function _showRestoreWarningModal(h, warnings) {
+  _pendingRestoreHistId = h.id;
+  const modal = document.getElementById('restoreWarningModal');
+  if(!modal) {
+    const msg = `Restore "${h.name}"?\n\nHoldings will be reverted. ⚠ Note: these transactions happened on affected tokens since the close — review manually:\n\n` + warnings.join('\n') + '\n\nProceed?';
+    if(confirm(msg)) _doRestoreWithReversion(h.id);
+    return;
+  }
+  document.getElementById('rwm-title').textContent = `Restore "${h.name}" — Review Warnings`;
+  const listEl = document.getElementById('rwm-warnings');
+  listEl.innerHTML = warnings.slice(0, 12).map(w => `<li style="margin-bottom:6px;font-family:var(--mono);font-size:11px;">${w}</li>`).join('');
+  if(warnings.length > 12) {
+    listEl.innerHTML += `<li style="color:var(--text3);font-style:italic;">…and ${warnings.length - 12} more</li>`;
+  }
+  modal.classList.add('open');
+}
+
+function _confirmRestoreWarning() {
+  const id = _pendingRestoreHistId;
+  _pendingRestoreHistId = null;
+  closeModal('restoreWarningModal');
+  if(id) _doRestoreWithReversion(id);
+}
+function _cancelRestoreWarning() {
+  _pendingRestoreHistId = null;
+  closeModal('restoreWarningModal');
 }
 
 function archivePool(type) {
@@ -8409,6 +9407,9 @@ function archivePool(type) {
     tokASym:       p.tokASym,       tokAGeckoId: p.tokAGeckoId,
     tokBSym:       p.tokBSym,       tokBGeckoId: p.tokBGeckoId,
     rewardTokSym:  p.rewardTokSym,  rewardTokId: p.rewardTokId,
+    // Full pool snapshot (v47.55) — enables complete restore on revert.
+    // Deep-copied to avoid aliasing if the pool is later edited in history view.
+    poolSnapshot: JSON.parse(JSON.stringify(p)),
   });
   return p;
 }
@@ -8453,6 +9454,18 @@ function doPartialWithdrawal() {
   }
   if(newVal < 0) { toast('New position value cannot be negative', true); return; }
 
+  // Capture pool state BEFORE mutation so a revert can restore it precisely.
+  const _pwPoolBefore = {
+    entryValue:         p.entryValue,
+    manualCurrentValue: p.manualCurrentValue,
+    tokAQty:            p.tokAQty,
+    tokBQty:            p.tokBQty,
+  };
+
+  // Start reversion tracking for Holdings deltas.
+  _revStart();
+  const _pwTxnIds = [];
+
   // Update pool's manualCurrentValue to reflect reduced position
   // Also reduce entryValue proportionally so Net Result stays meaningful
   const prevCurVal = p.manualCurrentValue || p.entryValue || 0;
@@ -8483,25 +9496,59 @@ function doPartialWithdrawal() {
     const existing = DB.holdings.find(h => h.sym.toUpperCase() === sym);
     const geckoId  = known?.id || existing?.geckoId || '';
     const price    = getPrice(geckoId) || 0;
-    mergeYieldIntoHoldings(sym, geckoId, qty, price * qty, wallet);
+    // Basis-preserving: token returns to its existing pile at existing avgCost.
+    // Fallback basis (if no holding exists anywhere) uses the pool's entry price
+    // for this token when it matches, else current market as last resort.
+    const fallbackBasis = (sym === (p.tokASym||'').toUpperCase() ? p.entryPriceA : null)
+                       || (sym === (p.tokBSym||'').toUpperCase() ? p.entryPriceB : null)
+                       || price;
+    returnPoolAssetsToHoldings(sym, geckoId, qty, wallet, fallbackBasis, p.network);
     returned.push(`${qty} ${sym}`);
-    logTransaction({
+    const tid = logTransaction({
       date: today(), type: 'Transfer', sym,
       qty, price, total: price * qty,
       from: `Pool: ${p.name}`, to: wallet || 'Holdings',
       notes: notes || `Partial withdrawal — ${qty} ${sym} returned`,
     });
+    if(tid) _pwTxnIds.push(tid);
   });
 
   // Log the withdrawal value transaction even if no token rows
   if(!returned.length) {
-    logTransaction({
+    const tid = logTransaction({
       date: today(), type: 'Transfer', sym: p.name,
       qty: null, price: null, total: withdrawn,
       from: `Pool: ${p.name}`, to: wallet || 'External',
       notes: notes || `Partial withdrawal — $${$f(withdrawn)} removed, $${$f(newVal)} remaining`,
     });
+    if(tid) _pwTxnIds.push(tid);
   }
+
+  // Record this partial withdrawal as a reversible entry in history.
+  DB.history.push({
+    id: uid(),
+    name: p.name,
+    platform: p.platform || '',
+    type: 'Partial Withdrawal',
+    entryDate: p.entryDate || today(),
+    closeDate: today(),
+    days: daysSince(p.entryDate),
+    entryValue: _pwPoolBefore.entryValue,
+    exitValue: newVal,
+    yieldTotal: 0,
+    netResult: null,
+    hodlValue: null,
+    annReturn: null,
+    notes: notes || `Partial withdrawal — $${$f(withdrawn)} removed`,
+    tokASym: p.tokASym, tokAGeckoId: p.tokAGeckoId,
+    tokBSym: p.tokBSym, tokBGeckoId: p.tokBGeckoId,
+    rewardTokSym: p.rewardTokSym, rewardTokId: p.rewardTokId,
+    yieldLog: [],
+    closeUndo: _revFinalize(),
+    closeTxnIds: _pwTxnIds,
+    partialPoolId: p.id,
+    partialPoolBefore: _pwPoolBefore,
+  });
 
   persist(); closeModal('closeModal2'); renderAll();
   toast(returned.length
@@ -8517,9 +9564,323 @@ function clToggleBWallet() {
   btn.textContent = open ? '＋ Token B returns to different wallet?' : '－ Same wallet for both tokens';
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// ACTION CONFIRMATION MODAL (v47.56)
+// ─────────────────────────────────────────────────────────────────────────
+// Close, Rebalance and Partial Withdrawal all pop a preview/confirmation modal
+// before committing. The preview shows destinations, existing pile qty and
+// avgCost, and what each row will become — so accidental-wallet mistakes are
+// visible before they alter Holdings.
+// ═══════════════════════════════════════════════════════════════════════════
+
+let _acmPendingAction = null;  // 'close' | 'rebalance' | 'partial' | null
+
+function _acmFindRow(sym, wallet, chain) {
+  if(!sym || !wallet) return null;
+  const symU = sym.toUpperCase();
+  const walletL = wallet.toLowerCase();
+  const chainL = (chain||'').toLowerCase();
+  let match = DB.holdings.find(h =>
+    (h.sym||'').toUpperCase() === symU &&
+    (h.wallet||'').toLowerCase() === walletL &&
+    (!chain || (h.chain||'').toLowerCase() === chainL)
+  );
+  if(!match && chain) {
+    match = DB.holdings.find(h =>
+      (h.sym||'').toUpperCase() === symU &&
+      (h.wallet||'').toLowerCase() === walletL &&
+      !(h.chain||'').trim()
+    );
+  }
+  return match || null;
+}
+
+function _acmPreviewRow(sym, qty, wallet, chain, entryPrice, entryQty) {
+  if(!sym || !qty || qty <= 0 || !wallet) return null;
+  const row = _acmFindRow(sym, wallet, chain);
+  const overflow = Math.max(0, qty - (entryQty||0));
+  const preserved = Math.min(qty, entryQty||0);
+  let basisNote;
+  if(overflow > 0 && preserved > 0) {
+    basisNote = `basis split (${preserved} preserved + ${overflow} at market)`;
+  } else if(overflow > 0) {
+    basisNote = `at market price (new basis)`;
+  } else {
+    basisNote = `basis preserved`;
+  }
+  const header = `<div style="color:var(--text);font-weight:700;margin-top:8px;">${sym} ${qty} → ${wallet}${chain?' / '+chain:''}</div>`;
+  if(row) {
+    const before = `existing pile: ${row.qty} @ $${Number(row.avgCost||0).toFixed(4)} avgCost`;
+    const afterQty = (row.qty || 0) + qty;
+    const after = `after: ${afterQty} qty (${basisNote})`;
+    return header +
+      `<div style="color:var(--text3);padding-left:14px;">${before}</div>` +
+      `<div style="color:var(--accent);padding-left:14px;">${after}</div>`;
+  } else {
+    const newBasis = overflow > 0 ? `today's market` : `$${Number(entryPrice||0).toFixed(4)} (pool entry)`;
+    return header +
+      `<div style="color:#f59e0b;padding-left:14px;font-weight:600;">⚠ NEW row — no existing ${sym} in ${wallet}${chain?'/'+chain:''}</div>` +
+      `<div style="color:var(--text3);padding-left:14px;">new row: ${qty} @ ${newBasis} (${basisNote})</div>`;
+  }
+}
+
+function confirmClose() {
+  const _poolId = document.getElementById('cl-idx')?.value;
+  const p = DB.pools.find(x => x.id === _poolId);
+  if(!p) { toast('Pool not found', true); return; }
+
+  const skip = '— External / Skip —';
+  const dest    = (document.getElementById('cl-dest')?.value) || 'holdings';
+  const walletA = (document.getElementById('cl-wallet')?.value||'').trim();
+  const bWalletOpen = document.getElementById('cl-wallet-b-row')?.style.display !== 'none';
+  const walletB = bWalletOpen ? (document.getElementById('cl-wallet-b')?.value||'').trim() : walletA;
+
+  let summary, preview = '';
+  let isPartialPreview = false;  // track for title/button styling
+
+  if(p.vaultMode) {
+    const rows = document.querySelectorAll('#cl-returns > div');
+    const wallet = document.getElementById('cl-vault-wallet')?.value.trim() || '';
+    const parts = [];
+    let hasAny = false;
+    rows.forEach(r => {
+      const sym = (r.querySelector('.cl-ret-sym')?.value||'').trim().toUpperCase();
+      const qty = +r.querySelector('.cl-ret-qty')?.value || 0;
+      if(sym && qty) {
+        hasAny = true;
+        const entryPrice = sym === (p.tokASym||'').toUpperCase() ? p.entryPriceA
+                         : sym === (p.tokBSym||'').toUpperCase() ? p.entryPriceB
+                         : 0;
+        const entryQty = sym === (p.tokASym||'').toUpperCase() ? p.tokAQtyEntry
+                       : sym === (p.tokBSym||'').toUpperCase() ? p.tokBQtyEntry
+                       : 0;
+        const html = _acmPreviewRow(sym, qty, wallet, p.network, entryPrice, entryQty);
+        if(html) parts.push(html);
+      }
+    });
+    summary = `<strong>Close vault:</strong> ${p.name}<br>Platform: ${p.platform||'—'} · Network: ${p.network||'—'}`;
+    preview = hasAny
+      ? parts.join('')
+      : `<div style="color:var(--text3);font-style:italic;">No token return rows entered — close will log as external withdrawal only.</div>`;
+  } else {
+    const rawA = document.getElementById('cl-ret-tokA')?.value.trim();
+    const rawB = document.getElementById('cl-ret-tokB')?.value.trim();
+    if(rawA === '' || rawB === '') {
+      toast(`Please enter returned quantities for both ${p.tokASym||'Token A'} and ${p.tokBSym||'Token B'} (use 0 if a token went entirely to the other side).`, true);
+      return;
+    }
+    const tokA = +rawA, tokB = +rawB;
+    if(tokA < 0 || tokB < 0 || !isFinite(tokA) || !isFinite(tokB)) {
+      toast('Returned quantities must be zero or positive numbers.', true);
+      return;
+    }
+
+    // v47.57: Detect partial — same logic as doClose
+    // Returning 0 of a token is full exit (out-of-range case), not partial.
+    const curA = p.tokAQty || 0;
+    const curB = p.tokBQty || 0;
+    const EPS = 1e-9;
+    const partialOnA = tokA > EPS && tokA < curA - EPS && curA > 0;
+    const partialOnB = tokB > EPS && tokB < curB - EPS && curB > 0;
+    isPartialPreview = partialOnA || partialOnB;
+
+    // Build pool-fate banner
+    let fateBanner;
+    if(isPartialPreview) {
+      const remA = Math.max(0, curA - tokA);
+      const remB = Math.max(0, curB - tokB);
+      fateBanner = `<div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.30);border-radius:var(--radius);padding:8px 12px;margin-bottom:10px;">` +
+                   `<div style="font-size:11px;font-weight:700;color:#f59e0b;">⚠ Partial Withdrawal — pool stays open</div>` +
+                   `<div style="font-size:11px;color:var(--text2);margin-top:2px;">` +
+                   `Remaining in pool: <span style="font-family:var(--mono);">${nf(remA,6)} ${p.tokASym||''}</span> + <span style="font-family:var(--mono);">${nf(remB,6)} ${p.tokBSym||''}</span>` +
+                   `</div></div>`;
+    } else {
+      fateBanner = `<div style="background:rgba(220,38,38,0.08);border:1px solid rgba(220,38,38,0.30);border-radius:var(--radius);padding:8px 12px;margin-bottom:10px;">` +
+                   `<div style="font-size:11px;font-weight:700;color:#dc2626;">✕ Full Close — pool will be archived to History</div>` +
+                   `</div>`;
+    }
+
+    summary = `<strong>${isPartialPreview ? 'Partial withdrawal from' : 'Close pool:'}</strong> ${p.name}<br>Platform: ${p.platform||'—'} · Network: ${p.network||'—'}`;
+    if(dest === 'holdings') {
+      const partsA = _acmPreviewRow(p.tokASym, tokA, walletA, p.network, p.entryPriceA, p.tokAQtyEntry);
+      const partsB = _acmPreviewRow(p.tokBSym, tokB, walletB, p.network, p.entryPriceB, p.tokBQtyEntry);
+      const lines = [partsA, partsB].filter(x => x && (walletA && walletA !== skip)).join('');
+      preview = fateBanner + (lines || `<div style="color:var(--text3);font-style:italic;">No Holdings changes — tokens being returned externally.</div>`);
+    } else if(dest === 'cash_internal') {
+      const exitVal = poolCurrentValue(p) || 0;
+      preview = fateBanner + `<div style="color:var(--text);font-weight:700;">Cash proceeds → ${walletA || 'Cash'}</div>` +
+                `<div style="color:var(--accent);padding-left:14px;">$${exitVal.toFixed(2)} merged into cash/stablecoin Holdings</div>`;
+    } else {
+      const exitVal = poolCurrentValue(p) || 0;
+      preview = fateBanner + `<div style="color:var(--text);font-weight:700;">External withdrawal — logged only</div>` +
+                `<div style="color:var(--text3);padding-left:14px;">$${exitVal.toFixed(2)} no Holdings update</div>`;
+    }
+  }
+
+  document.getElementById('acm-title').textContent = isPartialPreview ? 'Confirm Partial Withdrawal' : 'Confirm Pool Close';
+  document.getElementById('acm-summary').innerHTML = summary;
+  document.getElementById('acm-preview').innerHTML = preview;
+  document.getElementById('acm-confirm-btn').textContent = isPartialPreview ? 'Confirm Partial' : 'Confirm Close';
+  document.getElementById('acm-confirm-btn').className = isPartialPreview ? 'btn warn' : 'btn danger';
+  _acmPendingAction = 'close';
+  document.getElementById('actionConfirmModal').classList.add('open');
+}
+
+function confirmRebalance() {
+  const _poolId = document.getElementById('cl-idx')?.value;
+  const p = DB.pools.find(x => x.id === _poolId);
+  if(!p) { toast('Pool not found', true); return; }
+
+  const skip = '— External / Skip —';
+  const dest    = (document.getElementById('cl-dest')?.value) || 'holdings';
+  const walletA = (document.getElementById('cl-wallet')?.value||'').trim();
+  const bWalletOpen = document.getElementById('cl-wallet-b-row')?.style.display !== 'none';
+  const walletB = bWalletOpen ? (document.getElementById('cl-wallet-b')?.value||'').trim() : walletA;
+
+  const rawA = document.getElementById('cl-ret-tokA')?.value.trim();
+  const rawB = document.getElementById('cl-ret-tokB')?.value.trim();
+  if(rawA === '' || rawB === '') {
+    toast(`Please enter returned quantities for both ${p.tokASym||'Token A'} and ${p.tokBSym||'Token B'} (use 0 if a token went entirely to the other side).`, true);
+    return;
+  }
+  const tokA = +rawA, tokB = +rawB;
+  if(tokA < 0 || tokB < 0 || !isFinite(tokA) || !isFinite(tokB)) {
+    toast('Returned quantities must be zero or positive numbers.', true);
+    return;
+  }
+
+  const summary = `<strong>Rebalance pool:</strong> ${p.name}<br>Old leg archived, new leg entered next. Platform: ${p.platform||'—'} · Network: ${p.network||'—'}`;
+  let preview = '';
+  if(dest === 'holdings') {
+    const partsA = _acmPreviewRow(p.tokASym, tokA, walletA, p.network, p.entryPriceA, p.tokAQtyEntry);
+    const partsB = _acmPreviewRow(p.tokBSym, tokB, walletB, p.network, p.entryPriceB, p.tokBQtyEntry);
+    preview = [partsA, partsB].filter(x => x && (walletA && walletA !== skip)).join('') ||
+              `<div style="color:var(--text3);font-style:italic;">No Holdings changes.</div>`;
+  } else {
+    const exitVal = poolCurrentValue(p) || 0;
+    preview = `<div style="color:var(--text);font-weight:700;">Exit value logged: $${exitVal.toFixed(2)}</div>`;
+  }
+
+  document.getElementById('acm-title').textContent = `Confirm Rebalance`;
+  document.getElementById('acm-summary').innerHTML = summary;
+  document.getElementById('acm-preview').innerHTML = preview;
+  document.getElementById('acm-confirm-btn').textContent = 'Confirm Rebalance';
+  document.getElementById('acm-confirm-btn').className = 'btn warn';
+  _acmPendingAction = 'rebalance';
+  document.getElementById('actionConfirmModal').classList.add('open');
+}
+
+function confirmPartialWithdrawal() {
+  const _poolId = document.getElementById('cl-idx')?.value;
+  const p = DB.pools.find(x => x.id === _poolId);
+  if(!p || !p.vaultMode) { toast('Partial withdrawal is for vault-mode pools only', true); return; }
+
+  const curVal    = p.manualCurrentValue || p.entryValue || 0;
+  const withdrawn = parseFloat(document.getElementById('cl-partial-amount').value) || 0;
+  const newVal    = parseFloat(document.getElementById('cl-partial-newval').value) || Math.max(0, curVal - withdrawn);
+  const wallet    = document.getElementById('cl-vault-wallet')?.value.trim() || '';
+
+  if(!withdrawn && !newVal) { toast('Enter withdrawal amount or new position value', true); return; }
+  if(newVal < 0) { toast('New position value cannot be negative', true); return; }
+
+  const rows = document.querySelectorAll('#cl-returns > div');
+  const parts = [];
+  let hasTokens = false;
+  rows.forEach(r => {
+    const sym = (r.querySelector('.cl-ret-sym')?.value||'').trim().toUpperCase();
+    const qty = +r.querySelector('.cl-ret-qty')?.value || 0;
+    if(sym && qty) {
+      hasTokens = true;
+      const entryPrice = sym === (p.tokASym||'').toUpperCase() ? p.entryPriceA
+                       : sym === (p.tokBSym||'').toUpperCase() ? p.entryPriceB
+                       : 0;
+      const html = _acmPreviewRow(sym, qty, wallet, p.network, entryPrice, 0);
+      if(html) parts.push(html);
+    }
+  });
+
+  const summary = `<strong>Partial withdrawal:</strong> ${p.name}<br>Amount: $${$f(withdrawn)} · New position value: $${$f(newVal)}`;
+  const preview = hasTokens
+    ? parts.join('')
+    : `<div style="color:var(--text3);font-style:italic;">No token return rows — only cash value will be logged (no Holdings update).</div>`;
+
+  document.getElementById('acm-title').textContent = `Confirm Partial Withdrawal`;
+  document.getElementById('acm-summary').innerHTML = summary;
+  document.getElementById('acm-preview').innerHTML = preview;
+  document.getElementById('acm-confirm-btn').textContent = 'Confirm Withdrawal';
+  document.getElementById('acm-confirm-btn').className = 'btn primary';
+  _acmPendingAction = 'partial';
+  document.getElementById('actionConfirmModal').classList.add('open');
+}
+
+function _acmConfirm() {
+  const action = _acmPendingAction;
+  _acmPendingAction = null;
+  closeModal('actionConfirmModal');
+  if(action === 'close')     doClose();
+  else if(action === 'rebalance') doRebalance();
+  else if(action === 'partial')   doPartialWithdrawal();
+}
+
+function _acmCancel() {
+  _acmPendingAction = null;
+  closeModal('actionConfirmModal');
+}
+
 function doClose() {
-  const p = archivePool('Close');
-  if(!p) return;
+  // For LP pools (not vaults), require the user to enter returned quantities
+  // BEFORE we archive anything. An LP close must include explicit Token A and
+  // Token B returned amounts — we can't infer them from the pool's stored qty
+  // because concentrated-liquidity pools shift composition as price moves.
+  const _poolId = document.getElementById('cl-idx')?.value;
+  const _poolPeek = DB.pools.find(x => x.id === _poolId);
+  let _userTokA = null, _userTokB = null;
+  if(_poolPeek && !_poolPeek.vaultMode) {
+    const rawA = document.getElementById('cl-ret-tokA')?.value.trim();
+    const rawB = document.getElementById('cl-ret-tokB')?.value.trim();
+    if(rawA === '' || rawB === '') {
+      toast(`Please enter returned quantities for both ${_poolPeek.tokASym||'Token A'} and ${_poolPeek.tokBSym||'Token B'} (use 0 if a token went entirely to the other side).`, true);
+      return;
+    }
+    _userTokA = +rawA;
+    _userTokB = +rawB;
+    if(_userTokA < 0 || _userTokB < 0 || !isFinite(_userTokA) || !isFinite(_userTokB)) {
+      toast('Returned quantities must be zero or positive numbers.', true);
+      return;
+    }
+  }
+
+  // v47.57: for LP pools, detect partial vs full close BEFORE archiving.
+  // A close is partial if either token is returned in a smaller-than-current
+  // amount (but > 0). Returning exactly 0 of a token is treated as full exit
+  // for that side — this is the concentrated-liquidity out-of-range case where
+  // one side converts entirely to the other and the user legitimately returns
+  // 0 of the depleted token.
+  let isPartial = false;
+  if(_poolPeek && !_poolPeek.vaultMode) {
+    const curA = _poolPeek.tokAQty || 0;
+    const curB = _poolPeek.tokBQty || 0;
+    const EPS = 1e-9;
+    const partialOnA = _userTokA > EPS && _userTokA < curA - EPS && curA > 0;
+    const partialOnB = _userTokB > EPS && _userTokB < curB - EPS && curB > 0;
+    isPartial = partialOnA || partialOnB;
+  }
+
+  // Archive only for vault close or full LP close. Partial LP keeps pool active.
+  let p, _partialPoolBefore = null;
+  if(isPartial) {
+    p = _poolPeek;
+    _partialPoolBefore = {
+      entryValue:         p.entryValue,
+      manualCurrentValue: p.manualCurrentValue,
+      tokAQty:            p.tokAQty,
+      tokBQty:            p.tokBQty,
+    };
+  } else {
+    p = archivePool('Close');
+    if(!p) return;
+  }
+
   const closeDate = today();
   const skip = '— External / Skip —';
 
@@ -8536,7 +9897,12 @@ function doClose() {
       const existing = DB.holdings.find(h => h.sym.toUpperCase() === sym);
       const geckoId = known?.id || existing?.geckoId || '';
       const price = getPrice(geckoId) || 0;
-      mergeYieldIntoHoldings(sym, geckoId, qty, price * qty, wallet);
+      // Basis-preserving pool close. Fallback basis uses pool's entry price if sym matches
+      // the pool's token, else current market (rare edge case for vaults).
+      const fallbackBasis = (sym === (p.tokASym||'').toUpperCase() ? p.entryPriceA : null)
+                         || (sym === (p.tokBSym||'').toUpperCase() ? p.entryPriceB : null)
+                         || price;
+      returnPoolAssetsToHoldings(sym, geckoId, qty, wallet, fallbackBasis, p.network);
       returned.push(`${qty} ${sym}`);
       logTransaction({
         date: closeDate, type: 'Pool Close', sym,
@@ -8568,42 +9934,124 @@ function doClose() {
     ? (document.getElementById('cl-wallet-b')?.value||'').trim()
     : walletA;
 
+  // User-entered returned quantities (validated above).
+  const tokAReturned = _userTokA;
+  const tokBReturned = _userTokB;
+
+  // Start recording Holdings deltas for potential reversion later.
+  _revStart();
+  const _closeTxnIds = [];
+
   if(dest === 'holdings') {
-    // Return Token A to Holdings
-    if(p.tokASym && p.tokAQty > 0 && walletA && walletA !== skip) {
-      const priceA = getPrice(p.tokAGeckoId) || 0;
-      mergeYieldIntoHoldings(p.tokASym, p.tokAGeckoId, p.tokAQty, priceA * p.tokAQty, walletA);
-      logTransaction({
-        date: closeDate, type: 'Pool Close', sym: p.tokASym,
-        qty: p.tokAQty, price: priceA, total: priceA * p.tokAQty,
+    const priceA = getPrice(p.tokAGeckoId) || 0;
+    const priceB = getPrice(p.tokBGeckoId) || 0;
+
+    // Token A
+    if(p.tokASym && tokAReturned > 0 && walletA && walletA !== skip) {
+      _returnTokenWithOverflow(p.tokASym, p.tokAGeckoId, p.tokAQtyEntry, tokAReturned, walletA, p.entryPriceA, priceA, p.network, skip);
+      const overflow = Math.max(0, tokAReturned - (p.tokAQtyEntry||0));
+      const basisNote = overflow > 0
+        ? `basis split: ${Math.min(tokAReturned, p.tokAQtyEntry||0).toFixed(4)} at original, ${overflow.toFixed(4)} at market`
+        : `basis preserved`;
+      const txnType = isPartial ? 'Partial Withdrawal' : 'Pool Close';
+      const noteVerb = isPartial ? 'Partial withdrawal' : 'Pool closed';
+      const tid = logTransaction({
+        date: closeDate, type: txnType, sym: p.tokASym,
+        qty: tokAReturned, price: priceA, total: priceA * tokAReturned,
         from: `Pool: ${p.name}`, to: walletA,
-        notes: `Pool closed — ${p.tokAQty.toFixed(4)} ${p.tokASym} returned to ${walletA}`,
+        notes: `${noteVerb} — ${tokAReturned} ${p.tokASym} returned to ${walletA} (${basisNote})`,
       });
+      if(tid) _closeTxnIds.push(tid);
     }
-    // Return Token B to Holdings
-    if(p.tokBSym && p.tokBQty > 0 && walletB && walletB !== skip) {
-      const priceB = getPrice(p.tokBGeckoId) || 0;
-      mergeYieldIntoHoldings(p.tokBSym, p.tokBGeckoId, p.tokBQty, priceB * p.tokBQty, walletB);
-      logTransaction({
-        date: closeDate, type: 'Pool Close', sym: p.tokBSym,
-        qty: p.tokBQty, price: priceB, total: priceB * p.tokBQty,
+    // Token B
+    if(p.tokBSym && tokBReturned > 0 && walletB && walletB !== skip) {
+      _returnTokenWithOverflow(p.tokBSym, p.tokBGeckoId, p.tokBQtyEntry, tokBReturned, walletB, p.entryPriceB, priceB, p.network, skip);
+      const overflow = Math.max(0, tokBReturned - (p.tokBQtyEntry||0));
+      const basisNote = overflow > 0
+        ? `basis split: ${Math.min(tokBReturned, p.tokBQtyEntry||0).toFixed(4)} at original, ${overflow.toFixed(4)} at market`
+        : `basis preserved`;
+      const txnType = isPartial ? 'Partial Withdrawal' : 'Pool Close';
+      const noteVerb = isPartial ? 'Partial withdrawal' : 'Pool closed';
+      const tid = logTransaction({
+        date: closeDate, type: txnType, sym: p.tokBSym,
+        qty: tokBReturned, price: priceB, total: priceB * tokBReturned,
         from: `Pool: ${p.name}`, to: walletB,
-        notes: `Pool closed — ${p.tokBQty.toFixed(4)} ${p.tokBSym} returned to ${walletB}`,
+        notes: `${noteVerb} — ${tokBReturned} ${p.tokBSym} returned to ${walletB} (${basisNote})`,
       });
+      if(tid) _closeTxnIds.push(tid);
     }
   } else if(dest === 'cash_internal') {
     const exitVal = poolCurrentValue(p) || 0;
     mergeCashIntoHoldings(exitVal, walletA !== skip ? walletA : '');
-    logTransaction({ date:closeDate, type:'Pool Close', sym:p.name,
+    const tid = logTransaction({ date:closeDate, type:'Pool Close', sym:p.name,
       qty:null, price:null, total:exitVal,
       from:`Pool: ${p.name}`, to: walletA !== skip ? walletA : 'Cash',
       notes:`Pool closed — $${exitVal.toFixed(2)} proceeds → cash Holdings` });
+    if(tid) _closeTxnIds.push(tid);
   } else {
     const exitVal = poolCurrentValue(p) || 0;
-    logTransaction({ date:closeDate, type:'Pool Close', sym:p.name,
+    const tid = logTransaction({ date:closeDate, type:'Pool Close', sym:p.name,
       qty:null, price:null, total:exitVal,
       from:`Pool: ${p.name}`, to:'External',
       notes:`Pool closed — funds withdrawn externally` });
+    if(tid) _closeTxnIds.push(tid);
+  }
+
+  if(isPartial) {
+    // Reduce pool's stored qtys by the returned amounts. Don't let them go
+    // negative (guard against the user entering slightly more than stored on
+    // one side but less on the other).
+    p.tokAQty = cleanQty(Math.max(0, _partialPoolBefore.tokAQty - tokAReturned));
+    p.tokBQty = cleanQty(Math.max(0, _partialPoolBefore.tokBQty - tokBReturned));
+
+    // Scale entryValue proportionally at today's prices to keep Net Result meaningful.
+    const priceA = getPrice(p.tokAGeckoId) || p.entryPriceA || 0;
+    const priceB = getPrice(p.tokBGeckoId) || p.entryPriceB || 0;
+    const preValue  = (_partialPoolBefore.tokAQty * priceA) + (_partialPoolBefore.tokBQty * priceB);
+    const postValue = (p.tokAQty * priceA) + (p.tokBQty * priceB);
+    if(preValue > 0) {
+      const ratio = postValue / preValue;
+      p.entryValue = (p.entryValue || 0) * ratio;
+    }
+
+    // Write a Partial Withdrawal history entry with full reversion data.
+    DB.history.push({
+      id: uid(),
+      name: p.name,
+      platform: p.platform || '',
+      type: 'Partial Withdrawal',
+      entryDate: p.entryDate || today(),
+      closeDate,
+      days: daysSince(p.entryDate),
+      entryValue: _partialPoolBefore.entryValue,
+      exitValue: postValue,
+      yieldTotal: 0,
+      netResult: null,
+      hodlValue: null,
+      annReturn: null,
+      notes: v('cl-notes') || `Partial withdrawal — ${tokAReturned} ${p.tokASym}, ${tokBReturned} ${p.tokBSym}`,
+      tokASym: p.tokASym, tokAGeckoId: p.tokAGeckoId,
+      tokBSym: p.tokBSym, tokBGeckoId: p.tokBGeckoId,
+      rewardTokSym: p.rewardTokSym, rewardTokId: p.rewardTokId,
+      yieldLog: [],
+      closeUndo: _revFinalize(),
+      closeTxnIds: _closeTxnIds,
+      partialPoolId: p.id,
+      partialPoolBefore: _partialPoolBefore,
+    });
+
+    persist(); closeModal('closeModal2'); renderAll();
+    toast(`Partial withdrawal — pool remains with ${nf(p.tokAQty,6)} ${p.tokASym} + ${nf(p.tokBQty,6)} ${p.tokBSym}`);
+    return;
+  }
+
+  // Full close: attach closeUndo to the history entry archivePool created
+  const _histEntry = DB.history[DB.history.length - 1];
+  if(_histEntry) {
+    _histEntry.closeUndo = _revFinalize();
+    _histEntry.closeTxnIds = _closeTxnIds;
+  } else {
+    _revDiscard();
   }
 
   DB.pools = DB.pools.filter(x=>x.id!==p.id);
@@ -8615,6 +10063,25 @@ function doClose() {
 }
 
 function doRebalance() {
+  // Require returned quantities (same rule as doClose) before archiving.
+  const _poolId = document.getElementById('cl-idx')?.value;
+  const _poolPeek = DB.pools.find(x => x.id === _poolId);
+  let _userTokA = null, _userTokB = null;
+  if(_poolPeek && !_poolPeek.vaultMode) {
+    const rawA = document.getElementById('cl-ret-tokA')?.value.trim();
+    const rawB = document.getElementById('cl-ret-tokB')?.value.trim();
+    if(rawA === '' || rawB === '') {
+      toast(`Please enter returned quantities for both ${_poolPeek.tokASym||'Token A'} and ${_poolPeek.tokBSym||'Token B'} (use 0 if a token went entirely to the other side).`, true);
+      return;
+    }
+    _userTokA = +rawA;
+    _userTokB = +rawB;
+    if(_userTokA < 0 || _userTokB < 0 || !isFinite(_userTokA) || !isFinite(_userTokB)) {
+      toast('Returned quantities must be zero or positive numbers.', true);
+      return;
+    }
+  }
+
   const p = archivePool('Rebalance');
   if(!p) return;
   const rebalDate = today();
@@ -8628,31 +10095,61 @@ function doRebalance() {
     ? (document.getElementById('cl-wallet-b')?.value||'').trim()
     : walletA;
 
+  const tokAReturned = _userTokA;
+  const tokBReturned = _userTokB;
+
+  // Start recording Holdings deltas for potential reversion later.
+  _revStart();
+  const _rebalTxnIds = [];
+
   if(dest === 'holdings') {
-    if(p.tokASym && p.tokAQty > 0 && walletA && walletA !== skip) {
-      const priceA = getPrice(p.tokAGeckoId) || 0;
-      logTransaction({
+    const priceA = getPrice(p.tokAGeckoId) || 0;
+    const priceB = getPrice(p.tokBGeckoId) || 0;
+
+    if(p.tokASym && tokAReturned > 0 && walletA && walletA !== skip) {
+      _returnTokenWithOverflow(p.tokASym, p.tokAGeckoId, p.tokAQtyEntry, tokAReturned, walletA, p.entryPriceA, priceA, p.network, skip);
+      const overflow = Math.max(0, tokAReturned - (p.tokAQtyEntry||0));
+      const basisNote = overflow > 0
+        ? `basis split: ${Math.min(tokAReturned, p.tokAQtyEntry||0).toFixed(4)} at original, ${overflow.toFixed(4)} at market`
+        : `basis preserved`;
+      const tid = logTransaction({
         date: rebalDate, type: 'Rebalance', sym: p.tokASym,
-        qty: p.tokAQty, price: priceA, total: priceA * p.tokAQty,
+        qty: tokAReturned, price: priceA, total: priceA * tokAReturned,
         from: `Pool: ${p.name}`, to: walletA,
-        notes: `Rebalance — ${p.tokAQty.toFixed(4)} ${p.tokASym} returned to ${walletA}`,
+        notes: `Rebalance — ${tokAReturned} ${p.tokASym} returned to ${walletA} (${basisNote})`,
       });
+      if(tid) _rebalTxnIds.push(tid);
     }
-    if(p.tokBSym && p.tokBQty > 0 && walletB && walletB !== skip) {
-      const priceB = getPrice(p.tokBGeckoId) || 0;
-      logTransaction({
+    if(p.tokBSym && tokBReturned > 0 && walletB && walletB !== skip) {
+      _returnTokenWithOverflow(p.tokBSym, p.tokBGeckoId, p.tokBQtyEntry, tokBReturned, walletB, p.entryPriceB, priceB, p.network, skip);
+      const overflow = Math.max(0, tokBReturned - (p.tokBQtyEntry||0));
+      const basisNote = overflow > 0
+        ? `basis split: ${Math.min(tokBReturned, p.tokBQtyEntry||0).toFixed(4)} at original, ${overflow.toFixed(4)} at market`
+        : `basis preserved`;
+      const tid = logTransaction({
         date: rebalDate, type: 'Rebalance', sym: p.tokBSym,
-        qty: p.tokBQty, price: priceB, total: priceB * p.tokBQty,
+        qty: tokBReturned, price: priceB, total: priceB * tokBReturned,
         from: `Pool: ${p.name}`, to: walletB,
-        notes: `Rebalance — ${p.tokBQty.toFixed(4)} ${p.tokBSym} returned to ${walletB}`,
+        notes: `Rebalance — ${tokBReturned} ${p.tokBSym} returned to ${walletB} (${basisNote})`,
       });
+      if(tid) _rebalTxnIds.push(tid);
     }
   } else {
     const exitVal = poolCurrentValue(p) || 0;
-    logTransaction({ date:rebalDate, type:'Rebalance', sym:p.name,
+    const tid = logTransaction({ date:rebalDate, type:'Rebalance', sym:p.name,
       qty:null, price:null, total:exitVal,
       from:`Pool: ${p.name}`, to: dest==='cash_external'?'External':'Cash',
       notes:`Rebalance exit — $${exitVal.toFixed(2)}` });
+    if(tid) _rebalTxnIds.push(tid);
+  }
+
+  // Attach Holdings-reversion log to the history entry for this rebalance.
+  const _rebalHistEntry = DB.history[DB.history.length - 1];
+  if(_rebalHistEntry) {
+    _rebalHistEntry.closeUndo = _revFinalize();
+    _rebalHistEntry.closeTxnIds = _rebalTxnIds;
+  } else {
+    _revDiscard();
   }
 
   // ── Reset pool for new leg ────────────────────────────────────────────────
@@ -8682,9 +10179,9 @@ function doRebalance() {
   closeModal('closeModal2');
   renderAll();
 
+  // v47.64: open the compact new-leg modal instead of the full pool-edit form.
   setTimeout(() => {
-    openPoolModal(p.id);
-    toast('Old leg archived. Enter new Token A & B quantities for the new leg, then Save.');
+    _openRebalNewLegModal(p.id);
   }, 200);
 }
 
@@ -8695,6 +10192,7 @@ function openVaultModal(id=null) {
   const v2 = id ? DB.vaults.find(v=>v.id===id) : null;
   document.getElementById('vm-name').value       = v2?.name||'';
   document.getElementById('vm-platform').value   = v2?.platform||'';
+  document.getElementById('vm-network').value    = v2?.network||'';
   document.getElementById('vm-tok-search').value = v2?.tokSym||'';
   document.getElementById('vm-tok-id').value     = v2?.tokGeckoId||'';
   document.getElementById('vm-tok-sym').value    = v2?.tokSym||'';
@@ -8768,6 +10266,7 @@ function saveVault() {
     id:          editingVaultId || uid(),
     name:        v('vm-name'),
     platform:    v('vm-platform'),
+    network:     v('vm-network'),
     tokSym:      document.getElementById('vm-tok-sym').value || v('vm-tok-search'),
     tokGeckoId:  document.getElementById('vm-tok-id').value,
     qty:         +v('vm-qty')||0,
@@ -8814,12 +10313,14 @@ function closeVault() {
   const px     = getPrice(v2.tokGeckoId) || 0;
   const exitVal = px * v2.qty || v2.entryValue || 0;
   if(dest === 'holdings') {
-    // Merge tokens back into Holdings at current price
-    mergeYieldIntoHoldings(v2.tokSym, v2.tokGeckoId, v2.qty, exitVal, wallet);
+    // Basis-preserving: tokens rejoin their wallet pile at existing avgCost.
+    // Fallback (no prior holding anywhere) uses vault's entry price per token.
+    const vaultEntryPricePerToken = (v2.qty > 0 && v2.entryValue > 0) ? v2.entryValue / v2.qty : px;
+    returnPoolAssetsToHoldings(v2.tokSym, v2.tokGeckoId, v2.qty, wallet, vaultEntryPricePerToken, v2.network);
     logTransaction({ date:today(), type:'Vault Close', sym:v2.tokSym,
       qty:v2.qty, price:px, total:exitVal,
       from:`Vault: ${v2.name}`, to:wallet||'Holdings',
-      notes: notes || `Vault closed — tokens returned to Holdings` });
+      notes: notes || `Vault closed — tokens returned to Holdings (basis preserved)` });
     toast(`Vault closed — ${v2.qty} ${v2.tokSym} returned to Holdings`);
   } else if(dest === 'cash_internal') {
     // Add proceeds to stablecoin Holdings row
@@ -8973,7 +10474,19 @@ function hmSetMode(mode) {
     document.getElementById('hm-swap-to-id').value='';
     document.getElementById('hm-swap-to-sym').value='';
     document.getElementById('hm-swap-to-qty').value='';
+    document.getElementById('hm-swap-to-qty').dataset.autofilled = '';  // v47.62: reset autofill flag
     document.getElementById('hm-swap-to-wallet').value = h?.wallet||'';
+
+    // v47.60: Show Current qty hint for what's being swapped FROM
+    const fromHint = document.getElementById('hm-swap-from-current');
+    if(fromHint && h) {
+      const qty = h.qty || 0;
+      const qtyStr = qty >= 1 ? qty.toFixed(4) : qty.toFixed(8);
+      const trimmed = qtyStr.replace(/\.?0+$/, '');
+      fromHint.textContent = `Current: ${trimmed} ${h.sym} available`;
+      fromHint.style.display = '';
+    }
+
     // Auto-fill price for stablecoins — lock at $1.00
     const priceEl = document.getElementById('hm-swap-sell-price');
     const isStable = h && (h.cat==='Stablecoin' || (h.geckoId==='' && h.sym==='USDC') || (!h.geckoId && getPrice(h.geckoId)===null));
@@ -8995,6 +10508,11 @@ function hmSetMode(mode) {
       const ph = document.getElementById('hm-swap-price-hint');
       if(ph) ph.style.display='none';
     }
+    // Reset receiving-qty hint and receiving-price display on every mode entry (v47.60)
+    const qHint = document.getElementById('hm-swap-to-qty-hint');
+    if(qHint) { qHint.textContent = ''; qHint.style.display = 'none'; }
+    const rpHint = document.getElementById('hm-swap-to-price');
+    if(rpHint) { rpHint.textContent = ''; rpHint.style.display = 'none'; }
   }
 
   if(mode==='transfer') {
@@ -9011,6 +10529,89 @@ function hmSetMode(mode) {
   const saveBtn = document.getElementById('hm-save-btn');
   saveBtn.textContent  = btnLabels[mode]||'Save';
   saveBtn.style.cssText = btnColors[mode]||'';
+}
+
+// v47.59: live hint for swap's Qty Received. See tracker for full explanation.
+// v47.60: also populates receiving-token price display + _hmTrySourcePrice.
+function updateSwapHint() {
+  const hintEl = document.getElementById('hm-swap-to-qty-hint');
+  const toPriceEl = document.getElementById('hm-swap-to-price');
+  if(!hintEl) return;
+  const sellQty   = +document.getElementById('hm-swap-qty').value        || 0;
+  const sellPrice = +document.getElementById('hm-swap-sell-price').value || 0;
+  const toGeckoId = document.getElementById('hm-swap-to-id').value || '';
+  const toSym     = (document.getElementById('hm-swap-to-sym').value || '').trim().toUpperCase();
+
+  let toPrice = getPrice(toGeckoId);
+  if(!toPrice) {
+    const existing = DB.holdings.find(h => (h.sym||'').toUpperCase() === toSym);
+    if(existing && existing.geckoId) toPrice = getPrice(existing.geckoId);
+  }
+  if(!toPrice && (toSym === 'USDC' || toSym === 'USDT' || toSym === 'DAI' || toSym === 'USDT0')) {
+    toPrice = 1;
+  }
+
+  if(toPriceEl) {
+    if(toSym && toPrice > 0) {
+      const priceStr = toPrice.toLocaleString('en-US',{maximumFractionDigits: toPrice<1 ? 6 : 2});
+      toPriceEl.textContent = `Live: $${priceStr} / ${toSym}`;
+      toPriceEl.style.color = 'var(--accent)';
+      toPriceEl.style.display = '';
+    } else if(toSym) {
+      toPriceEl.textContent = `${toSym} price not available — enter Qty Received manually`;
+      toPriceEl.style.color = 'var(--warn)';
+      toPriceEl.style.display = '';
+    } else {
+      toPriceEl.textContent = '';
+      toPriceEl.style.display = 'none';
+    }
+  }
+
+  if(sellQty <= 0 || sellPrice <= 0 || !toSym) {
+    hintEl.style.display = 'none'; hintEl.textContent = '';
+    return;
+  }
+
+  const saleValue = sellQty * sellPrice;
+  if(!toPrice || toPrice <= 0) {
+    hintEl.textContent = `$${saleValue.toLocaleString('en-US',{maximumFractionDigits:2})} equivalent — ${toSym} price not available`;
+    hintEl.style.color = 'var(--warn)';
+    hintEl.style.display = '';
+    return;
+  }
+  const expectedQty = cleanQty(saleValue / toPrice);
+  const qtyStr = expectedQty >= 1 ? expectedQty.toFixed(4) : expectedQty.toFixed(6);
+  hintEl.textContent = `expected: ${qtyStr} ${toSym} (~$${saleValue.toLocaleString('en-US',{maximumFractionDigits:2})})`;
+  hintEl.style.color = 'var(--text3)';
+  hintEl.style.display = '';
+
+  // v47.62: pre-fill Qty Received with calculated value (user overtype wins)
+  const toQtyEl = document.getElementById('hm-swap-to-qty');
+  if(toQtyEl) {
+    const currentVal = toQtyEl.value.trim();
+    const wasAutofilled = toQtyEl.dataset.autofilled === '1';
+    if(currentVal === '' || wasAutofilled) {
+      toQtyEl.value = qtyStr;
+      toQtyEl.dataset.autofilled = '1';
+    }
+  }
+}
+
+function _hmSwapToQtyInput() {
+  const el = document.getElementById('hm-swap-to-qty');
+  if(el) el.dataset.autofilled = '';
+}
+
+function _hmTrySourcePrice() {
+  const priceEl = document.getElementById('hm-swap-sell-price');
+  if(!priceEl || priceEl.value || priceEl.readOnly) return;
+  const h = DB.holdings.find(x => x.id === document.getElementById('hm-edit-id').value);
+  if(!h) return;
+  const liveP = getPrice(h.geckoId) || (h.cat === 'Stablecoin' ? 1 : 0);
+  if(liveP > 0) {
+    priceEl.value = liveP.toFixed(liveP < 1 ? 6 : 2);
+    updateSwapHint();
+  }
 }
 
 function updateBuyTotal() {
@@ -9100,12 +10701,30 @@ function saveHoldingUnified() {
     const sellPrice = +document.getElementById('hm-swap-sell-price').value || 0;
     const toSym     = (document.getElementById('hm-swap-to-sym').value || document.getElementById('hm-swap-to-search').value).trim().toUpperCase();
     const toGeckoId = document.getElementById('hm-swap-to-id').value;
-    const toQty     = +document.getElementById('hm-swap-to-qty').value     || 0;
+    let   toQty     = +document.getElementById('hm-swap-to-qty').value     || 0;
     const toWallet  = document.getElementById('hm-swap-to-wallet').value;
     if(!sellQty||!sellPrice){ toast('Swap qty and price required',true); return; }
-    if(sellQty > h.qty){ toast('Qty exceeds available balance',true); return; }
+    if(sellQty > h.qty){
+      const availStr = h.qty >= 1 ? h.qty.toFixed(4).replace(/\.?0+$/,'') : h.qty.toFixed(8).replace(/\.?0+$/,'');
+      toast(`Qty to Swap (${sellQty} ${h.sym}) exceeds your available balance (${availStr} ${h.sym})`, true);
+      return;
+    }
     if(!toSym){ toast('Destination token required',true); return; }
-    if(!toQty){ toast('Qty received required',true); return; }
+    // v47.59: If user left Qty Received blank, fall back to computed expected value.
+    if(!toQty) {
+      let toPrice = getPrice(toGeckoId);
+      if(!toPrice) {
+        const existing = DB.holdings.find(x => (x.sym||'').toUpperCase() === toSym);
+        if(existing && existing.geckoId) toPrice = getPrice(existing.geckoId);
+      }
+      if(!toPrice && (toSym === 'USDC' || toSym === 'USDT' || toSym === 'DAI' || toSym === 'USDT0')) {
+        toPrice = 1;
+      }
+      if(toPrice > 0) {
+        toQty = cleanQty((sellQty * sellPrice) / toPrice);
+      }
+    }
+    if(!toQty){ toast('Qty received required — enter the amount or ensure price data is loaded',true); return; }
     const saleValue = sellQty * sellPrice;
     const destCost  = saleValue / toQty;
     h.qty -= sellQty;
@@ -9207,8 +10826,9 @@ function mergeCashIntoHoldings(usd, wallet) {
 // Central function to log any portfolio movement
 function logTransaction(obj) {
   if(!DB.transactions) DB.transactions = [];
+  const id = uid();
   DB.transactions.push({
-    id:    uid(),
+    id,
     date:  obj.date || today(),
     type:  obj.type || 'Other',
     sym:   obj.sym  || '',
@@ -9219,6 +10839,7 @@ function logTransaction(obj) {
     to:    obj.to   || '',
     notes: obj.notes || '',
   });
+  return id;
 }
 
 // Render Transactions subtab
@@ -12386,6 +14007,11 @@ function selectToken(id, sym, resultsId, idField, symField, searchId) {
   document.getElementById(symField).value = sym;
   document.getElementById(searchId).value = sym;
   document.getElementById(resultsId).classList.remove('open');
+  // v47.61: if this is the swap modal's receiving-token search, trigger the
+  // hint update so the live price + expected qty appear immediately after click.
+  if(searchId === 'hm-swap-to-search' && typeof updateSwapHint === 'function') {
+    updateSwapHint();
+  }
 }
 
 // Close dropdowns on outside click
@@ -14570,12 +16196,26 @@ async function exportJSON() {
   if(fsFileHandle) {
     const ok = await fsWriteNow(true);
     if(ok) {
+      // Detect if the linked file's name has a stale date (browser API
+      // doesn't allow renaming a linked file, so the date stays whatever
+      // it was when first created/linked).
+      const linkedName = fsFileHandle.name || '';
+      const dateMatch = linkedName.match(/(\d{4}-\d{2}-\d{2})/);
+      const isStale = dateMatch && dateMatch[1] !== dt;
+
       const alsoCopy = !!(DB.settings && DB.settings.alsoDownloadCopy);
-      if(alsoCopy) {
+      if(alsoCopy || isStale) {
+        // Always give the user a freshly-dated copy when the linked
+        // filename is stale. They can delete the old linked file and
+        // re-link the fresh one if they want the filename to track dates.
         downloadDatedCopy();
-        toast(`✓ Saved to ${fsFileHandle.name} + downloaded portfolio_backup_${dt}_manual.json`);
+        if(isStale) {
+          toast(`✓ Saved to ${linkedName} · Also downloaded fresh portfolio_backup_${dt}_manual.json (linked filename shows ${dateMatch[1]} — browser doesn't allow renaming linked files)`, false, 8000);
+        } else {
+          toast(`✓ Saved to ${linkedName} + downloaded portfolio_backup_${dt}_manual.json`);
+        }
       } else {
-        toast(`✓ Saved to linked file: ${fsFileHandle.name} — reconnect this file after clearing cache`);
+        toast(`✓ Saved to linked file: ${linkedName} — reconnect this file after clearing cache`);
       }
     } else {
       toast('⚠ Save to linked file failed — downloading dated copy instead', true);
@@ -16406,6 +18046,41 @@ const FORMSPREE_REGISTRATION_EP   = 'https://formspree.io/f/mvzdgzga';  // Regis
 const IMGBB_API_KEY      = 'ab03e5f5abceb7d23cb84bc4452e88fc';
 let _fbImageBase64 = null;
 
+// v47.65: Silent auto-report for infrastructure failures (worker polling, etc).
+// Reuses the Formspree feedback pipeline so errors get to the same inbox as user
+// feedback, but tagged distinctly so they're easy to filter. Rate-limited to at
+// most one report per failure-source per 24 hours (stored in localStorage) so a
+// flaky worker doesn't spam the inbox. Swallows its own errors — this is
+// diagnostic only and must never break the calling flow.
+async function _reportInfraFailure(source, details) {
+  try {
+    const key = 'cpf_infra_reported::' + source;
+    const last = parseInt(localStorage.getItem(key) || '0', 10);
+    const now = Date.now();
+    if(now - last < 24 * 60 * 60 * 1000) return;  // 24-hour dedupe
+    localStorage.setItem(key, String(now));
+
+    let installId = '';
+    try { installId = await getInstallId(); } catch(e) {}
+
+    const payload = {
+      type: 'auto_infra_error',
+      name: 'auto_report',
+      email: 'not provided',
+      message: `Infrastructure failure detected\n\nSource: ${source}\nDetails: ${details}\nInstall ID: ${installId || '(unavailable)'}\nUser agent: ${navigator.userAgent}\nTime: ${new Date().toISOString()}`,
+      version: APP_VERSION,
+      platform: navigator.platform || 'unknown',
+      source: source,
+      _subject: `[auto] Infra failure: ${source} — v${APP_VERSION}`,
+    };
+    await fetch(FORMSPREE_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+  } catch(e) { /* diagnostic-only — must never break the caller */ }
+}
+
 // ── Registration ──────────────────────────────────────────────────────────────
 async function populateSettingsInstallId() {
   try {
@@ -16413,16 +18088,111 @@ async function populateSettingsInstallId() {
     const el = document.getElementById('settingsInstallId');
     if(el) el.textContent = id || '——';
   } catch(e) {}
+  // Also refresh the activation status pill + button/hint text.
+  updateSettingsActivationStatus();
+}
+
+// Reflect the current worker activation state in the Settings Registration block.
+// Three visible states:
+//   active   → green "✓ Activated" pill, Register button hidden, hint confirms
+//   pending  → amber "⏳ Pending" pill, Register button hidden, hint explains auto-unlock
+//   new      → no pill, Register button shown, standard hint
+// If the worker is unreachable, the block is left as-is (last-known state, with
+// the session flag window._demoActivated as a fallback signal).
+async function updateSettingsActivationStatus() {
+  const block = document.getElementById('settingsRegBlock');
+  const pill  = document.getElementById('settingsActStatusPill');
+  const btn   = document.getElementById('settingsRegBtn');
+  const hint  = document.getElementById('settingsRegHint');
+  if(!block || !pill || !btn || !hint) return;
+
+  // If we already know this session is activated, render immediately and
+  // still do a background refresh in case the admin revoked.
+  if(window._demoActivated) {
+    block.setAttribute('data-status', 'active');
+    pill.style.display = 'inline-block';
+    pill.textContent = '✓ ACTIVATED';
+    pill.style.color = '#065f46';
+    pill.style.background = 'rgba(10,124,74,0.15)';
+    pill.style.border = '1px solid rgba(10,124,74,0.4)';
+    btn.style.display = 'none';
+    hint.textContent = 'Your install ID is activated — no further action needed.';
+    hint.style.color = 'var(--accent)';
+  }
+
+  let status = 'unknown';
+  try {
+    status = await checkWorkerActivationStatus();
+  } catch(e) { status = 'error'; }
+
+  if(status === 'already_active') {
+    block.setAttribute('data-status', 'active');
+    pill.style.display = 'inline-block';
+    pill.textContent = '✓ ACTIVATED';
+    pill.style.color = '#065f46';
+    pill.style.background = 'rgba(10,124,74,0.15)';
+    pill.style.border = '1px solid rgba(10,124,74,0.4)';
+    btn.style.display = 'none';
+    hint.textContent = 'Your install ID is activated — no further action needed.';
+    hint.style.color = 'var(--accent)';
+    // Make sure session flag + banner removal state are in sync.
+    if(!window._demoActivated) handleDemoActivation(false);
+  } else if(status === 'pending') {
+    block.setAttribute('data-status', 'pending');
+    pill.style.display = 'inline-block';
+    pill.textContent = '⏳ PENDING';
+    pill.style.color = '#92400e';
+    pill.style.background = 'rgba(245,158,11,0.15)';
+    pill.style.border = '1px solid rgba(245,158,11,0.4)';
+    btn.style.display = 'none';
+    hint.textContent = 'Registration submitted — awaiting admin approval. Demo will unlock automatically when approved.';
+    hint.style.color = '#d97706';
+  } else if(status === 'error' || status === 'unknown') {
+    // Worker unreachable — don't clobber any existing state we may have set.
+    // Only reset if block is still in its initial unknown state and no session flag.
+    if(block.getAttribute('data-status') === 'unknown' && !window._demoActivated) {
+      block.setAttribute('data-status', 'new');
+      pill.style.display = 'none';
+      btn.style.display = '';
+      hint.textContent = 'Register to receive access approval.';
+      hint.style.color = 'var(--text3)';
+    }
+  } else {
+    // 'new' or any other response → show the registration CTA.
+    block.setAttribute('data-status', 'new');
+    pill.style.display = 'none';
+    btn.style.display = '';
+    hint.textContent = 'Register to receive access approval.';
+    hint.style.color = 'var(--text3)';
+  }
 }
 
 async function showRegistrationScreen() {
   closeModal('alertModal');
   // Pre-fill Install ID
+  let id = '';
   try {
-    const id = await getInstallId();
+    id = await getInstallId();
     const idEl = document.getElementById('reg-install-id');
     if(idEl) idEl.value = id || '';
   } catch(e) {}
+
+  // Before opening the form, check if this install ID is already activated on
+  // the worker. If so, don't re-open registration — tell the user they're
+  // already activated and update the UI state.
+  if(id) {
+    const status = await checkWorkerActivationStatus();
+    if(status === 'already_active') {
+      handleDemoActivation(false);  // remove banner, set flag, show celebration
+      return;
+    }
+    if(status === 'pending') {
+      // Polling is already running (or will be); admin will activate soon.
+      toast('⏳ Registration already submitted — awaiting admin approval. Demo will unlock automatically once approved.', false, 7000);
+      return;
+    }
+  }
+
   // Clear previous values
   ['reg-name','reg-email','reg-phone','reg-referral'].forEach(id => {
     const el = document.getElementById(id);
@@ -16454,6 +18224,7 @@ async function submitRegistration() {
 
   let workerOk = false;
   let formspreeOk = false;
+  let alreadyActive = false;
 
   // ── 1. Post to Cloudflare Worker (adds as pending user in your panel) ──
   try {
@@ -16470,7 +18241,24 @@ async function submitRegistration() {
     });
     const data = await res.json();
     workerOk = !!(data.ok);
+    alreadyActive = (data.status === 'already_active');
   } catch(e) { /* network error — fall through to Formspree */ }
+
+  // If the worker says this install ID is already activated, treat as success
+  // and reflect that in the UI immediately.
+  if(alreadyActive) {
+    showRegStatus('✓ This install ID is already activated — no approval needed.', 'success');
+    btn.textContent = '✓ Already activated';
+    try {
+      const banner = document.getElementById('demoBanner');
+      if(banner) banner.remove();
+      const h = document.getElementById('header'); if(h) h.style.top = '';
+      const m = document.getElementById('main');   if(m) m.style.marginTop = '';
+      window._demoActivated = true;
+    } catch(e) {}
+    setTimeout(() => closeModal('registrationModal'), 3000);
+    return;
+  }
 
   // ── 2. Post to Formspree (sends you an email notification) ──
   try {
@@ -16494,9 +18282,11 @@ async function submitRegistration() {
   } catch(e) { /* network error */ }
 
   if(workerOk || formspreeOk) {
-    showRegStatus('✓ Registration submitted! You\'ll be notified by email once your access is approved.', 'success');
+    showRegStatus('✓ Registration submitted! The demo will unlock automatically as soon as your access is approved — no need to refresh or re-enter anything.', 'success');
     btn.textContent = '✓ Submitted';
     setTimeout(() => closeModal('registrationModal'), 3500);
+    // Ensure polling is active so we detect admin approval immediately.
+    startDemoActivationPolling();
   } else {
     btn.disabled = false;
     btn.textContent = '📬 Submit Registration';
@@ -17942,6 +19732,164 @@ const TAB_LABELS = {
 };
 
 const WHATS_NEW = {
+  '47.66': {
+    headline: "Version 47.66",
+    summary:  "Close/Rebalance modal's Return Wallet dropdown now shows each wallet's current token balance, the 'Computed USD return' display is fixed (was showing raw HTML), and redundant hints under the new-leg Qty fields have been removed.",
+    items: [
+      { icon: '💰', title: "Return Wallet dropdown shows last-recorded balances",
+        text: "The Return Wallet selector in the Close/Rebalance modal used to show only the wallet name. It now includes each wallet's current Holdings balance for the specific token being returned — so the Token A dropdown shows wallets with their wBTC balance (e.g. 'Hardware Wallet ✦ — 0.2 wBTC') and the Token B dropdown shows ETH balances (e.g. 'Hardware Wallet ✦ — 9.7 ETH'). You can confirm at a glance that tokens are going back to the right wallet instead of guessing." },
+      { icon: '🐛', title: "Fixed: Computed USD return was showing raw HTML",
+        text: "The live 'Computed USD return' readout in the Tokens Returning section was rendering as literal text like '$<span class=\"prv\">$7,611.18</span>' because the dollar formatter's privacy-mask span was being set into textContent. The readout now uses the unmasked formatter — close-modal inputs are user-active, so masking didn't apply anyway — and renders as a clean '$7,611.18'." },
+      { icon: '✂', title: "New-leg modal: removed confusing hints under qty fields",
+        text: "The 'Available source wallets for TOKEN' hints that appeared under the Qty in Pool inputs of the rebalance new-leg modal were misleading — they floated beneath qty inputs but referred to the wallet dropdowns below. The wallet dropdowns already show each option's balance (e.g. 'Hardware Wallet — 0.2 wBTC'), so the top hints were redundant. Removed for cleaner layout." },
+    ]
+  },
+  '47.65': {
+    headline: "Version 47.65",
+    summary:  "Silent infrastructure failures (worker sync, activation status check) now auto-report to the feedback inbox with rate limiting, so connectivity issues become visible without adding any UI.",
+    items: [
+      { icon: '📡', title: "Silent worker failures now auto-report via feedback pipeline",
+        text: "When the help-content sync or activation status check silently failed against the Cloudflare Worker, nothing was surfaced — errors were caught and discarded. These two sites now fire a single automated report to the same Formspree inbox that user-submitted feedback uses, tagged distinctly so they're easy to filter. Each report includes the failure source, error details, install ID, user agent, app version, and timestamp. No new UI, no new endpoint — just reuses what's already in place so genuine connectivity problems become visible to the developer instead of vanishing." },
+      { icon: '⏱', title: "Rate limited — one report per failure source per 24 hours",
+        text: "To prevent a flaky network or temporarily struggling worker from flooding the feedback inbox, auto-reports are deduped via localStorage: at most one report per source name per 24 hours. A reconciled network the following day emits no further reports until another failure occurs. The auto-report helper also swallows its own errors, so if Formspree itself is unreachable, the app continues normally without any visible issue." },
+    ]
+  },
+  '47.64': {
+    headline: "Version 47.64",
+    summary:  "Rebalance now uses a compact new-leg form instead of opening the full pool-edit form. Enter qty A, qty B, $ value, range, and source wallets — tokens deduct from Holdings with validation. Cancel still fully reverts the rebalance.",
+    items: [
+      { icon: '📝', title: "Compact new-leg entry form",
+        text: "After you confirm the rebalance exit-side, a new focused modal appears asking only for the new leg: Qty in Pool for Token A, Qty in Pool for Token B, Entry $ Value (auto-estimated from qtys × live prices), optional range, and source wallet for each token. No more landing in the full 20-field pool-edit form with empty placeholders — just the inputs you actually need to update." },
+      { icon: '🛡', title: "Deposit validation + Holdings deduction on the new leg",
+        text: "The new leg now genuinely deducts tokens from your Holdings wallets (previously, the new-leg save didn't touch Holdings at all — a pre-existing gap). Before deducting, it runs the same validation as new pool funding: if a wallet doesn't have enough tokens, the save is blocked with a clear message naming the shortfall. Transactions log as 'Rebalance New Leg' so the audit trail distinguishes them from fresh pool funding." },
+      { icon: '🔙', title: "Cancel continues to fully revert the rebalance",
+        text: "The Cancel button on the new-leg form still fully rolls back the entire rebalance — pool, Holdings, and history restored to pre-rebalance state. Same safety as v47.63, just reached through the new compact form." },
+    ]
+  },
+  '47.63': {
+    headline: "Version 47.63",
+    summary:  "Two safety fixes: rebalance cancel now fully reverts Holdings (not just the pool), and attempting to fund a pool, vault, or capital addition with more than the wallet has is now caught with a clear error before anything is persisted.",
+    items: [
+      { icon: '🔙', title: "Rebalance cancel now fully rolls back Holdings",
+        text: "When a rebalance's exit-side runs, tokens are returned to Holdings and a history entry is created. Previously, cancelling the new-leg modal restored the pool from snapshot and removed the history entry, but the Holdings deltas were left in place — leaving you with duplicated tokens (once in Holdings, once in the restored pool). Now cancel applies the history entry's reversion log before removing it, so Holdings, pool state, and history all revert together. The toast confirms all three: 'Rebalance cancelled — pool, Holdings, and history restored.'" },
+      { icon: '🛡', title: "Deposit-side validation on pool/vault funding and add-capital",
+        text: "Creating a pool, creating a vault, or adding capital to a pool with more than your Holdings wallet actually contains used to silently clamp the deduction at zero — leaving 'phantom tokens' in the pool that never existed in your Holdings. Every funding flow now pre-validates each source row against the wallet's actual balance before committing. If short, an explicit error blocks the save: 'Not enough ETH in Metamask — need 1.0, have 0.5'. Rows drawing from the same (sym, wallet) pair are aggregated, so splitting a deposit across two rows from the same wallet also gets caught. Rows marked '— External / Skip —' bypass the check as intentional." },
+    ]
+  },
+  '47.62': {
+    headline: "Version 47.62",
+    summary:  "Swap modal now pre-fills Qty Received with the calculated value (you can still overtype for slippage), and the 'not enough balance' error now clearly says which side of the swap is short and by how much.",
+    items: [
+      { icon: '✍', title: "Qty Received pre-filled from live-price calculation",
+        text: "When all three inputs are known (Qty to Swap, Price at Swap, Receiving Token), the Qty Received field now auto-fills with the calculated expected amount — no more leaving it blank. If the actual received differs due to slippage, just overtype the value and the app respects your input. The field only auto-fills when empty or when it still holds a previous auto-fill; once you type your own number, it won't be overwritten by further recalculations." },
+      { icon: '📏', title: "Clearer 'insufficient balance' error on swap",
+        text: "The swap modal's validation error was just 'Qty exceeds available balance' — ambiguous when both source and received have quantities on screen. The new message names the side, the attempted amount, and your available balance: 'Qty to Swap (1 ETH) exceeds your available balance (0.5 ETH)'. Removes guesswork about which side triggered the error." },
+    ]
+  },
+  '47.61': {
+    headline: "Version 47.61",
+    summary:  "Swap modal's live price and auto-calculation now appear immediately after picking a token from the dropdown — fixing a case where clicking a search result didn't refresh the hint.",
+    items: [
+      { icon: '🔗', title: "Dropdown click now triggers the price hint",
+        text: "Previously, the swap modal's 'Live: $XXX / TOKEN' hint and the 'expected: X TOKEN' calculation only updated when you typed into the search field. If you clicked a result from the dropdown, the hidden token id was set but the hint function didn't re-run, leaving the hints empty. Clicking a dropdown result now fires the hint update directly, so the receiving-token price and expected-qty calculation show up immediately." },
+      { icon: '⌨', title: "Typed symbols (without dropdown click) also resolve to a price",
+        text: "If you type a known ticker like 'AAVE' into the search box and move on without clicking a dropdown result, the hint will still try to look up the token's live price via KNOWN_TOKENS and your existing Holdings. If a match is found, the hidden id is auto-populated so Execute Swap also uses the correct price. If no match, a warning hint suggests picking from the dropdown for auto-price lookup or entering Qty Received manually." },
+    ]
+  },
+  '47.60': {
+    headline: "Version 47.60",
+    summary:  "Swap modal now shows Current qty available for what's being swapped, live price for the receiving token as soon as it's picked, and recovers gracefully when prices are still loading.",
+    items: [
+      { icon: '📊', title: "Current qty shown under Qty to Swap",
+        text: "The swap modal now displays a 'Current: X TOKEN available' hint under the Qty to Swap input — so you can see how much of that asset you actually hold before entering the amount. No more switching tabs to check." },
+      { icon: '💹', title: "Receiving token's live price shown immediately",
+        text: "As soon as you pick a receiving token, a green hint appears under the search field: 'Live: $170.65 / AAVE'. You see the reference price without needing to first fill in sell qty and sell price. Bonus: if the receiving token doesn't have a live price (gecko ID not mapped, still loading), the hint says 'price not available — enter Qty Received manually' so you know to use a manual value." },
+      { icon: '🔄', title: "Price at Swap auto-fills when prices become available",
+        text: "If you open the swap modal before live prices have finished loading, the Price at Swap field used to stay blank. Now, when you focus (click/tap) that field, the app re-checks for live prices and fills it in if available. Same behavior for the receiving price display — it refreshes as the token is picked." },
+    ]
+  },
+  '47.59': {
+    headline: "Version 47.59",
+    summary:  "Swap modal's Qty Received is now auto-computed from the sell qty, sell price, and receiving token's live price — shown as a hint so you can compare against the actual received amount (slippage differences are honest).",
+    items: [
+      { icon: '🔁', title: "Swap: Qty Received now auto-computes from live prices",
+        text: "When you enter Qty to Swap, Price at Swap, and pick a Receiving Token, the modal shows an 'expected: X TOKEN' hint under Qty Received — calculated from (sellQty × sellPrice) ÷ receivingPrice. You can still type the actual received amount (which may differ from theoretical due to slippage) — or leave the field blank and the submit will use the computed value. Same deliberate-entry principle as elsewhere: the hint informs, the input authorizes." },
+      { icon: '⚠', title: "Graceful fallback when receiving-token price is unknown",
+        text: "If the receiving token doesn't have a live price loaded (yet-to-be-known token, gecko ID not mapped), the hint displays the dollar equivalent and notes the missing price instead of a fake number. Common stablecoins (USDC, USDT, DAI, USDT0) fall back to $1 automatically. You can always enter the Qty Received manually if auto-calc can't help." },
+    ]
+  },
+  '47.58': {
+    headline: "Version 47.58",
+    summary:  "Three fixes based on testing feedback: Return Wallet dropdown no longer gets cut off, 'Close Position' button renamed to 'Return' to reflect its dual role as close-or-partial, and floating-point noise on token returns (e.g. 2.0 showing as 1.9999999999) is cleaned up.",
+    items: [
+      { icon: '🔧', title: "Return Wallet dropdown layout fixed",
+        text: "The wallet selector in the Close/Rebalance modal was getting cut off at narrower widths because it shared a two-column grid with the 'Return funds to' dropdown and its help text. The two fields are now stacked vertically, each full-width — the wallet dropdown shows completely and the modal is easier to scan." },
+      { icon: '🏷', title: "Close Position button renamed to Return",
+        text: "Since the same button now handles both full close and partial withdrawal (depending on quantities entered), 'Close Position' was misleading — users doing a partial withdrawal saw 'Close' and felt like they were about to kill the pool. The button now reads 'Return' with a small italic hint below: 'Return closes the pool if you entered the full Current qty; otherwise it's a partial withdrawal (pool stays open).' Vaults still show 'Close Vault' since their close is always full." },
+      { icon: '🧮', title: "Floating-point noise cleaned up on quantity arithmetic",
+        text: "JavaScript represents decimals in binary, so 6.2 - 4.1 yields 2.0999999999999996 instead of 2.1. After a partial withdrawal or close-and-merge, pool and Holdings quantities were showing this ugly noise. A new cleanQty() helper rounds to 10 decimal places — eliminating the noise while preserving meaningful digits regardless of magnitude (fixed-decimal rounding, not significant-figures — the latter would incorrectly destroy digits on large numbers)." },
+    ]
+  },
+  '47.57': {
+    headline: "Version 47.57",
+    summary:  "LP pools now support partial withdrawal through the regular Close action — if you return less than the pool currently holds on either side, the pool stays open with reduced capital. Full reversion safety applies.",
+    items: [
+      { icon: '↓', title: "Partial withdrawal for LP pools, inferred from quantities",
+        text: "When you click Close Position and enter returned quantities that are less than the pool's current Token A or Token B (but non-zero), the app treats it as a partial withdrawal. The pool stays active in LP Pools with reduced stored quantities, entry value scales proportionally at live prices, and a 'Partial Withdrawal' history entry is created. No separate button needed — the intent is read from what you type." },
+      { icon: '⚠', title: "Confirmation modal shows pool fate clearly",
+        text: "The confirmation modal now displays a prominent banner indicating what will happen to the pool: amber '⚠ Partial Withdrawal — pool stays open' with the remaining quantities shown, or red '✕ Full Close — pool will be archived'. You see the outcome before clicking Confirm, and the Confirm button itself changes color (warn vs. danger) to match. Cancel always preserves your inputs so you can adjust." },
+      { icon: '🎯', title: "Out-of-range close handled correctly",
+        text: "When a concentrated-liquidity pool goes out of range, one side converts entirely to the other — you return 0 of the depleted token plus a larger-than-entry amount of the other. This now correctly detects as a full close (pool archived), not as a partial withdrawal. Returning exactly 0 of a token means that side is fully exited; partial detection only triggers when both a non-zero amount is returned AND it's less than the stored quantity." },
+      { icon: '↩', title: "Full reversion safety for partial withdrawals",
+        text: "LP partial withdrawals use the same reversion infrastructure as close and rebalance. Restoring a Partial Withdrawal entry from the History tab reverts both Holdings (tokens go back) and the pool (stored quantities and entry value restored to pre-partial state). Preflight checks still apply — if you've spent the returned tokens since, the restore blocks with a clear explanation." },
+    ]
+  },
+  '47.56': {
+    headline: "Version 47.56",
+    summary:  "Close, rebalance, and partial withdrawal now show a confirmation preview before committing — see exactly which wallet each token returns to, what the existing pile looks like, and whether a new Holdings row would be created.",
+    items: [
+      { icon: '👁', title: "Confirmation preview before every close, rebalance, partial withdrawal",
+        text: "Clicking Close Position, Rebalance, or Partial Withdrawal now pops a confirmation modal that previews exactly what will happen to Holdings. For each token being returned you see: destination wallet and chain; the existing pile's qty and avgCost; the resulting qty after the action; and the basis treatment (preserved, split, or market). This catches accidental-wallet mistakes before they alter Holdings." },
+      { icon: '⚠', title: "New-row warning when the wallet has no existing token",
+        text: "If the target wallet doesn't already have an entry for a token being returned (e.g., you left the default wallet and it doesn't hold USDC), the preview shows an amber ⚠ NEW row indicator with a clear explanation. This makes it obvious that the close will create a new Holdings entry rather than silently adding to an existing pile somewhere else." },
+      { icon: '↺', title: "Cancel safely — no state changes until Confirm",
+        text: "Clicking Cancel on the confirmation modal returns you to the Close modal with all inputs intact — you can adjust the returned quantities or wallet choice and try again. Nothing is archived, no Holdings mutate, no history entry is created until you explicitly hit Confirm. All the v47.55 reversion safety net still applies after confirmation." },
+      { icon: '📊', title: "Current qty shown next to Returned input",
+        text: "The Tokens Returning section now shows 'Current: X' (the pool's last-known stored qty) next to each token's Returned input, instead of the original 'Entry' amount. For in-range closes the Current value is a useful reference — most of the time you're returning close to what the app expects you still hold. The input is deliberately left empty (not pre-filled) to preserve the v47.54 safeguard requiring explicit entry of what actually came back from the platform." },
+    ]
+  },
+  '47.55': {
+    headline: "Version 47.55",
+    summary:  "Closing or rebalancing a pool is now fully reversible — restoring from History automatically reverts Holdings to pre-close state. Partial Withdrawal also reversible. Safety checks prevent reversal if tokens have been spent since.",
+    items: [
+      { icon: '↩', title: "Full reversion on pool restore",
+        text: "When you restore a closed pool from the History tab, Holdings are now automatically reverted to the exact pre-close state — no more manual cleanup after an accidental close. The reversion restores token quantities, cost bases, and the pool's full metadata (range, entry prices, wallets). The original close transactions stay in the log marked as 'reversed' for audit clarity." },
+      { icon: '🛡', title: "Safety checks before reversal",
+        text: "Before applying a reversal, the app runs a preflight check. If tokens from the close have been spent since (reversal would produce negative Holdings), or a Holdings row has been deleted, a blocker modal explains exactly what is missing and the restore is prevented. This guarantees the reversal is always mathematically sound — no silent data corruption." },
+      { icon: '⚠', title: "Warning for activity since close",
+        text: "If transactions on affected tokens occurred after the close but none of them block the reversal, a warning modal lists the transactions so you can verify nothing important will be miscounted. You can proceed or cancel. Either way, you see exactly what's in play before committing." },
+      { icon: '📜', title: "Reversion also covers Rebalance and Partial Withdrawal",
+        text: "The same safety net applies to rebalance and partial withdrawal actions. Rebalance creates a history entry for the exit leg that can be restored to undo both the old-leg archive and the Holdings return. Partial withdrawals now create their own history entry (type: Partial Withdrawal) with full undo data — restore reverts the pool's value and token quantities in place while undoing Holdings changes." },
+      { icon: '💾', title: "Pool snapshots stored at archive time",
+        text: "Each close/rebalance now stores a full deep-copy of the pool at the moment of archive. Restores from v47.55 onward come back complete — range, basis, wallet, all settings intact. Legacy history entries from v47.54 and earlier use the previous reconstruction path and still work, just with the old 'edit quantities and range to match' prompt." },
+    ]
+  },
+  '47.54': {
+    headline: "Version 47.54",
+    summary:  "LP close/rebalance now requires explicit returned token quantities — no more stale stored values applied to out-of-range positions. Split-basis accounting handles token conversion cleanly. Demo activation is now fully automatic.",
+    items: [
+      { icon: '📥', title: "Explicit returned quantities on close & rebalance",
+        text: "The close modal now requires you to enter the actual Token A and Token B quantities returned from the LP — they are no longer inferred from the pool's stored quantities. This was a significant bug: concentrated-liquidity pools shift token composition as price moves, and an out-of-range close could result in 0 of one token and all of the other. The previous flow blindly returned whatever stored quantity the pool happened to hold, injecting tokens into Holdings that never actually came back. Now Entry quantity is shown as a hint beneath each field, the Close button is disabled until both are filled, and a live 'Computed USD return' readout lets you sanity-check against the platform's exit value. Rebalance uses the same input flow." },
+      { icon: '⚖', title: "Split-basis accounting for converted tokens",
+        text: "When an LP converts one token into the other (common for out-of-range closes), returned tokens now have their basis tracked correctly. The portion up to the entry quantity rejoins Holdings at preserved basis — existing wallet avgCost is untouched. The overflow portion (tokens created by in-pool conversion) enters at today's market price and weighted-averages with the combined pile. Transaction notes distinguish the two cases: 'basis preserved' for normal closes, 'basis split: X at original, Y at market' when conversion occurred. This models the LP's behaviour accurately without distorting long-held cost bases." },
+      { icon: '🎁', title: "Reward token Holdings row created at pool save",
+        text: "When a pool is created or edited with a reward token (e.g. AERO on Aerodrome), a Holdings row for that reward token is silently created at (sym, defaultWallet, network) if one does not already exist. The row starts at qty=0 and cost=0; the first yield harvest establishes the avgCost via the existing weighted-average merge. This ensures yield harvests always have a target row and avoids the awkward situation of the first harvest failing to post because no matching Holdings row existed. Existing rows are preserved, never overwritten." },
+      { icon: '🔓', title: "Demo activation is now fully automatic (demo only)",
+        text: "When the admin activates a user's install ID via the working version, the demo now detects this within 30 seconds via Worker polling and unlocks itself automatically — banner removed, celebratory confirmation shown, no page refresh needed. Polling is visibility-aware (skipped when tab is hidden, fires immediately on tab focus). The Settings Registration section shows live activation status with ✓ ACTIVATED or ⏳ PENDING pills and hides the Register button once activated. The registration form now tells the user 'the demo will unlock automatically' rather than promising email notification." },
+      { icon: '🛡', title: "Validation before state change",
+        text: "Close and rebalance now validate returned quantity inputs before archiving the pool. If inputs are missing or invalid, a toast appears and no state is modified. Previously if a close hit an error partway through, the pool could be left half-archived with inconsistent Holdings. This fix keeps all state transitions atomic with respect to user-facing errors." },
+    ]
+  },
   '47.50': {
     headline: "Version 47.50",
     summary:  "Demo registration pipeline fully connected — phone number now required at registration.",
@@ -18623,7 +20571,10 @@ async function fetchHelpContent() {
       localStorage.setItem(HELP_CACHE_TS, Date.now().toString());
     } catch(e) {}
     return data;
-  } catch(e) { return null; }
+  } catch(e) {
+    _reportInfraFailure('fetchHelpContent', (e && e.message) || String(e));
+    return null;
+  }
 }
 
 async function initHelpSync() {
@@ -18932,6 +20883,8 @@ function _helpEditRender(tab) {
 
 function demoInjectBanner() {
   if(!DEMO_MODE) return;
+  // If activation succeeded during this session, never re-show the banner.
+  if(window._demoActivated) return;
   const e = document.getElementById('demoBanner'); if(e) e.remove();
   const b = document.createElement('div');
   b.id = 'demoBanner';
@@ -18969,6 +20922,8 @@ function demoStartAndEnter() {
   renderAll(); fetchPrices(); fetchBenchmarks(); fetchHedgeData(false); initFileProtocolUI(); initHelpSync(); initPIN();
   checkWhatsNew();
   setTimeout(demoInjectBanner, 300);
+  // Start polling worker for activation status while trial is running.
+  startDemoActivationPolling();
 }
 
 function demoGoActivate() {
