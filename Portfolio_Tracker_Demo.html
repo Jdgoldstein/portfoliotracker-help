@@ -1165,7 +1165,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 <!-- HEADER -->
 <div id="header" style="visibility:hidden;">
   <div class="logo">PORTFOLIO <small>TRACKER</small></div>
-  <span id="versionBadge" style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-left:2px;align-self:flex-end;padding-bottom:2px;font-weight:600;">v47.66</span>
+  <span id="versionBadge" style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-left:2px;align-self:flex-end;padding-bottom:2px;font-weight:600;">v47.68</span>
   <span id="privacyBadge">🙈 VALUES MASKED</span>
   <div class="header-right">
     <div class="price-stamp"><span class="dot" id="priceDot"></span><span id="priceStamp">—</span></div>
@@ -2222,6 +2222,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
           <option value="Ethereum">Ethereum</option>
           <option value="Base">Base</option>
           <option value="Solana">Solana</option>
+          <option value="Sui">Sui</option>
           <option value="Arbitrum">Arbitrum</option>
           <option value="Optimism">Optimism</option>
           <option value="Polygon">Polygon</option>
@@ -2240,7 +2241,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
       <div class="field">
         <label>Pool Model <span style="font-weight:400;color:var(--text3);font-size:10px;text-transform:none;letter-spacing:0;" id="pm-modelLabel">(determines IL math)</span></label>
         <select id="pm-poolType" onchange="onPoolTypeChange()" style="width:100%;padding:6px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:12px;">
-          <option value="uni_v3">Uniswap v3 / Concentrated (Orca, Aerodrome volatile, VFAT→v3)</option>
+          <option value="uni_v3">Uniswap v3 / Concentrated (Orca, Aerodrome volatile, Cetus, VFAT→v3)</option>
           <option value="uni_v2">Uniswap v2 / Full Range (standard 50/50 x·y=k)</option>
           <option value="curve">Curve Stableswap (msETH/WETH, USDC/USDT, etc.)</option>
           <option value="balancer">Balancer Weighted Pool (e.g. 80/20 BPT)</option>
@@ -3312,7 +3313,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
           <input id="hm-chain" placeholder="e.g. Base, Ethereum" list="chain-options">
           <datalist id="chain-options">
             <option value="Bitcoin"><option value="Ethereum"><option value="Base">
-            <option value="Arbitrum"><option value="Solana"><option value="Optimism">
+            <option value="Arbitrum"><option value="Solana"><option value="Sui"><option value="Optimism">
             <option value="Polygon"><option value="Avalanche"><option value="BSC"><option value="CEX">
           </datalist>
         </div>
@@ -4190,7 +4191,7 @@ const ACT_MASTER = (()=>{const p=['CPF_MA','STER_O','VERRID','E_KEY_','ZULU9'];r
 const ACT_STORE    = 'cpf_activation_v1';
 const ACT_ID_STORE = 'cpf_install_id';
 const ACT_VER      = 'v30';
-const APP_VERSION  = '47.66';           // bumped on each release
+const APP_VERSION  = '47.68';           // bumped on each release
 const WHATS_NEW_KEY = 'cpf_seen_ver';   // localStorage: last version user saw What's New
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -19518,6 +19519,29 @@ function _parseColor(str) {
   return null;
 }
 
+// ── Privacy / Mask mode (v47.68 — was missing from demo) ────────────────────
+let privacyOn = false;
+function togglePrivacy() {
+  privacyOn = !privacyOn;
+  document.body.classList.toggle('privacy', privacyOn);
+  // Re-render all tabs so newly generated HTML gets prv classes applied
+  try { renderHeader(); } catch(e) {}
+  try { renderPools(); } catch(e) {}
+  try { renderVaults(); } catch(e) {}
+  try { renderHoldings(); } catch(e) {}
+  try { renderSummary(); } catch(e) {}
+  try { renderGems(); } catch(e) {}
+  // Disable export button functionally too
+  const expBtn = document.querySelector('button.prv-hide[onclick*="export"]');
+  if(expBtn) expBtn.disabled = privacyOn;
+}
+// Auto-enable mask mode if URL contains ?demo=1 or #demo
+(function(){
+  if(location.search.includes('demo=1') || location.hash === '#demo') {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(togglePrivacy, 500));
+  }
+})();
+
 // Restore saved brightness on load
 (function(){
   const saved = localStorage.getItem('brightness');
@@ -19654,6 +19678,7 @@ const PLATFORM_MODEL_MAP = [
   { match: ['uniswap v2','uni v2','sushiswap'], model: 'uni_v2',   label: 'Uniswap v2 / Full Range' },
   { match: ['orca','whirlpool'],                model: 'uni_v3',   label: 'Uniswap v3 / Concentrated (Orca Whirlpool)' },
   { match: ['aerodrome','velo','velodrome'],     model: 'uni_v3',   label: 'Uniswap v3 / Concentrated (Aerodrome CL)' },
+  { match: ['cetus'],                           model: 'uni_v3',   label: 'Uniswap v3 / Concentrated (Cetus CLMM — Sui)' },
   { match: ['curve'],                           model: 'curve',    label: 'Curve Stableswap' },
   { match: ['beefy'],                           model: 'curve',    label: 'Curve Stableswap (correlated pairs)' },
   { match: ['balancer','aura'],                 model: 'balancer', label: 'Balancer Weighted Pool' },
@@ -19668,7 +19693,7 @@ function onPoolTypeChange() {
   const platform = (document.getElementById('pm-platform').value || '').toLowerCase().trim();
 
   const hints = {
-    uni_v3:   'Concentrated liquidity — IL amplified within your price range. Works for Uniswap v3, Orca Whirlpools, Aerodrome volatile, VFAT→v3 pools.',
+    uni_v3:   'Concentrated liquidity — IL amplified within your price range. Works for Uniswap v3, Orca Whirlpools, Aerodrome volatile, Cetus (Sui), VFAT→v3 pools.',
     uni_v2:   'Standard full-range 50/50 pool (x·y=k). Classic Uniswap v2 / SushiSwap style. Higher IL than concentrated for same price move.',
     curve:    'Curve stableswap — IL dramatically reduced by the amplification coefficient A. Use for pegged pairs: stETH/ETH, USDC/USDT, msETH/WETH.',
     balancer: 'Balancer weighted pool — IL formula adjusts for non-50/50 weights. An 80/20 pool has ~75% less IL than 50/50 at the same price move.',
@@ -19732,6 +19757,26 @@ const TAB_LABELS = {
 };
 
 const WHATS_NEW = {
+  '47.68': {
+    headline: "Version 47.68",
+    summary:  "Demo file's Mask/Privacy toggle restored, and the Help → What's New tab now rebuilds itself from the changelog dict on every open.",
+    items: [
+      { icon: '🙈', title: "Mask slider works in demo again",
+        text: "The 🙈 Mask toggle in the demo version's header was non-functional — the onclick handler referenced a togglePrivacy() function that had gone missing from the file at some earlier point. Clicking the toggle did nothing (and silently threw a ReferenceError in the console). The function has been restored, along with the URL-based auto-enable for ?demo=1 / #demo patterns. The CSS masking rule was always intact — only the JS toggle that applies the privacy class was missing. Tracker/working version was never affected." },
+      { icon: '✦', title: "Help → What's New tab now always up to date",
+        text: "The Help modal's What's New tab had a hardcoded sections array that was last updated around v47.39, so recent versions (v47.40 through v47.68) were not showing up there even though the changelog data existed. The tab is now rebuilt dynamically from the internal WHATS_NEW dict every time the tab is opened — the current version appears at the top with a CURRENT badge, and all prior entries follow in descending order. This eliminates the drift problem for good: no more manual sync between the dict and the tab." },
+    ]
+  },
+  '47.67': {
+    headline: "Version 47.67",
+    summary:  "Added Sui as a network option and Cetus (CLMM on Sui) as a platform that auto-maps to Uniswap v3 concentrated math.",
+    items: [
+      { icon: '🌐', title: "Sui network added",
+        text: "Sui is now available as a Network / Chain option in the pool creation modal and the Holdings chain autocomplete. The vault modal already had Sui. No math changes — just the option appears where you'd expect it." },
+      { icon: '🌀', title: "Cetus added as a recognized platform",
+        text: "Typing 'Cetus' as a platform on a new pool now auto-suggests the Uniswap v3 / Concentrated math model with label 'Uniswap v3 / Concentrated (Cetus CLMM — Sui)'. Cetus uses Uniswap v3-style concentrated liquidity math, so IL calculations, range tracking, and HODL comparisons all work the same way as Uniswap v3, Orca, Aerodrome CL, etc. The pool-type dropdown and the uni_v3 hint text now also mention Cetus for clarity." },
+    ]
+  },
   '47.66': {
     headline: "Version 47.66",
     summary:  "Close/Rebalance modal's Return Wallet dropdown now shows each wallet's current token balance, the 'Computed USD return' display is fixed (was showing raw HTML), and redundant hints under the new-leg Qty fields have been removed.",
@@ -20599,6 +20644,31 @@ function openHelpModal(tab) {
 
   const data = HELP_CONTENT[tab];
   if(!data) return;
+
+  // v47.68: dynamically rebuild What's New tab from WHATS_NEW dict on every open.
+  if(tab === 'whatsNew' && typeof WHATS_NEW === 'object') {
+    try {
+      const versions = Object.keys(WHATS_NEW).sort((a, b) => {
+        const [aMaj, aMin] = a.split('.').map(Number);
+        const [bMaj, bMin] = b.split('.').map(Number);
+        return bMaj !== aMaj ? bMaj - aMaj : bMin - aMin;
+      });
+      data.sections = versions.map(ver => {
+        const entry = WHATS_NEW[ver] || {};
+        const isCurrent = ver === APP_VERSION;
+        const summary = entry.summary ? `<em style="color:var(--text3);">${entry.summary}</em><br><br>` : '';
+        const items = (entry.items || []).map(it =>
+          `<strong>${it.icon || '•'} ${it.title || ''}</strong><br>${it.text || ''}`
+        ).join('<br><br>');
+        return {
+          icon: isCurrent ? '✦' : '○',
+          heading: isCurrent ? `v${ver}  — CURRENT` : `v${ver}`,
+          text: summary + items,
+        };
+      });
+    } catch(e) { console.error('What\'s New dynamic build failed:', e); }
+  }
+
   const eb = document.getElementById('helpEditToggleBtn');
   if(eb) {
     eb.textContent='✏ Edit'; eb.style.background=''; eb.style.color=''; eb.style.borderColor='';
