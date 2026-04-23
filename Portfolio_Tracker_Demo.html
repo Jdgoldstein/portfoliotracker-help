@@ -106,7 +106,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
-body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:var(--fs-base);min-height:100vh;overflow-x:hidden;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:var(--fs-base);min-height:100vh;}
 
 /* ── SCROLLBAR ── */
 ::-webkit-scrollbar{width:5px;height:5px;}
@@ -155,7 +155,9 @@ input[type="date"] { color-scheme: dark; }
 .hint{font-size:9px;color:var(--text3);margin-top:3px;line-height:1.5;}
 
 /* ── MAIN LAYOUT ── */
-#main{padding:10px 12px 30px;display:flex;flex-direction:column;gap:14px;max-width:100%;}
+#main{padding:10px 12px 30px;display:flex;flex-direction:column;gap:14px;
+  /* v47.78: min-width 1280px floor, no max cap — page fills window width. */
+  min-width:1280px;margin:0 auto;}
 
 /* ── SECTION ── */
 .section{}
@@ -230,6 +232,15 @@ thead th{
   padding:5px 6px;text-align:right;border-bottom:3px solid #7a9abf;
   position:sticky;top:0;z-index:10;
 }
+/* v47.76: sticky captions global. Fixed-width page eliminates width inconsistency.
+   Mac Safari hardening: will-change:transform forces thead onto composite layer;
+   explicit table width:100% ensures consistent column computation. */
+.tbl-wrap { overflow: visible !important; }
+thead th {
+  top: 94px !important;
+  will-change: transform;
+}
+.tbl-wrap table { width: 100%; }
 thead th.left{text-align:left;}
 tbody td{padding:4px 6px;border-bottom:1px solid #b8cce0;text-align:right;color:#1a2740;font-family:var(--mono);font-size:var(--fs-mono);font-weight:600;vertical-align:middle;}
 tbody td.left{text-align:left;font-family:var(--sans);color:var(--text1);font-weight:600;}
@@ -1165,7 +1176,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 <!-- HEADER -->
 <div id="header" style="visibility:hidden;">
   <div class="logo">PORTFOLIO <small>TRACKER</small></div>
-  <span id="versionBadge" style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-left:2px;align-self:flex-end;padding-bottom:2px;font-weight:600;">v47.74</span>
+  <span id="versionBadge" style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-left:2px;align-self:flex-end;padding-bottom:2px;font-weight:600;">v47.78</span>
   <span id="privacyBadge">🙈 VALUES MASKED</span>
   <div class="header-right">
     <div class="price-stamp"><span class="dot" id="priceDot"></span><span id="priceStamp">—</span></div>
@@ -4202,7 +4213,7 @@ const ACT_MASTER = (()=>{const p=['CPF_MA','STER_O','VERRID','E_KEY_','ZULU9'];r
 const ACT_STORE    = 'cpf_activation_v1';
 const ACT_ID_STORE = 'cpf_install_id';
 const ACT_VER      = 'v30';
-const APP_VERSION  = '47.74';           // bumped on each release
+const APP_VERSION  = '47.78';           // bumped on each release
 const WHATS_NEW_KEY = 'cpf_seen_ver';   // localStorage: last version user saw What's New
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -5045,8 +5056,77 @@ function handleDemoActivation(isInitialBoot) {
     if(!isInitialBoot) {
       // Mid-session activation — user should see this clearly.
       toast('🎉 Your install ID has just been activated! Demo is now fully unlocked.', false, 9000);
+      // v47.77: offer a friendly first-time feedback ask (only once per install,
+      // and only for platforms we care most about — Mac/Safari specifically)
+      setTimeout(() => _showFirstRunFeedbackAsk('activation'), 7000);
     }
   } catch(e) { /* non-fatal */ }
+}
+
+// v47.77: First-run feedback ask.
+// Shows a small bottom-right toast-style card inviting the user to report any
+// issues. Respects a localStorage flag so it only appears once per install.
+// Particularly interested in Mac/Safari feedback, which we highlight in the copy.
+function _showFirstRunFeedbackAsk(trigger) {
+  try {
+    if(localStorage.getItem('cpf_first_run_ask_shown') === '1') return;
+    localStorage.setItem('cpf_first_run_ask_shown', '1');
+    const ua = navigator.userAgent;
+    const isMac = /Mac/i.test(ua);
+    const isSafari = /Safari/i.test(ua) && !/Chrome/i.test(ua);
+    // Skip ask on Chrome/Windows — app is well-tested there
+    if(!isMac && !isSafari) return;
+
+    const card = document.createElement('div');
+    card.id = '_firstRunFeedbackCard';
+    card.style.cssText = `
+      position:fixed;bottom:20px;right:20px;z-index:10050;
+      background:var(--bg2);border:1px solid var(--border);
+      border-left:4px solid var(--accent);border-radius:8px;
+      padding:14px 16px;width:320px;max-width:calc(100vw - 40px);
+      box-shadow:0 8px 24px rgba(0,0,0,0.25);
+      font-size:12px;color:var(--text1);line-height:1.5;
+      animation:slideInRight .35s ease-out;
+    `;
+    const platLabel = isMac && isSafari ? 'Mac + Safari' : isMac ? 'Mac' : 'Safari';
+    card.innerHTML = `
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;">
+        <div style="font-size:22px;flex-shrink:0;">👋</div>
+        <div style="flex:1;">
+          <div style="font-weight:700;color:var(--accent);margin-bottom:4px;">Thanks for trying Portfolio Tracker!</div>
+          <div style="color:var(--text2);">
+            We're especially keen for <strong>${platLabel}</strong> feedback.
+            If you spot any layout issues — captions misaligned, content cut off, weird scrolling —
+            please let us know.
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;justify-content:flex-end;">
+        <button class="btn sm" onclick="_firstRunFeedbackDismiss()" style="font-size:11px;padding:4px 10px;">Maybe later</button>
+        <button class="btn sm primary" onclick="_firstRunFeedbackOpen()" style="font-size:11px;padding:4px 10px;">📬 Send feedback</button>
+      </div>
+    `;
+    // Add slideIn animation if not already present
+    if(!document.getElementById('_firstRunFeedbackStyles')) {
+      const sty = document.createElement('style');
+      sty.id = '_firstRunFeedbackStyles';
+      sty.textContent = `@keyframes slideInRight { from{opacity:0;transform:translateX(20px);} to{opacity:1;transform:translateX(0);} }`;
+      document.head.appendChild(sty);
+    }
+    document.body.appendChild(card);
+    // Auto-dismiss after 30s if user ignores it
+    setTimeout(() => { try { _firstRunFeedbackDismiss(); } catch(e){} }, 30000);
+  } catch(e) { /* non-fatal */ }
+}
+
+function _firstRunFeedbackDismiss() {
+  const card = document.getElementById('_firstRunFeedbackCard');
+  if(card) card.remove();
+}
+
+function _firstRunFeedbackOpen() {
+  _firstRunFeedbackDismiss();
+  try { openFeedbackModal(); } catch(e) {}
 }
 
 function startDemoActivationPolling() {
@@ -18629,14 +18709,28 @@ async function submitFeedback() {
   }
 
   try {
+    // v47.77: parse browser version for targeted triage
+    const ua = navigator.userAgent;
+    let browserVer = '';
+    const mSafari = ua.match(/Version\/([0-9.]+).*Safari/);
+    const mChrome = ua.match(/Chrome\/([0-9.]+)/);
+    const mFirefox = ua.match(/Firefox\/([0-9.]+)/);
+    if(mSafari && !/Chrome/.test(ua)) browserVer = mSafari[1].split('.').slice(0,2).join('.');
+    else if(mChrome) browserVer = mChrome[1].split('.')[0];
+    else if(mFirefox) browserVer = mFirefox[1].split('.')[0];
+
+    const envTag = `[${platform}${browserVer?' '+browserVer:''} · v${version}]`;
+    const messageWithEnv = `${envTag}\n\n${message}`;
+
     const res = await fetch(FORMSPREE_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify({
         type, name: name || 'Anonymous', email: email || 'not provided',
-        message, version, platform,
+        message: messageWithEnv, version, platform,
+        browser_version: browserVer || 'unknown',
         screenshot: screenshotUrl || 'none',
-        _subject: `[${type}] Portfolio Tracker v${version}`,
+        _subject: `[${type}] ${platform}${browserVer?' '+browserVer:''} — v${version}`,
       }),
     });
     if(res.ok) {
@@ -19993,6 +20087,48 @@ const TAB_LABELS = {
 };
 
 const WHATS_NEW = {
+  '47.78': {
+    headline: "Version 47.78",
+    summary:  "Removed the 1440px max-width cap. Page now fills the window (down to the 1280px floor) so tables have all available horizontal space on widescreen monitors — no more unused margins or clipped columns.",
+    items: [
+      { icon: '⟷', title: "Full-width tables on wide monitors",
+        text: "v47.76 introduced a fixed max-width of 1440px that centered the page with margins on both sides. While elegant for text-heavy pages, this capped the tables unnecessarily on widescreen displays — causing the HODL? badges on LP Pools to clip at the right edge AND leaving ~250px of unused space on each side at 1920px resolution. The max-width cap has been removed. Page now expands to fill your window above the 1280px floor. Tables use the full horizontal space available, no clipping, no wasted margins. Narrow-screen behavior (< 1280px) unchanged — page horizontally scrolls as before." },
+    ]
+  },
+  '47.77': {
+    headline: "Version 47.77",
+    summary:  "Feedback submissions now carry browser+OS info in the subject line and message body for easier triage. Demo users on Mac/Safari see a friendly one-time ask for layout feedback.",
+    items: [
+      { icon: '🏷', title: "Feedback auto-tagged with browser/OS",
+        text: "Every feedback submission now includes the browser name and major version (e.g. 'Safari 17.4', 'Chrome 128', 'Firefox 131') both in the email subject line and prepended to the message body. This makes it easy to see at a glance which environment a reported issue came from — particularly useful for triaging Mac/Safari specific layout quirks when the developer's primary testing stack is Windows/Chrome." },
+      { icon: '👋', title: "First-run feedback ask for Mac/Safari demo users",
+        text: "Demo users running on a Mac (regardless of browser) or Safari (regardless of OS) see a small non-intrusive card in the bottom-right corner shortly after activating or starting their trial. The card thanks them for trying the app and asks specifically for feedback on layout issues, with one click to open the feedback modal. Shown once per install (tracked via localStorage), auto-dismisses after 30s, does NOT appear for Chrome-on-Windows users (already well-tested) and does NOT appear in the working version at all." },
+    ]
+  },
+  '47.76': {
+    headline: "Version 47.76",
+    summary:  "Page now renders at a consistent 1280px minimum width and centers on wide screens. Sticky column headers (captions) extended to ALL scrollable tabs — no more hidden columns off-screen, no more per-tab width differences when switching between tabs.",
+    items: [
+      { icon: '📐', title: "Fixed 1280px minimum page width",
+        text: "Every tab now renders at the same width (min 1280px, max 1440px). On widescreen monitors the page centers horizontally with margin on both sides, giving it a more app-like, deliberate feel. On narrow screens the whole page horizontally scrolls as a unit — so if data is cut off, you can tell immediately (you'll see a page scrollbar) rather than having individual columns disappear off-screen without any indication. Covers 1366×768 budget laptops up through 4K desktops with proper centering. Tablet and mobile are not supported in this pass — see a future release for that." },
+      { icon: '📌', title: "Sticky captions on every tab (Holdings, LP Pools, Vaults, GEMs, History)",
+        text: "Scroll down in any data-heavy tab and the column headers (Token / Pool / Vault / etc.) now stay pinned just below the tab bar. Same behavior across all tabs now that v47.76 eliminates the per-tab width inconsistency that blocked this in v47.75. The header icon row and the tab bar remain fixed above the captions. Everything else (KPI cards, section titles) scrolls normally." },
+      { icon: '🔧', title: "Under the hood: consistent scroll container",
+        text: "Previously each .tbl-wrap div had overflow-x:auto, which created a nested scroll container per table and unpredictably interacted with CSS sticky positioning. v47.76 removes that per-wrap overflow globally (all tabs), making the page body the single scroll container. Combined with the fixed-width main element, every tab now behaves identically." },
+    ]
+  },
+  '47.75': {
+    headline: "Version 47.75",
+    summary:  "Column headers (captions) now stay pinned when scrolling on Holdings and LP Pools — the two most data-heavy tabs. Incremental rollout: other tabs will follow once these two are verified in real use.",
+    items: [
+      { icon: '📌', title: "Sticky captions on Holdings + LP Pools",
+        text: "When you scroll down through your Holdings or LP Pools, the column headers (Token, Wallet, Live Price, Qty, Value, etc.) now stay pinned just below the tab bar. You always know what each column means regardless of how far down you've scrolled. Everything above the captions — header icon row, tab bar — remains pinned as before, so the only things that scroll off the top are the KPI cards and the section title. This matches the layout you sketched: fixed toolbar + tab bar, then captions stick when they reach the tab bar, data rows scroll underneath." },
+      { icon: '🧪', title: "Why only two tabs for now",
+        text: "My previous attempt (v47.69) changed the rule globally and broke the layout on every tab simultaneously. This pass limits the change to just Holdings and LP Pools so we can verify the behavior in real use before rolling it out to Vaults, GEMs, and History. Column integrity is preserved by keeping each tab on a single <table> — no risky thead/tbody split pattern that could cause Mac Safari column-width drift." },
+      { icon: '🔧', title: "What changed under the hood",
+        text: "The .tbl-wrap div that contains each table had overflow-x:auto set, which made it a CSS scroll container — that broke sticky positioning on the thead because the thead would stick relative to the wrap instead of the page. Scoped override for #tab-holdings and #tab-pools sets overflow:visible on the wrap, and sets thead's sticky top offset to 94px (header 48px + tab-bar ~46px) so captions pin just below the tab bar. No JavaScript involved, no table split — just two targeted CSS rules." },
+    ]
+  },
   '47.74': {
     headline: "Version 47.74",
     summary:  "Re-hedge modal now requires an explicit ratio entry (no auto-defaulting) with Keep Current and Use Suggested shortcut buttons. Hedge ratio alerts now snooze after you save, re-firing only if the suggested ratio shifts materially or a week passes.",
@@ -21296,6 +21432,8 @@ function demoStartAndEnter() {
   setTimeout(demoInjectBanner, 300);
   // Start polling worker for activation status while trial is running.
   startDemoActivationPolling();
+  // v47.77: offer first-run feedback ask for Mac/Safari users after 45s of exploration
+  setTimeout(() => { try { _showFirstRunFeedbackAsk('trial-start'); } catch(e) {} }, 45000);
 }
 
 function demoGoActivate() {
