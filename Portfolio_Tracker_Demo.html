@@ -1165,7 +1165,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 <!-- HEADER -->
 <div id="header" style="visibility:hidden;">
   <div class="logo">PORTFOLIO <small>TRACKER</small></div>
-  <span id="versionBadge" style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-left:2px;align-self:flex-end;padding-bottom:2px;font-weight:600;">v47.68</span>
+  <span id="versionBadge" style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-left:2px;align-self:flex-end;padding-bottom:2px;font-weight:600;">v47.74</span>
   <span id="privacyBadge">🙈 VALUES MASKED</span>
   <div class="header-right">
     <div class="price-stamp"><span class="dot" id="priceDot"></span><span id="priceStamp">—</span></div>
@@ -1707,14 +1707,14 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 
     <!-- Hedge sub-tabs -->
     <div class="tab-bar" style="margin-bottom:12px;border-bottom:1px solid var(--border);background:var(--bg3);border-radius:var(--radius) var(--radius) 0 0;padding:0 8px;">
-      <div class="tab" id="hgtab-pos-btn"  onclick="switchHedgeSubtab('positions')" style="font-size:11px;padding:6px 12px;">📌 Open Positions</div>
-      <div class="tab on" id="hgtab-calc-btn" onclick="switchHedgeSubtab('calc')" style="font-size:11px;padding:6px 12px;">📊 Calculator</div>
+      <div class="tab on" id="hgtab-pos-btn"  onclick="switchHedgeSubtab('positions')" style="font-size:11px;padding:6px 12px;">📌 Open Positions</div>
+      <div class="tab" id="hgtab-calc-btn" onclick="switchHedgeSubtab('calc')" style="font-size:11px;padding:6px 12px;">📊 Calculator</div>
       <div class="tab" id="hgtab-hist-btn" onclick="switchHedgeSubtab('history')" style="font-size:11px;padding:6px 12px;">📋 Closed Positions</div>
       <div class="tab" id="hgtab-acct-btn" onclick="switchHedgeSubtab('account')" style="font-size:11px;padding:6px 12px;">💵 HL Account</div>
     </div>
 
     <!-- SUB-TAB: Calculator -->
-    <div id="hgtab-calc" class="htab-panel" style="display:block;">
+    <div id="hgtab-calc" class="htab-panel" style="display:none;">
       <!-- Exposure Summary -->
       <div style="margin-bottom:14px;">
         <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;font-weight:700;">Portfolio Exposure by Asset</div>
@@ -1742,7 +1742,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     </div>
 
     <!-- SUB-TAB: Open Positions -->
-    <div id="hgtab-pos" class="htab-panel" style="display:none;">
+    <div id="hgtab-pos" class="htab-panel" style="display:block;">
       <div class="section-head" style="margin-bottom:10px;">
         <span style="font-size:12px;font-weight:600;color:var(--text2);">Open Hedge Positions</span>
         <button class="btn sm primary" onclick="openHedgePosModal()">+ Add Position</button>
@@ -2565,7 +2565,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     <div class="form-grid cols3">
       <div class="field">
         <label>Asset</label>
-        <select id="hp-asset" onchange="updateHpCalc()" style="width:100%;padding:6px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:12px;">
+        <select id="hp-asset" onchange="onHpAssetChange()" style="width:100%;padding:6px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:12px;">
           <option value="ETH">ETH</option>
           <option value="BTC">BTC</option>
           <option value="SOL">SOL</option>
@@ -2585,8 +2585,17 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     </div>
     <!-- Margin / Hedge $ auto-fill row -->
     <div style="background:rgba(10,124,74,0.05);border:1px solid rgba(10,124,74,0.2);border-radius:var(--radius);padding:10px 12px;margin-bottom:10px;">
-      <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;font-weight:600;">Position Size — enter either, other auto-fills</div>
-      <div class="form-grid cols2" style="margin-bottom:0;">
+      <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;font-weight:600;">Position Size — enter any one, others auto-fill</div>
+      <div class="form-grid cols3" style="margin-bottom:0;">
+        <div class="field" style="margin-bottom:0;">
+          <label>Hedge % <span style="font-weight:400;font-size:10px;color:var(--text3);">(of exposure)</span></label>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <input id="hp-ratio" type="number" min="0" max="100" step="1" placeholder="30" oninput="onHpRatioInput()" style="flex:1;">
+            <button class="btn sm" onclick="hpApplySuggestedRatio()" type="button" style="font-size:10px;padding:2px 8px;white-space:nowrap;">Use Suggested</button>
+          </div>
+          <div class="hint" id="hp-ratio-hint">Suggested —</div>
+          <div id="hp-rationale" style="display:none;margin-top:6px;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);font-size:10px;"></div>
+        </div>
         <div class="field" style="margin-bottom:0;">
           <label>Margin $ <span style="font-weight:400;font-size:10px;color:var(--text3);">(USDC collateral)</span></label>
           <input id="hp-margin" type="number" step="any" placeholder="e.g. 1000"
@@ -2660,7 +2669,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     <!-- New position calculator -->
     <div style="background:rgba(10,124,74,0.05);border:1px solid rgba(10,124,74,0.2);border-radius:var(--radius);padding:12px 14px;margin-bottom:12px;">
       <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;font-weight:600;">New Position Parameters</div>
-      <div class="form-grid cols3" style="margin-bottom:10px;">
+      <div class="form-grid cols2" style="margin-bottom:10px;">
         <div class="field" style="margin-bottom:0;">
           <label>Entry Price $</label>
           <input id="rh-entry" type="number" step="any" oninput="updateRhCalc()" placeholder="live price">
@@ -2674,14 +2683,16 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
           </div>
           <div class="hint" id="rh-lev-hint" style="margin-top:4px;"></div>
         </div>
-        <div class="field" style="margin-bottom:0;">
-          <label>Ratio override %</label>
-          <div style="display:flex;align-items:center;gap:6px;">
-            <input id="rh-ratio-override" type="number" min="10" max="60" step="1" oninput="updateRhCalc()" style="width:60px;">
-            <span style="font-size:11px;color:var(--text3);">%</span>
-            <button class="btn sm" onclick="rhApplySuggested()" style="font-size:10px;padding:2px 8px;">Use Suggested</button>
-          </div>
+      </div>
+      <div class="field" style="margin-bottom:10px;">
+        <label>Ratio override %</label>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <input id="rh-ratio-override" type="number" min="10" max="60" step="1" oninput="updateRhCalc()" style="width:80px;" placeholder="enter %">
+          <span style="font-size:11px;color:var(--text3);">%</span>
+          <button class="btn sm" onclick="rhKeepCurrent()" style="font-size:10px;padding:2px 8px;white-space:nowrap;" title="Snap to the position's current ratio">Keep Current</button>
+          <button class="btn sm" onclick="rhApplySuggested()" style="font-size:10px;padding:2px 8px;white-space:nowrap;" title="Snap to the engine's suggested ratio">Use Suggested</button>
         </div>
+        <div class="hint" style="color:var(--text3);font-size:10px;margin-top:4px;">Enter a value — or use a button to snap to current / suggested. Required to save.</div>
       </div>
       <div class="form-grid cols2" style="margin-bottom:0;">
         <div class="field" style="margin-bottom:0;">
@@ -4191,7 +4202,7 @@ const ACT_MASTER = (()=>{const p=['CPF_MA','STER_O','VERRID','E_KEY_','ZULU9'];r
 const ACT_STORE    = 'cpf_activation_v1';
 const ACT_ID_STORE = 'cpf_install_id';
 const ACT_VER      = 'v30';
-const APP_VERSION  = '47.68';           // bumped on each release
+const APP_VERSION  = '47.74';           // bumped on each release
 const WHATS_NEW_KEY = 'cpf_seen_ver';   // localStorage: last version user saw What's New
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -7393,7 +7404,9 @@ function renderHeader() {
         if(!pos) return false;
         const suggested = calcOptimalRatio(asset);
         const current   = DB.hedgeCache?.[`ratio_${asset}`] ?? suggested;
-        return Math.abs(suggested - current) >= HEDGE_RATIO_THRESHOLD;
+        if(Math.abs(suggested - current) < HEDGE_RATIO_THRESHOLD) return false;
+        if(_hedgeIsSnoozed(asset, suggested)) return false;  // v47.74
+        return true;
       });
       if(hedgeGaps.length === 0) {
         // All good — green
@@ -14923,6 +14936,37 @@ function renderHedgePositions() {
         ${p.notes?` &nbsp;·&nbsp; ${p.notes}`:''}
       </td>
     </tr>`;
+
+    // v47.69: alert action banner — shown when a threshold has been breached
+    const alertRows = [];
+    if(curPx <= tp) alertRows.push({
+      bg: 'rgba(22,163,74,0.08)', border: '#16a34a', icon: '🎯',
+      title: `Take-profit reached — ${p.asset} at ${$f(curPx,0)} ≤ TP ${$f(tp,0)}`,
+      action: 'Short thesis has played out. Consider closing to lock in the gain, or set a new trailing SL to ride further.'
+    });
+    if(curPx >= sl) alertRows.push({
+      bg: 'rgba(204,34,0,0.08)', border: '#cc2200', icon: '⛔',
+      title: `Stop-loss breached — ${p.asset} at ${$f(curPx,0)} ≥ SL ${$f(sl,0)}`,
+      action: 'Price has moved against the short. Consider closing to limit the loss, or rolling the position with a wider SL if the thesis still holds.'
+    });
+    if(curPx > liqPx * 0.85) alertRows.push({
+      bg: 'rgba(245,158,11,0.1)', border: '#f59e0b', icon: '⚠',
+      title: `Near liquidation — ${p.asset} at ${$f(curPx,0)} is within 15% of liq price ${$f(liqPx,0)}`,
+      action: 'Urgent. Options: (1) add margin via Edit to lower leverage, (2) close the position to stop the risk, (3) partially close to reduce exposure.'
+    });
+    alertRows.forEach(a => {
+      html += `<tr><td colspan="12" style="padding:0;">
+        <div style="background:${a.bg};border-left:3px solid ${a.border};padding:8px 12px;margin:4px 0;font-size:11px;display:flex;gap:10px;align-items:flex-start;">
+          <div style="font-size:16px;flex-shrink:0;">${a.icon}</div>
+          <div style="flex:1;">
+            <div style="font-weight:700;color:${a.border};margin-bottom:2px;">${a.title}</div>
+            <div style="color:var(--text2);line-height:1.5;">${a.action}</div>
+          </div>
+          <button class="btn sm warn" onclick="openHedgeCloseModal('${p.id}')" style="font-size:10px;padding:3px 8px;flex-shrink:0;">Close position</button>
+          <button class="btn sm" onclick="openRehedgeModal('${p.asset}')" style="font-size:10px;padding:3px 8px;flex-shrink:0;" title="Adjust size, ratio or leverage">Edit</button>
+        </div>
+      </td></tr>`;
+    });
   });
   html += '</tbody></table></div>';
   container.innerHTML = html;
@@ -15439,8 +15483,160 @@ function openHedgePosModal(asset=null) {
   const a = asset || document.getElementById('hp-asset').value || 'ETH';
   const px = getPrice(HEDGE_GECKO[a]) || 0;
   document.getElementById('hp-entry').value = px ? px.toFixed(0) : '';
+  // v47.71: pre-fill Hedge % with suggested ratio
+  try {
+    const sugRatio = calcOptimalRatio(a);
+    const sugPct = Math.round(sugRatio * 100);
+    document.getElementById('hp-ratio').value = sugPct;
+    _hpUpdateRatioHint(a);
+  } catch(e) {}
   updateHpCalc();
   document.getElementById('hedgePosModal').classList.add('open');
+}
+
+// v47.71: Hedge % entry point
+function onHpRatioInput() {
+  const asset  = document.getElementById('hp-asset').value;
+  const ratio  = (+document.getElementById('hp-ratio').value || 0) / 100;
+  const lev    = +document.getElementById('hp-lev-slider').value || 3;
+  const entry  = +document.getElementById('hp-entry').value || 0;
+  if(ratio > 0) {
+    try {
+      const e = getHedgeExposure();
+      const exp = e.exp || e;
+      const assetExp = exp[asset] || {holdings:0, pools:0, vaults:0};
+      const total = (assetExp.holdings||0) + (assetExp.pools||0) + (assetExp.vaults||0);
+      if(total > 0) {
+        const hedgeUsd = total * ratio;
+        document.getElementById('hp-hedge-usd').value = hedgeUsd.toFixed(2);
+        const margin = hedgeUsd / lev;
+        document.getElementById('hp-margin').value = margin.toFixed(2);
+        if(entry > 0) document.getElementById('hp-size').value = (hedgeUsd / entry).toFixed(4);
+      }
+    } catch(e) { console.error('onHpRatioInput:', e); }
+  }
+  _hpUpdateRatioHint(asset);
+  updateHpCalc();
+}
+
+function hpApplySuggestedRatio() {
+  const asset = document.getElementById('hp-asset').value;
+  const sugRatio = calcOptimalRatio(asset);
+  const sugPct = Math.round(sugRatio * 100);
+  document.getElementById('hp-ratio').value = sugPct;
+  onHpRatioInput();
+}
+
+function _hpUpdateRatioHint(asset) {
+  const sugRatio = calcOptimalRatio(asset);
+  const sugPct = Math.round(sugRatio * 100);
+  const cur = +document.getElementById('hp-ratio').value || 0;
+  const hintEl = document.getElementById('hp-ratio-hint');
+  if(!hintEl) return;
+  const gap = cur - sugPct;
+  const gapStr = gap === 0 ? '' : ` · ${gap>0?'+':''}${gap}% vs suggested`;
+  const color = Math.abs(gap) < 5 ? 'var(--text3)' : Math.abs(gap) < 15 ? '#f59e0b' : '#f87171';
+  hintEl.innerHTML = `Suggested <strong>${sugPct}%</strong><span style="color:${color};">${gapStr}</span> <a href="#" onclick="_hpToggleRationale(event)" style="color:var(--accent2);text-decoration:none;font-size:10px;margin-left:4px;">Why?</a>`;
+  const rat = document.getElementById('hp-rationale');
+  if(rat && rat.style.display !== 'none') rat.innerHTML = _hpBuildRationale(asset);
+}
+
+// v47.72: Rationale builder — explains which signals drove the suggested ratio
+function _hpBuildRationale(asset) {
+  let d, regime;
+  try {
+    d = calcOptimalRatioDetail(asset);
+    regime = getRegime(asset);
+  } catch(e) { return '<div style="color:var(--text3);font-size:10px;">Signal data not yet loaded — refresh hedge data and retry.</div>'; }
+
+  const fmt = (n, dp=1) => (+n).toFixed(dp);
+  const pctFmt = (n) => (n >= 0 ? '+' : '') + fmt(n, 1) + '%';
+  const rows = [];
+
+  rows.push(`<div style="background:${regime.bg};border-left:3px solid ${regime.color};padding:6px 10px;margin-bottom:8px;border-radius:3px;">
+    <span style="font-size:11px;font-weight:700;color:${regime.color};">${regime.emoji} ${regime.label}</span>
+    <span style="font-size:10px;color:var(--text3);margin-left:8px;">typical hedge: ${regime.hedge}</span>
+  </div>`);
+
+  const signals = [];
+
+  const ivNote = d.alreadyDown && d.iv > 60
+    ? `<span style="color:#7c3aed;">dampened (price already down ${fmt(d.drawdown,1)}% — IV now symmetric)</span>`
+    : d.iv > 70 ? `<span style="color:#cc2200;">elevated — markets expect big moves</span>`
+    : d.iv < 50 ? `<span style="color:#16a34a;">low — markets calm</span>`
+    : `<span style="color:var(--text3);">near reference (60)</span>`;
+  signals.push(`IV (implied volatility) = <strong>${fmt(d.iv,0)}</strong> — ${ivNote}`);
+
+  const cache = DB.hedgeCache?.[asset] || {};
+  const trend7d = cache.trend7d || 0;
+  const trendNote = trend7d > 5 ? `<span style="color:#16a34a;">strong uptrend → hedge less (×${fmt(d.biasMult,2)})</span>`
+    : trend7d < -5 ? `<span style="color:#cc2200;">strong downtrend → hedge more (×${fmt(d.biasMult,2)})</span>`
+    : trend7d > 2  ? `<span style="color:#16a34a;">mild uptrend → hedge slightly less (×${fmt(d.biasMult,2)})</span>`
+    : trend7d < -2 ? `<span style="color:#ea580c;">mild downtrend → hedge slightly more (×${fmt(d.biasMult,2)})</span>`
+    : `<span style="color:var(--text3);">range-bound → neutral (×1.00)</span>`;
+  signals.push(`7-day trend = <strong>${pctFmt(trend7d)}</strong> — ${trendNote}`);
+
+  const fundNote = d.fundAnn < 0
+    ? `<span style="color:#16a34a;">negative → longs paying shorts → get paid to hedge (cost mult ${fmt(d.costMult,2)})</span>`
+    : d.yieldAPY > 0
+    ? `<span style="color:var(--text3);">+${fmt(d.fundAnn,1)}%/yr cost, your spot yield ${fmt(d.yieldAPY,1)}% offsets it (cost mult ${fmt(d.costMult,2)})</span>`
+    : `<span style="color:#f59e0b;">+${fmt(d.fundAnn,1)}%/yr drag — no yield offset (cost mult ${fmt(d.costMult,2)})</span>`;
+  signals.push(`Funding rate (annualised) — ${fundNote}`);
+
+  if(d.stabilityReduction > 0) {
+    const stabWhy = asset === 'BTC' ? 'BTC IV stabilising'
+      : d.btcStable && d.assetStable ? 'BTC & asset both stabilising'
+      : d.btcStable && !d.diverging  ? `BTC stabilising (${asset} IV not unusually diverging)`
+      : `${asset} IV stabilising independently`;
+    signals.push(`Stability offset: <strong>−${fmt(d.stabilityReduction*100,0)}%</strong> — ${stabWhy}`);
+  }
+
+  if(d.hasLimitBuy) {
+    signals.push(`Limit-buy active for ${asset}: <strong>−${fmt(d.limitBuyReduction*100,0)}%</strong> — pre-planned accumulation lowers hedge need`);
+  }
+
+  rows.push(`<ul style="margin:0;padding-left:18px;font-size:11px;color:var(--text2);line-height:1.7;">${signals.map(s=>`<li>${s}</li>`).join('')}</ul>`);
+
+  rows.push(`<div style="margin-top:8px;padding-top:6px;border-top:1px solid var(--border);font-size:10px;font-family:var(--mono);color:var(--text3);">
+    Base <strong>${fmt(d.baseRatio*100,0)}%</strong> × trend <strong>${fmt(d.biasMult,2)}</strong>
+    × fundSignal <strong>${fmt(d.fundSignalMult,2)}</strong> × cost <strong>${fmt(d.costMult,2)}</strong>
+    ${d.stabilityReduction>0?`− <strong>${fmt(d.stabilityReduction*100,0)}%</strong>`:''}
+    ${d.limitBuyReduction>0?`− <strong>${fmt(d.limitBuyReduction*100,0)}%</strong>`:''}
+    = <strong style="color:var(--accent);">${fmt(d.final*100,0)}%</strong>
+  </div>`);
+
+  return rows.join('');
+}
+
+function _hpToggleRationale(ev) {
+  if(ev) ev.preventDefault();
+  const rat = document.getElementById('hp-rationale');
+  if(!rat) return;
+  const asset = document.getElementById('hp-asset').value;
+  if(rat.style.display === 'none' || !rat.style.display) {
+    rat.innerHTML = _hpBuildRationale(asset);
+    rat.style.display = '';
+  } else {
+    rat.style.display = 'none';
+  }
+}
+
+function onHpAssetChange() {
+  const asset = document.getElementById('hp-asset').value;
+  const px = getPrice(HEDGE_GECKO[asset]) || 0;
+  if(px) document.getElementById('hp-entry').value = px.toFixed(0);
+  try {
+    const sugRatio = calcOptimalRatio(asset);
+    const sugPct = Math.round(sugRatio * 100);
+    const curRatio = +document.getElementById('hp-ratio').value || 0;
+    if(curRatio === 0) {
+      document.getElementById('hp-ratio').value = sugPct;
+      onHpRatioInput();
+      return;
+    }
+  } catch(e) {}
+  _hpUpdateRatioHint(asset);
+  updateHpCalc();
 }
 
 // Called whenever margin $ changes — auto-fill hedge $ and qty
@@ -15763,8 +15959,10 @@ function openRehedgeModal(asset) {
   document.getElementById('rh-lev-val').textContent = (pos?.leverage || sugLev) + 'x';
   document.getElementById('rh-lev-hint').textContent = levHint;
 
-  // Ratio override pre-fill with suggested
-  document.getElementById('rh-ratio-override').value = (optimal*100).toFixed(0);
+  // v47.74: leave Ratio override BLANK on open — force an explicit choice
+  document.getElementById('rh-ratio-override').value = '';
+  document.getElementById('rh-ratio-override').dataset.current = ((DB.hedgeCache?.[`ratio_${asset}`] ?? optimal) * 100).toFixed(0);
+  document.getElementById('rh-ratio-override').dataset.suggested = (optimal * 100).toFixed(0);
 
   // Entry price — live
   document.getElementById('rh-entry').value = markPx ? markPx.toFixed(0) : '';
@@ -15791,11 +15989,9 @@ function openRehedgeModal(asset) {
     document.getElementById('rh-close-old-btn').style.display = 'none';
   }
 
-  // Pre-fill margin from suggested ratio
-  const newHedgeUsd = exposure * optimal;
-  const lev = pos?.leverage || sugLev;
-  document.getElementById('rh-margin').value = (newHedgeUsd / lev).toFixed(0);
-  document.getElementById('rh-hedge-usd').value = newHedgeUsd.toFixed(0);
+  // v47.74: blank margin/hedge — populate when ratio is chosen
+  document.getElementById('rh-margin').value = '';
+  document.getElementById('rh-hedge-usd').value = '';
 
   updateRhCalc();
   document.getElementById('rehedgeModal').classList.add('open');
@@ -15819,6 +16015,13 @@ function _calcExposure(asset) {
 function rhApplySuggested() {
   const optimal = calcOptimalRatio(_rhAsset);
   document.getElementById('rh-ratio-override').value = (optimal*100).toFixed(0);
+  updateRhCalc();
+}
+
+// v47.74: snap ratio field to CURRENT (position's current ratio)
+function rhKeepCurrent() {
+  const current = DB.hedgeCache?.[`ratio_${_rhAsset}`] ?? calcOptimalRatio(_rhAsset);
+  document.getElementById('rh-ratio-override').value = (current*100).toFixed(0);
   updateRhCalc();
 }
 
@@ -15907,8 +16110,12 @@ function rhLogAdjustment() {
   const lev      = +document.getElementById('rh-lev-slider').value || 3;
   const margin   = +document.getElementById('rh-margin').value || 0;
   const hedgeUsd = +document.getElementById('rh-hedge-usd').value || 0;
-  const ratio    = +(document.getElementById('rh-ratio-override').value||0) / 100 || calcOptimalRatio(asset);
+  const ratioRaw = +(document.getElementById('rh-ratio-override').value||0);
   const notes    = document.getElementById('rh-notes').value.trim();
+
+  // v47.74: require explicit ratio entry
+  if(!ratioRaw) { toast('Enter a Ratio Override % (or click Use Suggested / Keep Current)', true); return; }
+  const ratio = ratioRaw / 100;
 
   if(!entry) { toast('Enter entry price', true); return; }
   if(!margin && !hedgeUsd) { toast('Enter margin or hedge size', true); return; }
@@ -15916,7 +16123,6 @@ function rhLogAdjustment() {
   const size = hedgeUsd > 0 ? hedgeUsd / entry : margin * lev / entry;
   const finalMargin = margin || hedgeUsd / lev;
 
-  // Update the existing position or create new
   const existing = (DB.hedgePositions||[]).find(p => p.asset === asset);
   if(existing) {
     existing.size       = size;
@@ -15929,9 +16135,16 @@ function rhLogAdjustment() {
     DB.hedgePositions.push({ id:uid(), asset, size, entryPrice:entry, leverage:lev, openDate:today(), fundingPaid:0, margin:finalMargin, notes });
   }
 
-  // Save the new ratio
   if(!DB.hedgeCache) DB.hedgeCache = {};
   DB.hedgeCache[`ratio_${asset}`] = ratio;
+
+  // v47.74: record ack for snooze logic
+  DB.hedgeCache.ack = DB.hedgeCache.ack || {};
+  DB.hedgeCache.ack[asset] = {
+    ackRatio: ratio,
+    ackSuggestedAt: calcOptimalRatio(asset),
+    ackTimestamp: Date.now(),
+  };
 
   persist();
   closeModal('rehedgeModal');
@@ -15957,6 +16170,16 @@ function rhCloseAndReopen() {
 
 const HEDGE_RATIO_THRESHOLD = 0.10; // 10 percentage points gap triggers alert
 const HEDGE_RATIO_COOLDOWN  = 4 * 60 * 60 * 1000; // 4 hours
+// v47.74: snooze logic
+const HEDGE_RATIO_SNOOZE_DELTA = 0.10;
+const HEDGE_RATIO_SNOOZE_TTL   = 7 * 86400000;
+
+function _hedgeIsSnoozed(asset, curSuggested) {
+  const ack = DB.hedgeCache?.ack?.[asset];
+  if(!ack) return false;
+  if(Date.now() - (ack.ackTimestamp || 0) > HEDGE_RATIO_SNOOZE_TTL) return false;
+  return Math.abs(curSuggested - (ack.ackSuggestedAt || 0)) < HEDGE_RATIO_SNOOZE_DELTA;
+}
 
 function checkHedgeRatioAlerts() {
   if(!(DB.hedgePositions||[]).length) return;
@@ -15971,6 +16194,11 @@ function checkHedgeRatioAlerts() {
     const gap       = suggested - current; // positive = should increase, negative = should decrease
 
     if(Math.abs(gap) < HEDGE_RATIO_THRESHOLD) {
+      _alertReset(`hedge-ratio-${asset}`, 'gem');
+      return;
+    }
+    // v47.74: respect snooze
+    if(_hedgeIsSnoozed(asset, suggested)) {
       _alertReset(`hedge-ratio-${asset}`, 'gem');
       return;
     }
@@ -16047,18 +16275,28 @@ function checkHedgeAlerts() {
   // Update hedge tab badge
   const badge = document.getElementById('hedgeTabBadge');
   if(badge) {
-    const alerts = (DB.hedgePositions||[]).filter(p => {
+    // v47.69: count AND describe per-position alert conditions
+    const alertDetails = [];
+    (DB.hedgePositions||[]).forEach(p => {
       const curPx = getPrice(HEDGE_GECKO[p.asset]);
-      if(!curPx) return false;
+      if(!curPx) return;
       const liq = p.entryPrice*(1+1/(p.leverage||3)-0.005);
       const badgeRatio = DB.hedgeCache?.[`ratio_${p.asset}`] ?? calcOptimalRatio(p.asset);
       const tp = p.entryPrice*(1-badgeRatio);
       const slRaw = p.entryPrice+(p.entryPrice-tp)*0.30;
       const sl = Math.min(slRaw, liq*0.88);
-      return curPx<=tp || curPx>=sl || curPx>liq*0.85;
-    }).length;
+      const tags = [];
+      if(curPx <= tp)       tags.push('TP hit');
+      if(curPx >= sl)       tags.push('SL hit');
+      if(curPx > liq*0.85)  tags.push('near liq');
+      if(tags.length) alertDetails.push(`${p.asset}: ${tags.join(', ')}`);
+    });
+    const alerts = alertDetails.length;
     badge.textContent = alerts || '';
     badge.style.display = alerts ? '' : 'none';
+    badge.title = alerts
+      ? `${alerts} hedge position alert${alerts>1?'s':''} — ${alertDetails.join(' · ')}. Click ⚡ Hedge tab to review.`
+      : '';
   }
 }
 
@@ -18839,8 +19077,8 @@ function renderSummary() {
     return `data-tip-id="${id}"`;
   }
 
-  // ── Hedge ratio alert banner ─────────────────────────────────────────────
-  const hedgeAlertRows = [];
+  // ── Hedge ratio alert banner (v47.73: consolidated into single compact row) ──
+  const hedgeAlertData = [];
   if((DB.hedgePositions||[]).length) {
     ['BTC','ETH','SOL'].forEach(asset => {
       const pos = (DB.hedgePositions||[]).find(p => p.asset === asset);
@@ -18849,30 +19087,28 @@ function renderSummary() {
       const current   = DB.hedgeCache?.[`ratio_${asset}`] ?? suggested;
       const gap       = suggested - current;
       if(Math.abs(gap) < HEDGE_RATIO_THRESHOLD) return;
+      if(_hedgeIsSnoozed(asset, suggested)) return;  // v47.74
       const arrow     = gap > 0 ? '▲' : '▼';
       const curPct    = Math.round(current * 100);
       const sugPct    = Math.round(suggested * 100);
-      const cache     = DB.hedgeCache?.[asset] || {};
-      const trend     = cache.trend7d || 0;
-      const iv        = cache.iv || 65;
-      const reason    = gap < 0 && trend > 5  ? 'market trending up, IV easing'
-                      : gap > 0 && trend < -5 ? 'bearish trend, elevated risk'
-                      : gap < 0              ? `IV dropped to ${iv.toFixed(0)}`
-                      : gap > 0              ? `IV elevated at ${iv.toFixed(0)}`
-                      : 'conditions changed';
-      const color = gap > 0 ? '#cc2200' : '#b86800';
-      hedgeAlertRows.push(`<div style="display:flex;align-items:center;gap:10px;padding:6px 12px;background:${gap>0?'rgba(204,34,0,0.08)':'rgba(184,104,0,0.08)'};border-left:3px solid ${color};border-radius:4px;margin-bottom:4px;font-size:11px;">
-        <span style="font-size:14px;">⚖</span>
-        <span style="font-weight:700;color:${color};">${asset} Hedge</span>
-        <span style="color:var(--text2);">Current <strong>${curPct}%</strong> → Suggested <strong>${sugPct}%</strong> ${arrow}</span>
-        <span style="color:var(--text3);font-size:10px;">${reason}</span>
-        <span style="margin-left:auto;cursor:pointer;color:var(--accent2);font-size:10px;white-space:nowrap;" onclick="switchTab('hedge')">Go to Hedge →</span>
-      </div>`);
+      hedgeAlertData.push({ asset, curPct, sugPct, arrow, gap });
     });
   }
-  const hedgeBannerHtml = hedgeAlertRows.length
-    ? `<div style="margin-bottom:8px;">${hedgeAlertRows.join('')}</div>`
-    : '';
+  let hedgeBannerHtml = '';
+  if(hedgeAlertData.length) {
+    const anyIncrease = hedgeAlertData.some(a => a.gap > 0);
+    const color       = anyIncrease ? '#cc2200' : '#b86800';
+    const bg          = anyIncrease ? 'rgba(204,34,0,0.08)' : 'rgba(184,104,0,0.08)';
+    const perAsset    = hedgeAlertData.map(a =>
+      `<span style="color:${a.gap>0?'#cc2200':'#b86800'};font-weight:700;">${a.asset}</span> ${a.curPct}→${a.sugPct}% ${a.arrow}`
+    ).join(' &nbsp;·&nbsp; ');
+    hedgeBannerHtml = `<div style="display:flex;align-items:center;gap:10px;padding:6px 12px;background:${bg};border-left:3px solid ${color};border-radius:4px;margin-bottom:8px;font-size:11px;flex-wrap:wrap;">
+      <span style="font-size:14px;">⚖</span>
+      <span style="font-weight:700;color:${color};">Hedge gap${hedgeAlertData.length>1?'s':''}:</span>
+      <span style="color:var(--text2);">${perAsset}</span>
+      <span style="margin-left:auto;cursor:pointer;color:var(--accent2);font-size:10px;white-space:nowrap;" onclick="switchTab('hedge')">Go to Hedge →</span>
+    </div>`;
+  }
 
   el.innerHTML = hedgeBannerHtml + `
     <div style="background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--border2);border-radius:10px;padding:8px 14px;margin-bottom:6px;display:flex;align-items:stretch;gap:0;box-shadow:0 2px 12px rgba(0,0,0,.2);flex-wrap:nowrap;overflow:hidden;">
@@ -19757,6 +19993,72 @@ const TAB_LABELS = {
 };
 
 const WHATS_NEW = {
+  '47.74': {
+    headline: "Version 47.74",
+    summary:  "Re-hedge modal now requires an explicit ratio entry (no auto-defaulting) with Keep Current and Use Suggested shortcut buttons. Hedge ratio alerts now snooze after you save, re-firing only if the suggested ratio shifts materially or a week passes.",
+    items: [
+      { icon: '⌨', title: "Ratio Override must be entered explicitly",
+        text: "Previously the Re-hedge modal pre-filled Ratio Override with the Suggested value, which made it feel like you were committing to the engine's suggestion by default. The field is now blank on open — you either type a value, click Keep Current (snaps to your position's existing ratio), or click Use Suggested (snaps to the engine's recommendation). Attempting to save with a blank field shows an error toast. The Margin and Hedge Size fields are also blank on open and populate after you choose a ratio. This makes the choice clear: pick intentionally, or Cancel to leave the position unchanged." },
+      { icon: '🔕', title: "Alert snooze after you acknowledge a ratio",
+        text: "When you save a re-hedge at any ratio (whether Suggested, Current, or custom), the app records an acknowledgement: the ratio you saved, what the engine suggested at that moment, and when. The Summary banner, header pill, and toast alerts for that asset are then quiet UNTIL either (a) the suggested ratio drifts by 10pp or more from what was suggested at your ack time, or (b) 7 days pass. No more persistent nagging for a gap you've already considered and intentionally accepted. If conditions actually change materially, you get alerted again — exactly when a second look is warranted." },
+      { icon: '🎯', title: "Example",
+        text: "BTC suggestion is 60%, yours is 40% → red banner fires → you open Re-hedge, decide to save at 50% (a compromise). Banner goes quiet immediately. Two days later, suggestion is still 60% → quiet. A week later, suggestion moves to 72% (your gap from the ack-time suggestion is now 12pp, exceeding the 10pp threshold) → banner re-fires with the new number. OR after 7 days, the ack expires and the banner re-evaluates fresh regardless." },
+    ]
+  },
+  '47.73': {
+    headline: "Version 47.73",
+    summary:  "Re-hedge modal layout fixed (Ratio override no longer clipped) and Summary hedge alert consolidated from per-asset stacked banners into a single compact row.",
+    items: [
+      { icon: '📐', title: "Re-hedge modal: Ratio override no longer cut off",
+        text: "In the RE-HEDGE CALCULATOR modal, the 'Ratio override %' field's label and 'Use Suggested' button were overflowing the right edge when squeezed into the 3-column row with Entry Price and Leverage. Entry Price and Leverage now share a 2-column row, and Ratio override gets its own dedicated row below with enough width for the input, the % sign, and the Use Suggested button. No functionality change — just layout." },
+      { icon: '🎯', title: "Summary hedge banner consolidated",
+        text: "When multiple hedge ratios drift from their suggested targets, the Summary screen previously showed one full-width banner PER asset (so BTC + ETH gaps meant two stacked red rows). The rows have been consolidated into a single compact banner: '⚖ Hedge gaps: BTC 30→57% ▲ · ETH 45→60% ▲ Go to Hedge →'. Saves vertical space while preserving the same information and the same click-through action. The header pill (⚖ Hedge ⚠ BTC/ETH) continues to exist as a persistent across-tab indicator — the two indicators have always been intentional because the pill is visible everywhere but the banner only on Summary, and now the Summary banner is less repetitive." },
+    ]
+  },
+  '47.72': {
+    headline: "Version 47.72",
+    summary:  "The Hedge % suggestion on the Add Position modal now includes a 'Why?' link that expands into a detailed rationale — regime label, each driving signal, and the final calculation.",
+    items: [
+      { icon: '❓', title: "'Why?' link next to the suggested ratio",
+        text: "The hint below the Hedge % field (previously 'Suggested 42% · +8% vs suggested') now ends with a 'Why?' link. Click it to expand an inline explanation of exactly how the suggestion was computed. Click again to collapse. The explanation refreshes automatically when the asset is changed." },
+      { icon: '📊', title: "What the rationale shows",
+        text: "1) The overall regime label (e.g. '🟣 STABILISING — typical hedge: 25-40%') with its color-coded banner. 2) Each driving signal in plain language: implied volatility level, 7-day trend direction with its multiplier, funding rate versus your yield offset, and any stability or limit-buy reductions. 3) The final calculation in formula form at the bottom — e.g. 'Base 50% × trend 1.10 × fundSignal 1.00 × cost 0.70 − 8% = 31%' — so you can see the exact math the engine used." },
+    ]
+  },
+  '47.71': {
+    headline: "Version 47.71",
+    summary:  "The Add Hedge Position modal now has a Hedge % field, so you can specify your desired ratio directly instead of calculating Hedge Size $ by hand.",
+    items: [
+      { icon: '⚖', title: "Hedge % field on Add Position modal",
+        text: "The Add Hedge Position modal (the one that opens when you click 'Open New Position' after closing, or via + Add Position) now includes a Hedge % input as the first field of the Position Size block. Enter your desired ratio (e.g. 30%) and the modal auto-calculates Hedge Size $ = your asset exposure × that ratio, then propagates to Margin $ and Short Qty. The Margin $ and Hedge $ fields still work as before if you prefer entering those directly — now you have three entry points for the same quantity and whichever you edit updates the others." },
+      { icon: '✦', title: "Pre-filled with the Suggested ratio",
+        text: "When the modal opens, Hedge % is pre-populated with the app's suggested ratio for that asset (based on IV regime and portfolio composition). A 'Use Suggested' button resets to that value at any time, and a hint below the field always shows the current suggestion plus how much your entry differs from it (e.g. 'Suggested 42% · +8% vs suggested'). Changing the asset dropdown updates both the ratio suggestion and the entry price for the new asset." },
+    ]
+  },
+  '47.70': {
+    headline: "Version 47.70",
+    summary:  "Reverted v47.69's sticky column header change after it caused headers to float in wrong positions. Sticky behavior is back to the pre-v47.69 state while a proper solution is investigated.",
+    items: [
+      { icon: '↩', title: "Reverted: sticky column headers",
+        text: "v47.69 attempted to fix the Holdings-caption-disappears-on-scroll issue by giving thead cells a top:94px offset. This caused worse behavior on several other tabs — the column headers appeared floating mid-table (Vaults, History, GEMs) or pinned at the wrong vertical position rather than at the top of their table. Root cause: the tables live inside a .tbl-wrap div with overflow-x:auto, which creates a nested scroll container — sticky positioning then behaves relative to that container, not the page, producing inconsistent results across different tab layouts. The thead is restored to top:0 (prior behavior) pending a correctly-scoped fix." },
+      { icon: '🔜', title: "What's next",
+        text: "The Holdings-headers-disappearing-on-scroll problem still exists. A proper fix requires either changing the wrapper's overflow strategy or introducing a per-tab sticky-header mechanism — both bigger changes than the 94px tweak attempted. This will be addressed in a future release, with each tab tested individually before shipping." },
+    ]
+  },
+  '47.69': {
+    headline: "Version 47.69",
+    summary:  "Table column headers now stay pinned on scroll across all tabs. Hedge tab defaults to Open Positions instead of Calculator, and positions in alert state now display an explanatory action banner with direct Close/Edit buttons.",
+    items: [
+      { icon: '📌', title: "Sticky column headers across every tab",
+        text: "When scrolling through LP Pools, Vaults, Holdings, History, GEMs, or Hedge positions — the column headers now stay pinned just below the tab bar so you always know what each column represents. Previously the thead was sticking at the very top of the viewport, where it slid underneath the main header and tab bar on scroll and effectively disappeared. It now sticks at top:94px, below both fixed UI layers. Applied via a single CSS rule so every table in the app benefits." },
+      { icon: '🎯', title: "Hedge tab: Open Positions is now the default sub-tab",
+        text: "Opening the ⚡ Hedge tab now lands you on 📌 Open Positions instead of 📊 Calculator. The positions view is what you almost always want to see first — especially when reacting to an alert. Calculator is still one click away when you want to explore suggested ratios or run scenarios." },
+      { icon: '⚠', title: "Alert action banners on individual hedge positions",
+        text: "When a hedge position breaches take-profit, stop-loss, or approaches within 15% of liquidation, a clearly-styled banner now appears directly under that position row. Each banner states what triggered, why it matters, and what the conventional next steps are — with Close and Edit buttons built right in so you don't have to scroll or hunt for the action. Three distinct styles: green for TP hits (celebration), red for SL breaches (concern), amber for near-liquidation (urgency)." },
+      { icon: '🏷', title: "Hedge tab badge: descriptive tooltip",
+        text: "The '1' badge (or higher count) on the ⚡ Hedge tab now shows a descriptive tooltip on hover: e.g. '1 hedge position alert — BTC: near liq. Click ⚡ Hedge tab to review.' Previously the badge gave no hint about what it was counting or why. Note the badge (position-level threshold alerts) and the header pill ⚖ (portfolio-wide ratio gaps) are two different signals: the badge fires when price crosses a threshold on an individual position, while the pill fires when your overall hedge ratio drifts from the suggested target." },
+    ]
+  },
   '47.68': {
     headline: "Version 47.68",
     summary:  "Demo file's Mask/Privacy toggle restored, and the Help → What's New tab now rebuilds itself from the changelog dict on every open.",
