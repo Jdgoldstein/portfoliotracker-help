@@ -240,6 +240,15 @@ thead th {
   top: 94px !important;
   will-change: transform;
 }
+/* v47.80: Hedge tab — completely opt out of sticky theads. On the Hedge tab the
+   column captions were rendering in the middle of the data area instead of at
+   the top of the table. The Hedge tables are short, so captions stay visible
+   without sticky behavior. */
+#tab-hedge thead th {
+  position: static !important;
+  top: auto !important;
+  will-change: auto !important;
+}
 .tbl-wrap table { width: 100%; }
 thead th.left{text-align:left;}
 tbody td{padding:4px 6px;border-bottom:1px solid #b8cce0;text-align:right;color:#1a2740;font-family:var(--mono);font-size:var(--fs-mono);font-weight:600;vertical-align:middle;}
@@ -1176,7 +1185,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 <!-- HEADER -->
 <div id="header" style="visibility:hidden;">
   <div class="logo">PORTFOLIO <small>TRACKER</small></div>
-  <span id="versionBadge" style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-left:2px;align-self:flex-end;padding-bottom:2px;font-weight:600;">v47.78</span>
+  <span id="versionBadge" style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-left:2px;align-self:flex-end;padding-bottom:2px;font-weight:600;">v47.81</span>
   <span id="privacyBadge">🙈 VALUES MASKED</span>
   <div class="header-right">
     <div class="price-stamp"><span class="dot" id="priceDot"></span><span id="priceStamp">—</span></div>
@@ -3399,10 +3408,19 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
           <input id="hm-swap-to-qty" type="number" placeholder="0" min="0" oninput="_hmSwapToQtyInput()">
           <div class="hint" id="hm-swap-to-qty-hint" style="margin-top:3px;color:var(--text3);display:none;"></div>
         </div>
+        <div class="field"></div>
+      </div>
+      <!-- v47.81: Destination wallet + chain on its own row, supports cross-chain swaps -->
+      <div class="form-grid cols2">
         <div class="field">
           <label>Destination Wallet</label>
           <input id="hm-swap-to-wallet" placeholder="e.g. Trezor" list="hm-swap-wallet-options" autocomplete="off">
           <datalist id="hm-swap-wallet-options"></datalist>
+        </div>
+        <div class="field">
+          <label>Destination Chain <span style="font-weight:400;color:var(--text3);font-size:10px;">(optional)</span></label>
+          <input id="hm-swap-to-chain" placeholder="same as source" list="chain-options">
+          <div class="hint" id="hm-swap-from-chain" style="margin-top:3px;color:var(--text3);display:none;"></div>
         </div>
       </div>
     </div>
@@ -3422,9 +3440,11 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
         <div class="field">
           <label>Chain <span style="font-weight:400;color:var(--text3);font-size:10px;">(optional)</span></label>
           <input id="hm-transfer-chain" placeholder="same as source" list="chain-options">
+          <!-- v47.81: source chain hint -->
+          <div class="hint" id="hm-transfer-from-chain" style="margin-top:3px;color:var(--text3);display:none;"></div>
         </div>
       </div>
-      <div class="hint" style="margin-top:2px;color:var(--accent);">Cost basis carries over exactly — no price needed. A Transfer transaction is logged.</div>
+      <div class="hint" style="margin-top:2px;color:var(--accent);">Cost basis carries over exactly — no price needed. A Transfer transaction is logged. Cross-chain transfers (bridges) are supported — set Chain to the destination network.</div>
     </div>
 
     <!-- Date — shown in all modes -->
@@ -4213,7 +4233,7 @@ const ACT_MASTER = (()=>{const p=['CPF_MA','STER_O','VERRID','E_KEY_','ZULU9'];r
 const ACT_STORE    = 'cpf_activation_v1';
 const ACT_ID_STORE = 'cpf_install_id';
 const ACT_VER      = 'v30';
-const APP_VERSION  = '47.78';           // bumped on each release
+const APP_VERSION  = '47.81';           // bumped on each release
 const WHATS_NEW_KEY = 'cpf_seen_ver';   // localStorage: last version user saw What's New
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -10570,6 +10590,19 @@ function hmSetMode(mode) {
     document.getElementById('hm-swap-to-qty').value='';
     document.getElementById('hm-swap-to-qty').dataset.autofilled = '';  // v47.62: reset autofill flag
     document.getElementById('hm-swap-to-wallet').value = h?.wallet||'';
+    // v47.81: Destination chain — defaults to source chain
+    const swapChainEl = document.getElementById('hm-swap-to-chain');
+    if(swapChainEl) swapChainEl.value = h?.chain || '';
+    // v47.81: source-chain hint
+    const swapFromChainHint = document.getElementById('hm-swap-from-chain');
+    if(swapFromChainHint) {
+      if(h && h.chain) {
+        swapFromChainHint.textContent = `Source: ${h.sym} on ${h.chain}`;
+        swapFromChainHint.style.display = '';
+      } else {
+        swapFromChainHint.style.display = 'none';
+      }
+    }
 
     // v47.60: Show Current qty hint for what's being swapped FROM
     const fromHint = document.getElementById('hm-swap-from-current');
@@ -10614,6 +10647,16 @@ function hmSetMode(mode) {
     document.getElementById('hm-transfer-qty').value = '';
     document.getElementById('hm-transfer-to-wallet').value = '';
     document.getElementById('hm-transfer-chain').value = h?.chain||'';
+    // v47.81: source-chain hint
+    const tFromHint = document.getElementById('hm-transfer-from-chain');
+    if(tFromHint) {
+      if(h && h.chain) {
+        tFromHint.textContent = `Source: ${h.sym} on ${h.chain}`;
+        tFromHint.style.display = '';
+      } else {
+        tFromHint.style.display = 'none';
+      }
+    }
   }
 
   const titles    = { new:'ADD HOLDING', edit:'EDIT HOLDING', buy:'ADD HOLDING', sell:'ADD HOLDING', swap:'ADD HOLDING', transfer:'ADD HOLDING' };
@@ -10797,6 +10840,8 @@ function saveHoldingUnified() {
     const toGeckoId = document.getElementById('hm-swap-to-id').value;
     let   toQty     = +document.getElementById('hm-swap-to-qty').value     || 0;
     const toWallet  = document.getElementById('hm-swap-to-wallet').value;
+    // v47.81: read destination chain — defaults to source for same-chain swaps
+    const toChain   = (document.getElementById('hm-swap-to-chain')?.value || '').trim() || (h?.chain || '');
     if(!sellQty||!sellPrice){ toast('Swap qty and price required',true); return; }
     if(sellQty > h.qty){
       const availStr = h.qty >= 1 ? h.qty.toFixed(4).replace(/\.?0+$/,'') : h.qty.toFixed(8).replace(/\.?0+$/,'');
@@ -10823,27 +10868,29 @@ function saveHoldingUnified() {
     const destCost  = saleValue / toQty;
     h.qty -= sellQty;
     if(h.qty <= 0.000001) DB.holdings = DB.holdings.filter(x=>x.id!==editId);
-    // Match destination: prefer wallet+sym exact match, fall back to sym-only if unique
+    // v47.81: Match destination on sym + wallet + chain (chain-aware)
     const symMatches = DB.holdings.filter(x=>x.sym.toUpperCase()===toSym.toUpperCase());
-    const dest = symMatches.find(x=>x.wallet===toWallet)   // exact wallet match
-              || (symMatches.length===1 ? symMatches[0] : null); // sym-only if unique
+    const dest = symMatches.find(x => x.wallet===toWallet && (x.chain||'')===(toChain||''))
+              || symMatches.find(x => x.wallet===toWallet && !x.chain)  // legacy no-chain row
+              || (symMatches.length===1 ? symMatches[0] : null);
     if(dest) {
       const tq = dest.qty + toQty;
       dest.avgCost = tq > 0 ? ((dest.avgCost*dest.qty)+(destCost*toQty))/tq : destCost;
       dest.qty = tq;
-      // Preserve existing geckoId/cat/chain; only update geckoId if it was blank
       if(toGeckoId && !dest.geckoId) dest.geckoId = toGeckoId;
+      if(toChain && !dest.chain) dest.chain = toChain;
     } else {
-      // New row — inherit cat/chain from same-symbol rows if possible
       const ref = symMatches[0];
-      DB.holdings.push({ id:uid(), sym:toSym, geckoId:toGeckoId||ref?.geckoId||'', cat:ref?.cat||'', chain:ref?.chain||'', wallet:toWallet||ref?.wallet||'', avgCost:destCost, qty:toQty });
+      DB.holdings.push({ id:uid(), sym:toSym, geckoId:toGeckoId||ref?.geckoId||'', cat:ref?.cat||'', chain:toChain||ref?.chain||'', wallet:toWallet||ref?.wallet||'', avgCost:destCost, qty:toQty });
     }
+    // v47.81: include chain info when source ≠ dest chain
+    const chainNote = (h.chain && toChain && h.chain !== toChain) ? ` [${h.chain} → ${toChain}]` : '';
     logTransaction({ date, type:'Swap', sym:h.sym, qty:sellQty, price:sellPrice, total:saleValue,
-      from:h.wallet, to:toWallet, notes:`Swap ${sellQty} ${h.sym} → ${toQty} ${toSym}` });
+      from:h.wallet, to:toWallet, notes:`Swap ${sellQty} ${h.sym} → ${toQty} ${toSym}${chainNote}` });
     logTransaction({ date, type:'Swap', sym:toSym, qty:toQty, price:destCost, total:saleValue,
-      from:h.wallet, to:toWallet, notes:`Received ${toQty} ${toSym} (swap from ${h.sym})` });
+      from:h.wallet, to:toWallet, notes:`Received ${toQty} ${toSym} (swap from ${h.sym})${chainNote}` });
     persist(); closeModal('holdingModal'); renderHoldings(); renderHeader();
-    toast(`Swapped ${sellQty} ${h.sym} → ${toQty} ${toSym}`);
+    toast(`Swapped ${sellQty} ${h.sym} → ${toQty} ${toSym}${chainNote}`);
 
   } else if(mode==='transfer') {
     // ── Transfer — move qty to another wallet, cost basis preserved ──
@@ -10877,14 +10924,18 @@ function saveHoldingUnified() {
       });
     }
 
+    // v47.81: clearer note when chains differ (cross-chain transfer / bridge)
+    const tChainNote = (h.chain && toChain && h.chain !== toChain)
+      ? ` (${h.chain} → ${toChain})`
+      : (toChain ? ` (${toChain})` : '');
     logTransaction({
       date, type: 'Transfer', sym: h.sym,
       qty: transferQty, price: null, total: null,
       from: h.wallet, to: toWallet,
-      notes: `Transferred ${transferQty} ${h.sym} → ${toWallet}${toChain?' ('+toChain+')':''}`,
+      notes: `Transferred ${transferQty} ${h.sym} → ${toWallet}${tChainNote}`,
     });
     persist(); closeModal('holdingModal'); renderHoldings(); renderHeader();
-    toast(`✓ Transferred ${transferQty} ${h.sym} → ${toWallet}`);
+    toast(`✓ Transferred ${transferQty} ${h.sym} → ${toWallet}${tChainNote}`);
   }
 }
 
@@ -20087,6 +20138,34 @@ const TAB_LABELS = {
 };
 
 const WHATS_NEW = {
+  '47.81': {
+    headline: "Version 47.81",
+    summary:  "Swap action now supports cross-chain swaps. Add a destination chain alongside the destination wallet — perfect for bridge swaps like WETH on Base → ETH on Ethereum. Transfer's existing cross-chain support gets clearer hints and notes too.",
+    items: [
+      { icon: '⇄', title: "Cross-chain swaps",
+        text: "Previously the Swap modal had no way to specify a destination chain — the received token always inherited its chain from existing rows of the same symbol or from the source token, which made it impossible to correctly record swaps that also bridged between networks (e.g. swapping WETH on Base into ETH on Ethereum mainnet). The Receiving section now has a Destination Chain field that defaults to the source chain (preserving the old behavior for same-chain swaps) but can be changed to any chain in the dropdown. The save logic matches the destination row on symbol + wallet + chain, so chain-distinct holdings stay separate." },
+      { icon: '📍', title: "Source chain shown as a hint",
+        text: "Both Swap and Transfer modals now show the source chain inline beneath the Destination Chain field (e.g. 'Source: WETH on Base'), making cross-chain operations obvious at a glance. No more guessing which network you're starting from." },
+      { icon: '📝', title: "Cross-chain transactions clearly logged",
+        text: "When source and destination chains differ, the Transactions log entry now reads 'Transferred 0.5 WETH → Ledger X1 (Base → Ethereum)' instead of just '(Ethereum)'. Same for Swap notes. Same-chain operations log unchanged." },
+    ]
+  },
+  '47.80': {
+    headline: "Version 47.80",
+    summary:  "Hedge tab column captions now sit properly at the top of each table. Earlier attempts at a sticky-caption fix produced a captions-floating-mid-table glitch on this tab specifically; sticky behavior is now disabled for Hedge tables (which are short enough that captions stay visible without scrolling).",
+    items: [
+      { icon: '📌', title: "Hedge tab caption row positioned correctly",
+        text: "On the Hedge tab, the Open Positions table column captions (ASSET, LEV, SHORT $, MARGIN $, etc.) were rendering between data rows instead of at the top of the table. Root cause was an interaction between the global sticky-thead rule, will-change:transform compositing, and the Hedge tables' two-row-per-position layout. Sticky behavior is now explicitly disabled inside the Hedge tab — captions render naturally at the top of each table. Other tabs keep sticky captions unchanged." },
+    ]
+  },
+  '47.79': {
+    headline: "Version 47.79",
+    summary:  "Internal investigation release for the Hedge tab caption-row positioning issue — superseded by v47.80's fix.",
+    items: [
+      { icon: '🔍', title: "Sticky offset investigation",
+        text: "v47.79 attempted to fix the Hedge tab's misplaced column captions by adjusting the sticky offset. The adjustment didn't fully resolve the issue, so v47.80 takes a different approach (disabling sticky behavior on Hedge entirely)." },
+    ]
+  },
   '47.78': {
     headline: "Version 47.78",
     summary:  "Removed the 1440px max-width cap. Page now fills the window (down to the 1280px floor) so tables have all available horizontal space on widescreen monitors — no more unused margins or clipped columns.",
