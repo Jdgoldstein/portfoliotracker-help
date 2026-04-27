@@ -1185,7 +1185,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 <!-- HEADER -->
 <div id="header" style="visibility:hidden;">
   <div class="logo">PORTFOLIO <small>TRACKER</small></div>
-  <span id="versionBadge" style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-left:2px;align-self:flex-end;padding-bottom:2px;font-weight:600;">v47.81</span>
+  <span id="versionBadge" style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-left:2px;align-self:flex-end;padding-bottom:2px;font-weight:600;">v47.83</span>
   <span id="privacyBadge">🙈 VALUES MASKED</span>
   <div class="header-right">
     <div class="price-stamp"><span class="dot" id="priceDot"></span><span id="priceStamp">—</span></div>
@@ -4233,7 +4233,7 @@ const ACT_MASTER = (()=>{const p=['CPF_MA','STER_O','VERRID','E_KEY_','ZULU9'];r
 const ACT_STORE    = 'cpf_activation_v1';
 const ACT_ID_STORE = 'cpf_install_id';
 const ACT_VER      = 'v30';
-const APP_VERSION  = '47.81';           // bumped on each release
+const APP_VERSION  = '47.83';           // bumped on each release
 const WHATS_NEW_KEY = 'cpf_seen_ver';   // localStorage: last version user saw What's New
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -10805,11 +10805,15 @@ function saveHoldingUnified() {
     const qty   = +document.getElementById('hm-buy-qty').value   || 0;
     const price = +document.getElementById('hm-buy-price').value || 0;
     if(!qty||!price){ toast('Qty and price required',true); return; }
+    const _preBuyAvgCost = h.avgCost;
+    const _preBuyQty     = h.qty;
     const totalQty = h.qty + qty;
     h.avgCost = totalQty > 0 ? ((h.avgCost*h.qty)+(price*qty)) / totalQty : price;
     h.qty = totalQty;
     logTransaction({ date, type:'Buy', sym:h.sym, qty, price, total:price*qty,
-      from:'Cash', to:h.wallet||'Holdings', notes:'Additional purchase — cost basis merged' });
+      from:'Cash', to:h.wallet||'Holdings', notes:'Additional purchase — cost basis merged',
+      revert: { type:'buy', destId:h.id, destQtyDelta:qty, buyPrice:price,
+                destAvgCostBefore:_preBuyAvgCost, destQtyBefore:_preBuyQty } });
     persist(); closeModal('holdingModal'); renderHoldings(); renderHeader();
     toast(`${h.sym} updated — new avg cost $${$fp(h.avgCost,4)}`);
 
@@ -10866,14 +10870,26 @@ function saveHoldingUnified() {
     if(!toQty){ toast('Qty received required — enter the amount or ensure price data is loaded',true); return; }
     const saleValue = sellQty * sellPrice;
     const destCost  = saleValue / toQty;
+
+    // v47.83: snapshot source state for revert
+    const _sourceSnap = {
+      sym: h.sym, wallet: h.wallet, chain: h.chain || '',
+      avgCost: h.avgCost, geckoId: h.geckoId, cat: h.cat,
+    };
+
     h.qty -= sellQty;
     if(h.qty <= 0.000001) DB.holdings = DB.holdings.filter(x=>x.id!==editId);
-    // v47.81: Match destination on sym + wallet + chain (chain-aware)
+    // v47.82: Match destination strictly on sym + wallet + chain. Removed the loose
+    // "sym-only if unique" fallback that caused swap-to-new-chain to merge back into
+    // the source row instead of creating a new row on the chosen chain.
     const symMatches = DB.holdings.filter(x=>x.sym.toUpperCase()===toSym.toUpperCase());
     const dest = symMatches.find(x => x.wallet===toWallet && (x.chain||'')===(toChain||''))
-              || symMatches.find(x => x.wallet===toWallet && !x.chain)  // legacy no-chain row
-              || (symMatches.length===1 ? symMatches[0] : null);
+              || symMatches.find(x => x.wallet===toWallet && !x.chain && toChain);  // legacy no-chain row
+    // v47.83: snapshot dest pre-merge state
+    let _destPreAvgCost = null, _destPreQty = 0;
     if(dest) {
+      _destPreAvgCost = dest.avgCost;
+      _destPreQty = dest.qty;
       const tq = dest.qty + toQty;
       dest.avgCost = tq > 0 ? ((dest.avgCost*dest.qty)+(destCost*toQty))/tq : destCost;
       dest.qty = tq;
@@ -10885,10 +10901,43 @@ function saveHoldingUnified() {
     }
     // v47.81: include chain info when source ≠ dest chain
     const chainNote = (h.chain && toChain && h.chain !== toChain) ? ` [${h.chain} → ${toChain}]` : '';
-    logTransaction({ date, type:'Swap', sym:h.sym, qty:sellQty, price:sellPrice, total:saleValue,
-      from:h.wallet, to:toWallet, notes:`Swap ${sellQty} ${h.sym} → ${toQty} ${toSym}${chainNote}` });
-    logTransaction({ date, type:'Swap', sym:toSym, qty:toQty, price:destCost, total:saleValue,
-      from:h.wallet, to:toWallet, notes:`Received ${toQty} ${toSym} (swap from ${h.sym})${chainNote}` });
+
+    // v47.83: revert object
+    const revertObj = {
+      type: 'swap',
+      sourceSym: _sourceSnap.sym, sourceWallet: _sourceSnap.wallet, sourceChain: _sourceSnap.chain,
+      sourceQtyDelta: sellQty, sourceAvgCost: _sourceSnap.avgCost,
+      sourceGeckoId: _sourceSnap.geckoId, sourceCat: _sourceSnap.cat,
+      destSym: toSym, destWallet: toWallet || _sourceSnap.wallet, destChain: toChain || '',
+      destQtyDelta: toQty, destCost: destCost,
+      destAvgCostBefore: _destPreAvgCost, destQtyBefore: _destPreQty,
+    };
+
+    // v47.83: COLLAPSE same-symbol swaps into ONE entry
+    const sameSym = h.sym.toUpperCase() === toSym.toUpperCase();
+    if(sameSym) {
+      const slipNote = (Math.abs(sellQty - toQty) > 0.0000001) ? ` (received ${qf(toQty)})` : '';
+      logTransaction({
+        date, type:'Swap', sym:h.sym, qty:sellQty, price:sellPrice, total:saleValue,
+        from:h.wallet, to:toWallet,
+        notes:`Swap ${qf(sellQty)} ${h.sym}${chainNote}${slipNote}`,
+        revert: revertObj,
+      });
+    } else {
+      const pairId = uid();
+      logTransaction({
+        date, type:'Swap', sym:h.sym, qty:sellQty, price:sellPrice, total:saleValue,
+        from:h.wallet, to:toWallet,
+        notes:`Swap ${qf(sellQty)} ${h.sym} → ${qf(toQty)} ${toSym}${chainNote}`,
+        revert: revertObj, pairId,
+      });
+      logTransaction({
+        date, type:'Swap', sym:toSym, qty:toQty, price:destCost, total:saleValue,
+        from:h.wallet, to:toWallet,
+        notes:`Received ${qf(toQty)} ${toSym} (swap from ${h.sym})${chainNote}`,
+        revert: revertObj, pairId,
+      });
+    }
     persist(); closeModal('holdingModal'); renderHoldings(); renderHeader();
     toast(`Swapped ${sellQty} ${h.sym} → ${toQty} ${toSym}${chainNote}`);
 
@@ -10901,6 +10950,12 @@ function saveHoldingUnified() {
     if(!toWallet){ toast('Destination wallet required', true); return; }
     if(transferQty > h.qty){ toast('Qty exceeds available balance', true); return; }
     if(toWallet === h.wallet && toChain === h.chain){ toast('Source and destination are the same wallet/chain', true); return; }
+
+    // v47.83: snapshot source for revert
+    const _tSourceSnap = {
+      sym: h.sym, wallet: h.wallet, chain: h.chain || '',
+      avgCost: h.avgCost, geckoId: h.geckoId, cat: h.cat,
+    };
 
     // Deduct from source
     h.qty -= transferQty;
@@ -10933,6 +10988,15 @@ function saveHoldingUnified() {
       qty: transferQty, price: null, total: null,
       from: h.wallet, to: toWallet,
       notes: `Transferred ${transferQty} ${h.sym} → ${toWallet}${tChainNote}`,
+      // v47.83: revert data
+      revert: {
+        type: 'transfer', sym: _tSourceSnap.sym,
+        sourceWallet: _tSourceSnap.wallet, sourceChain: _tSourceSnap.chain,
+        sourceAvgCost: _tSourceSnap.avgCost, sourceCat: _tSourceSnap.cat,
+        geckoId: _tSourceSnap.geckoId,
+        destWallet: toWallet, destChain: toChain || '',
+        qtyDelta: transferQty,
+      },
     });
     persist(); closeModal('holdingModal'); renderHoldings(); renderHeader();
     toast(`✓ Transferred ${transferQty} ${h.sym} → ${toWallet}${tChainNote}`);
@@ -10983,8 +11047,145 @@ function logTransaction(obj) {
     from:  obj.from || '',
     to:    obj.to   || '',
     notes: obj.notes || '',
+    // v47.83: revert support
+    revert: obj.revert || null,
+    pairId: obj.pairId || null,
+    revertedAt: null,
   });
   return id;
+}
+
+// v47.83: Apply a revert object to undo a Holdings change. Returns true on success.
+function _applyTxnRevert(rev) {
+  if(!rev || !rev.type) return false;
+
+  if(rev.type === 'buy') {
+    const h = DB.holdings.find(x => x.id === rev.destId);
+    if(!h) return false;
+    if(h.qty < rev.destQtyDelta - 0.000001) return false;
+    const newQty = h.qty - rev.destQtyDelta;
+    if(newQty <= 0.000001) {
+      DB.holdings = DB.holdings.filter(x => x.id !== rev.destId);
+    } else {
+      const oldQty = h.qty - rev.destQtyDelta;
+      const oldAvg = oldQty > 0
+        ? ((h.avgCost * h.qty) - (rev.buyPrice * rev.destQtyDelta)) / oldQty
+        : rev.destAvgCostBefore || h.avgCost;
+      h.avgCost = oldAvg;
+      h.qty = newQty;
+    }
+    return true;
+  }
+
+  if(rev.type === 'transfer') {
+    const dest = DB.holdings.find(x =>
+      x.sym.toUpperCase() === rev.sym.toUpperCase() &&
+      x.wallet === rev.destWallet &&
+      (x.chain||'') === (rev.destChain||'')
+    );
+    if(!dest) return false;
+    if(dest.qty < rev.qtyDelta - 0.000001) return false;
+    const newDestQty = dest.qty - rev.qtyDelta;
+    if(newDestQty <= 0.000001) {
+      DB.holdings = DB.holdings.filter(x => x.id !== dest.id);
+    } else {
+      const oldDestQty = dest.qty - rev.qtyDelta;
+      const oldDestAvg = oldDestQty > 0
+        ? ((dest.avgCost * dest.qty) - (rev.sourceAvgCost * rev.qtyDelta)) / oldDestQty
+        : dest.avgCost;
+      dest.avgCost = oldDestAvg;
+      dest.qty = newDestQty;
+    }
+    let source = DB.holdings.find(x =>
+      x.sym.toUpperCase() === rev.sym.toUpperCase() &&
+      x.wallet === rev.sourceWallet &&
+      (x.chain||'') === (rev.sourceChain||'')
+    );
+    if(source) {
+      const tq = source.qty + rev.qtyDelta;
+      source.avgCost = tq > 0 ? ((source.avgCost*source.qty) + (rev.sourceAvgCost*rev.qtyDelta)) / tq : rev.sourceAvgCost;
+      source.qty = tq;
+    } else {
+      DB.holdings.push({
+        id: uid(), sym: rev.sym,
+        geckoId: rev.geckoId || '', cat: rev.sourceCat || '',
+        chain: rev.sourceChain || '', wallet: rev.sourceWallet || '',
+        avgCost: rev.sourceAvgCost, qty: rev.qtyDelta,
+      });
+    }
+    return true;
+  }
+
+  if(rev.type === 'swap') {
+    const dest = DB.holdings.find(x =>
+      x.sym.toUpperCase() === rev.destSym.toUpperCase() &&
+      x.wallet === rev.destWallet &&
+      (x.chain||'') === (rev.destChain||'')
+    );
+    if(!dest) return false;
+    if(dest.qty < rev.destQtyDelta - 0.000001) return false;
+    const newDestQty = dest.qty - rev.destQtyDelta;
+    if(newDestQty <= 0.000001) {
+      DB.holdings = DB.holdings.filter(x => x.id !== dest.id);
+    } else {
+      const oldDestQty = dest.qty - rev.destQtyDelta;
+      const oldDestAvg = oldDestQty > 0
+        ? ((dest.avgCost * dest.qty) - (rev.destCost * rev.destQtyDelta)) / oldDestQty
+        : (rev.destAvgCostBefore != null ? rev.destAvgCostBefore : dest.avgCost);
+      dest.avgCost = oldDestAvg;
+      dest.qty = newDestQty;
+    }
+    let source = DB.holdings.find(x =>
+      x.sym.toUpperCase() === rev.sourceSym.toUpperCase() &&
+      x.wallet === rev.sourceWallet &&
+      (x.chain||'') === (rev.sourceChain||'')
+    );
+    if(source) {
+      source.qty += rev.sourceQtyDelta;
+    } else {
+      DB.holdings.push({
+        id: uid(), sym: rev.sourceSym,
+        geckoId: rev.sourceGeckoId || '', cat: rev.sourceCat || '',
+        chain: rev.sourceChain || '', wallet: rev.sourceWallet || '',
+        avgCost: rev.sourceAvgCost, qty: rev.sourceQtyDelta,
+      });
+    }
+    return true;
+  }
+
+  return false;
+}
+
+// v47.83: User-facing revert handler
+function revertTxn(id) {
+  if(!DB.transactions) return;
+  const t = DB.transactions.find(x => x.id === id);
+  if(!t) return;
+  if(!t.revert) {
+    toast('This transaction cannot be reverted (older entry without revert data).', true);
+    return;
+  }
+  if(t.revertedAt) {
+    toast('Already reverted.', true);
+    return;
+  }
+  const typeLabel = t.type === 'Buy' ? 'purchase' : t.type === 'Swap' ? 'swap' : 'transfer';
+  let msg = `Revert this ${typeLabel}?\n\nThis will undo the Holdings change`;
+  if(t.pairId) msg += ' (both paired log entries will be removed)';
+  msg += '.\n\nThis cannot be undone.';
+  if(!confirm(msg)) return;
+  const ok = _applyTxnRevert(t.revert);
+  if(!ok) {
+    toast('Revert blocked — Holdings have changed since this transaction. Adjust manually if needed.', true);
+    return;
+  }
+  if(t.pairId) {
+    DB.transactions = DB.transactions.filter(x => x.pairId !== t.pairId);
+  } else {
+    DB.transactions = DB.transactions.filter(x => x.id !== id);
+  }
+  persist(); renderTxnTab(); renderHoldings(); renderHeader();
+  toast(`✓ ${typeLabel.charAt(0).toUpperCase() + typeLabel.slice(1)} reverted`);
 }
 
 // Render Transactions subtab
@@ -11014,6 +11215,11 @@ function renderTxnTab() {
   tbody.innerHTML = txns.map(t => {
     const isBuy = ['Buy','Pool Close'].includes(t.type);
     if(t.total) { if(isBuy) totalIn += t.total; else totalOut += t.total; }
+    // v47.83: revert button for Swap/Transfer/Buy with revert data
+    const canRevert = t.revert && !t.revertedAt && ['Swap','Transfer','Buy'].includes(t.type);
+    const revertBtn = canRevert
+      ? `<button class="btn sm ghost" onclick="revertTxn('${t.id}')" title="Revert this ${t.type.toLowerCase()} (undoes Holdings change)" style="margin-right:3px;color:var(--accent);">↶</button>`
+      : '';
     return `<tr>
       <td style="font-family:var(--mono);font-size:11px;">${t.date||'—'}</td>
       <td><span class="badge ${t.type==='Buy'?'b-nr':t.type==='Swap'?'b-watch':'b-oor'}" style="font-size:9px;padding:1px 5px;">${t.type}</span></td>
@@ -11025,6 +11231,7 @@ function renderTxnTab() {
       <td class="left" style="color:var(--text3);font-size:11px;">${t.to||'—'}</td>
       <td class="left" style="color:var(--text3);font-size:11px;">${t.notes||''}</td>
       <td style="white-space:nowrap;">
+        ${revertBtn}
         <button class="btn sm ghost" onclick="editTxn('${t.id}')" title="Edit this transaction" style="margin-right:3px;">✎</button>
         <button class="btn sm danger" onclick="deleteTxn('${t.id}')">✕</button>
       </td>
@@ -20138,6 +20345,28 @@ const TAB_LABELS = {
 };
 
 const WHATS_NEW = {
+  '47.83': {
+    headline: "Version 47.83",
+    summary:  "Same-symbol swaps now log as one row instead of duplicates, and Swap/Transfer/Buy entries have a Revert button (↶) that cleanly undoes the Holdings change.",
+    items: [
+      { icon: '⇄', title: "Same-symbol swaps collapse to one log row",
+        text: "Cross-chain swaps where source and destination symbols match (ETH → ETH across chains) now log as a single line. Cross-asset swaps (ETH → USDC) keep both rows because the dual cost-basis log is needed for auditing buy/sell legs." },
+      { icon: '↶', title: "Revert button on Swap, Transfer, and Buy",
+        text: "Each Swap/Transfer/Buy row gets a ↶ button that asks for confirmation, then unwinds the Holdings change. Paired entries (cross-asset swaps) are removed together. Blocked with an explanatory toast if Holdings have changed since the transaction." },
+      { icon: '🛡', title: "Safe-revert guards",
+        text: "Older transactions logged before v47.83 don't have revert metadata and won't show ↶ — only new transactions can be reverted." },
+    ]
+  },
+  '47.82': {
+    headline: "Version 47.82",
+    summary:  "Fix for v47.81 cross-chain swaps: when the destination chain didn't already have a row for the receiving token, the swap silently merged the qty back into the source row instead of creating a new row on the chosen chain.",
+    items: [
+      { icon: '🐛', title: "Cross-chain swap to a new chain now creates the new row",
+        text: "v47.81's destination matching had a legacy fallback rule (\"if there's exactly one row for this symbol, merge into it\") that overrode the new chain check. Swapping ETH-on-Ethereum → ETH-on-Base when no Base row existed merged the received qty back into the Ethereum row, so Holdings appeared unchanged even though the transactions logged. The fallback has been removed; cross-chain swaps to a non-existent destination row now create that row." },
+      { icon: '🧹', title: "Heads-up: previous failed attempts may have skewed avg cost",
+        text: "If you tried a cross-chain swap on v47.81 and saw nothing happen, the swap did execute against the source row — meaning the source row's avg cost got weighted with the destination cost basis on each attempt. Worth eyeballing the avg cost on rows where you tried a v47.81 cross-chain swap." },
+    ]
+  },
   '47.81': {
     headline: "Version 47.81",
     summary:  "Swap action now supports cross-chain swaps. Add a destination chain alongside the destination wallet — perfect for bridge swaps like WETH on Base → ETH on Ethereum. Transfer's existing cross-chain support gets clearer hints and notes too.",
