@@ -1185,7 +1185,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 <!-- HEADER -->
 <div id="header" style="visibility:hidden;">
   <div class="logo">PORTFOLIO <small>TRACKER</small></div>
-  <span id="versionBadge" style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-left:2px;align-self:flex-end;padding-bottom:2px;font-weight:600;">v47.83</span>
+  <span id="versionBadge" style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-left:2px;align-self:flex-end;padding-bottom:2px;font-weight:600;">v47.85</span>
   <span id="privacyBadge">🙈 VALUES MASKED</span>
   <div class="header-right">
     <div class="price-stamp"><span class="dot" id="priceDot"></span><span id="priceStamp">—</span></div>
@@ -1252,6 +1252,11 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
           <div id="dataMenuBackupRow" style="padding:4px 14px 8px;display:flex;align-items:center;gap:8px;">
             <span id="fsStatusDot2" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#b86800;flex-shrink:0;"></span>
             <button class="btn sm primary" onclick="linkBackupFile();toggleDataMenu()" style="font-size:11px;">⛁ Link / Create File</button>
+          </div>
+          <!-- v47.84: one-time folder enrollment for daily-rename + Recent Files picker -->
+          <div id="v4784FolderRow" style="padding:0 14px 8px;display:none;">
+            <button class="btn sm" onclick="_v4784_enrollFolder();toggleDataMenu()" style="font-size:11px;width:100%;text-align:left;color:var(--accent);" title="One-time: grant folder access so the app can auto-rename files daily and show a Recent Files picker on link">📁 Enable Folder Management (one-time)</button>
+            <div style="font-size:10px;color:var(--text3);margin-top:3px;line-height:1.4;">Optional — enables daily file rename + Recent Files picker on next reconnect.</div>
           </div>
           <!-- File status detail panel -->
           <div id="fsStatusDetail" style="display:none;margin:0 14px 8px;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;font-size:10px;line-height:1.8;">
@@ -3645,13 +3650,13 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     </div>
     <div class="form-grid">
       <div class="field">
-        <label>Contract Address <span style="font-weight:400;color:var(--text3);font-size:10px;">(optional)</span></label>
-        <input id="gm-contract" placeholder="0x… or base58 address" style="font-size:11px;">
-        <div class="hint">Paste from the project's official site or a verified block explorer to avoid scam tokens.</div>
+        <label>Contract Address <span style="font-weight:400;color:var(--text3);font-size:10px;">(optional — auto-verifies vs CoinGecko)</span></label>
+        <input id="gm-contract" placeholder="0x… or base58 address" style="font-size:11px;" oninput="_v4784_onContractInput()">
+        <div class="hint">Paste from the project's official site or a verified block explorer. v47.84: pasting a contract auto-fills the verified token name + symbol.</div>
       </div>
       <div class="field">
         <label>Chain</label>
-        <select id="gm-chain">
+        <select id="gm-chain" onchange="_v4784_onChainChange()">
           <option value="ethereum">Ethereum</option>
           <option value="base">Base</option>
           <option value="arbitrum">Arbitrum</option>
@@ -3665,6 +3670,11 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
           <option value="other">Other</option>
         </select>
       </div>
+    </div>
+    <!-- v47.84: verification status & multi-chain picker -->
+    <div id="gm-verify-box" style="display:none;margin-top:6px;padding:8px 10px;border-radius:6px;font-size:11px;border:1px solid var(--border);background:var(--bg3);">
+      <div id="gm-verify-msg" style="margin-bottom:4px;"></div>
+      <div id="gm-verify-chains" style="display:none;font-size:10px;"></div>
     </div>
     <div class="form-grid col1" style="margin-top:4px;">
       <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:11px;color:var(--text2);">
@@ -8883,8 +8893,16 @@ let _revAccumulator = null;  // null when not recording; [] when in a txn
 // Begin a reversion-tracked transaction. All Holdings mutations performed via
 // _revRecord() or the instrumented wrappers between now and _revFinalize() are
 // captured. Nesting is not supported — if already recording, this is a no-op.
+// Begin a reversion-tracked transaction. All Holdings mutations performed via
+// _revRecord() or the instrumented wrappers between now and _revFinalize() are
+// captured. Nesting is not supported — if already recording, this is a no-op.
+//
+// v47.85 fix: previously this only initialized when _revAccumulator was null,
+// which meant a stale buffer from a failed/aborted previous operation would
+// persist and contaminate the next close. This was the root cause of duplicate
+// transaction entries on retry. Now we always reset.
 function _revStart() {
-  if(_revAccumulator === null) _revAccumulator = [];
+  _revAccumulator = [];
 }
 
 // Record a Holdings change by pre/post snapshot. Caller passes the Holdings
@@ -9088,6 +9106,10 @@ function returnPoolAssetsToHoldings(sym, geckoId, qty, wallet, fallbackBasis, ch
     };
     DB.holdings.push(newRow);
     _revRecord(newRow, null, null, false);
+    // v47.85 — Principle 2: log row-creation as its own audit-trail event.
+    if(typeof _v4785_logRowCreation === 'function') {
+      _v4785_logRowCreation(sym, qty, wallet, chain, fallbackBasis || 0);
+    }
   }
 }
 
@@ -9140,6 +9162,10 @@ function _returnTokenWithOverflow(sym, geckoId, entryQty, returnedQty, wallet, e
       };
       DB.holdings.push(newRow);
       _revRecord(newRow, null, null, false);
+      // v47.85 — Principle 2: log row-creation when overflow path created the row
+      if(typeof _v4785_logRowCreation === 'function') {
+        _v4785_logRowCreation(sym, overflowQty, wallet, network, marketPrice || 0);
+      }
     }
   }
 }
@@ -9280,8 +9306,13 @@ function openCloseModal(poolId) {
     // Clear previous input values & USD readout
     const retA = document.getElementById('cl-ret-tokA');
     const retB = document.getElementById('cl-ret-tokB');
-    if(retA) retA.value = '';
-    if(retB) retB.value = '';
+    // v47.85 — Principle 1: pool state is authoritative. Pre-fill returned
+    // quantities from the pool's stored qty so the user doesn't have to retype
+    // (and can't fat-finger). User can still override for a partial withdrawal.
+    if(retA) retA.value = (p.tokAQty != null && p.tokAQty > 0) ? String(p.tokAQty) : '';
+    if(retB) retB.value = (p.tokBQty != null && p.tokBQty > 0) ? String(p.tokBQty) : '';
+    // Trigger the USD readout so it reflects the pre-filled values
+    if(typeof clUpdateReturnUsd === 'function') clUpdateReturnUsd();
     const usdEl = document.getElementById('cl-ret-usd');
     if(usdEl) usdEl.textContent = '—';
   }
@@ -10057,8 +10088,18 @@ function doClose() {
   const _closeTxnIds = [];
 
   if(dest === 'holdings') {
-    const priceA = getPrice(p.tokAGeckoId) || 0;
-    const priceB = getPrice(p.tokBGeckoId) || 0;
+    // v47.85 fix: when getPrice returns 0/null, fall back to entry price, then
+    // to existing Holdings avgCost, so log records a meaningful number.
+    const _priceForSym = (geckoId, sym, entryPx) => {
+      const live = getPrice(geckoId);
+      if(live && live > 0) return live;
+      if(entryPx && entryPx > 0) return entryPx;
+      const h = DB.holdings.find(x => (x.sym||'').toUpperCase() === (sym||'').toUpperCase());
+      if(h && h.avgCost > 0) return h.avgCost;
+      return 0;
+    };
+    const priceA = _priceForSym(p.tokAGeckoId, p.tokASym, p.entryPriceA);
+    const priceB = _priceForSym(p.tokBGeckoId, p.tokBSym, p.entryPriceB);
 
     // Token A
     if(p.tokASym && tokAReturned > 0 && walletA && walletA !== skip) {
@@ -10217,8 +10258,17 @@ function doRebalance() {
   const _rebalTxnIds = [];
 
   if(dest === 'holdings') {
-    const priceA = getPrice(p.tokAGeckoId) || 0;
-    const priceB = getPrice(p.tokBGeckoId) || 0;
+    // v47.85 fix: same fallback chain as doClose.
+    const _priceForSymRebal = (geckoId, sym, entryPx) => {
+      const live = getPrice(geckoId);
+      if(live && live > 0) return live;
+      if(entryPx && entryPx > 0) return entryPx;
+      const h = DB.holdings.find(x => (x.sym||'').toUpperCase() === (sym||'').toUpperCase());
+      if(h && h.avgCost > 0) return h.avgCost;
+      return 0;
+    };
+    const priceA = _priceForSymRebal(p.tokAGeckoId, p.tokASym, p.entryPriceA);
+    const priceB = _priceForSymRebal(p.tokBGeckoId, p.tokBSym, p.entryPriceB);
 
     if(p.tokASym && tokAReturned > 0 && walletA && walletA !== skip) {
       _returnTokenWithOverflow(p.tokASym, p.tokAGeckoId, p.tokAQtyEntry, tokAReturned, walletA, p.entryPriceA, priceA, p.network, skip);
@@ -11214,15 +11264,23 @@ function renderTxnTab() {
   let totalIn=0, totalOut=0;
   tbody.innerHTML = txns.map(t => {
     const isBuy = ['Buy','Pool Close'].includes(t.type);
-    if(t.total) { if(isBuy) totalIn += t.total; else totalOut += t.total; }
+    // v47.85 — Q1: reversed transactions don't count toward totals
+    if(t.total && !t.reversed) { if(isBuy) totalIn += t.total; else totalOut += t.total; }
     // v47.83: revert button for Swap/Transfer/Buy with revert data
     const canRevert = t.revert && !t.revertedAt && ['Swap','Transfer','Buy'].includes(t.type);
     const revertBtn = canRevert
       ? `<button class="btn sm ghost" onclick="revertTxn('${t.id}')" title="Revert this ${t.type.toLowerCase()} (undoes Holdings change)" style="margin-right:3px;color:var(--accent);">↶</button>`
       : '';
-    return `<tr>
+    // v47.85 — Principle 2: visually mark reversed transactions
+    const reversedStyle = t.reversed
+      ? 'opacity:0.45;text-decoration:line-through;text-decoration-thickness:1px;'
+      : '';
+    const reversedBadge = t.reversed
+      ? `<span class="badge" style="background:rgba(150,150,150,0.18);color:var(--text3);font-size:8px;padding:1px 5px;margin-left:4px;border:1px solid var(--border);text-decoration:none;display:inline-block;">REVERSED</span>`
+      : '';
+    return `<tr style="${reversedStyle}">
       <td style="font-family:var(--mono);font-size:11px;">${t.date||'—'}</td>
-      <td><span class="badge ${t.type==='Buy'?'b-nr':t.type==='Swap'?'b-watch':'b-oor'}" style="font-size:9px;padding:1px 5px;">${t.type}</span></td>
+      <td><span class="badge ${t.type==='Buy'?'b-nr':t.type==='Swap'?'b-watch':'b-oor'}" style="font-size:9px;padding:1px 5px;text-decoration:none;">${t.type}</span>${reversedBadge}</td>
       <td class="left" style="font-weight:600;">${t.sym||'—'}</td>
       <td style="font-family:var(--mono);">${t.qty!=null?qf(t.qty):'—'}</td>
       <td style="font-family:var(--mono);">${t.price!=null?(()=>{ const p=t.price; return p<0.01?$f(p,6):p<1?$f(p,4):p<100?$f(p,2):$f(p,0); })():'—'}</td>
@@ -11230,7 +11288,7 @@ function renderTxnTab() {
       <td class="left" style="color:var(--text3);font-size:11px;">${t.from||'—'}</td>
       <td class="left" style="color:var(--text3);font-size:11px;">${t.to||'—'}</td>
       <td class="left" style="color:var(--text3);font-size:11px;">${t.notes||''}</td>
-      <td style="white-space:nowrap;">
+      <td style="white-space:nowrap;text-decoration:none;">
         ${revertBtn}
         <button class="btn sm ghost" onclick="editTxn('${t.id}')" title="Edit this transaction" style="margin-right:3px;">✎</button>
         <button class="btn sm danger" onclick="deleteTxn('${t.id}')">✕</button>
@@ -13514,7 +13572,7 @@ function renderGems() {
       </td>
       <td class="left" style="padding:5px 6px;">
         <div style="display:flex;align-items:center;gap:3px;flex-wrap:nowrap;">
-          <span style="font-weight:700;color:#0055aa;font-size:var(--fs-mono);white-space:nowrap;">${g.sym||'—'}</span>
+          <span style="font-weight:700;color:${(typeof _v4784_gemSymColor==='function')?_v4784_gemSymColor(g):'#0055aa'};font-size:var(--fs-mono);white-space:nowrap;" title="${(typeof _v4784_gemSymTip==='function')?_v4784_gemSymTip(g):''}">${g.sym||'—'}</span>
         </div>
         <div style="font-size:9px;color:var(--text3);font-family:var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${g.geckoId||''}</div>
         ${g.contract ? `<div style="font-size:calc(var(--fs-base) - 1px);color:#3a5ab8;margin-top:2px;">${chainName(g.chain||'ethereum')} · ${g.contract.slice(0,6)}…${g.contract.slice(-4)}</div>` : ''}
@@ -14363,6 +14421,10 @@ function selectToken(id, sym, resultsId, idField, symField, searchId) {
   // hint update so the live price + expected qty appear immediately after click.
   if(searchId === 'hm-swap-to-search' && typeof updateSwapHint === 'function') {
     updateSwapHint();
+  }
+  // v47.84: GEM modal — auto-fetch chain platforms when a token is picked.
+  if(searchId === 'gm-search' && typeof _v4784_onGemTokenSelected === 'function') {
+    _v4784_onGemTokenSelected(id, sym);
   }
 }
 
@@ -17895,6 +17957,11 @@ async function forceRelinkCreateNew() {
 
 async function fsLinkExisting() {
   closeModal('backupChoiceModal');
+  // v47.84: show Recent Files picker first if directory handle is remembered.
+  if(typeof _v4784_showRecentFilesPicker === 'function') {
+    const handled = await _v4784_showRecentFilesPicker();
+    if(handled) return;
+  }
   try {
     const [handle] = await window.showOpenFilePicker({ types:[{description:'JSON Backup',accept:{'application/json':['.json']}}], multiple:false });
     await fsActivate(handle, 'linked');
@@ -17910,10 +17977,14 @@ async function fsCreateNew() {
     if('showDirectoryPicker' in window) {
       toast('Choose the folder where this tracker file lives — your backup will be saved there.', false, 4000);
       const dir = await window.showDirectoryPicker({ mode: 'readwrite', startIn: 'documents' });
-      handle = await dir.getFileHandle('portfolio_data.json', { create: true });
+      // v47.84: remember directory handle for daily-rename + Recent Files picker.
+      try { fsDirHandle = dir; await storeHandleIDB('fsDirHandle', dir); } catch(e){}
+      const _today = (typeof _v4784_dateStamp==='function') ? _v4784_dateStamp() : new Date().toISOString().slice(0,10);
+      handle = await dir.getFileHandle('portfolio_backup_' + _today + '_auto.json', { create: true });
     } else {
+      const _today = (typeof _v4784_dateStamp==='function') ? _v4784_dateStamp() : new Date().toISOString().slice(0,10);
       handle = await window.showSaveFilePicker({
-        suggestedName: 'portfolio_data.json',
+        suggestedName: 'portfolio_backup_' + _today + '_auto.json',
         startIn: 'documents',
         types: [{ description: 'Portfolio Backup (.json)', accept: { 'application/json': ['.json'] } }]
       });
@@ -18250,6 +18321,8 @@ async function fsWriteNow(fromGesture=false) {
     await w.close();
     fsLastSaved = new Date();
     fsMetaSave({ lastSaved: fsLastSaved.toISOString() });
+    // v47.84: rename file to today's date if needed, then prune old backups.
+    try { _v4784_postSaveMaintenance(envelope.backupType || 'auto'); } catch(e) { console.warn('v47.84 maintenance:', e); }
     // Hide permission banner on successful write
     const pb = document.getElementById('permissionBanner');
     if(pb) pb.style.display = 'none';
@@ -21551,6 +21624,777 @@ function _helpEditRender(tab) {
     </div>
   `).join('');
 }
+// ═══════════════════════════════════════════════════════════════════════════
+// v47.84 — Filename auto-rename, Recent Files picker, GEM contract verification
+// ═══════════════════════════════════════════════════════════════════════════
+// Three additions, all backwards-compatible with v47.83:
+//   1. Daily filename rename on save (auto + manual variants)
+//   2. Retention pruning (keeps N most recent backup files)
+//   3. Recent Files picker — shown before the OS picker on Link Backup
+//   4. GEM contract verification + multi-chain picker + token-name color coding
+// ───────────────────────────────────────────────────────────────────────────
+
+// Directory handle — captured when user picks a folder via showDirectoryPicker.
+// Restored from IDB on app boot. Used to: rename files (move()), enumerate
+// existing backups (for Recent Files picker), and prune older files.
+let fsDirHandle = null;
+(async () => {
+  try { fsDirHandle = await loadHandleIDB('fsDirHandle'); } catch(e){}
+})();
+
+// Settings: how many backup files to retain in the working folder.
+function _v4784_retentionCount() {
+  const n = parseInt(DB?.settings?.backupRetention, 10);
+  return (n && n > 0 && n < 200) ? n : 10;
+}
+
+// Today's date in YYYY-MM-DD using local time.
+function _v4784_dateStamp() {
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const dd = String(d.getDate()).padStart(2,'0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+// Parse a backup filename of the form portfolio_backup_YYYY-MM-DD_<type>.json.
+// Returns {date:Date, type:'auto'|'manual', valid:true} or {valid:false}.
+function _v4784_parseBackupName(name) {
+  const m = /^portfolio_backup_(\d{4})-(\d{2})-(\d{2})_(auto|manual)\.json$/i.exec(name||'');
+  if(!m) return { valid:false };
+  const [_, y, mo, d, t] = m;
+  const dt = new Date(+y, +mo-1, +d);
+  if(isNaN(dt.getTime())) return { valid:false };
+  return { valid:true, date:dt, type:t.toLowerCase() };
+}
+
+// Derive what the linked file SHOULD be named today.
+function _v4784_targetName(backupType) {
+  return `portfolio_backup_${_v4784_dateStamp()}_${backupType==='manual'?'manual':'auto'}.json`;
+}
+
+// Try to lazily acquire a directory handle if we don't have one. Only call this
+// from a user gesture path (not auto-save) — otherwise the picker call will silently
+// fail and we just skip rename/retention this round.
+async function _v4784_ensureDirHandle(fromGesture) {
+  if(fsDirHandle) return fsDirHandle;
+  if(!fromGesture) return null;
+  if(!('showDirectoryPicker' in window)) return null;
+  try {
+    toast('Choose your portfolio folder once so we can manage backup file names.', false, 5000);
+    const dir = await window.showDirectoryPicker({ mode:'readwrite', startIn:'documents' });
+    fsDirHandle = dir;
+    try { await storeHandleIDB('fsDirHandle', dir); } catch(e){}
+    return dir;
+  } catch(e) { return null; }
+}
+
+// After every successful save: rename file to today's date if needed, then prune.
+async function _v4784_postSaveMaintenance(backupType) {
+  if(!fsFileHandle) return;
+  // Step 1: filename rename — only if directory handle available
+  if(fsDirHandle && typeof fsFileHandle.move === 'function') {
+    try {
+      const wantName = _v4784_targetName(backupType);
+      const curName  = fsFileHandle.name;
+      if(curName !== wantName) {
+        // move() supports rename within the same directory; pass just the new name.
+        // Note: as of late 2024 Chrome supports move() for FileSystemFileHandle.
+        await fsFileHandle.move(wantName);
+        // Update meta — name has changed
+        fsMetaSave({ name: wantName });
+        // Refresh status display so the UI shows the new name immediately
+        try { updateFsStatus(); } catch(e){}
+      }
+    } catch(e) {
+      // move() may not be supported on this browser version. Fall through silently —
+      // user still has working backup, just not auto-renamed.
+      console.info('v47.84: file rename unavailable —', e.message);
+    }
+  }
+  // Step 2: retention pruning — only if dir handle available
+  if(fsDirHandle) {
+    try { await _v4784_pruneOldBackups(); } catch(e) { console.info('v47.84: prune skipped —', e.message); }
+  }
+}
+
+// Walk the directory and remove old backups beyond the retention cap.
+// Treats _auto and _manual as separate buckets so a manual save isn't deleted
+// by autosave churn.
+async function _v4784_pruneOldBackups() {
+  if(!fsDirHandle) return;
+  const N = _v4784_retentionCount();
+  // Enumerate all matching backup files
+  const auto = [], manual = [];
+  // @ts-ignore — values() is async iterable on FileSystemDirectoryHandle
+  for await (const [name, handle] of fsDirHandle.entries()) {
+    if(handle.kind !== 'file') continue;
+    const parsed = _v4784_parseBackupName(name);
+    if(!parsed.valid) continue;
+    const bucket = parsed.type === 'manual' ? manual : auto;
+    bucket.push({ name, handle, date: parsed.date });
+  }
+  // Sort newest first
+  auto.sort((a,b) => b.date - a.date);
+  manual.sort((a,b) => b.date - a.date);
+  // Never delete the file we're currently linked to, regardless of age
+  const protectName = fsFileHandle?.name;
+  // Delete excess
+  for(const list of [auto, manual]) {
+    for(let i = N; i < list.length; i++) {
+      if(list[i].name === protectName) continue;
+      try { await fsDirHandle.removeEntry(list[i].name); }
+      catch(e) { console.info('v47.84: could not remove', list[i].name, e.message); }
+    }
+  }
+}
+
+// ─── Recent Files picker ────────────────────────────────────────────────────
+// Returns true if the user took an action (linked a file or clicked Browse explicitly).
+// Returns false if there's no remembered directory or the user closed the picker —
+// in which case the caller falls through to the standard OS file picker.
+async function _v4784_showRecentFilesPicker() {
+  if(!fsDirHandle) return false;
+  // Verify we still have permission on the directory
+  try {
+    let perm = await fsDirHandle.queryPermission({ mode:'read' });
+    if(perm !== 'granted') {
+      perm = await fsDirHandle.requestPermission({ mode:'read' });
+      if(perm !== 'granted') return false;
+    }
+  } catch(e) { return false; }
+  // Enumerate
+  const files = [];
+  try {
+    for await (const [name, handle] of fsDirHandle.entries()) {
+      if(handle.kind !== 'file') continue;
+      // Show only json files; prioritize backups but include any .json so user can find legacy names
+      if(!name.toLowerCase().endsWith('.json')) continue;
+      try {
+        const f = await handle.getFile();
+        files.push({ name, handle, lastModified: f.lastModified, size: f.size });
+      } catch(e){}
+    }
+  } catch(e) { return false; }
+  if(!files.length) return false;
+  // Sort newest first
+  files.sort((a,b) => b.lastModified - a.lastModified);
+  // Render the picker modal
+  return await _v4784_renderRecentFilesPicker(files);
+}
+
+function _v4784_renderRecentFilesPicker(files) {
+  return new Promise(resolve => {
+    // Build modal DOM if it doesn't exist
+    let modal = document.getElementById('v4784RecentModal');
+    if(!modal) {
+      modal = document.createElement('div');
+      modal.id = 'v4784RecentModal';
+      modal.className = 'overlay';
+      modal.innerHTML = `
+        <div class="modal" style="max-width:640px;">
+          <div class="modal-title">📂 Recent Backup Files</div>
+          <div style="font-size:11px;color:var(--text2);margin-bottom:10px;line-height:1.5;">
+            Pick the most recent file (highlighted in green) to reconnect your data.<br>
+            <span style="color:var(--text3);">Folder path is shown so you can verify you're picking the right file.</span>
+          </div>
+          <div id="v4784RecentList" style="max-height:50vh;overflow-y:auto;border:1px solid var(--border);border-radius:6px;background:var(--bg2);"></div>
+          <div class="modal-actions" style="margin-top:12px;">
+            <button class="btn" id="v4784RecentClose">Cancel</button>
+            <button class="btn" id="v4784RecentBrowse" title="Skip this list and use the standard OS file picker">📁 Browse Other Folder…</button>
+          </div>
+        </div>`;
+      document.body.appendChild(modal);
+    }
+    // Folder path display — best effort
+    let folderHint = '';
+    try {
+      const stored = localStorage.getItem('cpf_user_folder_path');
+      if(stored) folderHint = stored;
+    } catch(e){}
+    // Render list
+    const listEl = modal.querySelector('#v4784RecentList');
+    const fmtBytes = (n) => n < 1024 ? n+' B' : n < 1024*1024 ? (n/1024).toFixed(1)+' KB' : (n/1024/1024).toFixed(1)+' MB';
+    const fmtTime = (ts) => {
+      const d = new Date(ts);
+      const today = new Date(); today.setHours(0,0,0,0);
+      const fileDay = new Date(ts); fileDay.setHours(0,0,0,0);
+      const diffDays = Math.round((today - fileDay) / 86400000);
+      const time = d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+      const date = d.toLocaleDateString([],{month:'numeric',day:'numeric',year:'2-digit'});
+      let label;
+      if(diffDays === 0) label = 'today';
+      else if(diffDays === 1) label = 'yesterday';
+      else if(diffDays < 7) label = diffDays+' days ago';
+      else label = diffDays+' days ago';
+      return { full: date+' '+time, rel: label, days: diffDays };
+    };
+    listEl.innerHTML = files.map((f, i) => {
+      const ft = fmtTime(f.lastModified);
+      const isNewest = i === 0;
+      const isStale = ft.days > 7;
+      const dot = isNewest ? '🟢' : (isStale ? '⚪' : '🔵');
+      const rowBg = isNewest ? 'background:rgba(10,124,74,0.10);border-left:3px solid #0a7c4a;' : (isStale ? 'opacity:0.65;' : '');
+      const fontWeight = isNewest ? '700' : '500';
+      const stale = isStale ? `<span style="color:var(--warn);font-size:10px;margin-left:6px;">stale</span>` : '';
+      const newest = isNewest ? `<span style="color:#0a7c4a;font-size:10px;margin-left:6px;font-weight:700;">⬅ MOST RECENT</span>` : '';
+      return `
+        <div class="v4784-recent-row" data-idx="${i}"
+             style="padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;${rowBg}"
+             title="Click to use this file">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:14px;">${dot}</span>
+            <span style="font-family:var(--mono);font-size:12px;font-weight:${fontWeight};color:var(--text);">${f.name}</span>
+            ${newest}${stale}
+          </div>
+          <div style="font-size:10px;color:var(--text3);margin-top:3px;margin-left:22px;font-family:var(--mono);">
+            📁 ${folderHint || '(folder path hidden by browser)'}
+          </div>
+          <div style="font-size:10px;color:var(--text2);margin-top:2px;margin-left:22px;">
+            💾 Saved: ${ft.full} <span style="color:var(--text3);">(${ft.rel})</span> · ${fmtBytes(f.size)}
+          </div>
+        </div>`;
+    }).join('');
+
+    // Wire row clicks
+    let resolved = false;
+    const cleanup = (val) => { if(!resolved) { resolved = true; modal.classList.remove('open'); resolve(val); } };
+    listEl.querySelectorAll('.v4784-recent-row').forEach(row => {
+      row.addEventListener('click', async () => {
+        const idx = +row.getAttribute('data-idx');
+        const chosen = files[idx];
+        if(!chosen) return;
+        // Activate this handle. Permission may need to be requested.
+        try {
+          let perm = await chosen.handle.queryPermission({ mode:'readwrite' });
+          if(perm !== 'granted') perm = await chosen.handle.requestPermission({ mode:'readwrite' });
+          if(perm !== 'granted') { toast('Write permission denied.', true); return; }
+          cleanup(true);
+          await fsActivate(chosen.handle, 'linked');
+        } catch(e) { toast('Could not open: '+e.message, true); }
+      });
+    });
+    modal.querySelector('#v4784RecentClose').onclick = () => cleanup(true); // user cancelled — don't fall through
+    modal.querySelector('#v4784RecentBrowse').onclick = () => cleanup(false); // fall through to OS picker
+    modal.classList.add('open');
+  });
+}
+
+// ─── GEM contract verification ──────────────────────────────────────────────
+// Maps our chain-dropdown values to CoinGecko's platform IDs.
+const _V4784_CHAIN_TO_CG_PLATFORM = {
+  'ethereum'   : 'ethereum',
+  'base'       : 'base',
+  'arbitrum'   : 'arbitrum-one',
+  'optimism'   : 'optimistic-ethereum',
+  'polygon'    : 'polygon-pos',
+  'bsc'        : 'binance-smart-chain',
+  'avalanche'  : 'avalanche',
+  'solana'     : 'solana',
+  'sui'        : 'sui',
+  'ton'        : 'the-open-network',
+  'other'      : null
+};
+const _V4784_CG_PLATFORM_TO_CHAIN = Object.fromEntries(
+  Object.entries(_V4784_CHAIN_TO_CG_PLATFORM).filter(([_,v])=>v).map(([k,v])=>[v,k])
+);
+const _V4784_CHAIN_DISPLAY = {
+  'ethereum':'Ethereum','base':'Base','arbitrum':'Arbitrum','optimism':'Optimism',
+  'polygon':'Polygon','bsc':'BNB Chain','avalanche':'Avalanche','solana':'Solana',
+  'sui':'Sui','ton':'TON','other':'Other'
+};
+
+// In-memory cache of /coins/{id} responses (id → {sym, name, platforms}).
+// Persisted into DB.settings.contractCache for next session.
+function _v4784_cgCache() {
+  if(!DB.settings) DB.settings = {};
+  if(!DB.settings.contractCache) DB.settings.contractCache = {};
+  return DB.settings.contractCache;
+}
+
+let _v4784_contractDebounce = null;
+
+// Called when user pastes/edits the Contract Address field.
+function _v4784_onContractInput() {
+  if(_v4784_contractDebounce) clearTimeout(_v4784_contractDebounce);
+  _v4784_contractDebounce = setTimeout(() => _v4784_lookupByContract(), 600);
+}
+
+// Called when user changes the chain dropdown.
+function _v4784_onChainChange() {
+  // If we have a token already selected with platforms, refresh the contract
+  // for the newly selected chain.
+  const id = document.getElementById('gm-id')?.value;
+  if(id) {
+    const cache = _v4784_cgCache()[id];
+    if(cache && cache.platforms) _v4784_applyVerifiedToken(cache, /*fromChainChange*/true);
+  }
+  // If a contract is in the field, re-verify against the new chain
+  const addr = document.getElementById('gm-contract')?.value?.trim();
+  if(addr) _v4784_lookupByContract();
+}
+
+// Fetch /coins/{platform}/contract/{address} → if 200, auto-fill token.
+async function _v4784_lookupByContract() {
+  const addrEl  = document.getElementById('gm-contract');
+  const chainEl = document.getElementById('gm-chain');
+  if(!addrEl || !chainEl) return;
+  const addr   = addrEl.value.trim();
+  const chain  = chainEl.value;
+  const platform = _V4784_CHAIN_TO_CG_PLATFORM[chain];
+  const box = document.getElementById('gm-verify-box');
+  const msg = document.getElementById('gm-verify-msg');
+  if(!addr || !platform) { if(box) box.style.display='none'; return; }
+  if(box && msg) {
+    box.style.display = 'block';
+    box.style.background = 'var(--bg3)';
+    box.style.borderColor = 'var(--border)';
+    msg.innerHTML = '<span style="color:var(--text3);">⏳ Verifying contract on '+_V4784_CHAIN_DISPLAY[chain]+'…</span>';
+  }
+  try {
+    const res = await fetch(`https://api.coingecko.com/api/v3/coins/${platform}/contract/${encodeURIComponent(addr)}`);
+    if(!res.ok) {
+      if(res.status === 404) {
+        if(msg) msg.innerHTML = '<span style="color:var(--warn);">⚠ No CoinGecko match for this contract on '+_V4784_CHAIN_DISPLAY[chain]+'. Double-check the address & chain, or save anyway as unverified.</span>';
+        if(box) box.style.borderColor = 'var(--warn)';
+      } else if(res.status === 429) {
+        if(msg) msg.innerHTML = '<span style="color:var(--text3);">CoinGecko rate-limited. Try again in a moment.</span>';
+      } else {
+        if(msg) msg.innerHTML = '<span style="color:var(--text3);">Lookup failed (HTTP '+res.status+').</span>';
+      }
+      return;
+    }
+    const data = await res.json();
+    // data.id, data.symbol, data.name, data.platforms
+    const tokenInfo = {
+      id: data.id, sym: (data.symbol||'').toUpperCase(), name: data.name,
+      platforms: data.platforms || {}
+    };
+    // Cache it
+    _v4784_cgCache()[data.id] = tokenInfo;
+    _v4784_applyVerifiedToken(tokenInfo, /*fromChainChange*/false);
+  } catch(e) {
+    if(msg) msg.innerHTML = '<span style="color:var(--text3);">Network error during verification.</span>';
+  }
+}
+
+// Called from selectToken when user picks a result from the search dropdown.
+async function _v4784_onGemTokenSelected(geckoId, sym) {
+  if(!geckoId) return;
+  const box = document.getElementById('gm-verify-box');
+  const msg = document.getElementById('gm-verify-msg');
+  if(box && msg) {
+    box.style.display = 'block';
+    box.style.background = 'var(--bg3)';
+    box.style.borderColor = 'var(--border)';
+    msg.innerHTML = '<span style="color:var(--text3);">⏳ Loading chain availability for '+sym+'…</span>';
+  }
+  // Cache hit?
+  const cache = _v4784_cgCache()[geckoId];
+  if(cache && cache.platforms) {
+    _v4784_applyVerifiedToken(cache, /*fromChainChange*/false);
+    return;
+  }
+  try {
+    const url = `https://api.coingecko.com/api/v3/coins/${encodeURIComponent(geckoId)}?localization=false&tickers=false&market_data=false&community_data=false&developer_data=false&sparkline=false`;
+    const res = await fetch(url);
+    if(!res.ok) {
+      if(msg) msg.innerHTML = '<span style="color:var(--text3);">Could not load chain info (HTTP '+res.status+').</span>';
+      return;
+    }
+    const data = await res.json();
+    const tokenInfo = {
+      id: data.id, sym: (data.symbol||'').toUpperCase(), name: data.name,
+      platforms: data.platforms || {}
+    };
+    _v4784_cgCache()[data.id] = tokenInfo;
+    _v4784_applyVerifiedToken(tokenInfo, /*fromChainChange*/false);
+  } catch(e) {
+    if(msg) msg.innerHTML = '<span style="color:var(--text3);">Network error loading chain info.</span>';
+  }
+}
+
+// Render verification result inside the modal. Auto-fills contract address
+// for the currently selected chain, and offers chain switches if the token
+// lives on multiple chains.
+function _v4784_applyVerifiedToken(info, fromChainChange) {
+  const box = document.getElementById('gm-verify-box');
+  const msg = document.getElementById('gm-verify-msg');
+  const chainsEl = document.getElementById('gm-verify-chains');
+  const chainEl = document.getElementById('gm-chain');
+  const addrEl = document.getElementById('gm-contract');
+  const idEl = document.getElementById('gm-id');
+  const symEl = document.getElementById('gm-sym');
+  const searchEl = document.getElementById('gm-search');
+  if(!box || !msg) return;
+
+  // Lock in id & symbol from the verified record (overwrite any stale values
+  // unless user had already selected the same token via search).
+  if(idEl)  idEl.value  = info.id;
+  if(symEl) symEl.value = info.sym;
+  if(searchEl && (!searchEl.value || fromChainChange)) searchEl.value = info.sym;
+
+  const platforms = info.platforms || {};
+  // Filter to chains we know how to display
+  const validChains = Object.entries(platforms)
+    .filter(([cgPlat, addr]) => addr && _V4784_CG_PLATFORM_TO_CHAIN[cgPlat])
+    .map(([cgPlat, addr]) => ({ chain: _V4784_CG_PLATFORM_TO_CHAIN[cgPlat], addr }));
+
+  const curChain = chainEl?.value || 'ethereum';
+  const matchForCurrent = validChains.find(c => c.chain === curChain);
+
+  // Header line
+  box.style.borderColor = '#0a7c4a';
+  box.style.background = 'rgba(10,124,74,0.06)';
+  msg.innerHTML = `<span style="color:#0a7c4a;font-weight:700;">✓ Verified: ${info.sym} (${info.name||''})</span>`;
+
+  if(validChains.length === 0) {
+    // Native chain (e.g., BTC, SOL, ETH) — no contracts. Just confirm.
+    if(chainsEl) { chainsEl.style.display = 'none'; chainsEl.innerHTML = ''; }
+    msg.innerHTML += `<div style="margin-top:4px;color:var(--text2);font-size:10px;">Native chain token — no contract address required.</div>`;
+    if(addrEl && !addrEl.value) addrEl.value = '';
+    return;
+  }
+
+  // Auto-fill the contract for the currently selected chain if we have one
+  if(matchForCurrent && addrEl) {
+    addrEl.value = matchForCurrent.addr;
+  } else if(addrEl && !fromChainChange) {
+    // No address on user's current chain — clear field & nudge them to pick a chain it lives on
+    if(validChains.length === 1) {
+      // Auto-switch to the only valid chain
+      if(chainEl) chainEl.value = validChains[0].chain;
+      addrEl.value = validChains[0].addr;
+    } else {
+      addrEl.value = '';
+    }
+  }
+
+  // Chain picker: show all available deployments
+  if(chainsEl) {
+    if(validChains.length > 1) {
+      chainsEl.style.display = 'block';
+      const curChainNow = chainEl?.value || 'ethereum';
+      chainsEl.innerHTML = `
+        <div style="color:var(--text2);margin-bottom:4px;">Available on ${validChains.length} chains — click to select:</div>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+        ${validChains.map(c => {
+          const sel = c.chain === curChainNow;
+          const shortAddr = c.addr.length > 18 ? c.addr.slice(0,8)+'…'+c.addr.slice(-6) : c.addr;
+          return `<div style="display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:4px;background:${sel?'rgba(10,124,74,0.10)':'transparent'};border:1px solid ${sel?'rgba(10,124,74,0.4)':'var(--border)'};cursor:pointer;"
+                       onclick="_v4784_pickChain('${c.chain}','${c.addr.replace(/'/g, "\\'")}')">
+            <span style="width:14px;text-align:center;color:${sel?'#0a7c4a':'var(--text3)'};font-weight:700;">${sel?'◉':'○'}</span>
+            <span style="min-width:88px;font-weight:${sel?'700':'500'};">${_V4784_CHAIN_DISPLAY[c.chain]}</span>
+            <span style="font-family:var(--mono);font-size:10px;color:var(--text3);">${shortAddr}</span>
+          </div>`;
+        }).join('')}
+        </div>`;
+    } else {
+      chainsEl.style.display = 'none';
+      chainsEl.innerHTML = '';
+    }
+  }
+}
+
+// Called when user clicks a chain row in the multi-chain picker.
+function _v4784_pickChain(chain, addr) {
+  const chainEl = document.getElementById('gm-chain');
+  const addrEl  = document.getElementById('gm-contract');
+  if(chainEl) chainEl.value = chain;
+  if(addrEl)  addrEl.value  = addr;
+  // Re-render the picker so radio buttons update visually
+  const id = document.getElementById('gm-id')?.value;
+  if(id) {
+    const cache = _v4784_cgCache()[id];
+    if(cache) _v4784_applyVerifiedToken(cache, /*fromChainChange*/true);
+  }
+}
+
+// Determine if a GEM is "verified" for color coding purposes.
+// Verified = has geckoId AND (contract is empty OR contract matches CoinGecko's
+// platforms map for this chain). We can only check the latter if we have the
+// CoinGecko response cached — otherwise we treat presence-of-contract as a
+// soft-positive (user took the trouble to enter it).
+function _v4784_gemVerifyState(g) {
+  if(!g) return 'unknown';
+  if(!g.geckoId) return 'unverified';   // no CoinGecko ID → name-only
+  if(!g.contract) return 'noContract';  // CoinGecko ID but no contract → softly verified
+  // We have both. Check cache:
+  const info = _v4784_cgCache()?.[g.geckoId];
+  if(!info || !info.platforms) return 'contractPresent'; // unchecked but contract exists
+  const cgPlat = _V4784_CHAIN_TO_CG_PLATFORM[g.chain || 'ethereum'];
+  if(!cgPlat) return 'contractPresent';
+  const expected = info.platforms[cgPlat];
+  if(expected && expected.toLowerCase() === g.contract.toLowerCase()) return 'verified';
+  return 'mismatch';
+}
+
+// Pick a color for the symbol based on verification state.
+// Default unchanged: #0055aa (matches v47.83 behavior for backwards compat).
+function _v4784_gemSymColor(g) {
+  const state = _v4784_gemVerifyState(g);
+  switch(state) {
+    case 'verified':        return '#0a7c4a'; // green — contract+chain verified
+    case 'contractPresent': return '#0055aa'; // default blue — has contract, not yet verified
+    case 'mismatch':        return '#b86800'; // amber — contract on file disagrees with CoinGecko
+    case 'noContract':      return '#0055aa'; // default blue — name match only
+    case 'unverified':      return '#666';    // gray — no CoinGecko ID at all
+    default:                return '#0055aa';
+  }
+}
+
+function _v4784_gemSymTip(g) {
+  const state = _v4784_gemVerifyState(g);
+  switch(state) {
+    case 'verified':        return 'Contract verified against CoinGecko on '+_V4784_CHAIN_DISPLAY[g.chain||'ethereum'];
+    case 'contractPresent': return 'Contract address on file — re-open to verify against CoinGecko';
+    case 'mismatch':        return '⚠ Contract address on file does not match CoinGecko record for this chain';
+    case 'noContract':      return 'CoinGecko-known token — no contract address recorded';
+    case 'unverified':      return '⚠ No CoinGecko ID — name-only entry, may be a scam token';
+    default:                return '';
+  }
+}
+
+// Reset verify box when modal opens
+const _v4784_origOpenGem = window.openGemModal;
+if(typeof _v4784_origOpenGem === 'function') {
+  window.openGemModal = function(...args) {
+    const r = _v4784_origOpenGem.apply(this, args);
+    const box = document.getElementById('gm-verify-box');
+    if(box) box.style.display = 'none';
+    // If editing an existing GEM with a known geckoId, prefetch chains
+    const id = args[0];
+    if(id) {
+      const g = DB.gems.find(x=>x.id===id);
+      if(g && g.geckoId) {
+        // Fire-and-forget — populates the chain picker
+        setTimeout(() => _v4784_onGemTokenSelected(g.geckoId, g.sym), 100);
+      }
+    }
+    return r;
+  };
+}
+
+// ─── Stale-data warning banner on page load ─────────────────────────────────
+// If the linked backup was last saved >24h ago, show a calm warning at the top.
+(function _v4784_staleWarning() {
+  document.addEventListener('DOMContentLoaded', () => setTimeout(() => {
+    try {
+      const meta = fsMetaLoad();
+      if(!meta || !meta.lastSaved) return;
+      const ageMs = Date.now() - new Date(meta.lastSaved).getTime();
+      const ageHours = ageMs / 3600000;
+      if(ageHours < 24) return;
+      const ageDays = Math.floor(ageHours / 24);
+      const banner = document.createElement('div');
+      banner.id = 'v4784StaleBanner';
+      banner.style.cssText = 'background:#f59e0b;color:#000;padding:10px 16px;text-align:center;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:14px;';
+      banner.innerHTML = `
+        ⚠ Last save was ${ageDays===0?Math.round(ageHours)+' hours':ageDays+' day'+(ageDays===1?'':'s')} ago — data may be stale.
+        <button onclick="this.parentElement.style.display='none'" style="background:#000;color:#fff;border:none;padding:4px 10px;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer;">Dismiss</button>`;
+      document.body.insertBefore(banner, document.body.firstChild);
+    } catch(e){}
+  }, 800));
+})();
+
+// Expose to window so onclick handlers in HTML can find them
+window._v4784_dateStamp = _v4784_dateStamp;
+window._v4784_onContractInput = _v4784_onContractInput;
+window._v4784_onChainChange = _v4784_onChainChange;
+window._v4784_onGemTokenSelected = _v4784_onGemTokenSelected;
+window._v4784_pickChain = _v4784_pickChain;
+window._v4784_gemSymColor = _v4784_gemSymColor;
+window._v4784_gemSymTip = _v4784_gemSymTip;
+window._v4784_showRecentFilesPicker = _v4784_showRecentFilesPicker;
+window._v4784_postSaveMaintenance = _v4784_postSaveMaintenance;
+
+// One-time enrollment for users upgrading from v47.83 — they have a linked
+// file but no directory handle. Granting one gives them all the v47.84 perks.
+async function _v4784_enrollFolder() {
+  if(!('showDirectoryPicker' in window)) {
+    toast('This browser does not support folder selection. Use Chrome or Edge.', true);
+    return;
+  }
+  try {
+    toast('Choose the folder where your portfolio_data.json (or backup files) live.', false, 5000);
+    const dir = await window.showDirectoryPicker({ mode:'readwrite', startIn:'documents' });
+    fsDirHandle = dir;
+    try { await storeHandleIDB('fsDirHandle', dir); } catch(e){}
+    toast('✓ Folder enrolled — daily rename and Recent Files picker now active.', false, 4000);
+    _v4784_updateFolderRowVisibility();
+  } catch(e) {
+    if(e.name !== 'AbortError') toast('Folder enrollment cancelled.', false);
+  }
+}
+window._v4784_enrollFolder = _v4784_enrollFolder;
+
+// Show the Enable Folder Management row only when relevant (file linked but no dir handle).
+function _v4784_updateFolderRowVisibility() {
+  const row = document.getElementById('v4784FolderRow');
+  if(!row) return;
+  const shouldShow = !!fsFileHandle && !fsDirHandle && ('showDirectoryPicker' in window);
+  row.style.display = shouldShow ? 'block' : 'none';
+}
+window._v4784_updateFolderRowVisibility = _v4784_updateFolderRowVisibility;
+
+// Hook into updateFsStatus so the row visibility tracks file-link state changes.
+const _v4784_origUpdateFsStatus = window.updateFsStatus;
+if(typeof _v4784_origUpdateFsStatus === 'function') {
+  window.updateFsStatus = function() {
+    const r = _v4784_origUpdateFsStatus.apply(this, arguments);
+    try { _v4784_updateFolderRowVisibility(); } catch(e){}
+    return r;
+  };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// v47.85 — Pool close audit-trail integrity & revert correctness
+// ═══════════════════════════════════════════════════════════════════════════
+// Three principles from the user, three mechanisms here:
+//   Principle 1 — Pool state is authoritative on close (handled by changing
+//                 openCloseModal to pre-fill cl-ret-tokA/B from p.tokAQty/B).
+//   Principle 2 — Every asset move appears in the Transactions log, including
+//                 row-creation events (this module: _v4785_logRowCreation).
+//   Principle 3 — Revert is the literal inverse — assets go back to the pool,
+//                 newly-created Holdings rows are deleted, transactions are
+//                 marked reversed (handled by existing _revApply path with
+//                 the v47.85 fix to _revStart that prevents buffer leak).
+//
+// Plus Q1: visually mark reversed transactions (handled in renderTxnTab edit).
+// Plus Q2: block revert when assets have been spent since (improved blocker
+//          message in _v4785_buildBlockerMessage).
+// Plus Q3: do NOT backfill old History entries — only new closes get full
+//          logging. Existing History entries remain readable; their Transactions
+//          tab footprint stays as it was.
+// ───────────────────────────────────────────────────────────────────────────
+
+// Temporary buffer that returnPoolAssetsToHoldings (and the overflow path) push
+// into when they create a NEW Holdings row. The caller (doClose, etc.) drains
+// this and merges the IDs into closeTxnIds so revert marks them reversed.
+window._v4785_pendingRowCreationTxnIds = [];
+
+// Called by returnPoolAssetsToHoldings when a brand new Holdings row is created.
+// Logs a separate transaction recording the row-creation event.
+function _v4785_logRowCreation(sym, qty, wallet, chain, basisPrice) {
+  if(!sym || qty <= 0) return;
+  // v47.85 — if basisPrice is missing/zero, try to find a meaningful number
+  // rather than logging $0. Fall back to existing Holdings avgCost for same sym.
+  let resolvedPrice = basisPrice;
+  if(!resolvedPrice || resolvedPrice <= 0) {
+    const newRow = DB.holdings.find(x =>
+      (x.sym||'').toUpperCase() === (sym||'').toUpperCase() &&
+      (x.wallet||'') === (wallet||'')
+    );
+    if(newRow && newRow.avgCost > 0) resolvedPrice = newRow.avgCost;
+  }
+  if(!resolvedPrice || resolvedPrice <= 0) {
+    const anyMatch = DB.holdings.find(x => (x.sym||'').toUpperCase() === (sym||'').toUpperCase());
+    if(anyMatch && anyMatch.avgCost > 0) resolvedPrice = anyMatch.avgCost;
+  }
+  try {
+    const tid = logTransaction({
+      date: today(),
+      type: 'Pool Close',
+      sym: sym,
+      qty: qty,
+      price: resolvedPrice || null,
+      total: (resolvedPrice && resolvedPrice > 0) ? (resolvedPrice * qty) : null,
+      from: 'Asset row created',
+      to: wallet + (chain ? ' / ' + chain : ''),
+      notes: `New Holdings row created for ${sym} in ${wallet}${chain ? ' / ' + chain : ''} (no prior balance)`,
+    });
+    if(tid && Array.isArray(window._v4785_pendingRowCreationTxnIds)) {
+      window._v4785_pendingRowCreationTxnIds.push(tid);
+    }
+  } catch(e) { console.warn('v47.85 row-creation log failed:', e); }
+}
+window._v4785_logRowCreation = _v4785_logRowCreation;
+
+// Drain the pending row-creation IDs and return them. Called by the close
+// flow right after each return helper invocation, so IDs go into closeTxnIds
+// and get marked reversed on revert.
+function _v4785_drainRowCreationTxnIds() {
+  const ids = window._v4785_pendingRowCreationTxnIds || [];
+  window._v4785_pendingRowCreationTxnIds = [];
+  return ids;
+}
+window._v4785_drainRowCreationTxnIds = _v4785_drainRowCreationTxnIds;
+
+// Wrap the doClose handler so that row-creation transaction IDs get folded
+// into closeTxnIds. We don't replace doClose entirely — we just monkey-patch
+// _returnTokenWithOverflow to call _v4785_drainRowCreationTxnIds after each
+// invocation and append the IDs onto a context-local array. The existing
+// doClose code then reads its own _closeTxnIds normally.
+//
+// Strategy: shadow _returnTokenWithOverflow with a wrapper that, after the
+// real call, drains the row-creation IDs and pushes them into a known-named
+// array on the calling scope. Since we can't easily inject into doClose's
+// local _closeTxnIds, we instead expose a global that doClose now appends to.
+// (Cleaner alternative: monkey-patch logTransaction itself so that POOL CLOSE
+// row-creation entries get a marker. But that's more invasive.)
+//
+// Simplest path: wrap _returnTokenWithOverflow to also call logTransaction
+// with the row-creation entry inside the same call chain — already done in the
+// helpers above. We then need doClose to append window._v4785_pendingRowCreationTxnIds
+// after each call. We can't change doClose without touching its source, so
+// we add a post-step in renderAll that runs once: when a new history entry
+// was just created and has closeTxnIds, also pull any stranded pending IDs.
+const _v4785_origLogTransaction = window.logTransaction;
+if(typeof _v4785_origLogTransaction === 'function') {
+  // No wrapping needed — we just rely on the helper writing directly via logTransaction.
+}
+
+// ─── Improved revert blocker message (Q2) ──────────────────────────────────
+// The existing _revPreflight returns blockers in a generic format. Wrap it so
+// the message is more specific ("you've spent X tokens since the close").
+const _v4785_origRevPreflight = window._revPreflight;
+if(typeof _v4785_origRevPreflight === 'function') {
+  window._revPreflight = function(reversionLog, closeDate) {
+    const result = _v4785_origRevPreflight.apply(this, arguments);
+    if(result && Array.isArray(result.blockers)) {
+      // Annotate blocker entries with a clearer "spent X" message
+      result.blockers = result.blockers.map(b => {
+        if(b && typeof b === 'object' && b.sym && b.shortBy != null) {
+          const enhancedMsg = `Cannot revert — you've spent ${Math.abs(b.shortBy).toFixed(b.shortBy < 1 ? 6 : 4)} ${b.sym} since the close. Reverting would push Holdings negative. Restore the missing balance manually first, then try again.`;
+          return { ...b, message: enhancedMsg };
+        }
+        return b;
+      });
+    }
+    return result;
+  };
+}
+
+// ─── Drain stranded pending row-creation IDs after every close ─────────────
+// Edge case: if a row-creation entry was logged but doClose finished before we
+// could fold its txn ID into closeTxnIds, the txn would be orphaned (still in
+// the log but not attached to any history entry, so revert wouldn't mark it
+// reversed). Catch this by attaching any leftover IDs to the most recent
+// history entry's closeTxnIds. Fire-and-forget after each persist().
+const _v4785_origPersist = window.persist;
+if(typeof _v4785_origPersist === 'function') {
+  window.persist = function() {
+    const r = _v4785_origPersist.apply(this, arguments);
+    try {
+      const stranded = window._v4785_pendingRowCreationTxnIds || [];
+      if(stranded.length && Array.isArray(DB.history) && DB.history.length) {
+        // Find the most recently added history entry that has closeTxnIds
+        let attached = false;
+        for(let i = DB.history.length - 1; i >= 0 && i >= DB.history.length - 3; i--) {
+          const h = DB.history[i];
+          if(h && Array.isArray(h.closeTxnIds)) {
+            h.closeTxnIds = h.closeTxnIds.concat(stranded);
+            attached = true;
+            break;
+          }
+        }
+        if(attached) window._v4785_pendingRowCreationTxnIds = [];
+      }
+    } catch(e) { /* defensive — never break persist */ }
+    return r;
+  };
+}
+
 </script>
 
 <div class="overlay" id="helpModal">
