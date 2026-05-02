@@ -1,8 +1,8 @@
 {
-  "version": "v2026.04.27",
-  "updatedAt": "2026-04-27",
+  "version": "v2026.05.01",
+  "updatedAt": "2026-05-01",
   "appName": "Portfolio Tracker",
-  "latestVersion": "47.83",
+  "latestVersion": "47.85",
   "downloadUrl": "https://jdgoldstein.github.io/portfoliotracker-help/START_HERE.html",
   "tabs": {
     "overview": {
