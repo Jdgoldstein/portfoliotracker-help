@@ -47,17 +47,6 @@
   .q-hint { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.55; }
   .req { color: var(--danger); margin-left: 2px; }
 
-  .agenda-card { border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; cursor: pointer; transition: border-color .15s, background .15s, transform .1s; margin-bottom: 8px; background: var(--surface); }
-  .agenda-card:hover { border-color: var(--border-hover); background: #fafaf8; transform: translateY(-1px); }
-  .agenda-card.sel { border-color: var(--accent); background: var(--accent-light); transform: none; }
-  .agenda-top { display: flex; align-items: flex-start; gap: 12px; }
-  .acheck { width: 20px; height: 20px; min-width: 20px; border: 1.5px solid var(--border-hover); border-radius: 5px; margin-top: 1px; display: flex; align-items: center; justify-content: center; background: var(--surface); transition: background .15s, border-color .15s; }
-  .agenda-card.sel .acheck { background: var(--accent); border-color: var(--accent); }
-  .acheck svg { display: none; }
-  .agenda-card.sel .acheck svg { display: block; }
-  .atitle { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 4px; line-height: 1.4; }
-  .adesc { font-size: 13px; color: var(--text-muted); line-height: 1.55; }
-
   .rlist { display: flex; flex-direction: column; gap: 8px; }
   .ritem { display: flex; align-items: center; gap: 11px; padding: 11px 14px; border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; transition: border-color .15s, background .15s; background: var(--surface); font-size: 14px; color: var(--text); }
   .ritem:hover { border-color: var(--border-hover); background: #fafaf8; }
@@ -108,9 +97,9 @@
   .ci a:hover { text-decoration: underline; }
   .tags-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
   .tag { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 500; white-space: nowrap; }
-  .t-agenda { background: var(--info-bg); color: var(--info-text); border: 1px solid var(--info-border); }
+  .t-day { background: var(--info-bg); color: var(--info-text); border: 1px solid var(--info-border); }
   .t-priority { background: var(--warn-bg); color: var(--warn-text); border: 1px solid var(--warn-border); }
-  .t-platform { background: var(--ok-bg); color: var(--ok-text); border: 1px solid var(--ok-border); }
+  .t-time { background: var(--ok-bg); color: var(--ok-text); border: 1px solid var(--ok-border); }
   .detail { margin-bottom: 10px; }
   .detail:last-child { margin-bottom: 0; }
   .d-label { font-size: 10px; font-weight: 500; color: var(--text-faint); letter-spacing: 0.1em; text-transform: uppercase; font-family: var(--mono); margin-bottom: 3px; }
@@ -131,9 +120,9 @@
 
 <div class="container">
 
-  <div class="badge"><div class="badge-dot"></div>Beta · First meeting</div>
-  <h1>Your input matters</h1>
-  <p class="subtitle">We want our first session to be genuinely useful for you. Please take 2 minutes to tell us what matters most and share any questions you'd like answered.</p>
+  <div class="badge"><div class="badge-dot"></div>Beta · Follow-up session</div>
+  <h1>Let's schedule our follow-up</h1>
+  <p class="subtitle">This will be a quick update of changes, Q&amp;A, and direct on-screen help if needed. Please take a minute to confirm what day and time works best for you.</p>
 
   <div class="prog-wrap">
     <div class="prog-track"><div class="prog-fill" id="prog"></div></div>
@@ -142,39 +131,30 @@
 
   <div id="survey-form">
 
-    <p class="sec-label">Section 1 — Meeting agenda</p>
+    <p class="sec-label">Section 1 — Scheduling</p>
 
     <div class="question">
-      <p class="q-label">We plan to cover these four topics. Which are most important to you?<span class="req">*</span></p>
-      <p class="q-hint">Select all that apply — this helps us know where to spend the most time.</p>
-      <div id="agenda">
-        <div class="agenda-card" onclick="tog(this)">
-          <div class="agenda-top"><div class="acheck"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><polyline points="1,4.5 4,7.5 10,1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div><p class="atitle">What the software does — and what it doesn't</p><p class="adesc">A clear walkthrough of the tracker's scope: what it tracks, calculates, and where its boundaries are — so there are no surprises.</p></div></div>
-        </div>
-        <div class="agenda-card" onclick="tog(this)">
-          <div class="agenda-top"><div class="acheck"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><polyline points="1,4.5 4,7.5 10,1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div><p class="atitle">How it helps you manage your portfolio</p><p class="adesc">Live pricing, LP pool tracking, yield, impermanent loss, vaults, and holdings — all in one place, giving you a real-time picture of where you stand.</p></div></div>
-        </div>
-        <div class="agenda-card" onclick="tog(this)">
-          <div class="agenda-top"><div class="acheck"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><polyline points="1,4.5 4,7.5 10,1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div><p class="atitle">Full integration including cost basis</p><p class="adesc">How the tracker connects holdings, transactions, yield history, and average cost basis into one unified view — no more piecing it together manually.</p></div></div>
-        </div>
-        <div class="agenda-card" onclick="tog(this)">
-          <div class="agenda-top"><div class="acheck"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><polyline points="1,4.5 4,7.5 10,1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div><p class="atitle">Why this is not tax software — and why that's a good thing</p><p class="adesc">Understanding the distinction: this tool gives you clarity and control without the complexity and constraints of tax reporting software.</p></div></div>
-        </div>
+      <p class="q-label">What day next week works best for you?<span class="req">*</span></p>
+      <p class="q-hint">We were thinking <strong>Wednesday, May 6</strong>. If another day is better, please specify the day and date below.</p>
+      <div class="rlist" id="day">
+        <div class="ritem" onclick="sel(this,'day')"><div class="rdot"><div class="rinner"></div></div>Wednesday, May 6 works for me</div>
+        <div class="ritem" onclick="sel(this,'day')"><div class="rdot"><div class="rinner"></div></div>I'd prefer a different day (specify below)</div>
       </div>
     </div>
 
     <div class="question">
-      <p class="q-label">Which topic would you like the most time spent on?<span class="req">*</span></p>
-      <div class="rlist" id="priority">
-        <div class="ritem" onclick="sel(this,'priority')"><div class="rdot"><div class="rinner"></div></div>What the software does and doesn't do</div>
-        <div class="ritem" onclick="sel(this,'priority')"><div class="rdot"><div class="rinner"></div></div>How it helps me manage my portfolio day-to-day</div>
-        <div class="ritem" onclick="sel(this,'priority')"><div class="rdot"><div class="rinner"></div></div>Cost basis and full integration</div>
-        <div class="ritem" onclick="sel(this,'priority')"><div class="rdot"><div class="rinner"></div></div>The tax software distinction</div>
-        <div class="ritem" onclick="sel(this,'priority')"><div class="rdot"><div class="rinner"></div></div>Equal time on all four topics</div>
+      <p class="q-label">If a different day suits you better, which day and date?</p>
+      <p class="q-hint">Optional — only if you selected the second option above. Please include both day and date (e.g. "Tuesday, May 12").</p>
+      <input type="text" id="alt_day" placeholder="e.g. Thursday, May 14" oninput="upd()">
+    </div>
+
+    <div class="question">
+      <p class="q-label">What time of day works best?<span class="req">*</span></p>
+      <p class="q-hint">Please choose between the two times below — both are Eastern Time.</p>
+      <div class="rlist" id="meeting_time">
+        <div class="ritem" onclick="sel(this,'meeting_time')"><div class="rdot"><div class="rinner"></div></div>6:00 PM Eastern</div>
+        <div class="ritem" onclick="sel(this,'meeting_time')"><div class="rdot"><div class="rinner"></div></div>8:00 PM Eastern</div>
+        <div class="ritem" onclick="sel(this,'meeting_time')"><div class="rdot"><div class="rinner"></div></div>Either works for me</div>
       </div>
     </div>
 
@@ -194,32 +174,34 @@
     </div>
 
     <div class="divider"></div>
-    <p class="sec-label">Section 3 — Logistics</p>
+    <p class="sec-label">Section 3 — Optional preferences</p>
 
     <div class="question">
-      <p class="q-label">Our meeting will be held online. Which platform do you prefer?<span class="req">*</span></p>
-      <p class="q-hint">We will send a joining link in advance — just let us know what works best for you.</p>
-      <div class="rlist" id="platform">
-        <div class="ritem" onclick="sel(this,'platform')"><div class="rdot"><div class="rinner"></div></div>Zoom</div>
-        <div class="ritem" onclick="sel(this,'platform')"><div class="rdot"><div class="rinner"></div></div>Microsoft Teams</div>
-        <div class="ritem" onclick="sel(this,'platform')"><div class="rdot"><div class="rinner"></div></div>Either works for me</div>
+      <p class="q-label">Any topic you'd particularly like us to focus on?</p>
+      <p class="q-hint">Optional — pick one if there's something you'd like more time spent on.</p>
+      <div class="rlist" id="priority">
+        <div class="ritem" onclick="sel(this,'priority')"><div class="rdot"><div class="rinner"></div></div>What the software does and doesn't do</div>
+        <div class="ritem" onclick="sel(this,'priority')"><div class="rdot"><div class="rinner"></div></div>How it helps me manage my portfolio day-to-day</div>
+        <div class="ritem" onclick="sel(this,'priority')"><div class="rdot"><div class="rinner"></div></div>Cost basis and full integration</div>
+        <div class="ritem" onclick="sel(this,'priority')"><div class="rdot"><div class="rinner"></div></div>The tax software distinction</div>
+        <div class="ritem" onclick="sel(this,'priority')"><div class="rdot"><div class="rinner"></div></div>No preference — equal time on all</div>
       </div>
     </div>
 
     <div class="question">
-      <p class="q-label">What time of day suits you best?<span class="req">*</span></p>
-      <p class="q-hint">We will do our best to find a slot that works across all timezones.</p>
-      <div class="rlist" id="time">
-        <div class="ritem" onclick="sel(this,'time')"><div class="rdot"><div class="rinner"></div></div>Morning (before 12pm your local time)</div>
-        <div class="ritem" onclick="sel(this,'time')"><div class="rdot"><div class="rinner"></div></div>Afternoon (12pm – 5pm your local time)</div>
-        <div class="ritem" onclick="sel(this,'time')"><div class="rdot"><div class="rinner"></div></div>Evening (after 5pm your local time)</div>
-        <div class="ritem" onclick="sel(this,'time')"><div class="rdot"><div class="rinner"></div></div>Flexible / no preference</div>
+      <p class="q-label">General time-of-day preference</p>
+      <p class="q-hint">Optional — useful if we need to find an alternative slot.</p>
+      <div class="rlist" id="timeofday">
+        <div class="ritem" onclick="sel(this,'timeofday')"><div class="rdot"><div class="rinner"></div></div>Morning (before 12pm your local time)</div>
+        <div class="ritem" onclick="sel(this,'timeofday')"><div class="rdot"><div class="rinner"></div></div>Afternoon (12pm – 5pm your local time)</div>
+        <div class="ritem" onclick="sel(this,'timeofday')"><div class="rdot"><div class="rinner"></div></div>Evening (after 5pm your local time)</div>
+        <div class="ritem" onclick="sel(this,'timeofday')"><div class="rdot"><div class="rinner"></div></div>Flexible / no preference</div>
       </div>
     </div>
 
     <div class="question">
       <p class="q-label">Your timezone</p>
-      <p class="q-hint">Helps us find a time that works across different locations.</p>
+      <p class="q-hint">Helps us confirm the meeting time in your local zone.</p>
       <input type="text" id="timezone" placeholder="e.g. EST, GMT+2, AEST, PST..." oninput="upd()">
     </div>
 
@@ -256,7 +238,7 @@
       <svg width="24" height="20" viewBox="0 0 24 20" fill="none"><polyline points="2,10 8.5,16.5 22,2" stroke="white" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </div>
     <p class="success-title">Thank you — we've got your responses!</p>
-    <p class="success-sub">We'll review everything before the meeting and make sure your questions and priorities are covered. A calendar invite with the meeting link will follow shortly.</p>
+    <p class="success-sub">We'll review everything before the meeting and confirm the time that works for the group. A Zoom invite will follow shortly.</p>
   </div>
 
   <div class="admin-section">
@@ -286,58 +268,48 @@
 </div>
 
 <script>
-  // ─────────────────────────────────────────────────────────────
-  //  SETUP STEP: Replace YOUR_FORM_ID with your Formspree form ID
-  //  1. Go to formspree.io and sign up free
-  //  2. Create a new form called "Beta Tester Survey"
-  //  3. Copy the ID from your endpoint URL (the part after /f/)
-  //  4. Paste it below replacing YOUR_FORM_ID
-  // ─────────────────────────────────────────────────────────────
   var FORMSPREE_URL = 'https://formspree.io/f/mykbpdop';
 
   var responses = [];
 
-  function tog(el) { el.classList.toggle('sel'); upd(); }
   function sel(el, g) { document.querySelectorAll('#'+g+' .ritem').forEach(function(r){r.classList.remove('sel');}); el.classList.add('sel'); upd(); }
 
   function upd() {
     var s = 0;
-    if (document.querySelectorAll('#agenda .agenda-card.sel').length) s += 17;
-    if (document.querySelectorAll('#priority .ritem.sel').length) s += 17;
-    if (document.getElementById('questions').value.trim()) s += 17;
-    if (document.querySelectorAll('#platform .ritem.sel').length) s += 16;
-    if (document.querySelectorAll('#time .ritem.sel').length) s += 16;
-    if (document.getElementById('name').value.trim() && document.getElementById('email').value.trim()) s += 17;
+    if (document.querySelectorAll('#day .ritem.sel').length) s += 20;
+    if (document.querySelectorAll('#meeting_time .ritem.sel').length) s += 20;
+    if (document.getElementById('questions').value.trim()) s += 20;
+    if (document.getElementById('name').value.trim()) s += 20;
+    if (document.getElementById('email').value.trim()) s += 20;
     s = Math.min(s, 100);
     document.getElementById('prog').style.width = s + '%';
     document.getElementById('prog-lbl').textContent = s + '%';
   }
 
   function submitForm() {
-    var agendaSel = document.querySelectorAll('#agenda .agenda-card.sel');
+    var daySel = document.querySelectorAll('#day .ritem.sel');
+    var meetingTimeSel = document.querySelectorAll('#meeting_time .ritem.sel');
     var prioritySel = document.querySelectorAll('#priority .ritem.sel');
-    var platformSel = document.querySelectorAll('#platform .ritem.sel');
-    var timeSel = document.querySelectorAll('#time .ritem.sel');
+    var timeOfDaySel = document.querySelectorAll('#timeofday .ritem.sel');
     var name = document.getElementById('name').value.trim();
     var email = document.getElementById('email').value.trim();
     var questions = document.getElementById('questions').value.trim();
     var errMsg = document.getElementById('err-msg');
 
-    if (!agendaSel.length || !prioritySel.length || !questions || !platformSel.length || !timeSel.length || !name || !email) {
+    if (!daySel.length || !meetingTimeSel.length || !questions || !name || !email) {
       errMsg.style.display = 'block'; return;
     }
     errMsg.style.display = 'none';
-
-    var agendaArr = Array.from(agendaSel).map(function(el){ return el.querySelector('.atitle').textContent.trim(); });
 
     var data = {
       name: name, email: email,
       phone: document.getElementById('phone').value.trim() || '—',
       timezone: document.getElementById('timezone').value.trim() || '—',
-      agenda_topics: agendaArr.join(' | '),
-      priority_topic: prioritySel[0].textContent.trim(),
-      platform: platformSel[0].textContent.trim(),
-      preferred_time: timeSel[0].textContent.trim(),
+      day_preference: daySel[0].textContent.trim(),
+      alternative_day: document.getElementById('alt_day').value.trim() || '—',
+      meeting_time: meetingTimeSel[0].textContent.trim(),
+      priority_topic: prioritySel.length ? prioritySel[0].textContent.trim() : '—',
+      time_of_day: timeOfDaySel.length ? timeOfDaySel[0].textContent.trim() : '—',
       questions: questions,
       bugs: document.getElementById('bugs').value.trim() || 'None reported'
     };
@@ -355,16 +327,16 @@
     .then(function(res){ return res.json(); })
     .then(function(json){
       sendMsg.style.display = 'none';
-      saveResponse(data, agendaArr);
+      saveResponse(data);
     })
     .catch(function(){
       sendMsg.style.display = 'none';
-      saveResponse(data, agendaArr);
+      saveResponse(data);
     });
   }
 
-  function saveResponse(data, agendaArr) {
-    var entry = Object.assign({}, data, { id: responses.length + 1, timestamp: new Date().toLocaleString(), agendaArr: agendaArr });
+  function saveResponse(data) {
+    var entry = Object.assign({}, data, { id: responses.length + 1, timestamp: new Date().toLocaleString() });
     responses.push(entry);
     try { localStorage.setItem('cptBeta', JSON.stringify(responses)); } catch(e) {}
     document.getElementById('survey-form').style.display = 'none';
@@ -388,7 +360,9 @@
       return;
     }
     list.innerHTML = responses.map(function(r) {
-      var agendaTags = (r.agendaArr || []).map(function(t){ return '<span class="tag t-agenda">'+t+'</span>'; }).join('');
+      var altDay = (r.alternative_day && r.alternative_day !== '—') ? '<span class="tag t-day">Alt: '+r.alternative_day+'</span>' : '';
+      var priorityTag = (r.priority_topic && r.priority_topic !== '—') ? '<span class="tag t-priority">Priority: '+r.priority_topic+'</span>' : '';
+      var todTag = (r.time_of_day && r.time_of_day !== '—') ? '<span class="tag t-time">'+r.time_of_day+'</span>' : '';
       return '<div class="user-card">' +
         '<div class="card-top"><div><div class="user-name">'+r.name+'</div><div class="user-time">'+r.timestamp+'</div></div><span class="resp-num">#'+r.id+'</span></div>' +
         '<div class="contact-row">' +
@@ -396,7 +370,7 @@
           '<div class="ci">✆ '+r.phone+'</div>' +
           '<div class="ci">⏱ '+r.timezone+'</div>' +
         '</div>' +
-        '<div class="tags-row"><span class="tag t-platform">'+r.platform+'</span><span class="tag t-platform">'+r.preferred_time+'</span><span class="tag t-priority">Priority: '+r.priority_topic+'</span>'+agendaTags+'</div>' +
+        '<div class="tags-row"><span class="tag t-day">'+r.day_preference+'</span>'+altDay+'<span class="tag t-time">'+r.meeting_time+'</span>'+priorityTag+todTag+'</div>' +
         '<div class="detail"><div class="d-label">Questions for the meeting</div><div class="d-text">'+r.questions+'</div></div>' +
         '<div class="detail"><div class="d-label">Bugs reported</div><div class="d-text">'+r.bugs+'</div></div>' +
       '</div>';
@@ -405,8 +379,8 @@
 
   function exportCSV() {
     if (!responses.length) { alert('No responses to export yet.'); return; }
-    var headers = ['#','Name','Email','Phone','Timezone','Platform','Preferred time','Priority topic','Agenda topics','Questions','Bugs reported','Submitted'];
-    var rows = responses.map(function(r){ return [r.id,r.name,r.email,r.phone,r.timezone,r.platform,r.preferred_time,r.priority_topic,r.agenda_topics,r.questions,r.bugs,r.timestamp]; });
+    var headers = ['#','Name','Email','Phone','Timezone','Day preference','Alternative day','Meeting time','Priority topic','Time of day','Questions','Bugs reported','Submitted'];
+    var rows = responses.map(function(r){ return [r.id,r.name,r.email,r.phone,r.timezone,r.day_preference,r.alternative_day,r.meeting_time,r.priority_topic,r.time_of_day,r.questions,r.bugs,r.timestamp]; });
     var csv = [headers].concat(rows).map(function(row){ return row.map(function(c){ return '"'+(c+'').replace(/"/g,'""')+'"'; }).join(','); }).join('\n');
     var a = document.createElement('a');
     a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
