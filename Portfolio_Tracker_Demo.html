@@ -1185,7 +1185,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 <!-- HEADER -->
 <div id="header" style="visibility:hidden;">
   <div class="logo">PORTFOLIO <small>TRACKER</small></div>
-  <span id="versionBadge" style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-left:2px;align-self:flex-end;padding-bottom:2px;font-weight:600;">v47.85</span>
+  <span id="versionBadge" style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-left:2px;align-self:flex-end;padding-bottom:2px;font-weight:600;">v47.94.3</span>
   <span id="privacyBadge">🙈 VALUES MASKED</span>
   <div class="header-right">
     <div class="price-stamp"><span class="dot" id="priceDot"></span><span id="priceStamp">—</span></div>
@@ -1491,6 +1491,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     <span id="poolAlertPill" style="display:inline-flex;align-self:center;margin-right:4px;cursor:pointer;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--mono);white-space:nowrap;transition:all .4s;color:#065f46;background:rgba(10,124,74,0.15);border:1px solid rgba(10,124,74,0.4);box-shadow:none;opacity:1;" onclick="switchTab('pools')" title="All pools in range — no alerts">🔁 Pools ✓</span>
     <span id="gemAlertPill"  style="display:inline-flex;align-self:center;margin-right:4px;cursor:pointer;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--mono);white-space:nowrap;transition:all .4s;color:#065f46;background:rgba(10,124,74,0.15);border:1px solid rgba(10,124,74,0.4);box-shadow:none;opacity:1;" onclick="switchTab('gems')"  title="No GEM alerts active">💎 GEMs ✓</span>
     <span id="hedgeAlertPill" style="display:inline-flex;align-self:center;margin-right:4px;cursor:pointer;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--mono);white-space:nowrap;transition:all .4s;color:#065f46;background:rgba(10,124,74,0.15);border:1px solid rgba(10,124,74,0.4);box-shadow:none;opacity:1;" onclick="switchTab('hedge')" title="Hedge ratio on target">⚖ Hedge ✓</span>
+    <span id="dcaAlertPill" style="display:none;" onclick="_dcaPillClick()" title="DCA reminders"></span>
     <button id="globalHelpBtn" class="btn sm btn-help" onclick="openHelpModal(window._activeTab||'overview')" title="Help for current tab — click Overview tab for general introduction" style="align-self:center;margin-right:2px;">? Help</button>
     <button class="btn sm" onclick="openFeedbackModal()" title="Send feedback or a question" style="align-self:center;margin-right:4px;padding:4px 8px;font-size:12px;background:rgba(10,124,74,0.08);border-color:rgba(10,124,74,0.35);color:var(--accent);">📬 Feedback</button>
   </div>
@@ -2958,14 +2959,20 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
       <div class="form-grid cols2" style="gap:10px;margin-bottom:8px;">
         <div class="field" style="margin-bottom:0;">
           <label style="font-size:10px;"><span id="cl-ret-tokA-label">Token A</span> returned <span style="color:var(--warn);">*</span></label>
-          <input id="cl-ret-tokA" type="number" step="any" placeholder="0" oninput="clUpdateReturnUsd()"
-                 style="font-size:12px;font-family:var(--mono);">
+          <div style="display:flex;gap:4px;align-items:stretch;">
+            <input id="cl-ret-tokA" type="number" step="any" placeholder="0" oninput="clUpdateReturnUsd()"
+                   style="font-size:12px;font-family:var(--mono);flex:1;">
+            <button type="button" class="btn sm ghost" onclick="_clFillMax('A')" style="font-size:10px;padding:2px 7px;font-weight:700;" title="Fill with pool's current Token A qty">MAX</button>
+          </div>
           <div style="font-size:9px;color:var(--text3);margin-top:2px;">Current: <span id="cl-ret-tokA-current" style="font-family:var(--mono);">—</span></div>
         </div>
         <div class="field" style="margin-bottom:0;">
           <label style="font-size:10px;"><span id="cl-ret-tokB-label">Token B</span> returned <span style="color:var(--warn);">*</span></label>
-          <input id="cl-ret-tokB" type="number" step="any" placeholder="0" oninput="clUpdateReturnUsd()"
-                 style="font-size:12px;font-family:var(--mono);">
+          <div style="display:flex;gap:4px;align-items:stretch;">
+            <input id="cl-ret-tokB" type="number" step="any" placeholder="0" oninput="clUpdateReturnUsd()"
+                   style="font-size:12px;font-family:var(--mono);flex:1;">
+            <button type="button" class="btn sm ghost" onclick="_clFillMax('B')" style="font-size:10px;padding:2px 7px;font-weight:700;" title="Fill with pool's current Token B qty">MAX</button>
+          </div>
           <div style="font-size:9px;color:var(--text3);margin-top:2px;">Current: <span id="cl-ret-tokB-current" style="font-family:var(--mono);">—</span></div>
         </div>
       </div>
@@ -3359,6 +3366,66 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
         <div class="field"><label>Qty</label><input id="hm-qty" type="number" placeholder="0"></div>
         <div class="field"></div><div class="field"></div>
       </div>
+
+      <!-- v47.87 / v47.89: DCA schedule (optional) — tracker + alert; never auto-buys -->
+      <div style="margin-top:6px;padding:10px;background:rgba(96,168,240,0.05);border:1px solid rgba(96,168,240,0.18);border-radius:var(--radius);">
+        <div style="font-size:9px;color:#70b8ff;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;font-weight:700;">
+          📅 DCA Schedule <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;margin-left:4px;">— optional; reminds you when a Buy is due, you confirm each one</span>
+        </div>
+        <div class="form-grid cols3" style="gap:8px;">
+          <div class="field" style="margin-bottom:0;">
+            <label style="font-size:10px;">Frequency</label>
+            <select id="hm-dca-freq" style="font-size:12px;">
+              <option value="">None</option>
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="biweekly">Bi-weekly</option>
+              <option value="monthly">Monthly</option>
+            </select>
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label style="font-size:10px;">Amount $ <span style="color:var(--text3);font-weight:400;">per cycle</span></label>
+            <input id="hm-dca-amount" type="number" step="any" placeholder="e.g. 200" style="font-size:12px;font-family:var(--mono);">
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label style="font-size:10px;">Start Date</label>
+            <input id="hm-dca-start" type="date" style="font-size:12px;">
+          </div>
+        </div>
+        <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(96,168,240,0.15);">
+          <div style="font-size:9px;color:#70b8ff;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;font-weight:700;opacity:0.85;">
+            Source (Buy lands here)
+          </div>
+          <div class="form-grid cols2" style="gap:8px;">
+            <div class="field" style="margin-bottom:0;">
+              <label style="font-size:10px;">Wallet</label>
+              <input id="hm-dca-src-wallet" type="text" list="wallet-options" placeholder="e.g. Coinbase Hot" style="font-size:12px;">
+            </div>
+            <div class="field" style="margin-bottom:0;">
+              <label style="font-size:10px;">Chain</label>
+              <input id="hm-dca-src-chain" type="text" list="chain-options" placeholder="e.g. Ethereum" style="font-size:12px;">
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:6px;padding-top:8px;border-top:1px solid rgba(96,168,240,0.15);">
+          <div style="font-size:9px;color:#70b8ff;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;font-weight:700;opacity:0.85;">
+            Long-Term Destination <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;">— optional cold-storage transfer after each Buy</span>
+          </div>
+          <div class="form-grid cols2" style="gap:8px;">
+            <div class="field" style="margin-bottom:0;">
+              <label style="font-size:10px;">Wallet</label>
+              <input id="hm-dca-dst-wallet" type="text" list="wallet-options" placeholder="e.g. Trezor Cold" style="font-size:12px;">
+            </div>
+            <div class="field" style="margin-bottom:0;">
+              <label style="font-size:10px;">Chain</label>
+              <input id="hm-dca-dst-chain" type="text" list="chain-options" placeholder="e.g. Bitcoin" style="font-size:12px;">
+            </div>
+          </div>
+          <div style="font-size:9px;color:var(--text3);margin-top:4px;font-style:italic;">
+            Leave Destination blank to keep DCA Buys in the source wallet. When set, each confirmed DCA logs Buy + Transfer atomically.
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- ── BUY MORE fields ── -->
@@ -3380,7 +3447,13 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     <!-- ── SELL fields ── -->
     <div id="hm-sell-fields" style="display:none;">
       <div class="form-grid cols3">
-        <div class="field"><label>Qty to Sell</label><input id="hm-sell-qty" type="number" placeholder="0" min="0"></div>
+        <div class="field">
+          <label>Qty to Sell</label>
+          <div style="display:flex;gap:4px;align-items:stretch;">
+            <input id="hm-sell-qty" type="number" placeholder="0" min="0" style="flex:1;">
+            <button type="button" class="btn sm ghost" onclick="_hmFillMax('hm-sell-qty')" style="font-size:10px;padding:2px 8px;font-weight:700;" title="Fill with full holding qty">MAX</button>
+          </div>
+        </div>
         <div class="field"><label>Sale Price $</label><input id="hm-sell-price" type="number" placeholder="0" min="0"></div>
         <div class="field"></div>
       </div>
@@ -3392,7 +3465,10 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
       <div class="form-grid cols3">
         <div class="field">
           <label>Qty to Swap</label>
-          <input id="hm-swap-qty" type="number" placeholder="0" min="0" oninput="updateSwapHint()">
+          <div style="display:flex;gap:4px;align-items:stretch;">
+            <input id="hm-swap-qty" type="number" placeholder="0" min="0" oninput="updateSwapHint()" style="flex:1;">
+            <button type="button" class="btn sm ghost" onclick="_hmFillMax('hm-swap-qty'); updateSwapHint();" style="font-size:10px;padding:2px 8px;font-weight:700;" title="Fill with full holding qty">MAX</button>
+          </div>
           <div class="hint" id="hm-swap-from-current" style="margin-top:3px;color:var(--text3);display:none;"></div>
         </div>
         <div class="field"><label>Price at Swap $</label><input id="hm-swap-sell-price" type="number" placeholder="0" min="0" oninput="updateSwapHint()" onfocus="_hmTrySourcePrice()"><div class="hint" id="hm-swap-price-hint" style="margin-top:3px;display:none;color:var(--accent);">Stablecoin — locked at $1.00</div></div>
@@ -3435,8 +3511,11 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
       <div class="form-grid cols3">
         <div class="field">
           <label>Qty to Transfer</label>
-          <input id="hm-transfer-qty" type="number" placeholder="0" min="0">
-          <div class="hint" style="margin-top:3px;">Leave blank to transfer entire holding</div>
+          <div style="display:flex;gap:4px;align-items:stretch;">
+            <input id="hm-transfer-qty" type="number" placeholder="0" min="0" style="flex:1;">
+            <button type="button" class="btn sm ghost" onclick="_hmFillMax('hm-transfer-qty')" style="font-size:10px;padding:2px 8px;font-weight:700;" title="Fill with full holding qty">MAX</button>
+          </div>
+          <div class="hint" style="margin-top:3px;">Leave blank or click MAX to transfer entire holding</div>
         </div>
         <div class="field">
           <label>To Wallet</label>
@@ -3461,6 +3540,53 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     <div class="modal-actions">
       <button class="btn" onclick="closeModal('holdingModal')">Cancel</button>
       <button class="btn primary" id="hm-save-btn" onclick="saveHoldingUnified()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- DCA CONFIRMATION MODAL (v47.87 / v47.89) — fires when a scheduled DCA is due -->
+<div class="overlay" id="dcaConfirmModal">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-title">📅 DCA DUE</div>
+    <input type="hidden" id="dca-holding-id">
+    <div id="dca-summary" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:14px;font-size:13px;line-height:1.7;"></div>
+    <div style="background:rgba(96,168,240,0.05);border:1px solid rgba(96,168,240,0.25);border-radius:var(--radius);padding:12px;margin-bottom:12px;">
+      <div style="font-size:9px;color:#70b8ff;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;font-weight:700;">Confirm purchase details</div>
+      <div class="form-grid cols2" style="gap:10px;">
+        <div class="field" style="margin-bottom:0;">
+          <label style="font-size:10px;">Amount $</label>
+          <input id="dca-amount" type="number" step="any" style="font-size:12px;font-family:var(--mono);" oninput="_dcaUpdatePreview()">
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label style="font-size:10px;">Price per token $ <span style="color:var(--text3);font-weight:400;">(live)</span></label>
+          <input id="dca-price" type="number" step="any" style="font-size:12px;font-family:var(--mono);" oninput="_dcaUpdatePreview()">
+        </div>
+      </div>
+      <div style="font-size:10px;color:var(--text3);margin-top:8px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.05);">
+        Qty added to holding: <strong id="dca-qty-preview" style="color:#70b8ff;font-family:var(--mono);">—</strong>
+        <span style="opacity:0.7;margin-left:6px;">at live price</span>
+      </div>
+    </div>
+    <div id="dca-xfer-panel" style="display:none;background:rgba(168,85,247,0.05);border:1px solid rgba(168,85,247,0.25);border-radius:var(--radius);padding:12px;margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div style="font-size:9px;color:#c084fc;text-transform:uppercase;letter-spacing:.1em;font-weight:700;">🔒 Long-Term Transfer (after Buy)</div>
+        <label style="font-size:10px;color:var(--text3);display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none;">
+          <input id="dca-xfer-on" type="checkbox" checked style="margin:0;cursor:pointer;">
+          <span>Include transfer this cycle</span>
+        </label>
+      </div>
+      <div id="dca-xfer-detail" style="font-size:11px;color:var(--text2);line-height:1.6;font-family:var(--mono);"></div>
+      <div style="font-size:9px;color:var(--text3);margin-top:4px;font-style:italic;">
+        Uncheck if you didn't move tokens to cold storage this cycle. The schedule itself is untouched — next cycle will prompt again.
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="_dcaSnooze()" title="Defer until next app open">Snooze</button>
+      <button class="btn warn" onclick="_dcaSkip()" title="Mark this cycle as skipped — advance to next due date">Skip Cycle</button>
+      <button class="btn primary" id="dca-confirm-btn" onclick="_dcaConfirm()">Confirm Buy</button>
+    </div>
+    <div style="font-size:10px;color:var(--text3);margin-top:6px;text-align:right;font-style:italic;" id="dca-action-hint">
+      Confirm logs a Buy transaction at the price above. Skip moves to the next cycle without buying.
     </div>
   </div>
 </div>
@@ -4243,8 +4369,44 @@ const ACT_MASTER = (()=>{const p=['CPF_MA','STER_O','VERRID','E_KEY_','ZULU9'];r
 const ACT_STORE    = 'cpf_activation_v1';
 const ACT_ID_STORE = 'cpf_install_id';
 const ACT_VER      = 'v30';
-const APP_VERSION  = '47.83';           // bumped on each release
+const APP_VERSION  = '47.94.3';         // bumped on each release
 const WHATS_NEW_KEY = 'cpf_seen_ver';   // localStorage: last version user saw What's New
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TAURI DESKTOP STORAGE ADAPTER (v47.91)
+// ══════════════════════════════════════════════════════════════════════════════
+// When running inside the Tauri desktop shell, window.__TAURI__ is defined and
+// we route persist()/load() through the Rust backend so data lives at a real
+// OS filesystem path. The browser version is unchanged — it still uses
+// localStorage + the file-handle backup path. The adapter is a no-op when
+// window.__TAURI__ is absent.
+window.__cpfTauri = (() => {
+  const T = window.__TAURI__;
+  if(!T || !T.core || typeof T.core.invoke !== 'function') {
+    return { enabled: false };
+  }
+  const invoke = T.core.invoke.bind(T.core);
+  const saveDb       = (json) => invoke('save_db', { json });
+  const loadDb       = ()      => invoke('load_db');
+  const listBackups  = ()      => invoke('list_backups');
+  const exportBackup = ()      => invoke('export_backup');
+  const restoreBackup= (name)  => invoke('restore_backup', { filename: name });
+  const getDataDir   = ()      => invoke('get_data_dir');
+  console.info('cpfTauri: desktop storage adapter enabled');
+  return {
+    enabled: true,
+    saveDb, loadDb, listBackups, exportBackup, restoreBackup, getDataDir,
+  };
+})();
+
+function __cpfTauriSaveDispatch(json) {
+  if(!window.__cpfTauri || !window.__cpfTauri.enabled) return;
+  window.__cpfTauri.saveDb(json).catch(err => {
+    console.warn('cpfTauri: save_db failed', err);
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
 
 // ══════════════════════════════════════════════════════════════════════════════
 // cpfVault — Unified hardened storage for ALL critical settings
@@ -5595,6 +5757,10 @@ function persist() {
   // Redundant backup under a different key — insurance if SK is cleared
   try { localStorage.setItem(SK_BACKUP, localStorage.getItem(SK)); } catch(e) {}
 
+  // v47.91: dispatch to Tauri storage if running under desktop shell.
+  // Browser version is unaffected (adapter is disabled when not in Tauri).
+  __cpfTauriSaveDispatch(json);
+
   // Keep vault (IDB) in sync with every persist — ensures pushKey, pushToken,
   // defiWallet are always current in the hardened store, not just localStorage
   vaultSyncFromDB().catch(() => {});
@@ -5639,68 +5805,54 @@ function localBackupRestore() {
 
 
 function seed() {
+  // ── DEMO SEED — entirely fictional sample data ───────────────────────────
+  // Round-number quantities, generic wallet names ("Demo Wallet", "Hardware
+  // Wallet", "Software Wallet"). Nothing here is derived from any real
+  // portfolio. Kept consistent with the window._embeddedBackup demo blob.
   return {
     pools: [
-      { id:'p1', name:'UNI / ETH', platform:'Uniswap',
-        entryDate:'', entryValue:24603,
-        tokASym:'UNI', tokAGeckoId:'uniswap', tokAQtyEntry:2744, tokAQty:2744,
-        tokBSym:'ETH', tokBGeckoId:'ethereum', tokBQtyEntry:5.6, tokBQty:5.6,
-        rangeLow:0.00153, rangeHigh:0.00206, liveRatio:null,
+      { id:'p1', name:'ETH / USDC', platform:'Uniswap',
+        entryDate:'2026-01-15', entryValue:12000,
+        tokASym:'ETH', tokAGeckoId:'ethereum', tokAQtyEntry:4.2, tokAQty:4.2,
+        tokBSym:'USDC', tokBGeckoId:'usd-coin', tokBQtyEntry:8400, tokBQty:8400,
+        rangeLow:1800, rangeHigh:2800, liveRatio:null,
         yieldLog:[], notes:'' },
-      { id:'p2', name:'AAVE / WETH', platform:'Uniswap',
-        entryDate:'', entryValue:10236,
-        tokASym:'AAVE', tokAGeckoId:'aave', tokAQtyEntry:45, tokAQty:45,
-        tokBSym:'WETH', tokBGeckoId:'ethereum', tokBQtyEntry:2.19, tokBQty:2.19,
-        rangeLow:0.0535, rangeHigh:0.0758, liveRatio:null,
+      { id:'p2', name:'SOL / USDC', platform:'Orca',
+        entryDate:'2026-02-01', entryValue:8500,
+        tokASym:'SOL', tokAGeckoId:'solana', tokAQtyEntry:65, tokAQty:65,
+        tokBSym:'USDC', tokBGeckoId:'usd-coin', tokBQtyEntry:4250, tokBQty:4250,
+        rangeLow:55, rangeHigh:180, liveRatio:null,
         yieldLog:[], notes:'' },
-      { id:'p3', name:'WETH / msETH', platform:'Aerodrome',
-        entryDate:'', entryValue:45345,
-        tokASym:'WETH', tokAGeckoId:'ethereum', tokAQtyEntry:10.96, tokAQty:10.96,
-        tokBSym:'msETH', tokBGeckoId:'ethereum', tokBQtyEntry:4.91, tokBQty:4.91,
-        rangeLow:1.0, rangeHigh:1.015, liveRatio:1.004,
+      { id:'p3', name:'wBTC / ETH', platform:'Uniswap',
+        entryDate:'2026-01-20', entryValue:25000,
+        tokASym:'wBTC', tokAGeckoId:'wrapped-bitcoin', tokAQtyEntry:0.29, tokAQty:0.29,
+        tokBSym:'ETH', tokBGeckoId:'ethereum', tokBQtyEntry:5.8, tokBQty:5.8,
+        rangeLow:14.0, rangeHigh:22.0, liveRatio:null,
         yieldLog:[], notes:'' },
-      { id:'p4', name:'SOL / JLP', platform:'Orca',
-        entryDate:'', entryValue:15739,
-        tokASym:'SOL', tokAGeckoId:'solana', tokAQtyEntry:40.643, tokAQty:40.643,
-        tokBSym:'JLP', tokBGeckoId:'jupiter-perpetuals-liquidity-provider-token', tokBQtyEntry:3058, tokBQty:3058,
-        rangeLow:0.0418, rangeHigh:0.0453, liveRatio:null,
-        yieldLog:[], notes:'' },
-      { id:'p5', name:'cbETH / ETH', platform:'Beefy',
-        entryDate:'', entryValue:21382,
-        tokASym:'cbETH', tokAGeckoId:'ethereum', tokAQtyEntry:5.718, tokAQty:5.718,
+      { id:'p4', name:'cbETH / ETH', platform:'Beefy',
+        entryDate:'2026-01-10', entryValue:18000,
+        tokASym:'cbETH', tokAGeckoId:'ethereum', tokAQtyEntry:4.5, tokAQty:4.5,
         tokBSym:'ETH', tokBGeckoId:'ethereum', tokBQtyEntry:0, tokBQty:0,
-        rangeLow:0.995, rangeHigh:1.005, liveRatio:1.0,
-        yieldLog:[], notes:'' },
-      { id:'p6', name:'msETH / WETH', platform:'Beefy',
-        entryDate:'', entryValue:20646,
-        tokASym:'msETH', tokAGeckoId:'ethereum', tokAQtyEntry:9.721, tokAQty:9.721,
-        tokBSym:'WETH', tokBGeckoId:'ethereum', tokBQtyEntry:0, tokBQty:0,
         rangeLow:0.995, rangeHigh:1.005, liveRatio:1.0,
         yieldLog:[], notes:'' },
     ],
     vaults: [
-      { id:'v1', name:'USDY', platform:'Scallop', tokSym:'USDY', tokGeckoId:'ondo-us-dollar-yield', qty:8707, entryDate:'2026-02-01', entryValue:4522, apy:0.04, yieldEarned:0, notes:'' },
-      { id:'v2', name:'ETH Stake', platform:'Stream', tokSym:'ETH', tokGeckoId:'ethereum', qty:2.974, entryDate:'2025-10-01', entryValue:16000, apy:0.12, yieldEarned:0, notes:'' },
-      { id:'v3', name:'JLP Vault', platform:'Drift', tokSym:'JLP', tokGeckoId:'jupiter-perpetuals-liquidity-provider-token', qty:1551, entryDate:'', entryValue:16151, apy:0.113, yieldEarned:0, notes:'' },
+      { id:'v1', name:'USDC Lending', platform:'Aave', tokSym:'USDC', tokGeckoId:'usd-coin', qty:10000, entryDate:'2026-01-01', entryValue:10000, apy:0.062, yieldEarned:310, notes:'' },
+      { id:'v2', name:'stETH Vault', platform:'Lido', tokSym:'stETH', tokGeckoId:'staked-ether', qty:3.5, entryDate:'2025-11-01', entryValue:8400, apy:0.038, yieldEarned:198, notes:'' },
     ],
     holdings: [
-      { id:'h1',  sym:'BTC',  geckoId:'bitcoin',    cat:'L1',      wallet:'Trezor',   avgCost:29408,  qty:3.4524 },
-      { id:'h2',  sym:'ETH',  geckoId:'ethereum',   cat:'L1',      wallet:'Trezor',   avgCost:200,    qty:5.0625 },
-      { id:'h3',  sym:'ETH',  geckoId:'ethereum',   cat:'L1',      wallet:'Ledger NS',avgCost:46.93,  qty:73.477 },
-      { id:'h4',  sym:'BTC',  geckoId:'bitcoin',    cat:'L1',      wallet:'Ledger NS',avgCost:29408,  qty:1.21036 },
-      { id:'h5',  sym:'SOL',  geckoId:'solana',     cat:'L1',      wallet:'Phantom',  avgCost:80,     qty:118 },
-      { id:'h6',  sym:'UNI',  geckoId:'uniswap',    cat:'DeFi',    wallet:'Trezor',   avgCost:6.381,  qty:1065 },
-      { id:'h7',  sym:'AAVE', geckoId:'aave',       cat:'DeFi',    wallet:'Trezor',   avgCost:275.69, qty:0.01 },
-      { id:'h8',  sym:'AERO', geckoId:'aerodrome-finance', cat:'L2', wallet:'Phantom',avgCost:0.7158, qty:152.6 },
-      { id:'h9',  sym:'IMX',  geckoId:'immutable-x',cat:'Gaming',  wallet:'Ledger',   avgCost:1.23,   qty:4082 },
-      { id:'h10', sym:'INJ',  geckoId:'injective-protocol', cat:'L1', wallet:'Ledger',avgCost:13.337, qty:74.43 },
-      { id:'h11', sym:'TAO',  geckoId:'bittensor',  cat:'L1',      wallet:'Trezor',   avgCost:411,    qty:9.45 },
-      { id:'h12', sym:'HYPE', geckoId:'hyperliquid',cat:'L1',      wallet:'Phantom',  avgCost:24.7,   qty:150 },
-      { id:'h13', sym:'PAXG', geckoId:'pax-gold',   cat:'Gold',    wallet:'Trezor',   avgCost:5000,   qty:1.78 },
-      { id:'h14', sym:'JLP',  geckoId:'jupiter-perpetuals-liquidity-provider-token', cat:'PERP', wallet:'Phantom', avgCost:4.65, qty:2552 },
-      { id:'h15', sym:'USDC', geckoId:'usd-coin',   cat:'Stablecoin', wallet:'Ledger X1', avgCost:1.00, qty:1133.37 },
-      { id:'h16', sym:'USDC', geckoId:'usd-coin',   cat:'Stablecoin', wallet:'Ledger X1', avgCost:1.00, qty:332.06 },
-      { id:'h17', sym:'USDC', geckoId:'usd-coin',   cat:'Stablecoin', wallet:'Ledger X1', avgCost:1.00, qty:49.89 },
+      { id:'h1',  sym:'BTC',   geckoId:'bitcoin',     cat:'L1',        wallet:'Hardware Wallet', avgCost:42000, qty:0.85 },
+      { id:'h2',  sym:'ETH',   geckoId:'ethereum',    cat:'L1',        wallet:'Hardware Wallet', avgCost:1800,  qty:6.2 },
+      { id:'h3',  sym:'SOL',   geckoId:'solana',      cat:'L1',        wallet:'Hardware Wallet', avgCost:95,    qty:42.0 },
+      { id:'h4',  sym:'USDC',  geckoId:'usd-coin',    cat:'Stablecoin',wallet:'Hardware Wallet', avgCost:1,     qty:3200 },
+      { id:'h5',  sym:'AAVE',  geckoId:'aave',        cat:'DeFi',      wallet:'Hardware Wallet', avgCost:95,    qty:18.0 },
+      { id:'h6',  sym:'UNI',   geckoId:'uniswap',     cat:'DeFi',      wallet:'Hardware Wallet', avgCost:7.2,   qty:220.0 },
+      { id:'h7',  sym:'LINK',  geckoId:'chainlink',   cat:'DeFi',      wallet:'Hardware Wallet', avgCost:12.5,  qty:85.0 },
+      { id:'h8',  sym:'MATIC', geckoId:'matic-network',cat:'L2',       wallet:'Software Wallet', avgCost:0.65,  qty:1800 },
+      { id:'h9',  sym:'ARB',   geckoId:'arbitrum',    cat:'L2',        wallet:'Software Wallet', avgCost:1.1,   qty:950 },
+      { id:'h10', sym:'OP',    geckoId:'optimism',    cat:'L2',        wallet:'Software Wallet', avgCost:1.8,   qty:620 },
+      { id:'h11', sym:'PAXG',  geckoId:'pax-gold',    cat:'Gold',      wallet:'Hardware Wallet', avgCost:1950,  qty:1.2 },
+      { id:'h12', sym:'USDT',  geckoId:'tether',      cat:'Stablecoin',wallet:'Software Wallet', avgCost:1,     qty:1500 },
     ],
     history: [],
     gems: [],
@@ -5709,6 +5861,51 @@ function seed() {
 }
 
 let DB = sanitiseDB(load());
+
+// ══════════════════════════════════════════════════════════════════════════════
+// v47.91 — TAURI POST-LOAD RECONCILIATION
+// ══════════════════════════════════════════════════════════════════════════════
+// On desktop, the canonical store is the Rust-backed db.json on disk. The
+// browser's localStorage is only used as a transient working copy. After
+// initial sync, every persist() also calls __cpfTauriSaveDispatch(json), so
+// they stay in lock-step. On startup we reconcile:
+//   - If desktop db.json exists and is newer than localStorage → load from disk
+//   - If desktop db.json is empty/missing → seed it from current localStorage
+//   - If browser (no Tauri) → no-op
+(async function tauriReconcile() {
+  if(!window.__cpfTauri || !window.__cpfTauri.enabled) return;
+  try {
+    const diskJson = await window.__cpfTauri.loadDb();
+    if(!diskJson || diskJson === 'null' || diskJson === '{}') {
+      // First run on desktop — seed from current session
+      const seed = JSON.stringify(DB);
+      await window.__cpfTauri.saveDb(seed);
+      console.info('cpfTauri: seeded db.json from current session');
+      return;
+    }
+    const diskDB = JSON.parse(diskJson);
+    if(!diskDB || typeof diskDB !== 'object') return;
+    // Compare savedAt to decide which is canonical
+    const diskTs = diskDB.savedAt || 0;
+    const memTs  = DB.savedAt || 0;
+    if(diskTs > memTs) {
+      DB = sanitiseDB(diskDB);
+      console.info('cpfTauri: loaded db.json (newer than localStorage)');
+      // Trigger a render — this runs before renderAll() is defined in some
+      // load paths, so we defer via setTimeout to let init finish first.
+      setTimeout(() => { try { renderAll(); } catch(e) {} }, 0);
+    } else if(memTs > diskTs) {
+      // localStorage is newer (e.g. user opened the .html in browser later) —
+      // push to disk so they match again
+      await window.__cpfTauri.saveDb(JSON.stringify(DB));
+      console.info('cpfTauri: pushed newer localStorage state to db.json');
+    }
+  } catch(err) {
+    console.warn('cpfTauri: reconcile failed', err);
+  }
+})();
+// ══════════════════════════════════════════════════════════════════════════════
+
 // Migrate history entries that predate the id field
 DB.history.forEach(h => { if(!h.id) h.id = uid(); });
 // ── Embedded backup history merge ────────────────────────────────────────────
@@ -6146,32 +6343,102 @@ function cleanQty(n) {
   return Math.round(n * 1e10) / 1e10;
 }
 
-// v47.63: deposit-side validation — see tracker for full explanation.
+// v47.88: Wallet+Chain encoding helpers. A single Holdings identity is
+// (sym, wallet, chain) — the same wallet can hold the same asset on multiple
+// chains (USDC on Ethereum, Base, Arbitrum within the same Ledger). Funding
+// source dropdowns encode the user's choice as "wallet::chain" so we can find
+// the right row. Old data (no chain) round-trips unchanged.
+const _WC_SEP = '::';
+function _encWalletChain(wallet, chain) {
+  const w = (wallet || '').trim();
+  const c = (chain  || '').trim();
+  if(!w) return '';
+  return c ? `${w}${_WC_SEP}${c}` : w;
+}
+function _decWalletChain(encoded) {
+  const s = (encoded || '').trim();
+  if(!s) return { wallet: '', chain: '' };
+  const i = s.indexOf(_WC_SEP);
+  if(i < 0) return { wallet: s, chain: '' };
+  return { wallet: s.slice(0, i), chain: s.slice(i + _WC_SEP.length) };
+}
+// Find the exact (sym, wallet, chain) Holdings row. If chain is omitted,
+// falls back to wallet-only matching (back-compat for old callers).
+function _findHoldingExact(sym, wallet, chain) {
+  const symU = (sym || '').toUpperCase();
+  const walletL = (wallet || '').toLowerCase();
+  const chainL  = (chain || '').toLowerCase();
+  if(!symU) return null;
+  if(chainL) {
+    return DB.holdings.find(h =>
+      (h.sym || '').toUpperCase() === symU &&
+      (h.wallet || '').toLowerCase() === walletL &&
+      (h.chain || '').toLowerCase() === chainL
+    ) || null;
+  }
+  return DB.holdings.find(h =>
+    (h.sym || '').toUpperCase() === symU &&
+    (!walletL || (h.wallet || '').toLowerCase() === walletL)
+  ) || null;
+}
+// v47.88: Smart resolver. Given (sym, wallet, chain?), returns the Holdings
+// row to use, auto-disambiguating multi-chain wallets when chain is omitted.
+function _resolveFundingHolding(sym, wallet, chain, wantQty) {
+  const symU = (sym || '').toUpperCase();
+  const walletL = (wallet || '').toLowerCase();
+  if(!symU) return { error: 'No symbol' };
+  if(chain) {
+    const h = _findHoldingExact(symU, wallet, chain);
+    return h ? { holding: h } : { error: `${symU} not found in ${wallet} / ${chain}` };
+  }
+  const candidates = DB.holdings.filter(h =>
+    (h.sym || '').toUpperCase() === symU &&
+    (!walletL || (h.wallet || '').toLowerCase() === walletL)
+  );
+  if(candidates.length === 0) return { error: `${symU} not found in ${wallet || 'any wallet'}` };
+  if(candidates.length === 1) return { holding: candidates[0] };
+  const sufficient = candidates.filter(h => (h.qty || 0) + 1e-9 >= wantQty);
+  if(sufficient.length === 1) return { holding: sufficient[0] };
+  if(sufficient.length === 0) {
+    const breakdown = candidates.map(h => {
+      const q = h.qty || 0;
+      const qs = q >= 1 ? q.toFixed(4).replace(/\.?0+$/, '') : q.toFixed(8).replace(/\.?0+$/, '');
+      return `${h.chain || '(no chain)'}: ${qs}`;
+    }).join(', ');
+    return { error: `Not enough ${symU} in ${wallet} on any one chain (need ${wantQty}). Available — ${breakdown}. Specify a chain or consolidate first.` };
+  }
+  const chains = sufficient.map(h => h.chain || '(no chain)').join(', ');
+  return { error: `${symU} in ${wallet} exists on multiple chains (${chains}). Specify which chain to use.` };
+}
+
+// v47.63 / v47.88: deposit-side validation — chain-aware.
 function _validateFundingRows(rows) {
   const requested = new Map();
   for(const r of rows) {
     const sym = (r.sym || '').trim().toUpperCase();
     const qty = +r.qty || 0;
-    const wallet = (r.wallet || '').trim();
+    const rawWallet = (r.wallet || '').trim();
     if(!sym || !qty) continue;
-    if(wallet === '— External / Skip —') continue;
-    const key = `${sym}::${wallet.toLowerCase()}`;
-    requested.set(key, (requested.get(key) || 0) + qty);
+    if(rawWallet === '— External / Skip —') continue;
+    const dec = _decWalletChain(rawWallet);
+    const wallet = dec.wallet;
+    const chain  = (r.chain || dec.chain || '').trim();
+    const key = `${sym}|${wallet.toLowerCase()}|${chain.toLowerCase()}`;
+    const existing = requested.get(key);
+    if(existing) existing.qty += qty;
+    else requested.set(key, { sym, wallet, chain, qty });
   }
   const errors = [];
-  for(const [key, wantQty] of requested) {
-    const [sym, walletLower] = key.split('::');
-    const holding = DB.holdings.find(h =>
-      (h.sym || '').toUpperCase() === sym &&
-      (!walletLower || (h.wallet || '').toLowerCase() === walletLower)
-    );
-    const avail = holding ? (holding.qty || 0) : 0;
-    if(!holding) {
-      errors.push(`${sym} not found in ${walletLower || 'any wallet'} — adjust Holdings first`);
-    } else if(wantQty > avail + 1e-9) {
+  for(const { sym, wallet, chain, qty: wantQty } of requested.values()) {
+    const res = _resolveFundingHolding(sym, wallet, chain, wantQty);
+    if(res.error) { errors.push(res.error); continue; }
+    const holding = res.holding;
+    const avail = holding.qty || 0;
+    if(wantQty > avail + 1e-9) {
       const availStr = avail >= 1 ? avail.toFixed(4).replace(/\.?0+$/, '') : avail.toFixed(8).replace(/\.?0+$/, '');
       const wantStr  = wantQty >= 1 ? wantQty.toFixed(4).replace(/\.?0+$/, '') : wantQty.toFixed(8).replace(/\.?0+$/, '');
-      errors.push(`Not enough ${sym} in ${holding.wallet || 'Holdings'} — need ${wantStr}, have ${availStr}`);
+      const chainPart = holding.chain ? ` / ${holding.chain}` : '';
+      errors.push(`Not enough ${sym} in ${holding.wallet || 'Holdings'}${chainPart} — need ${wantStr}, have ${availStr}`);
     }
   }
   return errors.length ? { ok: false, errors } : { ok: true };
@@ -6222,6 +6489,36 @@ function nf(n,d=4) {
 function cc(n) { if(n===null||n===undefined) return ''; return n>0?'pos':n<0?'neg':'neu'; }
 function today() { return new Date().toISOString().split('T')[0]; }
 function uid() { return 'x'+Math.random().toString(36).slice(2,9); }
+
+// ─── DCA HELPERS (v47.87) ──────────────────────────────────────────────────
+// All schedule math operates on YYYY-MM-DD strings (UTC-naive). The DCA
+// system is a TRACKER + ALERT — it never auto-creates Buy transactions.
+// When a DCA is due, the user is prompted to Confirm / Skip / Snooze.
+function _freqLabel(f) {
+  return ({daily:'Daily', weekly:'Weekly', biweekly:'Bi-weekly', monthly:'Monthly'})[f] || f || '';
+}
+function _dcaAddPeriod(dateStr, freq) {
+  // Returns next due date string after one period.
+  const d = new Date(dateStr + 'T00:00:00');
+  if(freq === 'daily')    d.setDate(d.getDate() + 1);
+  else if(freq === 'weekly')   d.setDate(d.getDate() + 7);
+  else if(freq === 'biweekly') d.setDate(d.getDate() + 14);
+  else if(freq === 'monthly')  d.setMonth(d.getMonth() + 1);
+  else return dateStr;
+  return d.toISOString().split('T')[0];
+}
+function _dcaIsDue(h) {
+  if(!h?.dca?.freq || !h.dca.nextDue) return false;
+  return h.dca.nextDue <= today();
+}
+// Collect all due DCAs across holdings — used for header alert badge
+function _dcaDueList() {
+  const out = [];
+  for(const h of DB.holdings) {
+    if(_dcaIsDue(h)) out.push(h);
+  }
+  return out;
+}
 
 // ─── BADGES ─────────────────────────────────────────────────────────────────
 function rangeBadge(status) {
@@ -6783,7 +7080,11 @@ function renderHoldings() {
     const _rsiLabel = _isStableOrNoId ? '' : (_rsi !== null ? _rsi.toFixed(0) : (window._rsiOn && _rsiRaw === undefined ? '…' : ''));
     const _bollChecked = window._bollSelected?.has(h.id);
     const _rsiDisp = window._rsiOn ? '' : 'none';
-    return `<tr${extraClass ? ' class="'+extraClass+'"' : ''} id="hold-row-${h.id}">
+    // v47.90: faint green tint on stablecoin/cash rows — visible in any view mode
+    // (flat, grouped, by-asset, multi-chain children). Restores the visual cue
+    // that was lost in v47.87 when stables moved inline into wallet groups.
+    const _stableBg = h.cat === 'Stablecoin' ? ' style="background:rgba(61,245,160,0.12) !important;"' : '';
+    return `<tr${extraClass ? ' class="'+extraClass+'"' : ''} id="hold-row-${h.id}"${_stableBg}>
       <td id="rsi-hold-${h.id}" style="display:${_rsiDisp};text-align:center;font-family:var(--mono);font-weight:700;font-size:var(--fs-mono);color:${_rsiColor};background:${_rsiBg};border-radius:4px;padding:2px 4px;">${_rsiLabel}</td>
       <td id="boll-chk-${h.id}" style="display:${_rsiDisp};text-align:center;padding:2px;">
         ${_isStableOrNoId ? '' : `<input type="checkbox" ${_bollChecked?'checked':''} onchange="toggleBollinger('${h.id}','${h.geckoId}','${h.sym}',this.checked)"
@@ -6803,6 +7104,7 @@ function renderHoldings() {
       <td class="${cc(h._pnlPct)}" style="font-weight:600">${h._pnlPct!==null?pfp(h._pnlPct):'—'}</td>
       <td><div style="display:flex;gap:4px;">
         <button class="btn sm ghost" onclick="openHoldAlert('${h.id}')" title="${h.alerts && Object.values(h.alerts).some(v=>v) ? 'Alerts active — click to edit' : 'Set price alerts'}" style="font-size:11px;padding:2px 6px;${h.alerts && Object.values(h.alerts).some(v=>v) ? 'background:rgba(245,158,11,0.15);border-color:#f59e0b;color:#f59e0b;font-weight:700;' : ''}">🔔${h.alerts && Object.values(h.alerts).some(v=>v) ? '<span style="font-size:9px;margin-left:2px;">' + Object.values(h.alerts).filter(Boolean).length + '</span>' : ''}</button>
+        ${h.dca && h.dca.freq ? `<button class="btn sm ghost" onclick="${_dcaIsDue(h)?`openDcaConfirmModal('${h.id}')`:`openHoldingModal('${h.id}','edit')`}" title="${_dcaIsDue(h) ? 'DCA due — click to confirm Buy' : `DCA: ${_freqLabel(h.dca.freq)} $${h.dca.amount} — next due ${h.dca.nextDue||'—'}`}" style="font-size:11px;padding:2px 6px;${_dcaIsDue(h)?'background:rgba(96,168,240,0.20);border-color:#70b8ff;color:#70b8ff;font-weight:700;animation:pulse 1.5s ease-in-out infinite;':'background:rgba(96,168,240,0.08);border-color:rgba(96,168,240,0.3);color:#70b8ff;'}">📅${_dcaIsDue(h)?'<span style="font-size:9px;margin-left:2px;">!</span>':''}</button>` : ''}
         <button class="btn sm primary" onclick="openHoldingModal('${h.id}','edit')">Edit</button>
         <button class="btn sm danger" onclick="deleteHolding('${h.id}')">✕</button>
       </div></td>
@@ -6936,7 +7238,10 @@ function renderHoldings() {
       const wallets = [...new Set(kids.map(h=>h.wallet).filter(Boolean))].join(', ');
       const chains  = [...new Set(kids.map(h=>h.chain).filter(Boolean))].join(', ');
       const chgClass = aChg24!==null?(aChg24>=0?'pos':'neg'):'';
-      html += `<tr>
+      // v47.90: green tint if all kids are stablecoins (asset view aggregates by sym)
+      const _allStable = kids.every(h => h.cat === 'Stablecoin');
+      const _stableBg = _allStable ? ' style="background:rgba(61,245,160,0.12) !important;"' : '';
+      html += `<tr${_stableBg}>
         <td class="left" style="font-weight:700;color:#0055aa;">
           ${sym}
           <div style="font-size:var(--fs-label);color:var(--text3);font-weight:400;margin-top:1px;">${chains||wallets}</div>
@@ -6961,10 +7266,16 @@ function renderHoldings() {
   // ─── RENDER ──────────────────────────────────────────────────────────────
   let html = '';
 
+  // v47.87: In grouped view, stablecoins should sit WITHIN their wallet group
+  // alongside other assets — not be banished to a separate global "Cash" section.
+  // The cash band still appears at the bottom as a summary, but the rows
+  // themselves are rendered inline with each wallet.
+  const groupedAll = (holdViewMode === 'grouped') ? enriched : assets;
+
   if(holdViewMode === 'asset') {
     html += renderByAsset(assets);
   } else if(holdViewMode === 'grouped') {
-    html += renderGrouped(assets);
+    html += renderGrouped(groupedAll);
   } else {
     assets.forEach(h => { html += rowHtml(h); });
   }
@@ -6972,9 +7283,13 @@ function renderHoldings() {
   if(cash.length) {
     cash.forEach(h => { if(h._val!==null) cashVal += h._val; });
     const _cashColspan = 13 + (window._rsiOn ? 2 : 0);
+    // In grouped mode the rows are already shown above — emit only the summary band.
+    const _cashLabel = (holdViewMode === 'grouped')
+      ? '💵 Cash & Stablecoins (shown inline per wallet)'
+      : '💵 Cash & Stablecoins';
     html += `<tr><td colspan="${_cashColspan}" style="padding:0;">
       <div style="display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,#0a3d26,#0d5c38);padding:5px 12px;margin:4px 0 0 0;">
-        <span style="font-size:10px;font-weight:700;letter-spacing:.12em;color:#3df5a0;text-transform:uppercase;">💵 Cash &amp; Stablecoins</span>
+        <span style="font-size:10px;font-weight:700;letter-spacing:.12em;color:#3df5a0;text-transform:uppercase;">${_cashLabel}</span>
         <span style="flex:1;height:1px;background:rgba(61,245,160,0.2);"></span>
         <span style="font-size:11px;font-weight:600;color:#7eeac4;font-family:var(--mono);">${$f(cashVal)}</span>
         <span style="font-size:10px;color:rgba(61,245,160,0.5);">available</span>
@@ -6983,9 +7298,10 @@ function renderHoldings() {
     if(holdViewMode === 'asset') {
       html += renderByAsset(cash);
     } else if(holdViewMode === 'grouped') {
-      html += renderGrouped(cash);
+      // Cash rows already rendered inline above — nothing to add here.
     } else {
-      cash.forEach(h => { html += rowHtml(h).replace('<tr>', '<tr style="background:rgba(16,76,48,0.04);">'); });
+      // v47.90: rowHtml now applies the green tint at source for Stablecoin rows
+      cash.forEach(h => { html += rowHtml(h); });
     }
   }
 
@@ -7552,6 +7868,28 @@ function renderHeader() {
       badge.style.display = 'none';
     }
   }
+
+  // ── DCA pill (v47.87) — show only when DCAs are due ──
+  const dcaPill = document.getElementById('dcaAlertPill');
+  if(dcaPill) {
+    const dueList = _dcaDueList();
+    if(dueList.length === 0) {
+      dcaPill.style.display = 'none';
+    } else {
+      dcaPill.style.cssText = `display:inline-flex;align-self:center;margin-right:4px;cursor:pointer;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--mono);white-space:nowrap;transition:all .4s;color:#70b8ff;background:rgba(96,168,240,0.18);border:2px solid #70b8ff;box-shadow:0 0 6px rgba(96,168,240,0.3);opacity:1;animation:pulse 1.5s ease-in-out infinite;`;
+      dcaPill.textContent = `📅 DCA ${dueList.length}`;
+      dcaPill.title = dueList.length === 1
+        ? `DCA due: ${dueList[0].sym} — click to confirm Buy`
+        : `${dueList.length} DCAs due — click to confirm the first`;
+    }
+  }
+}
+
+// ─── DCA PILL CLICK HANDLER (v47.87) ─────────────────────────────────────────
+function _dcaPillClick() {
+  const due = _dcaDueList();
+  if(!due.length) return;
+  openDcaConfirmModal(due[0].id);
 }
 
 // ─── YIELD LOG ───────────────────────────────────────────────────────────────
@@ -7820,8 +8158,32 @@ function toggleQuickYield(id) {
         ...allWallets.filter(w => w !== topWallet),
         '💵 Cash',
       ];
+      // v47.94 Layer 2A: build chain-aware labels. For yield destinations,
+      // showing the on-network row's qty for tokA helps the user verify the
+      // right chain context before confirming. The selected VALUE is still
+      // just the wallet name — chain disambiguation happens downstream via
+      // mergeYieldIntoHoldings(..., p.network).
+      const netL = (p.network || '').toLowerCase();
+      const symU = (p.tokASym || '').toUpperCase();
+      const _qyLabel = (w, i) => {
+        if(w === '💵 Cash') return w;
+        const isTop = i === 0 && topWallet;
+        const topSuffix = isTop ? (p.defaultWallet ? ' ✦ saved default' : ' ✦ auto-detected') : '';
+        if(!netL || !symU) return w + topSuffix;
+        const onChain = DB.holdings.find(h =>
+          (h.sym || '').toUpperCase() === symU &&
+          (h.wallet || '').trim() === w &&
+          (h.chain || '').toLowerCase() === netL
+        );
+        if(onChain) {
+          const q = onChain.qty || 0;
+          const qStr = q >= 1 ? q.toFixed(4).replace(/\.?0+$/, '') : q.toFixed(8).replace(/\.?0+$/, '');
+          return `${w} (${p.network}: ${qStr} ${p.tokASym})${topSuffix}`;
+        }
+        return w + topSuffix;
+      };
       walletEl.innerHTML = options.map((w, i) =>
-        `<option value="${w}"${i===0?' selected':''}>${w}${i===0&&topWallet?(p.defaultWallet?' ✦ saved default':' ✦ auto-detected'):''}</option>`
+        `<option value="${w}"${i===0?' selected':''}>${_qyLabel(w, i)}</option>`
       ).join('');
       if(!topWallet && allWallets.length) walletEl.value = allWallets[0];
     }
@@ -7894,8 +8256,12 @@ function quickSaveAll(poolId, tokAId, tokASym, tokBId, tokBSym, rewardId, reward
         mergeCashIntoHoldings(usd, '');
         logTransaction({ date:harvestDate, type:'Yield Harvest', sym:'USDC', qty:usd, price:1, total:usd, from:`Pool: ${p.name}`, to:'Cash', notes:`${tokASym} yield → cash` });
       } else if(wallet) {
-        mergeYieldIntoHoldings(tokASym, tokAId, ayld, usd, wallet);
-        logTransaction({ date:harvestDate, type:'Yield Harvest', sym:tokASym, qty:ayld, price:ayld>0?usd/ayld:0, total:usd, from:`Pool: ${p.name}`, to:wallet, notes:`Yield from ${p.name}` });
+        // v47.94: pass p.network so yield lands on the pool's chain row, not whichever
+        // (sym, wallet) row happens to appear first in DB.holdings. Also include the
+        // chain in the txn notes so users can verify routing after the fact.
+        mergeYieldIntoHoldings(tokASym, tokAId, ayld, usd, wallet, p.network);
+        const _chainTag = p.network ? ` (${p.network})` : '';
+        logTransaction({ date:harvestDate, type:'Yield Harvest', sym:tokASym, qty:ayld, price:ayld>0?usd/ayld:0, total:usd, from:`Pool: ${p.name}`, to:`${wallet}${_chainTag}`, notes:`Yield from ${p.name}${_chainTag}` });
       }
     }
 
@@ -7909,8 +8275,10 @@ function quickSaveAll(poolId, tokAId, tokASym, tokBId, tokBSym, rewardId, reward
         mergeCashIntoHoldings(usd, '');
         logTransaction({ date:harvestDate, type:'Yield Harvest', sym:'USDC', qty:usd, price:1, total:usd, from:`Pool: ${p.name}`, to:'Cash', notes:`${tokBSym} yield → cash` });
       } else if(wallet) {
-        mergeYieldIntoHoldings(tokBSym, tokBId, byld, usd, wallet);
-        logTransaction({ date:harvestDate, type:'Yield Harvest', sym:tokBSym, qty:byld, price:byld>0?usd/byld:0, total:usd, from:`Pool: ${p.name}`, to:wallet, notes:`Yield from ${p.name}` });
+        // v47.94: pass p.network (same rationale as Token A above)
+        mergeYieldIntoHoldings(tokBSym, tokBId, byld, usd, wallet, p.network);
+        const _chainTagB = p.network ? ` (${p.network})` : '';
+        logTransaction({ date:harvestDate, type:'Yield Harvest', sym:tokBSym, qty:byld, price:byld>0?usd/byld:0, total:usd, from:`Pool: ${p.name}`, to:`${wallet}${_chainTagB}`, notes:`Yield from ${p.name}${_chainTagB}` });
       }
     }
 
@@ -7925,8 +8293,10 @@ function quickSaveAll(poolId, tokAId, tokASym, tokBId, tokBSym, rewardId, reward
           mergeCashIntoHoldings(usd, '');
           logTransaction({ date:harvestDate, type:'Yield Harvest', sym:'USDC', qty:usd, price:1, total:usd, from:`Pool: ${p.name}`, to:'Cash', notes:`${rewardSym} reward → cash` });
         } else if(wallet) {
-          mergeYieldIntoHoldings(rewardSym, rewardId, rqty, usd, wallet);
-          logTransaction({ date:harvestDate, type:'Yield Harvest', sym:rewardSym, qty:rqty, price:rqty>0?usd/rqty:0, total:usd, from:`Pool: ${p.name}`, to:wallet, notes:`Reward from ${p.name}` });
+          // v47.94: pass p.network — rewards land on the pool's chain like yield
+          mergeYieldIntoHoldings(rewardSym, rewardId, rqty, usd, wallet, p.network);
+          const _chainTagR = p.network ? ` (${p.network})` : '';
+          logTransaction({ date:harvestDate, type:'Yield Harvest', sym:rewardSym, qty:rqty, price:rqty>0?usd/rqty:0, total:usd, from:`Pool: ${p.name}`, to:`${wallet}${_chainTagR}`, notes:`Reward from ${p.name}${_chainTagR}` });
         }
       }
     }
@@ -8106,14 +8476,19 @@ function savePool(id) {
   }
   if(!p.name) { toast('Pool name required',true); return; }
 
-  // v47.63: deposit-side validation — for NEW pools, check each source row
+  // v47.63 / v47.88: deposit-side validation — for NEW pools, check each source row
   // against Holdings before anything is persisted. Abort cleanly on shortage.
   if(!resolvedId) {
-    const fundingRows = Array.from(document.querySelectorAll('#pm-sources > div')).map(row => ({
-      sym:    row.querySelector('.pm-src-sym')?.value,
-      qty:    row.querySelector('.pm-src-qty')?.value,
-      wallet: row.querySelector('.pm-src-wallet')?.value,
-    }));
+    const fundingRows = Array.from(document.querySelectorAll('#pm-sources > div')).map(row => {
+      const enc = row.querySelector('.pm-src-wallet')?.value;
+      const dec = _decWalletChain(enc);
+      return {
+        sym:    row.querySelector('.pm-src-sym')?.value,
+        qty:    row.querySelector('.pm-src-qty')?.value,
+        wallet: dec.wallet,
+        chain:  dec.chain,
+      };
+    });
     const check = _validateFundingRows(fundingRows);
     if(!check.ok) {
       toast(`Cannot fund pool: ${check.errors.join(' · ')}`, true);
@@ -8126,24 +8501,23 @@ function savePool(id) {
     DB.pools[i] = p;
   } else {
     DB.pools.push(p);
-    // Deduct funded-from sources from Holdings (new pool only)
     document.querySelectorAll('#pm-sources > div').forEach(row => {
       const sym    = (row.querySelector('.pm-src-sym')?.value||'').trim().toUpperCase();
       const qty    = +row.querySelector('.pm-src-qty')?.value || 0;
-      const wallet = (row.querySelector('.pm-src-wallet')?.value||'').trim();
+      const enc    = (row.querySelector('.pm-src-wallet')?.value||'').trim();
+      const { wallet, chain } = _decWalletChain(enc);
       if(!sym || !qty) return;
-      const holding = DB.holdings.find(h =>
-        h.sym.toUpperCase() === sym &&
-        (!wallet || (h.wallet||'').toLowerCase() === wallet.toLowerCase())
-      );
+      const res = _resolveFundingHolding(sym, wallet, chain, qty);
+      const holding = res.holding;
       if(holding) {
         holding.qty = Math.max(0, (holding.qty||0) - qty);
+        const chainLabel = holding.chain ? ` (${holding.chain})` : '';
         logTransaction({ date: p.entryDate || today(), type: 'Transfer', sym,
           qty, price: null, total: null,
-          from: holding.wallet || 'Holdings', to: `Pool: ${p.name}`,
+          from: `${holding.wallet || 'Holdings'}${chainLabel}`, to: `Pool: ${p.name}`,
           notes: `Funded pool — ${qty} ${sym} → ${p.name}` });
       } else {
-        toast(`⚠ ${qty} ${sym} — no matching holding found`, true);
+        toast(`⚠ ${qty} ${sym} — ${res.error || 'no matching holding found'}`, true);
       }
     });
   }
@@ -8253,12 +8627,24 @@ function _openRebalNewLegModal(poolId) {
   document.getElementById('rnl-entry').dataset.autofilled = '';
   document.getElementById('rnl-rangeLow').value  = '';
   document.getElementById('rnl-rangeHigh').value = '';
-  _rnlPopulateWalletOptions(p.tokASym, 'rnl-srcA-wallet');
-  _rnlPopulateWalletOptions(p.tokBSym, 'rnl-srcB-wallet');
+  _rnlPopulateWalletOptions(p.tokASym, 'rnl-srcA-wallet', p.network);
+  _rnlPopulateWalletOptions(p.tokBSym, 'rnl-srcB-wallet', p.network);
   document.getElementById('rebalNewLegModal').classList.add('open');
 }
 
-function _rnlPopulateWalletOptions(sym, selectId) {
+// v47.93 — Populate the rebalance new-leg source-wallet dropdowns with chain-
+// aware defaulting. Previously, this listed every matching (wallet, chain)
+// row in DB.holdings order, so the dropdown defaulted to whichever chain
+// happened to appear first in DB.holdings — usually NOT the pool's own
+// network. That silently routed deductions to the wrong chain and produced
+// the "Not enough USDC in Ledger X1 / Ethereum" error reported by the user
+// even though USDC on Base was sufficient.
+//
+// New behavior: rows whose chain matches `poolNetwork` are listed first (and
+// the first one is auto-selected). Other-chain rows remain available but the
+// user has to explicitly pick them, with a clear chain badge alongside.
+// The ✦ marker visually signals which option is the pool's own network.
+function _rnlPopulateWalletOptions(sym, selectId, poolNetwork) {
   const select = document.getElementById(selectId);
   if(!select) return;
   select.innerHTML = '';
@@ -8270,11 +8656,33 @@ function _rnlPopulateWalletOptions(sym, selectId) {
     select.appendChild(opt);
     return;
   }
-  for(const h of matches) {
+  // v47.93: sort so rows on the pool's network bubble to the top of the
+  // dropdown. Within each group (on-network vs other), preserve DB.holdings
+  // order so users see a stable list across openings. Sort is *stable* in
+  // modern JS engines, so equal-priority rows keep their original order.
+  const netL = (poolNetwork || '').toLowerCase();
+  const sorted = netL
+    ? [...matches].sort((a, b) => {
+        const aMatch = (a.chain || '').toLowerCase() === netL ? 0 : 1;
+        const bMatch = (b.chain || '').toLowerCase() === netL ? 0 : 1;
+        return aMatch - bMatch;
+      })
+    : matches;
+  // v47.88: each row's identity is (wallet, chain). Encode chain into the
+  // option value so the user's pick disambiguates same-wallet-different-chain.
+  for(let i = 0; i < sorted.length; i++) {
+    const h = sorted[i];
     const qStr = h.qty >= 1 ? h.qty.toFixed(4).replace(/\.?0+$/, '') : h.qty.toFixed(8).replace(/\.?0+$/, '');
     const opt = document.createElement('option');
-    opt.value = h.wallet || '';
-    opt.textContent = `${h.wallet || '(no wallet)'} — ${qStr} ${sym}`;
+    opt.value = _encWalletChain(h.wallet, h.chain);
+    const chainPart = h.chain ? ` / ${h.chain}` : '';
+    // v47.93: mark on-network rows with ✦ so the user sees at-a-glance which
+    // chain matches the pool. Helps catch the "wallet name right, chain wrong"
+    // pitfall the user described.
+    const onNetwork = netL && (h.chain || '').toLowerCase() === netL;
+    const marker = onNetwork ? ' ✦' : '';
+    opt.textContent = `${h.wallet || '(no wallet)'}${chainPart} — ${qStr} ${sym}${marker}`;
+    if(i === 0) opt.selected = true;
     select.appendChild(opt);
   }
 }
@@ -8314,38 +8722,44 @@ function _rnlSave() {
   const entry = +document.getElementById('rnl-entry').value || 0;
   const rLow  = +document.getElementById('rnl-rangeLow').value || null;
   const rHigh = +document.getElementById('rnl-rangeHigh').value || null;
-  const walletA = (document.getElementById('rnl-srcA-wallet').value || '').trim();
-  const walletB = (document.getElementById('rnl-srcB-wallet').value || '').trim();
+  // v47.88: dropdown encodes "wallet::chain" — decode to (wallet, chain)
+  const encA = (document.getElementById('rnl-srcA-wallet').value || '').trim();
+  const encB = (document.getElementById('rnl-srcB-wallet').value || '').trim();
+  const srcA = _decWalletChain(encA);
+  const srcB = _decWalletChain(encB);
+  const walletA = srcA.wallet;
+  const walletB = srcB.wallet;
+  const chainA  = srcA.chain;
+  const chainB  = srcB.chain;
 
   if(qA <= 0 && qB <= 0) { toast('Enter a qty for at least one token', true); return; }
   if(entry <= 0) { toast('Entry $ value is required', true); return; }
 
   const check = _validateFundingRows([
-    { sym: p.tokASym, qty: qA, wallet: walletA },
-    { sym: p.tokBSym, qty: qB, wallet: walletB },
+    { sym: p.tokASym, qty: qA, wallet: walletA, chain: chainA },
+    { sym: p.tokBSym, qty: qB, wallet: walletB, chain: chainB },
   ]);
   if(!check.ok) {
     toast(`Cannot deposit new leg: ${check.errors.join(' · ')}`, true);
     return;
   }
 
-  const deduct = (sym, qty, wallet) => {
+  const deduct = (sym, qty, wallet, chain) => {
     if(!sym || qty <= 0 || !wallet) return;
-    const holding = DB.holdings.find(h =>
-      (h.sym||'').toUpperCase() === sym.toUpperCase() &&
-      (h.wallet||'').toLowerCase() === wallet.toLowerCase()
-    );
-    if(!holding) return;
+    const res = _resolveFundingHolding(sym, wallet, chain, qty);
+    if(!res.holding) return;
+    const holding = res.holding;
     holding.qty = cleanQty(Math.max(0, (holding.qty||0) - qty));
+    const chainLabel = holding.chain ? ` (${holding.chain})` : '';
     logTransaction({
       date: today(), type: 'Rebalance New Leg', sym,
       qty, price: getPrice(holding.geckoId) || null, total: null,
-      from: holding.wallet || 'Holdings', to: `Pool: ${p.name}`,
+      from: `${holding.wallet || 'Holdings'}${chainLabel}`, to: `Pool: ${p.name}`,
       notes: `Rebalance new leg — ${qty} ${sym} → ${p.name}`,
     });
   };
-  deduct(p.tokASym, qA, walletA);
-  deduct(p.tokBSym, qB, walletB);
+  deduct(p.tokASym, qA, walletA, chainA);
+  deduct(p.tokBSym, qB, walletB, chainB);
 
   p.tokAQtyEntry = qA;
   p.tokAQty      = qA;
@@ -8496,11 +8910,44 @@ function acInitFundedFrom(p) {
     ...allWallets.filter(w=>w!==topWallet),
     '— Skip / External —',
   ];
-  const opts = walletList.map((w,i) =>
-    `<option value="${w}"${i===0?' selected':''}>${w}${i===0&&topWallet?' ✦':''}${w==='— Skip / External —'?'':''}</option>`
-  ).join('');
-  document.getElementById('ac-fund-wallet').innerHTML = opts;
-  document.getElementById('ac-fund-wallet-b').innerHTML = opts;
+  // v47.94 Layer 2A: build chain-aware wallet labels. Show the on-network qty
+  // for tokA so the user sees at a glance whether the right chain has enough.
+  // The dropdown value remains the wallet name (downstream contract preserved).
+  // We pick tokA for the qty hint since Add Capital is typically funded from
+  // the asset paired with the pool's primary token; for tokB a separate
+  // wallet field exists.
+  const netL = (p.network || '').toLowerCase();
+  const _acLabel = (w, sym) => {
+    if(!w || w === '— Skip / External —' || !sym) return w;
+    const symU = (sym || '').toUpperCase();
+    const onChain = netL
+      ? DB.holdings.find(h =>
+          (h.sym || '').toUpperCase() === symU &&
+          (h.wallet || '').trim() === w &&
+          (h.chain || '').toLowerCase() === netL
+        )
+      : null;
+    const onChainQty = onChain ? (onChain.qty || 0) : 0;
+    if(onChain) {
+      const qStr = onChainQty >= 1
+        ? onChainQty.toFixed(4).replace(/\.?0+$/, '')
+        : onChainQty.toFixed(8).replace(/\.?0+$/, '');
+      return `${w} — ${qStr} ${sym} ✦`;
+    }
+    return w;
+  };
+  const optsA = walletList.map((w,i) => {
+    const isTop = i === 0 && topWallet && w !== '— Skip / External —';
+    const label = _acLabel(w, p.tokASym) + (isTop && !_acLabel(w, p.tokASym).includes('✦') ? ' ✦' : '');
+    return `<option value="${w}"${i===0?' selected':''}>${label}</option>`;
+  }).join('');
+  const optsB = walletList.map((w,i) => {
+    const isTop = i === 0 && topWallet && w !== '— Skip / External —';
+    const label = _acLabel(w, p.tokBSym) + (isTop && !_acLabel(w, p.tokBSym).includes('✦') ? ' ✦' : '');
+    return `<option value="${w}"${i===0?' selected':''}>${label}</option>`;
+  }).join('');
+  document.getElementById('ac-fund-wallet').innerHTML = optsA;
+  document.getElementById('ac-fund-wallet-b').innerHTML = optsB;
   // Labels
   document.getElementById('ac-fund-tokA-label').textContent = (p.tokASym||'Token A') + ' qty leaving wallet';
   document.getElementById('ac-fund-tokB-label').textContent = (p.tokBSym||'Token B') + ' qty leaving wallet';
@@ -8716,8 +9163,10 @@ function saveAddCapital() {
       ? (document.getElementById('ac-fund-wallet-b')?.value||'').trim()
       : primaryWallet;
     const validationRows = [
-      { sym: p.tokASym, qty: +document.getElementById('ac-fund-tokA-qty')?.value||0, wallet: primaryWallet },
-      { sym: p.tokBSym, qty: +document.getElementById('ac-fund-tokB-qty')?.value||0, wallet: bWalletOverride },
+      // v47.94: include the pool's network so validation knows to check the
+      // correct chain row's qty, not whichever (sym, wallet) row appears first
+      { sym: p.tokASym, qty: +document.getElementById('ac-fund-tokA-qty')?.value||0, wallet: primaryWallet,   chain: p.network || '' },
+      { sym: p.tokBSym, qty: +document.getElementById('ac-fund-tokB-qty')?.value||0, wallet: bWalletOverride, chain: p.network || '' },
     ].filter(r => r.wallet !== skip);
     const check = _validateFundingRows(validationRows);
     if(!check.ok) {
@@ -8781,23 +9230,26 @@ function saveAddCapital() {
 
   fundEntries.forEach(({sym, qty, wallet}) => {
     if(!sym || !qty || !wallet || wallet === skip) return;
-    const holding = DB.holdings.find(h =>
-      h.sym.toUpperCase() === sym.toUpperCase() &&
-      (!wallet || (h.wallet||'').toLowerCase() === wallet.toLowerCase())
-    );
+    // v47.88: resolver handles multi-chain wallets — picks the right chain row
+    // v47.94: pass p.network so the resolver prefers the pool's chain when
+    // multiple chain rows exist. Without this, the resolver requires the user
+    // to consolidate or specify a chain manually for multi-chain wallets.
+    const res = _resolveFundingHolding(sym, wallet, p.network || '', qty);
+    const holding = res.holding;
     if(holding) {
       const before = holding.qty || 0;
       holding.qty = Math.max(0, before - qty);
-      deductions.push(`${qty} ${sym} from ${holding.wallet||'Holdings'} (${before.toFixed(4)} → ${holding.qty.toFixed(4)})`);
+      const chainLabel = holding.chain ? `/${holding.chain}` : '';
+      deductions.push(`${qty} ${sym} from ${holding.wallet||'Holdings'}${chainLabel} (${before.toFixed(4)} → ${holding.qty.toFixed(4)})`);
       logTransaction({
         date: addDate, type: 'Transfer', sym,
         qty, price: null, total: null,
-        from: holding.wallet || 'Holdings',
+        from: `${holding.wallet || 'Holdings'}${holding.chain ? ` (${holding.chain})` : ''}`,
         to: `Pool: ${p.name}`,
         notes: `Funded pool — ${qty} ${sym} → ${p.name}`,
       });
     } else {
-      deductions.push(`⚠ ${qty} ${sym} — no matching holding found in ${wallet}`);
+      deductions.push(`⚠ ${qty} ${sym} — ${res.error || `no matching holding found in ${wallet}`}`);
     }
   });
 
@@ -8821,19 +9273,61 @@ function openHarvestModal(poolId) {
   if(row) row.scrollIntoView({ behavior:'smooth', block:'nearest' });
 }
 // ─── CLOSE / REBALANCE MODAL ─────────────────────────────────────────────────
-function mergeYieldIntoHoldings(sym, geckoId, qty, usd, wallet) {
-  // Price per token at harvest = usd / qty (this becomes new cost basis for harvested tokens)
+// v47.94: mergeYieldIntoHoldings now takes a `chain` parameter so yield from a
+// Base pool can never silently land on the Ethereum row of the same symbol.
+// Previously the function matched on (sym, wallet) only — chain-blind — which
+// produced a slow, ongoing leak: every yield harvest from a multi-chain wallet
+// risked routing tokens to whichever (sym, wallet) row appeared first in
+// DB.holdings, regardless of the pool's actual network.
+//
+// New behavior:
+//   1. If chain is provided, prefer strict (sym, wallet, chain) match
+//   2. Else (legacy callers passing no chain), fall back to (sym, wallet)
+//   3. If no match exists, create a NEW row on the caller's chain
+//
+// All current callers in quickSaveAll have been updated to pass p.network.
+function mergeYieldIntoHoldings(sym, geckoId, qty, usd, wallet, chain) {
+  // Price per token at harvest = usd / qty (becomes basis for harvested tokens)
   const harvestPrice = (qty > 0 && usd > 0) ? usd / qty : 0;
-  // Find matching holding: same symbol AND same wallet (if wallet specified), or any matching symbol
+  const symU    = (sym || '').toUpperCase();
+  const walletL = (wallet || '').toLowerCase();
+  const chainL  = (chain || '').toLowerCase();
+
+  // Strict (sym, wallet, chain) match when chain is provided.
   let match = null;
   if(wallet) {
-    match = DB.holdings.find(h => h.sym === sym && h.wallet === wallet);
+    if(chain) {
+      match = DB.holdings.find(h =>
+        (h.sym || '').toUpperCase() === symU &&
+        (h.wallet || '').toLowerCase() === walletL &&
+        (h.chain || '').toLowerCase() === chainL
+      );
+      // Legacy-data fallback: row exists at (sym, wallet) with no chain set yet —
+      // backfill the chain on merge rather than create a duplicate row.
+      if(!match) {
+        match = DB.holdings.find(h =>
+          (h.sym || '').toUpperCase() === symU &&
+          (h.wallet || '').toLowerCase() === walletL &&
+          !(h.chain || '').trim()
+        );
+        if(match) match.chain = chain;
+      }
+    } else {
+      // No chain specified by caller — match on (sym, wallet) only.
+      // This is the old behavior; we keep it for backward compat with any
+      // caller that doesn't yet pass chain. Such calls should be migrated.
+      match = DB.holdings.find(h =>
+        (h.sym || '').toUpperCase() === symU &&
+        (h.wallet || '').toLowerCase() === walletL
+      );
+    }
+  } else {
+    // No wallet specified — fall back to first sym match (very legacy).
+    match = DB.holdings.find(h => (h.sym || '').toUpperCase() === symU);
   }
-  if(!match) {
-    match = DB.holdings.find(h => h.sym === sym);
-  }
+
   if(match) {
-    // Weighted average cost: (existing cost basis total + new cost basis total) / total qty
+    // Weighted average cost
     const existingTotal = (match.avgCost || 0) * (match.qty || 0);
     const newTotal = harvestPrice * qty;
     const newQty = (match.qty || 0) + qty;
@@ -8841,10 +9335,11 @@ function mergeYieldIntoHoldings(sym, geckoId, qty, usd, wallet) {
     match.avgCost = newQty > 0 ? (existingTotal + newTotal) / newQty : harvestPrice;
     if(geckoId && !match.geckoId) match.geckoId = geckoId;
   } else {
-    // No matching holding — create one
+    // No matching holding — create one. Critically, use the caller's chain so
+    // yield from a Base pool creates a Base row, not a chainless ghost row.
     DB.holdings.push({
-      id: uid(), sym, geckoId: geckoId||'',
-      cat: '', chain: '', wallet: wallet||'',
+      id: uid(), sym, geckoId: geckoId || '',
+      cat: '', chain: chain || '', wallet: wallet || '',
       avgCost: harvestPrice, qty,
     });
   }
@@ -9110,6 +9605,29 @@ function returnPoolAssetsToHoldings(sym, geckoId, qty, wallet, fallbackBasis, ch
     if(typeof _v4785_logRowCreation === 'function') {
       _v4785_logRowCreation(sym, qty, wallet, chain, fallbackBasis || 0);
     }
+
+    // v47.94.1 — close-path row-creation warning. Pool tokens normally
+    // return to the row they were funded from at entry, so a new row here
+    // means the user picked a destination (wallet, chain) that wasn't the
+    // funding location. Legitimate cross-chain return — but worth flagging.
+    try {
+      const _chainTag = chain ? ` / ${chain}` : '';
+      const _walletLabel = wallet || '(no wallet)';
+      toast(`⚠ Created new ${sym}${_chainTag} row in ${_walletLabel} — verify intentional`, true);
+      if(typeof logTransaction === 'function') {
+        logTransaction({
+          date: today(),
+          type: 'Note',
+          sym,
+          qty,
+          price: fallbackBasis || 0,
+          total: (fallbackBasis || 0) * qty,
+          from: 'Pool/Vault Close',
+          to: `${_walletLabel}${chain ? ' ('+chain+')' : ''}`,
+          notes: `New row created on close — ${sym}${_chainTag} in ${_walletLabel} did not exist before. Pool tokens normally return to the row they were funded from; verify this was intentional.`,
+        });
+      }
+    } catch(_) {}
   }
 }
 
@@ -9166,6 +9684,27 @@ function _returnTokenWithOverflow(sym, geckoId, entryQty, returnedQty, wallet, e
       if(typeof _v4785_logRowCreation === 'function') {
         _v4785_logRowCreation(sym, overflowQty, wallet, network, marketPrice || 0);
       }
+
+      // v47.94.1 — close-path row-creation warning (overflow path mirror).
+      // See full comment in returnPoolAssetsToHoldings's create branch above.
+      try {
+        const _chainTag = network ? ` / ${network}` : '';
+        const _walletLabel = wallet || '(no wallet)';
+        toast(`⚠ Created new ${sym}${_chainTag} row in ${_walletLabel} — verify intentional`, true);
+        if(typeof logTransaction === 'function') {
+          logTransaction({
+            date: today(),
+            type: 'Note',
+            sym,
+            qty: overflowQty,
+            price: marketPrice || 0,
+            total: (marketPrice || 0) * overflowQty,
+            from: 'Pool/Vault Close',
+            to: `${_walletLabel}${network ? ' ('+network+')' : ''}`,
+            notes: `New row created on close — ${sym}${_chainTag} in ${_walletLabel} did not exist before. Pool tokens normally return to the row they were funded from; verify this was intentional.`,
+          });
+        }
+      } catch(_) {}
     }
   }
 }
@@ -9227,8 +9766,15 @@ function openCloseModal(poolId) {
     _smartWallet = Object.entries(wCount).sort((a,b)=>b[1]-a[1])[0]?.[0] || _allWallets[0] || '';
   }
   // v47.66: enrich wallet option labels with current Holdings balance per token
+  // v47.94 Layer 2A: the qty shown in each option is now CHAIN-AWARE.
+  // Previously the label looked up the first (sym, wallet) row regardless of
+  // chain — could show "Ledger X1 — 140 USDC" when the pool's chain (Base)
+  // had 1221 USDC and the 140 was Ethereum. Now: prefer (sym, wallet, chain=p.network)
+  // qty. If that row doesn't exist but other chains do, append "(+X off-chain)"
+  // so the user knows. Selected value remains the wallet name.
   const _buildWalletOptsFor = (sym) => {
     const symU = (sym || '').toUpperCase();
+    const netL = (p.network || '').toLowerCase();
     const orderedWallets = [
       ...(_smartWallet ? [_smartWallet] : []),
       ..._allWallets.filter(w => w !== _smartWallet),
@@ -9239,14 +9785,33 @@ function openCloseModal(poolId) {
       const isSmart = i === 0 && _smartWallet && !isSkip;
       let label = w + (isSmart ? ' ✦' : '');
       if(!isSkip && symU) {
-        const holding = DB.holdings.find(h =>
-          (h.sym || '').toUpperCase() === symU &&
-          (h.wallet || '').trim() === w
-        );
-        if(holding) {
-          const q = holding.qty || 0;
-          const qStr = q >= 1 ? q.toFixed(4).replace(/\.?0+$/, '') : q.toFixed(8).replace(/\.?0+$/, '');
-          label += ` — ${qStr} ${sym}`;
+        const onChain = netL
+          ? DB.holdings.find(h =>
+              (h.sym || '').toUpperCase() === symU &&
+              (h.wallet || '').trim() === w &&
+              (h.chain || '').toLowerCase() === netL
+            )
+          : null;
+        const onChainQty = onChain ? (onChain.qty || 0) : 0;
+        const offChainQty = DB.holdings
+          .filter(h =>
+            (h.sym || '').toUpperCase() === symU &&
+            (h.wallet || '').trim() === w &&
+            (h.chain || '').toLowerCase() !== netL
+          )
+          .reduce((s, h) => s + (h.qty || 0), 0);
+        if(onChain || offChainQty > 0) {
+          const qStr = onChainQty >= 1
+            ? onChainQty.toFixed(4).replace(/\.?0+$/, '')
+            : onChainQty.toFixed(8).replace(/\.?0+$/, '');
+          const chainTag = p.network ? ` / ${p.network}` : '';
+          label += ` —${chainTag} ${qStr} ${sym}`;
+          if(offChainQty > 0) {
+            const offStr = offChainQty >= 1
+              ? offChainQty.toFixed(4).replace(/\.?0+$/, '')
+              : offChainQty.toFixed(8).replace(/\.?0+$/, '');
+            label += ` <small>(+${offStr} off-chain)</small>`;
+          }
         } else {
           label += ` — 0 ${sym}`;
         }
@@ -10137,11 +10702,14 @@ function doClose() {
     }
   } else if(dest === 'cash_internal') {
     const exitVal = poolCurrentValue(p) || 0;
-    mergeCashIntoHoldings(exitVal, walletA !== skip ? walletA : '');
+    // v47.94: pass p.network so USDC proceeds land on the pool's chain row,
+    // not whichever wallet+USDC row appears first in DB.
+    mergeCashIntoHoldings(exitVal, walletA !== skip ? walletA : '', p.network);
+    const _ccTag = p.network ? ` (${p.network})` : '';
     const tid = logTransaction({ date:closeDate, type:'Pool Close', sym:p.name,
       qty:null, price:null, total:exitVal,
-      from:`Pool: ${p.name}`, to: walletA !== skip ? walletA : 'Cash',
-      notes:`Pool closed — $${exitVal.toFixed(2)} proceeds → cash Holdings` });
+      from:`Pool: ${p.name}`, to: walletA !== skip ? `${walletA}${_ccTag}` : 'Cash',
+      notes:`Pool closed — $${exitVal.toFixed(2)} proceeds → cash Holdings${_ccTag}` });
     if(tid) _closeTxnIds.push(tid);
   } else {
     const exitVal = poolCurrentValue(p) || 0;
@@ -10442,25 +11010,41 @@ function saveVault() {
   };
   if(editingVaultId) { const i=DB.vaults.findIndex(x=>x.id===editingVaultId); DB.vaults[i]=obj; }
   else {
+    // v47.88: pre-validate using resolver so a multi-chain shortage doesn't
+    // silently zero out the wrong chain row.
+    const fundingRows = Array.from(document.querySelectorAll('#vm-sources > div')).map(row => {
+      const enc = row.querySelector('.vm-src-wallet')?.value;
+      const dec = _decWalletChain(enc);
+      return {
+        sym:    row.querySelector('.vm-src-sym')?.value,
+        qty:    row.querySelector('.vm-src-qty')?.value,
+        wallet: dec.wallet,
+        chain:  dec.chain,
+      };
+    });
+    const check = _validateFundingRows(fundingRows);
+    if(!check.ok) {
+      toast(`Cannot fund vault: ${check.errors.join(' · ')}`, true);
+      return;
+    }
     DB.vaults.push(obj);
-    // Deduct funded-from sources from Holdings (new vault only)
     document.querySelectorAll('#vm-sources > div').forEach(row => {
       const sym    = (row.querySelector('.vm-src-sym')?.value||'').trim().toUpperCase();
       const qty    = +row.querySelector('.vm-src-qty')?.value || 0;
-      const wallet = (row.querySelector('.vm-src-wallet')?.value||'').trim();
+      const enc    = (row.querySelector('.vm-src-wallet')?.value||'').trim();
+      const { wallet, chain } = _decWalletChain(enc);
       if(!sym || !qty) return;
-      const holding = DB.holdings.find(h =>
-        h.sym.toUpperCase() === sym &&
-        (!wallet || (h.wallet||'').toLowerCase() === wallet.toLowerCase())
-      );
+      const res = _resolveFundingHolding(sym, wallet, chain, qty);
+      const holding = res.holding;
       if(holding) {
         holding.qty = Math.max(0, (holding.qty||0) - qty);
+        const chainLabel = holding.chain ? ` (${holding.chain})` : '';
         logTransaction({ date: obj.entryDate || today(), type: 'Transfer', sym,
           qty, price: null, total: null,
-          from: holding.wallet || 'Holdings', to: `Vault: ${obj.name}`,
+          from: `${holding.wallet || 'Holdings'}${chainLabel}`, to: `Vault: ${obj.name}`,
           notes: `Funded vault — ${qty} ${sym} → ${obj.name}` });
       } else {
-        toast(`⚠ ${qty} ${sym} — no matching holding found`, true);
+        toast(`⚠ ${qty} ${sym} — ${res.error || 'no matching holding found'}`, true);
       }
     });
   }
@@ -10488,11 +11072,13 @@ function closeVault() {
     toast(`Vault closed — ${v2.qty} ${v2.tokSym} returned to Holdings`);
   } else if(dest === 'cash_internal') {
     // Add proceeds to stablecoin Holdings row
-    mergeCashIntoHoldings(exitVal, wallet);
+    // v47.94: pass v2.network so USDC lands on the vault's chain row
+    mergeCashIntoHoldings(exitVal, wallet, v2.network);
+    const _vcTag = v2.network ? ` (${v2.network})` : '';
     logTransaction({ date:today(), type:'Vault Close', sym:'USDC',
       qty:exitVal, price:1, total:exitVal,
-      from:`Vault: ${v2.name}`, to:wallet||'Cash',
-      notes: notes || `Vault closed — $${exitVal.toFixed(2)} → cash Holdings` });
+      from:`Vault: ${v2.name}`, to:wallet ? `${wallet}${_vcTag}` : 'Cash',
+      notes: notes || `Vault closed — $${exitVal.toFixed(2)} → cash Holdings${_vcTag}` });
     toast(`Vault closed — $${exitVal.toFixed(2)} added to cash Holdings`);
   } else {
     // External — just log it, no Holdings change
@@ -10539,6 +11125,190 @@ function deleteVault(id) {
   persist(); renderVaults();
 }
 
+// ─── MAX FILL HELPERS (v47.87) ──────────────────────────────────────────────
+// Fill a Qty input with the source holding's full available quantity.
+// Used by Transfer / Sell / Swap fields in the unified holding modal, and by
+// the Close/Rebalance return inputs.
+function _hmFillMax(inputId) {
+  const editId = document.getElementById('hm-edit-id')?.value;
+  if(!editId) { toast('No source holding — open from a row to use MAX', true); return; }
+  const h = DB.holdings.find(x => x.id === editId);
+  if(!h) { toast('Holding not found', true); return; }
+  const el = document.getElementById(inputId);
+  if(el) {
+    el.value = h.qty || 0;
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+}
+function _clFillMax(which) {
+  const poolId = document.getElementById('cl-idx')?.value;
+  const p = DB.pools.find(x => x.id === poolId);
+  if(!p) { toast('Pool not found', true); return; }
+  const qty = which === 'A' ? (p.tokAQty || 0) : (p.tokBQty || 0);
+  const el = document.getElementById(which === 'A' ? 'cl-ret-tokA' : 'cl-ret-tokB');
+  if(el) {
+    el.value = qty;
+    if(typeof clUpdateReturnUsd === 'function') clUpdateReturnUsd();
+  }
+}
+
+// ─── DCA ALERT FLOW (v47.87 / v47.89) ───────────────────────────────────────
+let _dcaActiveId = null;
+function openDcaConfirmModal(holdingId) {
+  const h = DB.holdings.find(x => x.id === holdingId);
+  if(!h || !h.dca) { toast('No DCA schedule on this holding', true); return; }
+  _dcaActiveId = holdingId;
+  document.getElementById('dca-holding-id').value = holdingId;
+  const live = getPrice(h.geckoId) || h.avgCost || 0;
+  document.getElementById('dca-amount').value = h.dca.amount || '';
+  document.getElementById('dca-price').value  = live || '';
+  const dueDate = h.dca.nextDue || today();
+
+  // v47.89: identify source row (where the Buy lands) and destination row.
+  const srcW = h.dca.sourceWallet || h.wallet || '';
+  const srcC = h.dca.sourceChain  || h.chain  || '';
+  const dstW = h.dca.destWallet || '';
+  const dstC = h.dca.destChain  || '';
+  const srcRow = _findHoldingExact(h.sym, srcW, srcC);
+  const dstRow = dstW ? _findHoldingExact(h.sym, dstW, dstC) : null;
+
+  const srcLine = `${srcW || '(no wallet)'}${srcC ? ' / '+srcC : ''}`;
+  const srcQty  = srcRow ? srcRow.qty : 0;
+
+  document.getElementById('dca-summary').innerHTML =
+    `<strong>${h.sym}</strong> — ${_freqLabel(h.dca.freq)} schedule · Due: ${dueDate}<br>` +
+    `<span style="color:var(--text3);font-size:11px;">Buy lands in: <strong style="color:var(--text2);">${srcLine}</strong> (current: ${srcQty} ${h.sym})</span>`;
+
+  const xferPanel = document.getElementById('dca-xfer-panel');
+  const xferCb    = document.getElementById('dca-xfer-on');
+  const xferDetail= document.getElementById('dca-xfer-detail');
+  const confirmBtn= document.getElementById('dca-confirm-btn');
+  const actionHint= document.getElementById('dca-action-hint');
+  if(dstW) {
+    xferPanel.style.display = '';
+    xferCb.checked = true;
+    const dstQty = dstRow ? dstRow.qty : 0;
+    const dstLine = `${dstW}${dstC ? ' / '+dstC : ''}`;
+    const dstRowNote = dstRow
+      ? `current: ${dstQty} ${h.sym}`
+      : `<span style="color:#f59e0b;">new row will be created on confirm</span>`;
+    xferDetail.innerHTML =
+      `<span style="color:#c084fc;">Transfer to:</span> <strong>${dstLine}</strong> &nbsp;<span style="color:var(--text3);font-size:10px;">(${dstRowNote})</span><br>` +
+      `<span style="color:var(--text3);font-size:10px;">Full Buy qty moves to cold storage. Cost basis carries over.</span>`;
+    confirmBtn.textContent = 'Confirm Buy + Transfer';
+    actionHint.textContent = 'Confirm logs a Buy at the source, then a Transfer to the destination. Uncheck "Include transfer this cycle" to do Buy-only.';
+    xferCb.onchange = () => {
+      confirmBtn.textContent = xferCb.checked ? 'Confirm Buy + Transfer' : 'Confirm Buy only';
+    };
+  } else {
+    xferPanel.style.display = 'none';
+    confirmBtn.textContent = 'Confirm Buy';
+    actionHint.textContent = 'Confirm logs a Buy transaction at the price above. Skip moves to the next cycle without buying.';
+  }
+
+  _dcaUpdatePreview();
+  document.getElementById('dcaConfirmModal').classList.add('open');
+}
+function _dcaUpdatePreview() {
+  const amt   = +document.getElementById('dca-amount')?.value || 0;
+  const price = +document.getElementById('dca-price')?.value  || 0;
+  const qty   = (price > 0) ? amt / price : 0;
+  const el = document.getElementById('dca-qty-preview');
+  if(el) el.textContent = qty > 0 ? qty.toFixed(qty < 1 ? 6 : 4) : '—';
+}
+function _dcaConfirm() {
+  const id = _dcaActiveId;
+  const h = DB.holdings.find(x => x.id === id);
+  if(!h || !h.dca) { toast('Holding or schedule not found', true); return; }
+  const amt   = +document.getElementById('dca-amount').value || 0;
+  const price = +document.getElementById('dca-price').value  || 0;
+  if(amt <= 0 || price <= 0) { toast('Amount and price required', true); return; }
+  const qty = amt / price;
+
+  // v47.89: Buy lands in the SOURCE row (not necessarily h itself).
+  const srcW = h.dca.sourceWallet || h.wallet || '';
+  const srcC = h.dca.sourceChain  || h.chain  || '';
+  let srcRow = _findHoldingExact(h.sym, srcW, srcC);
+  if(!srcRow) {
+    srcRow = {
+      id: uid(), sym: h.sym, geckoId: h.geckoId, cat: h.cat || '',
+      chain: srcC, wallet: srcW, avgCost: 0, qty: 0,
+    };
+    DB.holdings.push(srcRow);
+  }
+
+  // 1) BUY into source row, weighted avg cost
+  const newQtySrc = (srcRow.qty || 0) + qty;
+  srcRow.avgCost = newQtySrc > 0
+    ? (((srcRow.avgCost||0) * (srcRow.qty||0)) + (price * qty)) / newQtySrc
+    : price;
+  srcRow.qty = newQtySrc;
+  logTransaction({
+    date: today(), type: 'Buy', sym: h.sym, qty, price, total: amt,
+    from: 'Cash', to: `${srcW || 'Holdings'}${srcC ? ' ('+srcC+')' : ''}`,
+    notes: `DCA — ${_freqLabel(h.dca.freq)} schedule (confirmed)`,
+  });
+
+  // 2) Optional TRANSFER to destination row
+  const dstW = h.dca.destWallet || '';
+  const dstC = h.dca.destChain  || '';
+  const wantTransfer = !!dstW && document.getElementById('dca-xfer-on')?.checked;
+  let xferSummary = '';
+  if(wantTransfer) {
+    srcRow.qty = Math.max(0, (srcRow.qty||0) - qty);
+    let dstRow = _findHoldingExact(h.sym, dstW, dstC);
+    if(!dstRow) {
+      dstRow = {
+        id: uid(), sym: h.sym, geckoId: h.geckoId, cat: h.cat || '',
+        chain: dstC, wallet: dstW, avgCost: price, qty: 0,
+      };
+      DB.holdings.push(dstRow);
+    }
+    const prevQty = dstRow.qty || 0;
+    const prevAvg = dstRow.avgCost || 0;
+    const newQtyDst = prevQty + qty;
+    dstRow.avgCost = newQtyDst > 0
+      ? ((prevAvg * prevQty) + (price * qty)) / newQtyDst
+      : price;
+    dstRow.qty = newQtyDst;
+    logTransaction({
+      date: today(), type: 'Transfer', sym: h.sym,
+      qty, price: null, total: null,
+      from: `${srcW}${srcC ? ' ('+srcC+')' : ''}`,
+      to:   `${dstW}${dstC ? ' ('+dstC+')' : ''}`,
+      notes: `DCA auto-transfer — ${qty} ${h.sym} → long-term storage`,
+    });
+    xferSummary = ` then transferred to ${dstW}${dstC?'/'+dstC:''}`;
+  }
+
+  // 3) Advance the schedule
+  h.dca.nextDue = _dcaAddPeriod(h.dca.nextDue || today(), h.dca.freq);
+  _dcaActiveId = null;
+  persist();
+  closeModal('dcaConfirmModal');
+  renderHoldings();
+  renderHeader();
+  const qStr = qty.toFixed(qty < 1 ? 6 : 4);
+  toast(`DCA confirmed — ${qStr} ${h.sym} @ $${price.toFixed(4)}${xferSummary}. Next due ${h.dca.nextDue}.`);
+}
+function _dcaSkip() {
+  const id = _dcaActiveId;
+  const h = DB.holdings.find(x => x.id === id);
+  if(!h || !h.dca) { closeModal('dcaConfirmModal'); _dcaActiveId = null; return; }
+  if(!confirm(`Skip this DCA cycle for ${h.sym}?\n\nNo Buy will be logged. Next due will advance to the following cycle.`)) return;
+  h.dca.nextDue = _dcaAddPeriod(h.dca.nextDue || today(), h.dca.freq);
+  _dcaActiveId = null;
+  persist();
+  closeModal('dcaConfirmModal');
+  renderHeader();
+  toast(`DCA skipped — next due ${h.dca.nextDue}.`);
+}
+function _dcaSnooze() {
+  _dcaActiveId = null;
+  closeModal('dcaConfirmModal');
+  // No state change — the alert will fire again on next render
+}
+
 // ─── HOLDING MODAL ──────────────────────────────────────────────────────────
 // ─── UNIFIED HOLDING MODAL ───────────────────────────────────────────────────
 // mode: 'new' | 'edit' | 'buy' | 'sell' | 'swap'
@@ -10565,7 +11335,7 @@ function openHoldingModal(id=null, mode='new') {
   const ctxText = document.getElementById('hm-ctx-text');
   if(h && mode!=='new' && mode!=='edit') {
     ctxBar.style.display = '';
-    ctxText.innerHTML = `<strong>${h.sym}</strong> &nbsp;·&nbsp; Wallet: <strong>${h.wallet||'—'}</strong> &nbsp;·&nbsp; Avg cost: <strong>$${$fp(h.avgCost,4)}</strong> &nbsp;·&nbsp; Qty: <strong>${fmt(h.qty)}</strong>`;
+    ctxText.innerHTML = `<strong>${h.sym}</strong> &nbsp;·&nbsp; Wallet: <strong>${h.wallet||'—'}</strong> &nbsp;·&nbsp; Avg cost: <strong>$${$fp(h.avgCost,4)}</strong> &nbsp;·&nbsp; Qty: <strong>${qf(h.qty)}</strong>`;
   } else {
     ctxBar.style.display = 'none';
   }
@@ -10580,6 +11350,15 @@ function openHoldingModal(id=null, mode='new') {
     document.getElementById('hm-chain').value  = h?.chain||'';
     document.getElementById('hm-cost').value   = h?.avgCost||'';
     document.getElementById('hm-qty').value    = h?.qty||'';
+    // v47.87: DCA schedule fields
+    document.getElementById('hm-dca-freq').value   = h?.dca?.freq   || '';
+    document.getElementById('hm-dca-amount').value = h?.dca?.amount || '';
+    document.getElementById('hm-dca-start').value  = h?.dca?.startDate || '';
+    // v47.89: DCA source + long-term destination
+    document.getElementById('hm-dca-src-wallet').value = h?.dca?.sourceWallet || h?.wallet || '';
+    document.getElementById('hm-dca-src-chain').value  = h?.dca?.sourceChain  || h?.chain  || '';
+    document.getElementById('hm-dca-dst-wallet').value = h?.dca?.destWallet   || '';
+    document.getElementById('hm-dca-dst-chain').value  = h?.dca?.destChain    || '';
   }
 
   // Set the active mode (also renders correct fields + button styles)
@@ -10834,6 +11613,29 @@ function saveHoldingUnified() {
       avgCost: +v('hm-cost')||0, qty: +v('hm-qty')||0,
     };
     if(!nh.sym){ toast('Token required',true); return; }
+    // v47.87 / v47.89: DCA schedule — confirm before activating, include
+    // source + long-term destination if specified.
+    const _dcaFreq = v('hm-dca-freq');
+    const _dcaAmt  = +v('hm-dca-amount') || 0;
+    if(_dcaFreq && _dcaAmt > 0) {
+      const _dcaStart = v('hm-dca-start') || today();
+      const _srcW = v('hm-dca-src-wallet') || nh.wallet || '';
+      const _srcC = v('hm-dca-src-chain')  || nh.chain  || '';
+      const _dstW = v('hm-dca-dst-wallet') || '';
+      const _dstC = v('hm-dca-dst-chain')  || '';
+      const _xferLine = (_dstW && _dstC)
+        ? `\nAuto-transfer after each Buy: ${_srcW||'(source)'}${_srcC?'/'+_srcC:''} → ${_dstW}/${_dstC}`
+        : '';
+      if(!confirm(`Activate DCA alert for ${nh.sym}?\n\n${_freqLabel(_dcaFreq)} reminder for $${_dcaAmt}, starting ${_dcaStart}.${_xferLine}\n\nThe app will alert you when a DCA is due — you confirm each Buy.`)) {
+        // user cancelled DCA but still wants to save the holding without DCA
+      } else {
+        nh.dca = {
+          freq: _dcaFreq, amount: _dcaAmt, startDate: _dcaStart, nextDue: _dcaStart,
+          sourceWallet: _srcW, sourceChain: _srcC,
+          destWallet:   _dstW, destChain:   _dstC,
+        };
+      }
+    }
     DB.holdings.push(nh);
     logTransaction({ date, type:'Buy', sym:nh.sym, qty:nh.qty, price:nh.avgCost,
       total:nh.avgCost*nh.qty, from:'Cash', to:nh.wallet||'Holdings', notes:'New purchase' });
@@ -10842,11 +11644,106 @@ function saveHoldingUnified() {
   } else if(mode==='edit') {
     // ── Edit in place ──
     if(!h) return;
+
+    // v47.94 Layer 2C: snapshot the holding's state BEFORE mutation so we can
+    // compare and log a concise Edit transaction if anything actually changed.
+    // The previous behavior was completely silent — users had no audit trail
+    // when they corrected a qty, avgCost, wallet, or chain. Now: log only if a
+    // real change happened (clicking Save with no edits stays a no-op).
+    const _editSnapshot = {
+      sym:     h.sym,
+      cat:     h.cat || '',
+      chain:   h.chain || '',
+      wallet:  h.wallet || '',
+      avgCost: +h.avgCost || 0,
+      qty:     +h.qty || 0,
+    };
+
     const rawSym = document.getElementById('hm-sym').value || v('hm-search') || h.sym;
     h.sym     = normSym(rawSym);
     h.geckoId = resolveGeckoId(rawSym, document.getElementById('hm-id').value) || h.geckoId;
     h.cat     = v('hm-cat'); h.chain = v('hm-chain'); h.wallet = v('hm-wallet');
     h.avgCost = +v('hm-cost')||0; h.qty = +v('hm-qty')||0;
+
+    // v47.94: build a concise change summary. Each field gets its own
+    // "field: from→to" segment only if it changed.
+    const _editChanges = [];
+    const _fmtNum = (n) => Math.abs(n) >= 1 ? (+n).toFixed(4).replace(/\.?0+$/, '') : (+n).toFixed(8).replace(/\.?0+$/, '');
+    if(_editSnapshot.sym !== h.sym)
+      _editChanges.push(`sym ${_editSnapshot.sym}→${h.sym}`);
+    if(_editSnapshot.cat !== (h.cat || ''))
+      _editChanges.push(`cat ${_editSnapshot.cat || '(none)'}→${h.cat || '(none)'}`);
+    if(_editSnapshot.chain !== (h.chain || ''))
+      _editChanges.push(`chain ${_editSnapshot.chain || '(none)'}→${h.chain || '(none)'}`);
+    if(_editSnapshot.wallet !== (h.wallet || ''))
+      _editChanges.push(`wallet ${_editSnapshot.wallet || '(none)'}→${h.wallet || '(none)'}`);
+    // For numeric fields, treat as changed only if they differ at 8-decimal precision
+    if(Math.abs(_editSnapshot.qty - (+h.qty || 0)) > 1e-8)
+      _editChanges.push(`qty ${_fmtNum(_editSnapshot.qty)}→${_fmtNum(h.qty)}`);
+    if(Math.abs(_editSnapshot.avgCost - (+h.avgCost || 0)) > 1e-8)
+      _editChanges.push(`avgCost ${_fmtNum(_editSnapshot.avgCost)}→${_fmtNum(h.avgCost)}`);
+
+    // Log the Edit transaction ONLY if something actually changed. The qty
+    // and price fields point to the after-edit values so downstream views
+    // (history filters, totals) treat them consistently. Notes capture the
+    // before→after summary for audit.
+    if(_editChanges.length > 0) {
+      logTransaction({
+        date, type: 'Edit', sym: h.sym,
+        qty: h.qty, price: h.avgCost, total: h.qty * h.avgCost,
+        from: 'Manual Edit', to: `${h.wallet || 'Holdings'}${h.chain ? ' ('+h.chain+')' : ''}`,
+        notes: `Edit — ${_editChanges.join(', ')}`,
+      });
+    }
+
+    // v47.87 / v47.89: DCA schedule edit — confirm changes, include source/dest
+    const _dcaFreq = v('hm-dca-freq');
+    const _dcaAmt  = +v('hm-dca-amount') || 0;
+    const _dcaStart = v('hm-dca-start') || '';
+    const _srcW = v('hm-dca-src-wallet') || h.wallet || '';
+    const _srcC = v('hm-dca-src-chain')  || h.chain  || '';
+    const _dstW = v('hm-dca-dst-wallet') || '';
+    const _dstC = v('hm-dca-dst-chain')  || '';
+    const _prev    = h.dca || null;
+    const _changed = (_prev?.freq||'') !== _dcaFreq
+                  || (+(_prev?.amount||0)) !== _dcaAmt
+                  || (_prev?.startDate||'') !== _dcaStart
+                  || (_prev?.sourceWallet||'') !== _srcW
+                  || (_prev?.sourceChain||'')  !== _srcC
+                  || (_prev?.destWallet||'')   !== _dstW
+                  || (_prev?.destChain||'')    !== _dstC;
+    if(_changed) {
+      if(!_dcaFreq || _dcaAmt <= 0) {
+        // Turning DCA off
+        if(_prev) {
+          if(confirm(`Turn off DCA alert for ${h.sym}?\n\nCurrent schedule (${_freqLabel(_prev.freq)} $${_prev.amount}) will be removed.`)) {
+            delete h.dca;
+          }
+        }
+      } else {
+        const startDate = _dcaStart || today();
+        const _xferLine = (_dstW && _dstC)
+          ? `\nAuto-transfer after each Buy: ${_srcW||'(source)'}${_srcC?'/'+_srcC:''} → ${_dstW}/${_dstC}`
+          : (_prev?.destWallet
+              ? `\nLong-term transfer: DISABLED (was → ${_prev.destWallet}/${_prev.destChain||''})`
+              : '');
+        const desc = _prev
+          ? `Update DCA alert for ${h.sym}?\n\nWas: ${_freqLabel(_prev.freq)} $${_prev.amount}\nNew: ${_freqLabel(_dcaFreq)} $${_dcaAmt} starting ${startDate}${_xferLine}`
+          : `Activate DCA alert for ${h.sym}?\n\n${_freqLabel(_dcaFreq)} reminder for $${_dcaAmt}, starting ${startDate}.${_xferLine}\n\nThe app will alert you when a DCA is due — you confirm each Buy.`;
+        if(confirm(desc)) {
+          h.dca = {
+            freq: _dcaFreq,
+            amount: _dcaAmt,
+            startDate,
+            nextDue: (_prev && _prev.freq === _dcaFreq && _prev.startDate === startDate)
+                     ? (_prev.nextDue || startDate)
+                     : startDate,
+            sourceWallet: _srcW, sourceChain: _srcC,
+            destWallet:   _dstW, destChain:   _dstC,
+          };
+        }
+      }
+    }
     persist(); closeModal('holdingModal'); fetchPrices(); toast('Holding updated');
 
   } else if(mode==='buy') {
@@ -11063,19 +11960,56 @@ function deleteHolding(id) {
 // ── Merge cash proceeds into a stablecoin Holdings row (USDC by default)
 // Finds an existing Stablecoin row for the wallet, adds qty (usd = qty for stablecoins)
 // Creates a new USDC row if none exists.
-function mergeCashIntoHoldings(usd, wallet) {
+// v47.94: mergeCashIntoHoldings restricted to USDC ONLY (not generic stablecoin)
+// and now takes a chain parameter.
+//
+// Previous bug: filter accepted ANY stablecoin (USDC/USDT/EURC/USDT0), so a
+// vault-to-cash conversion could land on a EURC or USDT row by accident if
+// that row appeared first in DB. Also chain-blind — could merge USDC into the
+// wrong chain row.
+//
+// New behavior:
+//   - Cash proceeds are USDC by convention (the function only ever creates USDC rows)
+//   - Match strictly on sym='USDC', wallet, chain
+//   - If no match exists, create a new USDC row on the specified chain
+function mergeCashIntoHoldings(usd, wallet, chain) {
   if(!usd || usd <= 0) return;
-  const existing = DB.holdings.find(x =>
-    (x.cat === 'Stablecoin' || x.sym === 'USDC' || x.sym === 'USDT') &&
-    (x.wallet === wallet || (!x.wallet && !wallet))
-  );
+  const walletL = (wallet || '').toLowerCase();
+  const chainL  = (chain || '').toLowerCase();
+
+  // Strict match: sym=USDC, same wallet, same chain.
+  let existing = null;
+  if(chain) {
+    existing = DB.holdings.find(x =>
+      (x.sym || '').toUpperCase() === 'USDC' &&
+      (x.wallet || '').toLowerCase() === walletL &&
+      (x.chain || '').toLowerCase() === chainL
+    );
+    // Legacy fallback: a USDC row exists at (wallet) with no chain set — backfill.
+    if(!existing) {
+      existing = DB.holdings.find(x =>
+        (x.sym || '').toUpperCase() === 'USDC' &&
+        (x.wallet || '').toLowerCase() === walletL &&
+        !(x.chain || '').trim()
+      );
+      if(existing) existing.chain = chain;
+    }
+  } else {
+    // No chain specified — match (sym=USDC, wallet) only.
+    existing = DB.holdings.find(x =>
+      (x.sym || '').toUpperCase() === 'USDC' &&
+      ((x.wallet || '').toLowerCase() === walletL ||
+       (!x.wallet && !wallet))
+    );
+  }
+
   if(existing) {
-    existing.qty = (existing.qty||0) + usd;
+    existing.qty = (existing.qty || 0) + usd;
     // avgCost stays 1 for stablecoins — no recalc needed
   } else {
     DB.holdings.push({
-      id: uid(), sym:'USDC', geckoId:'usd-coin',
-      cat:'Stablecoin', chain:'', wallet: wallet||'',
+      id: uid(), sym: 'USDC', geckoId: 'usd-coin',
+      cat: 'Stablecoin', chain: chain || '', wallet: wallet || '',
       avgCost: 1, qty: usd,
     });
   }
@@ -12803,7 +13737,10 @@ function tpExecuteConfirm() {
     const recvPrice = recvSym === 'USDC' || recvSym === 'USDT' ? 1
       : (getPrice(DB.holdings.find(h=>h.sym===recvSym)?.geckoId) || salePrice);
     const recvQty = recvPrice > 0 ? total / recvPrice : total;
-    mergeYieldIntoHoldings(recvSym, DB.holdings.find(h=>h.sym===recvSym)?.geckoId||'', recvQty, total, wallet);
+    // v47.94: pass the gem's chain so proceeds land on the right chain row.
+    // Gem chains are stored lowercase (e.g. 'ethereum', 'base') — normalize.
+    const _gemChain = g.chain ? g.chain.charAt(0).toUpperCase() + g.chain.slice(1) : '';
+    mergeYieldIntoHoldings(recvSym, DB.holdings.find(h=>h.sym===recvSym)?.geckoId||'', recvQty, total, wallet, _gemChain);
   }
 
   // 3. Log transaction
@@ -17910,6 +18847,10 @@ function showFileProtocolRecoveryModal() {
 }
 
 function showForceRelinkModal() {
+  // v47.92: under Tauri, storage lives in db.json on disk via the Rust backend.
+  // The browser File System Access API workflow is irrelevant there, so we
+  // suppress the relink prompt entirely.
+  if(window.__cpfTauri && window.__cpfTauri.enabled) return;
   const modal = document.getElementById('forceRelinkModal');
   const nameEl = document.getElementById('forceRelinkFileName');
   const meta = fsMetaLoad();
@@ -20418,6 +21359,182 @@ const TAB_LABELS = {
 };
 
 const WHATS_NEW = {
+  '47.94.3': {
+    headline: "Version 47.94.3 — Stablecoin row tint visibility",
+    summary:  "Tiny visual tweak. The stablecoin row tint introduced in v47.90 was set at 4% opacity — visually imperceptible against the dark theme. Bumped to 12% so it's actually distinguishable.",
+    items: [
+      { icon: '💚', title: "Stablecoin rows now visibly tinted (12% opacity, was 4%)",
+        text: "Same shade of green, just stronger. Affects all rows with cat='Stablecoin'. Visible in Flat, Grouped, and Asset views." },
+      { icon: '✓', title: "EURC included automatically",
+        text: "Any row categorized as 'Stablecoin' tints, regardless of peg currency." },
+    ]
+  },
+  '47.94.2': {
+    headline: "Version 47.94.2 — Cross-platform desktop builds",
+    summary:  "Infrastructure release. Desktop app now builds for both Windows and macOS via GitHub Actions cloud builds. No new HTML/JS features — same UI as v47.94.1 — but the Rust backend is now cross-platform and the data location is auto-detected.",
+    items: [
+      { icon: '🪟', title: "Windows: auto-detects D:\\Projects\\Portfolio-Data\\PortfolioTracker",
+        text: "If that path exists with data already, the app uses it. Otherwise, falls back to standard Windows app-data location at C:\\Users\\<name>\\AppData\\Roaming\\com.jdgoldstein.portfoliotracker\\. No config files needed." },
+      { icon: '🍎', title: "macOS: standard app-data location",
+        text: "Uses ~/Library/Application Support/com.jdgoldstein.portfoliotracker/ — the macOS-canonical location. No configuration needed. Mac demo users get a normal install-and-run experience." },
+      { icon: '⚙️', title: "GitHub Actions workflow — manual cross-platform builds",
+        text: "New .github/workflows/build.yml. Click 'Run workflow' on GitHub, get a Windows .msi and macOS .dmg in parallel within ~10-15 minutes." },
+      { icon: '🛡️', title: "No data risk for existing users",
+        text: "Existing data on D:\\ is used in place — no migration, no copying, no deletion." },
+    ]
+  },
+  '47.94.1': {
+    headline: "Version 47.94.1 — Close-path row-creation warning",
+    summary:  "Small companion to v47.94: when closing a pool or vault, if the destination (wallet, chain) row doesn't already exist in Holdings, you'll get an amber warning toast AND a 'Note' transaction in History. This catches the edge case where a user accidentally picks a destination chain that wasn't the funding chain. Doesn't block the operation — legitimate cross-chain returns work normally.",
+    items: [
+      { icon: '⚠', title: "Real-time warning toast on close",
+        text: "When returnPoolAssetsToHoldings or _returnTokenWithOverflow creates a new (sym, wallet, chain) row instead of merging into an existing one, you see an amber toast: '⚠ Created new <sym> / <chain> row in <wallet> — verify intentional'. Visible for 6 seconds, no action required. Pool tokens normally return to the row they came from at funding time, so a new row means something unusual happened." },
+      { icon: '📋', title: "Persistent 'Note' transaction in History",
+        text: "In addition to the toast, a Note-type transaction is logged with the same warning text in its notes field. This preserves the audit trail — if you didn't see the toast in real-time, you can still review your History later to find every instance of a new row being created on close. Filter the History view by type='Note' to surface these." },
+      { icon: '🎯', title: "Targeted to close-path only",
+        text: "The warning fires ONLY in pool/vault close and rebalance paths. Yield harvests and cash-conversion paths to new chains are left silent — those routinely create new rows when you start earning on a fresh chain, so warning there would be noise. Close is different because the destination row should usually exist (it's where the funding came from)." },
+      { icon: '🛡️', title: "Cannot break the close flow",
+        text: "The warning and Note-logging are wrapped in try/catch so even if logTransaction or toast fails, the close itself completes correctly. The warning is informational, not gating." },
+    ]
+  },
+  '47.94': {
+    headline: "Version 47.94 — Multi-chain integrity hardening + Edit logging",
+    summary:  "Closes the remaining multi-chain leaks that v47.93 didn't cover. Yield harvests, cash conversions, and pool funding now consistently respect the pool's network. Plus: editing a holding now records a concise audit-trail entry when fields actually change, so corrections no longer happen silently.",
+    items: [
+      { icon: '💧', title: "Yield harvests now route to the pool's chain row",
+        text: "mergeYieldIntoHoldings now takes a chain parameter and matches strictly on (sym, wallet, chain). All four yield harvest paths in quickSaveAll (Token A, Token B, reward, and the GEM take-profit flow) pass the pool's network. Transaction notes now include the chain in parentheses, e.g. 'Yield from WETH/USDC (Base)', so you can verify routing in the History tab. Yield on a new chain creates a fresh row instead of polluting an existing one." },
+      { icon: '💵', title: "Cash conversions are now USDC-only and chain-aware",
+        text: "mergeCashIntoHoldings used to accept ANY stablecoin (USDC, USDT, EURC, USDT0) as a merge target, so a vault-to-cash conversion could silently land on the wrong stablecoin row. Now: USDC strictly, with (wallet, chain) match. Pool close 'to cash' and vault close 'to cash' both pass the network. Cash row from a Base pool now creates USDC/Base, not chainless USDC." },
+      { icon: '✦', title: "Pool close, Add Capital, Quick Yield pickers show on-network qty",
+        text: "Three more wallet pickers (close modal, Add Capital, quick yield harvest) now show the on-network qty in their option labels instead of whichever (sym, wallet) row happened to be first in DB.holdings. Add Capital validation passes the pool's chain too, so the resolver auto-picks the right row instead of erroring out with 'ambiguous chain'. The ✦ mark continues to flag pool-default selections." },
+      { icon: '📝', title: "Edit Holding now logs a transaction when fields change",
+        text: "Previously, the ✎ Edit Holding button silently changed qty, avgCost, wallet, chain, etc. with no history entry — making it hard to audit corrections after the fact. Now: clicking Save with no changes does nothing (no spurious log entries). Clicking Save with real changes logs a single 'Edit' transaction with a concise summary in notes, e.g. 'Edit — qty 100→150, avgCost 2200→2100'. Date, wallet, and chain are recorded on the transaction." },
+      { icon: '🧪', title: "Test coverage extended",
+        text: "Added test-v94-chain-integrity.mjs which seeds a Base pool with multi-chain USDC holdings and verifies: (1) yield harvest from the Base pool creates/merges USDC/Base (not USDC/Ethereum), (2) cash close from a Base pool merges USDC/Base, (3) Edit Holding logs once on change and never on no-op save." },
+    ]
+  },
+  '47.93': {
+    headline: "Version 47.93 — Rebalance new-leg chain defaulting",
+    summary:  "Fixes a subtle multi-chain bug where the rebalance new-leg modal could silently default a token's source dropdown to the wrong chain. Reported scenario: a WETH/USDC pool on Base, where the USDC source dropdown defaulted to USDC/Ethereum (140 USDC) instead of USDC/Base (1221 USDC), triggering 'not enough USDC' even though Base had plenty. The on-chain operation was fine — only the tracker's accounting view was mis-defaulting.",
+    items: [
+      { icon: '🎯', title: "Rebalance new-leg defaults to the pool's own network",
+        text: "When the new-leg modal opens, the source-wallet dropdown for each token now sorts rows that match the pool's network to the top, and auto-selects the first one. The user no longer has to scroll to find 'Ledger X1 / Base' below 'Ledger X1 / Ethereum' — Base appears first when the pool is on Base." },
+      { icon: '✦', title: "Visual ✦ marker on on-network rows",
+        text: "Rows whose chain matches the pool's network are flagged with a ✦ in the dropdown label, so even if you do open it and pick manually, the right choice is obvious. Other-chain rows remain selectable for genuine cross-chain workflows; nothing is hidden." },
+      { icon: '🔍', title: "Underlying routing was already correct",
+        text: "The exit-leg fund-return code already passed the pool's network to the chain-aware holdings resolver, so funds returned to the right (wallet, chain) row. The bug was purely in the new-leg dropdown's default ordering — once you pick the correct option (which v47.93 does automatically), everything downstream works as expected." },
+    ]
+  },
+  '47.92': {
+    headline: "Version 47.92 — Desktop reconnect overlay suppression",
+    summary:  "Suppresses the browser-only 'Tap anywhere to reconnect' overlay when running inside the Tauri desktop shell. Storage on desktop uses the Rust backend at a real OS filesystem path, so the File-System-Access reconnect flow is irrelevant and was just visual noise.",
+    items: [
+      { icon: '🖥️', title: "Tauri desktop: no more reconnect prompt",
+        text: "On startup, if running under Tauri (window.__cpfTauri.enabled is true), the bootActivationCheck short-circuits before showing the overlay, and showForceRelinkModal becomes a no-op. Browser behavior is completely unchanged — the overlay still appears when needed for file:// or insecure-context fallback." },
+    ]
+  },
+  '47.91': {
+    headline: "Version 47.91 — Tauri desktop storage adapter",
+    summary:  "Internal plumbing: a thin JavaScript adapter (window.__cpfTauri) that detects the Tauri desktop shell and routes persist()/load() through the Rust backend. In a normal browser, the adapter is disabled and behavior is identical to v47.90. On desktop, the canonical data store is db.json at a real OS filesystem path (e.g. D:\\Projects\\Portfolio-Data\\PortfolioTracker\\db.json on Windows).",
+    items: [
+      { icon: '🔌', title: "Desktop ↔ web stay in lock-step via __cpfTauriSaveDispatch",
+        text: "Every persist() now also dispatches to save_db via the Tauri invoke channel (fire-and-forget; failures are logged, not fatal). On startup, tauriReconcile() compares disk vs in-memory savedAt and loads whichever is newer. First-run seeds db.json from the current session." },
+      { icon: '💾', title: "Automatic backups, no user action required",
+        text: "The Rust backend handles atomic writes (write-temp, fsync, rename) and rotating auto-backups in a backups/ subfolder (last 10 kept). Manual export and restore are exposed via window.__cpfTauri.exportBackup/restoreBackup, with UI to follow in a future release." },
+    ]
+  },
+  '47.90': {
+    headline: "Version 47.90",
+    summary:  "Small but useful visual tweak: stablecoin/cash rows in Holdings get back their faint green background tint. The tint was lost in v47.87 when stables moved inline into their wallet group; now they're easy to spot at a glance again, in any view mode.",
+    items: [
+      { icon: '💚', title: "Stablecoin rows tinted faint green in every view",
+        text: "Applied at the row-rendering source (rowHtml), so the green tint shows up consistently in Flat, Grouped, and Asset views — including multi-chain child rows when an asset is expanded. The tint uses the original rgba(16,76,48,0.04) — same shade as the bottom 'Cash & Stablecoins' band, but at row level instead of section level. Detection is by category: any row with cat='Stablecoin' gets the tint." },
+      { icon: '🧹', title: "Cleaned up redundant tint logic",
+        text: "The previous flat-mode tinting used a string-replace hack on the rendered HTML to inject the background style after the fact. Now that the tint comes from rowHtml directly, that workaround is removed. One source of truth, identical behavior in every view." },
+    ]
+  },
+  '47.89': {
+    headline: "Version 47.89",
+    summary:  "DCA schedules can now optionally auto-transfer each confirmed Buy to a long-term storage wallet. Common pattern: weekly BTC buy on Coinbase Hot → immediate transfer to Trezor Cold. Two atomic transactions (Buy + Transfer) logged per cycle, both reversible independently. Destination is optional — leave blank for v47.87 behavior.",
+    items: [
+      { icon: '🔒', title: "DCA schedule grows: source + long-term destination (wallet + chain)",
+        text: "The DCA Schedule section in the asset Edit modal now has two new sub-sections: 'Source (Buy lands here)' with wallet + chain, and 'Long-Term Destination' (also wallet + chain, optional). Source defaults to the asset's current wallet/chain. Destination left blank = no auto-transfer (existing v47.87 behavior preserved). When both are set, each confirmed DCA cycle logs a Buy at the source and an immediate Transfer to the destination — preserving cost basis since transfers between your own wallets don't change basis." },
+      { icon: '✓', title: "Confirmation modal grows a transfer panel",
+        text: "When a DCA with a destination is due, the confirm modal shows two panels: the existing 'purchase details' (amount + live price), and a new '🔒 Long-Term Transfer' panel showing the destination wallet/chain and current qty there (or 'new row will be created'). A checkbox 'Include transfer this cycle' is ticked by default. Uncheck it for a single cycle if you forgot to plug in the cold wallet — the schedule itself is untouched and next cycle still prompts for transfer. The primary action button label updates live ('Confirm Buy + Transfer' vs 'Confirm Buy only')." },
+      { icon: '🔗', title: "Multi-chain holdings handled correctly throughout",
+        text: "Both source and destination select the chain explicitly on the schedule, so DCAs into ETH on Coinbase (Ethereum) transferring to a Ledger that holds ETH on Base never accidentally lands on the wrong chain row. If the source or destination row doesn't exist yet, the system creates it with the correct (wallet, chain) identity. Builds on the v47.88 (wallet + asset + chain) identity work." },
+      { icon: '📋', title: "Audit trail records both legs atomically",
+        text: "Each confirmed DCA cycle now produces up to two transactions, both dated today: a Buy from Cash → source wallet (with chain in the `to` field, e.g. 'Coinbase Hot (Ethereum)'), and a Transfer source → destination (with chain in both `from` and `to`). Each is independently reversible via the standard revert flow if you need to back out one leg without the other." },
+    ]
+  },
+  '47.88': {
+    headline: "Version 47.88",
+    summary:  "Fixes a multi-chain funding bug that caused rebalance new-leg saves (and other pool/vault funding) to fail with 'not enough <token>' even when the wallet had plenty of that token on a different chain. The (wallet + asset + chain) identity is now respected everywhere funding is checked and deducted.",
+    items: [
+      { icon: '🐛', title: "Rebalance no longer fails when same token exists on multiple chains",
+        text: "Symptom: when funding a new rebalance leg with USDC from Ledger X1 — where USDC sits on Ethereum, Base, and Arbitrum simultaneously — the funding check only looked at the first chain row found (e.g. 297 USDC on Ethereum) and rejected the deposit as 'not enough', even though you had 10,000+ USDC on Base in the same wallet. The 'Add Capital' to existing pools and the New Pool / New Vault funding forms had the same flaw. Root cause: the funding validator and deduct loops matched holdings on (sym + wallet) only, ignoring chain entirely, and the rebalance new-leg wallet dropdown collapsed multiple chain options into a single ambiguous 'Ledger X1' value. Fixed in all four funding paths." },
+      { icon: '🔗', title: "Wallet + Asset + Chain is now a single identity",
+        text: "Internal change: added a shared resolver `_resolveFundingHolding(sym, wallet, chain?, wantQty)` that returns the correct Holdings row using strict (sym + wallet + chain) matching when chain is provided. When chain is omitted (older single-chain users, or wallet-only dropdowns), the resolver smart-disambiguates: if only one chain row has enough qty it picks that automatically; if multiple chain rows could work, it errors explicitly listing the chains so you specify one. Single-chain users see no behavior change." },
+      { icon: '🎯', title: "Rebalance new-leg wallet dropdown now shows chain per option",
+        text: "The 'From Wallet' dropdowns for Token A and Token B in the Rebalance new-leg modal now render one option per (wallet, chain) row — e.g. 'Ledger X1 / Ethereum — 297 USDC', 'Ledger X1 / Base — 10,381 USDC', 'Ledger X1 / Arbitrum — 49 USDC'. The selected option encodes both wallet and chain so the deduction lands on the exact row you picked. New Pool and New Vault source-wallet inputs remain typeable (datalist-backed); the resolver handles ambiguity there with the smart-pick logic." },
+      { icon: '📋', title: "Transaction audit trail now includes chain on funding entries",
+        text: "Funded-pool, funded-vault, and rebalance-new-leg transactions now include the source chain in the 'from' field (e.g. 'Ledger X1 (Base)' instead of just 'Ledger X1') so the audit trail unambiguously records which chain row was debited." },
+    ]
+  },
+  '47.87': {
+    headline: "Version 47.87",
+    summary:  "Three asked-for additions: DCA reminders on holdings, stablecoins grouped with their wallet's other assets in Grouped view, and MAX buttons on every qty input where it makes sense (Transfer, Sell, Swap, plus Close/Rebalance LP return inputs). Plus a small pre-existing bug fix in the Buy/Sell/Swap/Transfer context bar.",
+    items: [
+      { icon: '📅', title: "DCA schedule with confirmation alerts",
+        text: "Each holding's Edit form now has an optional DCA Schedule section — pick Daily / Weekly / Bi-weekly / Monthly, set the USD amount, choose a start date. Saving prompts for confirmation. When a DCA comes due, a pulsing blue '📅 DCA n' pill appears in the header and a 📅 chip lights up on the asset row. Clicking either opens a confirmation modal pre-filled with the live price, where you Confirm (logs a Buy at the entered price, updates qty + weighted avg cost, advances nextDue by one cycle), Skip Cycle (advances nextDue without buying), or Snooze (no change — will prompt again on next render). The system never auto-creates Buys — you confirm every cycle." },
+      { icon: '💼', title: "Stablecoins now sit inside their wallet group (Grouped view only)",
+        text: "Previously the Grouped view (Wallet → Asset → Chain) banished all stablecoins to a separate '💵 Cash & Stablecoins' section at the bottom, disconnected from the wallet they live in. Now in Grouped mode, USDC / USDT / etc. appear inline with their wallet's other assets — your Ledger X1 group shows BTC, SOL, AAVE, AND its USDC rows together. The cash total band still appears at the bottom as an aggregate (with a '(shown inline per wallet)' note in grouped mode). Flat and Asset views are unchanged — the change is grouped-only because that's where the wallet-association matters most." },
+      { icon: '⬆', title: "MAX buttons on every transferable qty",
+        text: "Transfer, Sell, and Swap qty inputs on the unified Holding modal now have a compact MAX button that fills the field with the holding's full current qty. Same on Close/Rebalance — Token A and Token B return inputs each have a MAX that fills with the pool's stored tokAQty/tokBQty. The MAX triggers the input event so downstream calculations (computed USD return, swap hint, etc.) update automatically. Useful for the common 'move everything out' case without having to copy the number from the Current hint." },
+      { icon: '🐛', title: "Fixed: 'fmt is not defined' in holding modal context bar",
+        text: "Pre-existing bug from before this release: opening Buy / Sell / Swap / Transfer from a holding row threw 'ReferenceError: fmt is not defined' in the browser console because the context bar used a local helper that wasn't in global scope. Replaced with the global qf() qty formatter. The modal still rendered fine because the throw happened after the bar was already painted, but the console error is gone now and the qty value in the context bar actually displays correctly." },
+    ]
+  },
+  '47.86': {
+    headline: "Version 47.86",
+    summary:  "File-system folder enrollment is now genuinely persistent across reboots. Three race conditions and a permission-downgrade edge case that made the 'Enable Folder Management' row reappear after restart have been resolved.",
+    items: [
+      { icon: '📁', title: "Stored folder handle now loads before UI renders",
+        text: "On boot, loading the dir handle from IndexedDB is now a tracked promise the UI waits for. Previously the handle load was fire-and-forget, so the first render read `fsDirHandle = null` and showed the 'Enable Folder Management' row even though the handle was successfully loading a few hundred milliseconds later. Once the load completes, the UI refreshes and the row hides." },
+      { icon: '🔒', title: "Permission state checked on boot (browsers downgrade 'granted' → 'prompt')",
+        text: "Per the File System Access spec, browsers downgrade an active 'granted' permission to 'prompt' between sessions, meaning a handle that worked yesterday will throw NotAllowedError on the first internal use today. Boot now calls queryPermission() to detect this dormant state and treats 'prompt' as 'still enrolled, needs re-confirmation on next user action' instead of 'broken — disable folder management'." },
+      { icon: '✨', title: "UI refreshes after handle load even when permission is dormant",
+        text: "A stored handle with permission='prompt' is still a valid enrollment — we just need a user gesture before using it. The boot path now distinguishes 'enrolled (handle exists)' from 'active (permission granted)' so the folder-mgmt UI hides itself correctly in both states. Previously the 'enabled' indicator only appeared after permission was actively granted, which made the user think nothing was saved." },
+    ]
+  },
+  '47.85': {
+    headline: "Version 47.85",
+    summary:  "Pool close/rebalance hardening: stale reversion buffers fixed, return prices fall back through a chain when price feeds lag, pool-state is now authoritative for return-qty pre-fill, and row-creation events get their own audit-trail line.",
+    items: [
+      { icon: '🔄', title: "Reversion accumulator always resets cleanly",
+        text: "Previously _revStart() only initialized when _revAccumulator was null, which meant a stale buffer from a failed/aborted previous operation would persist and contaminate the next close — leading to duplicate transaction entries on retry. _revStart() now unconditionally resets the accumulator." },
+      { icon: '💰', title: "Return prices fall back when getPrice() returns 0",
+        text: "When getPrice() returns 0 or null (price feed lag, geckoId stripped by a buggy revert path, first close after page load before CoinGecko responds), the close/rebalance return logic now falls back to: pool's stored entry price → existing Holdings avgCost for the same symbol → 0. Previously a null price resulted in $0.00 transaction totals — the audit log was unhelpful even though the qty was correct." },
+      { icon: '📌', title: "Pool state is authoritative for return-qty pre-fill",
+        text: "Opening the Close/Rebalance modal now pre-fills the Token A / Token B returned inputs from the pool's stored tokAQty / tokBQty. Previously the inputs started blank, requiring you to retype values shown in the 'Current' hint right below — easy to fat-finger, especially after manually updating the pool's current qty to reflect on-platform composition. You can still override for a partial withdrawal." },
+      { icon: '📋', title: "New-row creation logged as its own audit-trail line",
+        text: "When close/rebalance creates a new Holdings row (token returning to a wallet that didn't have that symbol before), the row creation now logs as a separate audit line preceding the deposit transaction. Makes the audit trail explicit about 'asset row created' vs 'tokens deposited' — useful when reconciling history later." },
+      { icon: '🧮', title: "Reversed transactions excluded from totals",
+        text: "Transactions marked as reversed (via the v47.83 revert flow) no longer count toward Transaction tab totals and are visually marked with a strikethrough and dimmed style so the audit trail is clear: the row stays for history, but doesn't contribute to financial summaries." },
+    ]
+  },
+  '47.84': {
+    headline: "Version 47.84",
+    summary:  "Backup file management upgrades: filenames auto-rename to today's date on save, a Recent Files picker remembers your directory across sessions for one-time setup, and the GEM modal verifies contract addresses against on-chain data.",
+    items: [
+      { icon: '📅', title: "Backup filenames auto-rename to today's date",
+        text: "On every save, the backup filename is updated to include today's date (e.g. portfolio_backup_2026-05-13_auto.json). Old auto-backups are pruned according to retention policy. Manual backups keep their _manual.json suffix and are not auto-pruned. This means the most recent file is always obvious in your file manager." },
+      { icon: '📂', title: "Recent Files picker for one-time folder enrollment",
+        text: "If you have a remembered directory handle, the boot path now shows a Recent Files picker first — letting you pick from your last few backups without having to re-navigate the folder tree. Useful when working across machines or after a browser cache clear." },
+      { icon: '🔗', title: "GEM contract verification & multi-chain picker",
+        text: "When adding a GEM, pasting a contract address now triggers a CoinGecko lookup that fetches verified token name + symbol + the list of chains where it exists. The modal shows a verification status badge (✓ verified / ⚠ unverified) and a multi-chain picker if the token is deployed on multiple networks. Eliminates the 'wrong symbol on wrong chain' class of GEM data errors." },
+    ]
+  },
   '47.83': {
     headline: "Version 47.83",
     summary:  "Same-symbol swaps now log as one row instead of duplicates, and Swap/Transfer/Buy entries have a Revert button (↶) that cleanly undoes the Holdings change.",
@@ -21637,10 +22754,58 @@ function _helpEditRender(tab) {
 // Directory handle — captured when user picks a folder via showDirectoryPicker.
 // Restored from IDB on app boot. Used to: rename files (move()), enumerate
 // existing backups (for Recent Files picker), and prune older files.
+//
+// v47.86 fix: the dir handle is meant to be PERMANENT once chosen. Three things
+// are required to make it actually behave that way across reboots:
+//   (a) The boot load must be a tracked promise so the UI can wait for it
+//       instead of reading `null` and showing the "Enable Folder Management"
+//       row even though the handle is sitting in IDB.
+//   (b) On boot we proactively check stored permission. Per the FSA spec the
+//       browser downgrades 'granted' to 'prompt' between sessions; if we don't
+//       notice, the first internal use (entries(), move(), removeEntry())
+//       throws NotAllowedError and the user thinks folder mgmt is broken.
+//   (c) Once the handle is loaded — even if permission is dormant — the UI
+//       must refresh so the row hides itself.
 let fsDirHandle = null;
-(async () => {
-  try { fsDirHandle = await loadHandleIDB('fsDirHandle'); } catch(e){}
+let fsDirHandlePerm = 'prompt';   // 'granted' | 'prompt' | 'denied'
+const fsDirHandleReady = (async () => {
+  try {
+    const h = await loadHandleIDB('fsDirHandle');
+    if(h) {
+      fsDirHandle = h;
+      // Query (don't request) — request must come from a user gesture.
+      try {
+        fsDirHandlePerm = await h.queryPermission({ mode: 'readwrite' });
+      } catch(e) { fsDirHandlePerm = 'prompt'; }
+    }
+  } catch(e){}
+  // Refresh the "Enable Folder Management" row once we know the real state.
+  try {
+    if(typeof _v4784_updateFolderRowVisibility === 'function') {
+      _v4784_updateFolderRowVisibility();
+    }
+  } catch(e){}
+  return fsDirHandle;
 })();
+
+// Re-validate (and if needed re-request) folder permission. MUST be called
+// from a user gesture if we want the prompt to actually appear. Returns true
+// if we end up with readwrite access. Used by save/maintenance paths and by
+// any UI action that needs the directory.
+async function _v4784_ensureDirPermission(fromGesture) {
+  if(!fsDirHandle) return false;
+  try {
+    let perm = await fsDirHandle.queryPermission({ mode: 'readwrite' });
+    if(perm === 'granted') { fsDirHandlePerm = 'granted'; return true; }
+    if(!fromGesture) { fsDirHandlePerm = perm; return false; }
+    perm = await fsDirHandle.requestPermission({ mode: 'readwrite' });
+    fsDirHandlePerm = perm;
+    return perm === 'granted';
+  } catch(e) {
+    fsDirHandlePerm = 'prompt';
+    return false;
+  }
+}
 
 // Settings: how many backup files to retain in the working folder.
 function _v4784_retentionCount() {
@@ -21690,10 +22855,25 @@ async function _v4784_ensureDirHandle(fromGesture) {
 }
 
 // After every successful save: rename file to today's date if needed, then prune.
+// v47.86: if the dir handle's permission is dormant ('prompt' state from a fresh
+// session) we silently skip — but we DO NOT discard the handle. Next user gesture
+// (manual save, link/create, enrollment row click) will re-grant via
+// _v4784_ensureDirPermission and folder mgmt resumes without the user re-picking.
 async function _v4784_postSaveMaintenance(backupType) {
   if(!fsFileHandle) return;
-  // Step 1: filename rename — only if directory handle available
-  if(fsDirHandle && typeof fsFileHandle.move === 'function') {
+  // Wait for boot-time IDB load before deciding the dir handle is missing.
+  try { await fsDirHandleReady; } catch(e){}
+  // If we have a handle but no live permission, do a non-gesture query;
+  // a real readwrite re-prompt has to wait for a gesture path.
+  if(fsDirHandle && fsDirHandlePerm !== 'granted') {
+    try {
+      const p = await fsDirHandle.queryPermission({ mode: 'readwrite' });
+      fsDirHandlePerm = p;
+    } catch(e) {}
+  }
+  const dirUsable = fsDirHandle && fsDirHandlePerm === 'granted';
+  // Step 1: filename rename — only if directory handle available AND permission live
+  if(dirUsable && typeof fsFileHandle.move === 'function') {
     try {
       const wantName = _v4784_targetName(backupType);
       const curName  = fsFileHandle.name;
@@ -21712,8 +22892,8 @@ async function _v4784_postSaveMaintenance(backupType) {
       console.info('v47.84: file rename unavailable —', e.message);
     }
   }
-  // Step 2: retention pruning — only if dir handle available
-  if(fsDirHandle) {
+  // Step 2: retention pruning — only if dir handle available AND permission live
+  if(dirUsable) {
     try { await _v4784_pruneOldBackups(); } catch(e) { console.info('v47.84: prune skipped —', e.message); }
   }
 }
@@ -22229,9 +23409,23 @@ async function _v4784_enrollFolder() {
 window._v4784_enrollFolder = _v4784_enrollFolder;
 
 // Show the Enable Folder Management row only when relevant (file linked but no dir handle).
+// v47.86: a stored handle with permission state 'prompt' is STILL enrolled — we just
+// need a gesture to wake permission. Don't show the enrollment prompt in that case
+// or the user will think their folder was reset. We also wait for the IDB load to
+// settle before evaluating, so we never flash the row during boot.
 function _v4784_updateFolderRowVisibility() {
   const row = document.getElementById('v4784FolderRow');
   if(!row) return;
+  // Once the IDB load completes, fsDirHandleReady resolves and we re-run.
+  if(typeof fsDirHandleReady !== 'undefined' && fsDirHandleReady &&
+     typeof fsDirHandleReady.then === 'function') {
+    fsDirHandleReady.then(() => {
+      const hasDir = !!fsDirHandle;  // any handle, regardless of permission
+      const shouldShow = !!fsFileHandle && !hasDir && ('showDirectoryPicker' in window);
+      row.style.display = shouldShow ? 'block' : 'none';
+    });
+    return;
+  }
   const shouldShow = !!fsFileHandle && !fsDirHandle && ('showDirectoryPicker' in window);
   row.style.display = shouldShow ? 'block' : 'none';
 }
