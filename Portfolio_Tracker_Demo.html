@@ -174,7 +174,15 @@ input[type="date"] { color-scheme: dark; }
 .card-sub{font-size:calc(var(--fs-base) - 2px);color:#4a5168;margin-top:3px;}
 
 /* ── TABLE WRAP ── */
-.tbl-wrap{overflow-x:auto;overflow-y:visible;border:2px solid #7a9abf;border-radius:var(--radius);box-shadow:0 2px 8px rgba(0,0,0,0.12);max-width:100%;width:100%;scrollbar-gutter:stable;}
+/* v47.96.4: base .tbl-wrap no longer sets overflow-x:auto. That was the root
+   of long-standing sticky-thead bugs — the wrap became a scroll container,
+   sticky position then pinned relative to it instead of the page. With this
+   removed, the page itself is the scroll container, and sticky theads with
+   top:94px correctly pin below the header+tab-bar across every tab. The
+   Holdings/History tabs override below to re-enable overflow-x:auto for
+   their wider column sets — those tabs get a per-table horizontal scrollbar
+   instead of sticky thead behavior. */
+.tbl-wrap{overflow:visible;border:2px solid #7a9abf;border-radius:var(--radius);box-shadow:0 2px 8px rgba(0,0,0,0.12);max-width:100%;width:100%;}
 #tab-pools .tbl-wrap table{table-layout:auto;}
 #tab-pools table{table-layout:auto;}
 #tab-pools table th,#tab-pools table td{padding:3px 4px;}
@@ -235,7 +243,19 @@ thead th{
 /* v47.76: sticky captions global. Fixed-width page eliminates width inconsistency.
    Mac Safari hardening: will-change:transform forces thead onto composite layer;
    explicit table width:100% ensures consistent column computation. */
-.tbl-wrap { overflow: visible !important; }
+/* v47.96.3: wide-table fix, scoped. v47.96.2 set overflow-x:auto globally on
+   .tbl-wrap to solve the Holdings cutoff on 1920x1200, but the combination
+   of overflow-x:auto with the sticky thead caused header rows to render
+   in the wrong position on tabs with fewer columns (notably LP Pools).
+   This version scopes the overflow-x change to only the tabs that actually
+   have many-column tables prone to right-edge cutoff: Holdings and History
+   (Transactions sub-tab). All other tabs keep the original overflow:visible
+   so their sticky theads pin to the page as intended. */
+#tab-holdings .tbl-wrap,
+#tab-history  .tbl-wrap {
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+}
 thead th {
   top: 94px !important;
   will-change: transform;
@@ -244,7 +264,15 @@ thead th {
    column captions were rendering in the middle of the data area instead of at
    the top of the table. The Hedge tables are short, so captions stay visible
    without sticky behavior. */
-#tab-hedge thead th {
+/* v47.96.5: same opt-out for Holdings and History tabs. These tabs use
+   overflow-x:auto on .tbl-wrap to get a horizontal scrollbar for their wide
+   column sets — but the resulting scroll container conflicts with the page-
+   level sticky positioning of the thead, causing the header to appear mid-
+   table. Since overflow-x:auto is the more useful behavior for these tabs,
+   sticky is dropped here. */
+#tab-hedge thead th,
+#tab-holdings thead th,
+#tab-history thead th {
   position: static !important;
   top: auto !important;
   will-change: auto !important;
@@ -4914,6 +4942,109 @@ function actEmailRequest() {
     document.getElementById('actEmailFallbackAddr').textContent = addr;
   }
 }
+
+// ── v47.96.2: Activation-screen backup helpers — these existed in the web/desktop
+//    builds but were missing from the demo, causing ReferenceError on activation.
+//    Restored verbatim from the web build.
+async function actReconnectBackup() {
+  const statusEl = document.getElementById('actReconnectHint');
+  const btn = document.getElementById('actReconnectBtn');
+  btn.disabled = true;
+  statusEl.textContent = 'Requesting permission…';
+  try {
+    // fsFileHandle is already set from restoreFsHandleFromIDB() during boot
+    if(!fsFileHandle) {
+      const handle = await loadHandleIDB('fsFileHandle');
+      if(!handle) { statusEl.textContent = 'No stored backup found.'; btn.disabled = false; return; }
+      fsFileHandle = handle;
+    }
+    // This requestPermission IS inside a user gesture (button click) — Chrome will grant it
+    const perm = await fsFileHandle.requestPermission({mode:'readwrite'});
+    if(perm !== 'granted') {
+      statusEl.textContent = 'Permission denied. Try "Link Backup File" below.';
+      btn.disabled = false;
+      return;
+    }
+    statusEl.textContent = '✓ Permission granted — checking activation…';
+    // Re-store the now-valid handle
+    await storeHandleIDB('fsFileHandle', fsFileHandle);
+    // Load data from backup
+    try {
+      const file = await fsFileHandle.getFile();
+      const text = await file.text();
+      const d = JSON.parse(text);
+      if(d.pools || d.vaults || d.holdings) {
+        DB = sanitiseDB(d);
+        DB.history.forEach(h => { if(!h.id) h.id = uid(); });
+        prices = DB.prices||{};
+        if(DB.settings?.pushKey)   vaultSet('pushKey',   DB.settings.pushKey);
+        if(DB.settings?.pushToken) vaultSet('pushToken', DB.settings.pushToken);
+        try { volMcRestoreAll(); } catch(e){}
+        localStorage.setItem(SK, JSON.stringify(DB));
+      }
+    } catch(e){}
+    await actCheckAfterLink();
+    if(document.getElementById('activationLock').classList.contains('active')) {
+      statusEl.textContent = 'Connected — but no licence found. Enter code below.';
+      btn.disabled = false;
+    }
+  } catch(e) {
+    statusEl.textContent = 'Error: ' + e.message + '. Try "Link Backup File" below.';
+    btn.disabled = false;
+  }
+}
+// ── Link backup from activation screen (auto-unlock path) ────────────────────
+async function actLinkBackup() {
+  if(!fsSupported()) {
+    document.getElementById('actErr').textContent = 'File linking requires Chrome, Brave, or Edge.';
+    return;
+  }
+  const statusEl = document.getElementById('actFileStatus');
+  statusEl.textContent = 'Opening file picker…';
+  statusEl.style.color = '#3a4a60';
+  try {
+    const [handle] = await window.showOpenFilePicker({
+      types: [{ description: 'Portfolio Backup', accept: {'application/json':['.json']} }],
+      multiple: false,
+    });
+    const perm = await handle.requestPermission({mode:'readwrite'});
+    if(perm !== 'granted') {
+      statusEl.textContent = 'Write permission needed.';
+      return;
+    }
+    fsFileHandle = handle;
+    await storeHandleIDB('fsFileHandle', handle); // IDB persist
+    // Try to capture full path post-gesture
+    try { const _pf = await handle.getFile(); if(_pf.path) fsMetaSave({ fullPath: _pf.path }); } catch(e) {}
+    statusEl.textContent = '✓ ' + handle.name + ' linked — checking activation…';
+    statusEl.style.color = '#3df5a0';
+    // Load data from backup first, then check auth
+    try {
+      const file = await handle.getFile();
+      const text = await file.text();
+      const d = JSON.parse(text);
+      if(d.pools || d.vaults || d.holdings) {
+        DB = sanitiseDB(d);
+        DB.history.forEach(h => { if(!h.id) h.id = uid(); });
+        prices = DB.prices||{};
+        localStorage.setItem(SK, JSON.stringify(DB));
+      }
+      // Mark backup as verified — file was read successfully
+      _fsBackupVerified = true;
+    } catch(e){}
+    // Now check if backup contains valid licence
+    await actCheckAfterLink();
+    if(document.getElementById('activationLock').classList.contains('active')) {
+      statusEl.textContent = '✓ ' + handle.name + ' linked — enter activation code below.';
+    }
+  } catch(e) {
+    if(e.name !== 'AbortError')
+      document.getElementById('actErr').textContent = 'Could not open file: ' + e.message;
+    else
+      statusEl.textContent = '';
+  }
+}
+
 
 // ── Activation submit ─────────────────────────────────────────────────────────
 async function actSubmit() {
