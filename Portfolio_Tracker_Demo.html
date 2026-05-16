@@ -2373,7 +2373,19 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     <div class="form-grid cols3">
       <div class="field"><label>Range Low (ratio)</label><input id="pm-low" type="number" step="any" placeholder="0.00153"></div>
       <div class="field"><label>Range High (ratio)</label><input id="pm-high" type="number" step="any" placeholder="0.00206"></div>
-      <div class="field"><label>Live Ratio (optional)</label><input id="pm-ratio" type="number" step="any" placeholder="auto-calc if blank"></div>
+      <!-- v47.95: Live Ratio is now display-only by default. The override
+           input is hidden behind an Advanced disclosure because it was easy
+           to set accidentally via the number-input spinner and silently broke
+           range status app-wide. See _renderLiveRatioDisplay() for behavior. -->
+      <div class="field">
+        <label>Live Ratio</label>
+        <div id="pm-ratio-display" style="padding:7px 10px;background:#0e1620;border:1px solid #1f2a3a;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#cfe6dc;min-height:18px;">&mdash;</div>
+        <div id="pm-ratio-advanced-toggle" style="margin-top:5px;font-size:11px;color:#6b7d92;cursor:pointer;user-select:none;" onclick="_toggleLiveRatioOverride()">&#9656; Set manual override (rare)</div>
+        <div id="pm-ratio-override-wrap" style="display:none;margin-top:6px;">
+          <input id="pm-ratio" type="text" inputmode="decimal" placeholder="e.g. 2.2189" style="font-family:'IBM Plex Mono',monospace;" oninput="_renderLiveRatioDisplay()">
+          <div style="margin-top:4px;font-size:10.5px;color:#9bb0a6;">Leave blank to use auto-calculated ratio. Most pools should leave this empty.</div>
+        </div>
+      </div>
     </div>
     <div class="form-grid">
       <div class="field">
@@ -3369,13 +3381,17 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 
       <!-- v47.87 / v47.89: DCA schedule (optional) — tracker + alert; never auto-buys -->
       <div style="margin-top:6px;padding:10px;background:rgba(96,168,240,0.05);border:1px solid rgba(96,168,240,0.18);border-radius:var(--radius);">
-        <div style="font-size:9px;color:#70b8ff;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;font-weight:700;">
-          📅 DCA Schedule <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;margin-left:4px;">— optional; reminds you when a Buy is due, you confirm each one</span>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:8px;">
+          <div style="font-size:9px;color:#70b8ff;text-transform:uppercase;letter-spacing:.1em;font-weight:700;">
+            📅 DCA Schedule <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;margin-left:4px;">— optional; reminds you when a Buy is due, you confirm each one</span>
+          </div>
+          <!-- v47.96: Remove DCA button — shown only when a schedule is active on the holding being edited -->
+          <button type="button" id="hm-dca-remove-btn" onclick="_dcaRemoveFromForm()" style="display:none;background:rgba(248,113,113,0.10);border:1px solid rgba(248,113,113,0.35);color:#f87171;font-size:10px;padding:3px 8px;border-radius:4px;cursor:pointer;font-weight:600;white-space:nowrap;" title="Remove this DCA schedule from this holding">✕ Remove DCA</button>
         </div>
         <div class="form-grid cols3" style="gap:8px;">
           <div class="field" style="margin-bottom:0;">
             <label style="font-size:10px;">Frequency</label>
-            <select id="hm-dca-freq" style="font-size:12px;">
+            <select id="hm-dca-freq" style="font-size:12px;" onchange="_dcaUpdateSummary()">
               <option value="">None</option>
               <option value="daily">Daily</option>
               <option value="weekly">Weekly</option>
@@ -3385,7 +3401,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
           </div>
           <div class="field" style="margin-bottom:0;">
             <label style="font-size:10px;">Amount $ <span style="color:var(--text3);font-weight:400;">per cycle</span></label>
-            <input id="hm-dca-amount" type="number" step="any" placeholder="e.g. 200" style="font-size:12px;font-family:var(--mono);">
+            <input id="hm-dca-amount" type="number" step="any" placeholder="e.g. 200" style="font-size:12px;font-family:var(--mono);" oninput="_dcaUpdateSummary()">
           </div>
           <div class="field" style="margin-bottom:0;">
             <label style="font-size:10px;">Start Date</label>
@@ -3394,36 +3410,42 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
         </div>
         <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(96,168,240,0.15);">
           <div style="font-size:9px;color:#70b8ff;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;font-weight:700;opacity:0.85;">
-            Source (Buy lands here)
+            Source
           </div>
           <div class="form-grid cols2" style="gap:8px;">
             <div class="field" style="margin-bottom:0;">
               <label style="font-size:10px;">Wallet</label>
-              <input id="hm-dca-src-wallet" type="text" list="wallet-options" placeholder="e.g. Coinbase Hot" style="font-size:12px;">
+              <input id="hm-dca-src-wallet" type="text" list="wallet-options" placeholder="e.g. Coinbase Hot" style="font-size:12px;" oninput="_dcaUpdateSummary()">
             </div>
             <div class="field" style="margin-bottom:0;">
               <label style="font-size:10px;">Chain</label>
-              <input id="hm-dca-src-chain" type="text" list="chain-options" placeholder="e.g. Ethereum" style="font-size:12px;">
+              <input id="hm-dca-src-chain" type="text" list="chain-options" placeholder="e.g. Ethereum" style="font-size:12px;" oninput="_dcaUpdateSummary()">
             </div>
           </div>
         </div>
         <div style="margin-top:6px;padding-top:8px;border-top:1px solid rgba(96,168,240,0.15);">
           <div style="font-size:9px;color:#70b8ff;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;font-weight:700;opacity:0.85;">
-            Long-Term Destination <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;">— optional cold-storage transfer after each Buy</span>
+            Destination <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;">— optional</span>
           </div>
-          <div class="form-grid cols2" style="gap:8px;">
+          <div class="form-grid cols3" style="gap:8px;">
             <div class="field" style="margin-bottom:0;">
               <label style="font-size:10px;">Wallet</label>
-              <input id="hm-dca-dst-wallet" type="text" list="wallet-options" placeholder="e.g. Trezor Cold" style="font-size:12px;">
+              <input id="hm-dca-dst-wallet" type="text" list="wallet-options" placeholder="e.g. Trezor Cold" style="font-size:12px;" oninput="_dcaUpdateSummary()">
             </div>
             <div class="field" style="margin-bottom:0;">
               <label style="font-size:10px;">Chain</label>
-              <input id="hm-dca-dst-chain" type="text" list="chain-options" placeholder="e.g. Bitcoin" style="font-size:12px;">
+              <input id="hm-dca-dst-chain" type="text" list="chain-options" placeholder="e.g. Bitcoin" style="font-size:12px;" oninput="_dcaUpdateSummary()">
+            </div>
+            <div class="field" style="margin-bottom:0;">
+              <label style="font-size:10px;">Token</label>
+              <input id="hm-dca-dst-sym" type="text" placeholder="e.g. BTC, ETH, USDC" style="font-size:12px;font-family:var(--mono);text-transform:uppercase;" oninput="_dcaUpdateSummary()">
             </div>
           </div>
           <div style="font-size:9px;color:var(--text3);margin-top:4px;font-style:italic;">
-            Leave Destination blank to keep DCA Buys in the source wallet. When set, each confirmed DCA logs Buy + Transfer atomically.
+            Leave <strong>all three</strong> destination fields blank to keep DCA Buys in the source wallet only. To enable a destination, <strong>all three</strong> are required — Wallet, Chain, and Token. Use the same Token as the source for a cold-storage transfer (e.g. ETH → Ledger on Ethereum). Use a different Token to record a swap (e.g. spend USDC, gain BTC).
           </div>
+          <!-- v47.96: live-updating summary line that spells out what the schedule will do -->
+          <div id="hm-dca-summary" style="margin-top:6px;padding:6px 8px;background:rgba(96,168,240,0.06);border:1px solid rgba(96,168,240,0.2);border-radius:4px;font-size:10.5px;line-height:1.45;color:var(--text2);"></div>
         </div>
       </div>
     </div>
@@ -3554,17 +3576,22 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
       <div style="font-size:9px;color:#70b8ff;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;font-weight:700;">Confirm purchase details</div>
       <div class="form-grid cols2" style="gap:10px;">
         <div class="field" style="margin-bottom:0;">
-          <label style="font-size:10px;">Amount $</label>
+          <label style="font-size:10px;">Amount $ <span id="dca-amount-err" style="color:#f87171;font-weight:600;display:none;margin-left:4px;">— required</span></label>
           <input id="dca-amount" type="number" step="any" style="font-size:12px;font-family:var(--mono);" oninput="_dcaUpdatePreview()">
         </div>
         <div class="field" style="margin-bottom:0;">
-          <label style="font-size:10px;">Price per token $ <span style="color:var(--text3);font-weight:400;">(live)</span></label>
+          <label style="font-size:10px;">Price per token $ <span id="dca-price-err" style="color:#f87171;font-weight:600;display:none;margin-left:4px;">— required</span></label>
           <input id="dca-price" type="number" step="any" style="font-size:12px;font-family:var(--mono);" oninput="_dcaUpdatePreview()">
+          <!-- v47.96: price hint — shows live + divergence so user knows the field is editable -->
+          <div id="dca-price-hint" style="margin-top:4px;font-size:10px;color:var(--text3);font-style:italic;line-height:1.4;"></div>
         </div>
       </div>
       <div style="font-size:10px;color:var(--text3);margin-top:8px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.05);">
         Qty added to holding: <strong id="dca-qty-preview" style="color:#70b8ff;font-family:var(--mono);">—</strong>
-        <span style="opacity:0.7;margin-left:6px;">at live price</span>
+      </div>
+      <!-- v47.95: persistent validation banner — replaces the easy-to-miss toast -->
+      <div id="dca-validation-banner" style="display:none;margin-top:10px;padding:8px 10px;background:rgba(248,113,113,0.10);border:1px solid rgba(248,113,113,0.35);border-radius:4px;font-size:11px;color:#fca5a5;line-height:1.4;">
+        <strong style="color:#f87171;">⚠ Cannot confirm yet</strong> &mdash; <span id="dca-validation-msg">enter amount and price to enable Confirm.</span>
       </div>
     </div>
     <div id="dca-xfer-panel" style="display:none;background:rgba(168,85,247,0.05);border:1px solid rgba(168,85,247,0.25);border-radius:var(--radius);padding:12px;margin-bottom:12px;">
@@ -3579,6 +3606,13 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
       <div style="font-size:9px;color:var(--text3);margin-top:4px;font-style:italic;">
         Uncheck if you didn't move tokens to cold storage this cycle. The schedule itself is untouched — next cycle will prompt again.
       </div>
+    </div>
+    <!-- v47.96: price-verification checkbox — gates Confirm, ensures cost basis reflects actual fill price even when confirmation is delayed hours or days after the buy -->
+    <div style="background:rgba(232,183,106,0.08);border:1px solid rgba(232,183,106,0.30);border-radius:var(--radius);padding:10px 12px;margin-bottom:12px;">
+      <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;user-select:none;font-size:11px;line-height:1.45;color:var(--text2);">
+        <input id="dca-verify-price" type="checkbox" style="margin:1px 0 0 0;cursor:pointer;flex-shrink:0;" onchange="_dcaUpdatePreview()">
+        <span><strong style="color:#e8b76a;">Price above reflects my actual purchase price</strong> — not just current live. If your buy happened earlier (hours or days ago), edit the price field to match your actual fill before ticking this.</span>
+      </label>
     </div>
     <div class="modal-actions">
       <button class="btn" onclick="_dcaSnooze()" title="Defer until next app open">Snooze</button>
@@ -6303,6 +6337,79 @@ function poolLiveRatio(p) {
   if(pa && pb && pa !== 0 && pb !== 0) return p.invertRatio ? pb / pa : pa / pb;
   return null;
 }
+// ── v47.95: Live Ratio modal display + override disclosure ─────────────────
+// The Live Ratio is shown as a read-only value by default — auto-calculated
+// from the latest token prices. A small "Advanced" disclosure lets the user
+// reveal an override input for the rare cases where it's needed (tokens
+// without a CoinGecko price feed, etc). When an override IS active, the
+// display shows it in amber with a one-click Clear action.
+//
+// The pool being edited is stashed on the override input as _srcPool so
+// the renderer can recompute the auto value reactively.
+function _poolAutoRatio(p) {
+  // Compute purely from prices, IGNORING any stored override
+  if(!p || !p.tokAGeckoId || !p.tokBGeckoId) return null;
+  const pa = getPrice(p.tokAGeckoId);
+  const pb = getPrice(p.tokBGeckoId);
+  if(!pa || !pb || pa === 0 || pb === 0) return null;
+  return p.invertRatio ? pb / pa : pa / pb;
+}
+function _fmtRatio(v) {
+  if(v == null || !isFinite(v)) return '—';
+  return v >= 100 ? v.toFixed(2) : v >= 1 ? v.toFixed(4) : v.toFixed(6);
+}
+function _renderLiveRatioDisplay() {
+  const disp = document.getElementById('pm-ratio-display');
+  const inp  = document.getElementById('pm-ratio');
+  const tog  = document.getElementById('pm-ratio-advanced-toggle');
+  if(!disp || !inp) return;
+  const p     = inp._srcPool;
+  const auto  = _poolAutoRatio(p);
+  const typed = (inp.value || '').trim();
+  const overrideNum = typed ? +typed : NaN;
+  const hasOverride = typed && isFinite(overrideNum) && overrideNum > 0;
+  if(hasOverride) {
+    // Override active — show in amber with clear action
+    disp.innerHTML =
+      '<span style="color:#e8b76a;font-weight:600;">' + _fmtRatio(overrideNum) + '</span>' +
+      ' <span style="color:#9b8662;font-size:10.5px;margin-left:8px;">override active' +
+      (auto != null ? ' &middot; auto would be ' + _fmtRatio(auto) : '') + '</span>' +
+      ' <a href="javascript:void(0)" onclick="_clearLiveRatioOverride()" ' +
+        'style="margin-left:10px;color:#5fb8e8;font-size:10.5px;text-decoration:underline;">Clear</a>';
+    if(tog) tog.style.display = 'none';   // override visible already, hide the toggle
+  } else if(auto != null) {
+    disp.innerHTML =
+      '<span style="color:#cfe6dc;font-weight:600;">' + _fmtRatio(auto) + '</span>' +
+      ' <span style="color:#6b7d92;font-size:10.5px;margin-left:8px;">auto-calculated from token prices</span>';
+    if(tog) tog.style.display = '';
+  } else {
+    disp.innerHTML =
+      '<span style="color:#9b8662;">—</span>' +
+      ' <span style="color:#6b7d92;font-size:10.5px;margin-left:8px;">price feed not loaded yet (try Refresh)</span>';
+    if(tog) tog.style.display = '';
+  }
+}
+function _toggleLiveRatioOverride() {
+  const wrap = document.getElementById('pm-ratio-override-wrap');
+  const tog  = document.getElementById('pm-ratio-advanced-toggle');
+  if(!wrap || !tog) return;
+  const showing = wrap.style.display !== 'none';
+  if(showing) {
+    wrap.style.display = 'none';
+    tog.innerHTML = '&#9656; Set manual override (rare)';
+  } else {
+    wrap.style.display = '';
+    tog.innerHTML = '&#9662; Hide override field';
+    const inp = document.getElementById('pm-ratio');
+    if(inp) inp.focus();
+  }
+}
+function _clearLiveRatioOverride() {
+  const inp = document.getElementById('pm-ratio');
+  if(!inp) return;
+  inp.value = '';
+  _renderLiveRatioDisplay();
+}
 function rangeStatus(p) {
   if(p.vaultMode) return 'vault';
   if(p.tokAGeckoId && p.tokAGeckoId === p.tokBGeckoId) return 'Like';
@@ -6380,6 +6487,17 @@ function _findHoldingExact(sym, wallet, chain) {
     (h.sym || '').toUpperCase() === symU &&
     (!walletL || (h.wallet || '').toLowerCase() === walletL)
   ) || null;
+}
+// v47.96: Look up a geckoId from any existing Holdings row matching this symbol.
+// Used by cross-asset DCA to find the price feed for the destination asset
+// without requiring the user to re-enter the gecko ID. Returns '' if no
+// existing row has that sym (the destination will get a fresh geckoId at
+// confirm time if/when the row is created).
+function _findGeckoIdForSym(sym) {
+  const symU = (sym || '').toUpperCase();
+  if(!symU) return '';
+  const hit = DB.holdings.find(h => (h.sym||'').toUpperCase() === symU && h.geckoId);
+  return hit ? hit.geckoId : '';
 }
 // v47.88: Smart resolver. Given (sym, wallet, chain?), returns the Holdings
 // row to use, auto-disambiguating multi-chain wallets when chain is omitted.
@@ -6649,7 +6767,7 @@ function renderPools() {
       <td style="min-width:72px;text-align:right;background:rgba(74,158,255,0.07);border-left:2px solid rgba(74,158,255,0.25);border-right:2px solid rgba(74,158,255,0.25);">
         ${p.vaultMode
           ? `<span style="font-size:10px;color:var(--text3);font-style:italic;">auto</span>`
-          : ratio ? `<span style="font-family:var(--mono);font-size:var(--fs-mono);font-weight:700;color:#4a9eff;">${ratio < 0.0001 ? ratio.toExponential(2) : ratio.toPrecision(4)}</span>` : '<span class="neu">—</span>'}
+          : ratio ? `<span style="font-family:var(--mono);font-size:var(--fs-mono);font-weight:700;color:#4a9eff;">${ratio < 0.0001 ? ratio.toExponential(2) : ratio.toPrecision(4)}</span>${p.liveRatio ? `<span style="display:inline-block;margin-left:4px;padding:0 4px;font-size:8px;font-weight:700;color:#e8b76a;background:rgba(232,183,106,0.12);border:1px solid rgba(232,183,106,0.35);border-radius:2px;cursor:pointer;vertical-align:middle;font-family:var(--mono);" onclick="event.stopPropagation();openPoolModal('${p.id}')" title="Manual override active — click to edit/clear">OVR</span>` : ''}` : '<span class="neu">—</span>'}
         ${!p.vaultMode ? `<div style="font-size:9px;color:var(--text3);margin-top:1px;line-height:1.3">
           ${pctLow!==null?`${(pctLow*100).toFixed(1)}%lo`:''}
           ${pctHigh!==null?` ${(pctHigh*100).toFixed(1)}%hi`:''}
@@ -8380,6 +8498,23 @@ function openPoolModal(id=null) {
   document.getElementById('pm-low').value         = p?.rangeLow||'';
   document.getElementById('pm-high').value        = p?.rangeHigh||'';
   document.getElementById('pm-ratio').value       = p?.liveRatio||'';
+  // v47.95: Live Ratio display setup
+  const _ratioInp = document.getElementById('pm-ratio');
+  if(_ratioInp) { _ratioInp._srcPool = p || null; }
+  // If this pool ALREADY has an override set, auto-reveal the override field
+  // so the user immediately sees what's happening (and can clear it easily).
+  const _ovrWrap = document.getElementById('pm-ratio-override-wrap');
+  const _ovrTog  = document.getElementById('pm-ratio-advanced-toggle');
+  if(_ovrWrap && _ovrTog) {
+    if(p && p.liveRatio) {
+      _ovrWrap.style.display = '';
+      _ovrTog.innerHTML = '&#9662; Hide override field';
+    } else {
+      _ovrWrap.style.display = 'none';
+      _ovrTog.innerHTML = '&#9656; Set manual override (rare)';
+    }
+  }
+  _renderLiveRatioDisplay();
   document.getElementById('pm-reward-search').value = p?.rewardTokSym||'';
   document.getElementById('pm-reward-id').value   = p?.rewardTokId||'';
   document.getElementById('pm-reward-sym').value  = p?.rewardTokSym||'';
@@ -11154,41 +11289,145 @@ function _clFillMax(which) {
 
 // ─── DCA ALERT FLOW (v47.87 / v47.89) ───────────────────────────────────────
 let _dcaActiveId = null;
+// ── v47.96: DCA Edit Holding form helpers ──────────────────────────────────
+// _dcaDestState reads the three destination fields and returns a structured
+// classification used by both the live summary line and the save-time validator.
+// Categories: 'empty' (all blank — schedule is buy-only),
+//             'complete-same' (all set, dest token == source token — cold-storage transfer),
+//             'complete-cross' (all set, dest token != source token — cross-asset swap),
+//             'incomplete' (some blank, some set — invalid).
+function _dcaDestState(srcSym) {
+  const w = (document.getElementById('hm-dca-dst-wallet')?.value || '').trim();
+  const c = (document.getElementById('hm-dca-dst-chain')?.value  || '').trim();
+  const s = (document.getElementById('hm-dca-dst-sym')?.value    || '').toUpperCase().trim();
+  const filled = [w, c, s].filter(Boolean).length;
+  if(filled === 0) return { kind:'empty', w, c, s };
+  if(filled  <  3) return { kind:'incomplete', w, c, s };
+  const srcU = (srcSym || '').toUpperCase();
+  return s === srcU ? { kind:'complete-same', w, c, s } : { kind:'complete-cross', w, c, s };
+}
+function _dcaUpdateSummary() {
+  const box = document.getElementById('hm-dca-summary');
+  if(!box) return;
+  const freq = document.getElementById('hm-dca-freq')?.value || '';
+  const amt  = +(document.getElementById('hm-dca-amount')?.value) || 0;
+  // Source token: in Edit Holding, the held row's symbol; new-mode reads from the search box.
+  const srcSym = ((document.getElementById('hm-sym')?.value)
+                 || (document.getElementById('hm-search')?.value) || '').toUpperCase().trim();
+  const srcW = (document.getElementById('hm-dca-src-wallet')?.value || '').trim();
+  const srcC = (document.getElementById('hm-dca-src-chain')?.value  || '').trim();
+  // If DCA isn't enabled (no freq or no amount), hide the summary altogether.
+  if(!freq || amt <= 0) { box.innerHTML = '<span style="color:var(--text3);font-style:italic;">No DCA — set a Frequency and Amount above to enable.</span>'; return; }
+  const dst = _dcaDestState(srcSym);
+  const freqWord = _freqLabel(freq).toLowerCase();
+  const srcLine = `${srcW || '(source wallet)'}${srcC ? ' / '+srcC : ''}`;
+  if(dst.kind === 'incomplete') {
+    box.innerHTML = `<span style="color:#f87171;font-weight:600;">⚠ Destination is incomplete.</span> <span style="color:var(--text3);">Fill all three fields (Wallet, Chain, Token) or clear all three.</span>`;
+    return;
+  }
+  if(dst.kind === 'empty') {
+    box.innerHTML = `This schedule will: log a Buy of <strong>$${amt} of ${srcSym||'?'}</strong> into <strong>${srcLine}</strong> each ${freqWord}. <span style="color:var(--text3);">No transfer.</span>`;
+    return;
+  }
+  const dstLine = `${dst.w} / ${dst.c}`;
+  if(dst.kind === 'complete-same') {
+    box.innerHTML = `This schedule will: each ${freqWord}, log a <strong>Buy</strong> of <strong>$${amt} of ${srcSym}</strong> at <strong>${srcLine}</strong>, then <strong>Transfer</strong> the ${srcSym} to <strong>${dstLine}</strong>.`;
+    return;
+  }
+  // complete-cross
+  box.innerHTML = `This schedule will: each ${freqWord}, <strong style="color:#c084fc;">Swap</strong> — spend <strong>$${amt} of ${srcSym}</strong> from <strong>${srcLine}</strong> and acquire <strong>${dst.s}</strong> at <strong>${dstLine}</strong> at the price you confirm.`;
+}
+// v47.96: Remove DCA — used by the ✕ Remove DCA button in the Edit Holding
+// modal. Clears all DCA form fields (Frequency → None blanks everything else
+// via the existing save-handler delete path) and refreshes the summary.
+// The actual deletion of h.dca happens when the user clicks Save (the existing
+// edit-mode handler detects "freq cleared while previous schedule existed" and
+// removes the schedule). This keeps a single deletion path through the same
+// confirm dialog the user already sees.
+function _dcaRemoveFromForm() {
+  if(!confirm('Clear the DCA schedule fields?\n\nClick OK to clear, then click Save to remove the schedule from this holding. (You can also click Cancel on the modal if you change your mind.)')) return;
+  const ids = ['hm-dca-freq','hm-dca-amount','hm-dca-start',
+               'hm-dca-src-wallet','hm-dca-src-chain',
+               'hm-dca-dst-wallet','hm-dca-dst-chain','hm-dca-dst-sym'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.value = '';
+  });
+  const btn = document.getElementById('hm-dca-remove-btn');
+  if(btn) btn.style.display = 'none';
+  _dcaUpdateSummary();
+  toast('DCA fields cleared — click Save to remove the schedule.');
+}
+// ───────────────────────────────────────────────────────────────────────────
 function openDcaConfirmModal(holdingId) {
   const h = DB.holdings.find(x => x.id === holdingId);
   if(!h || !h.dca) { toast('No DCA schedule on this holding', true); return; }
   _dcaActiveId = holdingId;
   document.getElementById('dca-holding-id').value = holdingId;
-  const live = getPrice(h.geckoId) || h.avgCost || 0;
+
+  // v47.96: cross-asset DCA detection.
+  // destSym blank or equal to source sym → same-asset (v47.89 behavior).
+  // destSym different → cross-asset: spend source asset, acquire dest asset.
+  const _dstSymRaw = (h.dca.destSym || '').toUpperCase().trim();
+  const _isCross   = !!_dstSymRaw && _dstSymRaw !== h.sym;
+  const _dstGecko  = _isCross ? _findGeckoIdForSym(_dstSymRaw) : '';
+  // Price field is for the DESTINATION asset in cross-asset; source asset otherwise.
+  const live = _isCross
+    ? (_dstGecko ? (getPrice(_dstGecko) || 0) : 0)
+    : (getPrice(h.geckoId) || h.avgCost || 0);
   document.getElementById('dca-amount').value = h.dca.amount || '';
   document.getElementById('dca-price').value  = live || '';
   const dueDate = h.dca.nextDue || today();
 
-  // v47.89: identify source row (where the Buy lands) and destination row.
+  // v47.89: identify source row (where the Buy/Swap originates).
   const srcW = h.dca.sourceWallet || h.wallet || '';
   const srcC = h.dca.sourceChain  || h.chain  || '';
   const dstW = h.dca.destWallet || '';
   const dstC = h.dca.destChain  || '';
   const srcRow = _findHoldingExact(h.sym, srcW, srcC);
-  const dstRow = dstW ? _findHoldingExact(h.sym, dstW, dstC) : null;
+  // For same-asset: destination row matches h.sym. For cross-asset: matches destSym.
+  const dstSymForRow = _isCross ? _dstSymRaw : h.sym;
+  const dstRow = dstW ? _findHoldingExact(dstSymForRow, dstW, dstC) : null;
 
   const srcLine = `${srcW || '(no wallet)'}${srcC ? ' / '+srcC : ''}`;
   const srcQty  = srcRow ? srcRow.qty : 0;
 
-  document.getElementById('dca-summary').innerHTML =
-    `<strong>${h.sym}</strong> — ${_freqLabel(h.dca.freq)} schedule · Due: ${dueDate}<br>` +
-    `<span style="color:var(--text3);font-size:11px;">Buy lands in: <strong style="color:var(--text2);">${srcLine}</strong> (current: ${srcQty} ${h.sym})</span>`;
+  // v47.96: cross-asset gets a clearer "Buy X with Y" summary.
+  document.getElementById('dca-summary').innerHTML = _isCross
+    ? `<strong>Buy ${_dstSymRaw} with ${h.sym}</strong> — ${_freqLabel(h.dca.freq)} schedule · Due: ${dueDate}<br>` +
+      `<span style="color:var(--text3);font-size:11px;">Spends from: <strong style="color:var(--text2);">${srcLine}</strong> (current: ${srcQty} ${h.sym})</span>`
+    : `<strong>${h.sym}</strong> — ${_freqLabel(h.dca.freq)} schedule · Due: ${dueDate}<br>` +
+      `<span style="color:var(--text3);font-size:11px;">Buy lands in: <strong style="color:var(--text2);">${srcLine}</strong> (current: ${srcQty} ${h.sym})</span>`;
 
   const xferPanel = document.getElementById('dca-xfer-panel');
   const xferCb    = document.getElementById('dca-xfer-on');
   const xferDetail= document.getElementById('dca-xfer-detail');
   const confirmBtn= document.getElementById('dca-confirm-btn');
   const actionHint= document.getElementById('dca-action-hint');
-  if(dstW) {
+
+  if(_isCross) {
+    // Cross-asset: single Swap, no separate "transfer" checkbox.
     xferPanel.style.display = '';
     xferCb.checked = true;
-    const dstQty = dstRow ? dstRow.qty : 0;
+    xferCb.disabled = true;          // can't disable the destination on a cross-asset DCA
     const dstLine = `${dstW}${dstC ? ' / '+dstC : ''}`;
+    const dstQty = dstRow ? dstRow.qty : 0;
+    const dstRowNote = dstRow
+      ? `current: ${dstQty} ${_dstSymRaw}`
+      : `<span style="color:#f59e0b;">new ${_dstSymRaw} row will be created on confirm</span>`;
+    xferDetail.innerHTML =
+      `<span style="color:#c084fc;">Swap to:</span> <strong>${dstLine}</strong> &nbsp;<span style="color:var(--text3);font-size:10px;">(${dstRowNote})</span><br>` +
+      `<span style="color:var(--text3);font-size:10px;">Source ${h.sym} debited from <strong>${srcLine}</strong>; destination ${_dstSymRaw} credited at the price above.</span>`;
+    confirmBtn.textContent = 'Confirm Swap';
+    actionHint.textContent = `Confirm logs a single Swap: spend ${h.sym} from source → gain ${_dstSymRaw} at destination, at the price above.`;
+    xferCb.onchange = null;
+  } else if(dstW) {
+    xferPanel.style.display = '';
+    xferCb.disabled = false;
+    xferCb.checked = true;
+    const dstLine = `${dstW}${dstC ? ' / '+dstC : ''}`;
+    const dstQty = dstRow ? dstRow.qty : 0;
     const dstRowNote = dstRow
       ? `current: ${dstQty} ${h.sym}`
       : `<span style="color:#f59e0b;">new row will be created on confirm</span>`;
@@ -11202,9 +11441,21 @@ function openDcaConfirmModal(holdingId) {
     };
   } else {
     xferPanel.style.display = 'none';
+    xferCb.disabled = false;
     confirmBtn.textContent = 'Confirm Buy';
     actionHint.textContent = 'Confirm logs a Buy transaction at the price above. Skip moves to the next cycle without buying.';
   }
+
+  // v47.96: stash cross-asset context on the modal for the preview/confirm to use.
+  document.getElementById('dcaConfirmModal')._dcaCtx = {
+    isCross: _isCross,
+    srcSym: h.sym, srcRow, srcW, srcC,
+    dstSym: dstSymForRow, dstRow, dstW, dstC, dstGecko: _dstGecko,
+  };
+
+  // v47.96: reset price-verification checkbox — user must reaffirm each cycle
+  const _verifyCb = document.getElementById('dca-verify-price');
+  if(_verifyCb) _verifyCb.checked = false;
 
   _dcaUpdatePreview();
   document.getElementById('dcaConfirmModal').classList.add('open');
@@ -11212,9 +11463,129 @@ function openDcaConfirmModal(holdingId) {
 function _dcaUpdatePreview() {
   const amt   = +document.getElementById('dca-amount')?.value || 0;
   const price = +document.getElementById('dca-price')?.value  || 0;
+  const ctx   = document.getElementById('dcaConfirmModal')?._dcaCtx;
+  // For cross-asset: price is the DESTINATION asset's price; qty produced
+  // is destination qty. For same-asset: qty produced is source qty.
   const qty   = (price > 0) ? amt / price : 0;
   const el = document.getElementById('dca-qty-preview');
-  if(el) el.textContent = qty > 0 ? qty.toFixed(qty < 1 ? 6 : 4) : '—';
+  if(el) {
+    if(ctx?.isCross && qty > 0) {
+      // Show conversion explicitly: $X SRC → Y DST
+      el.innerHTML =
+        `<span style="color:var(--text2);">$${amt.toFixed(2)} ${ctx.srcSym}</span>` +
+        ` <span style="color:var(--text3);">→</span> ` +
+        `<strong style="color:#70b8ff;font-family:var(--mono);">${qty.toFixed(qty < 1 ? 6 : 4)} ${ctx.dstSym}</strong>`;
+    } else {
+      el.textContent = qty > 0 ? qty.toFixed(qty < 1 ? 6 : 4) : '—';
+    }
+  }
+  // v47.95: persistent validation + v47.96 pre-flight balance check.
+  // Confirm button disables until both fields are > 0 AND source row has enough.
+  const amtBad   = !(amt > 0);
+  const priceBad = !(price > 0);
+  const errA = document.getElementById('dca-amount-err');
+  const errP = document.getElementById('dca-price-err');
+  if(errA) errA.style.display = amtBad   ? '' : 'none';
+  if(errP) errP.style.display = priceBad ? '' : 'none';
+  const banner = document.getElementById('dca-validation-banner');
+  const msg    = document.getElementById('dca-validation-msg');
+  const btn    = document.getElementById('dca-confirm-btn');
+
+  // Pre-flight: if amount and price are set, verify the source row holds
+  // enough source asset to cover this cycle. Source qty needed is `amt`
+  // for stablecoin sources (price ~$1) or `amt / sourcePrice` more generally.
+  // Same-asset DCA "buys" into the source row, so this check only fires for
+  // cross-asset where we're actually debiting the source.
+  let preflightErr = '';
+  if(!amtBad && !priceBad && ctx?.isCross) {
+    // For cross-asset, the source asset qty consumed = $amt / source-asset price.
+    // For stablecoin sources this is ~= amt. For volatile sources we look up
+    // the live price; if unavailable we trust the user's $amt directly.
+    const srcH = ctx.srcRow;
+    const srcGecko = srcH ? srcH.geckoId : '';
+    const srcPx = srcGecko ? (getPrice(srcGecko) || 0) : 1;
+    const srcQtyNeeded = srcPx > 0 ? (amt / srcPx) : amt;
+    if(!srcH) {
+      preflightErr = `No ${ctx.srcSym} found at ${ctx.srcW || '(source wallet)'}${ctx.srcC ? ' / '+ctx.srcC : ''}. Add a row with ${ctx.srcSym} on that wallet/chain first, or edit the schedule\u2019s Source.`;
+    } else if((srcH.qty || 0) < srcQtyNeeded) {
+      preflightErr = `Not enough ${ctx.srcSym} at ${ctx.srcW || '(source)'}${ctx.srcC ? ' / '+ctx.srcC : ''}. Have ${(srcH.qty||0).toFixed(4)}, need ~${srcQtyNeeded.toFixed(4)} for this cycle.`;
+    }
+  }
+
+  if(amtBad || priceBad || preflightErr) {
+    if(banner) banner.style.display = '';
+    if(msg) {
+      if(preflightErr) {
+        msg.textContent = preflightErr;
+      } else {
+        msg.textContent = amtBad && priceBad
+          ? 'enter both amount and price to enable Confirm.'
+          : amtBad
+            ? 'enter an amount (USD) to enable Confirm.'
+            : 'enter a price per token to enable Confirm. The live price normally pre-fills; if blank, the price feed hasn\u2019t loaded yet \u2014 type it manually or click Snooze and try again after a Refresh.';
+      }
+    }
+    if(btn) { btn.disabled = true; btn.style.opacity = '0.45'; btn.style.cursor = 'not-allowed'; btn.title = preflightErr || 'Enter amount and price to enable'; }
+  } else {
+    if(banner) banner.style.display = 'none';
+    if(btn) { btn.disabled = false; btn.style.opacity = ''; btn.style.cursor = ''; btn.title = ''; }
+  }
+
+  // ── v47.96: price hint + verification-checkbox gate ─────────────────────
+  // The price field is editable and SHOULD be edited if the user is
+  // confirming a cycle hours/days after the actual fill happened. Show what
+  // live currently is, and how far the user's entered value is from live.
+  // The verification checkbox is a final stop ensuring the price reflects
+  // the actual purchase, not just whatever was pre-filled.
+  const hint = document.getElementById('dca-price-hint');
+  if(hint) {
+    // Live price for the asset being acquired: dest for cross-asset, src (h) for same-asset.
+    const livePx = ctx?.isCross
+      ? (ctx.dstGecko ? (getPrice(ctx.dstGecko) || 0) : 0)
+      : (() => {
+          const _h = DB.holdings.find(x => x.id === _dcaActiveId);
+          return _h?.geckoId ? (getPrice(_h.geckoId) || 0) : 0;
+        })();
+    const fmtUsd = v => v >= 100 ? '$' + v.toFixed(2) : '$' + v.toFixed(4);
+    if(livePx <= 0 && !(price > 0)) {
+      hint.innerHTML = 'Live price not loaded yet \u2014 type the actual fill price manually.';
+      hint.style.color = '#9b8662';
+    } else if(livePx <= 0) {
+      hint.innerHTML = 'Live price unavailable \u2014 using your entered value.';
+      hint.style.color = '#9b8662';
+    } else if(!(price > 0)) {
+      hint.innerHTML = `Live: <strong>${fmtUsd(livePx)}</strong> \u2014 type the actual fill price, or use live if confirming immediately.`;
+      hint.style.color = 'var(--text3)';
+    } else {
+      const diff = price - livePx;
+      const pct  = (diff / livePx) * 100;
+      const absPct = Math.abs(pct);
+      const sign = diff >= 0 ? '+' : '\u2212';
+      if(absPct < 0.05) {
+        hint.innerHTML = `Live: <strong>${fmtUsd(livePx)}</strong> \u2014 your value matches live. Edit if your actual fill differed.`;
+        hint.style.color = 'var(--text3)';
+      } else {
+        // Show divergence; amber when big enough to be worth noticing
+        const color = absPct >= 5 ? '#e8b76a' : absPct >= 1 ? '#9bb0a6' : 'var(--text3)';
+        hint.innerHTML = `Live: <strong>${fmtUsd(livePx)}</strong> \u2014 your value differs by ${sign}${fmtUsd(Math.abs(diff)).replace('$','$')} (${sign}${absPct.toFixed(2)}%).`;
+        hint.style.color = color;
+      }
+    }
+  }
+
+  // Verification checkbox gate: only applies if the other validations passed
+  // (i.e. btn would otherwise be enabled). Confirm stays disabled until the
+  // checkbox is ticked. Confirmation reflects user explicitly affirming the
+  // price represents their actual purchase, not stale live.
+  const verifyCb = document.getElementById('dca-verify-price');
+  if(verifyCb && btn && !btn.disabled) {
+    if(!verifyCb.checked) {
+      btn.disabled = true;
+      btn.style.opacity = '0.45';
+      btn.style.cursor = 'not-allowed';
+      btn.title = 'Tick the price-verification checkbox to enable';
+    }
+  }
 }
 function _dcaConfirm() {
   const id = _dcaActiveId;
@@ -11223,61 +11594,187 @@ function _dcaConfirm() {
   const amt   = +document.getElementById('dca-amount').value || 0;
   const price = +document.getElementById('dca-price').value  || 0;
   if(amt <= 0 || price <= 0) { toast('Amount and price required', true); return; }
-  const qty = amt / price;
 
-  // v47.89: Buy lands in the SOURCE row (not necessarily h itself).
+  const ctx = document.getElementById('dcaConfirmModal')?._dcaCtx;
   const srcW = h.dca.sourceWallet || h.wallet || '';
   const srcC = h.dca.sourceChain  || h.chain  || '';
-  let srcRow = _findHoldingExact(h.sym, srcW, srcC);
-  if(!srcRow) {
-    srcRow = {
-      id: uid(), sym: h.sym, geckoId: h.geckoId, cat: h.cat || '',
-      chain: srcC, wallet: srcW, avgCost: 0, qty: 0,
+
+  // ── v47.96: CROSS-ASSET PATH — single Swap transaction ──────────────────
+  // When destSym differs from source sym, the cycle is a swap: source asset
+  // debited at its live price (or $1 for stablecoins), destination asset
+  // credited at the user-confirmable price entered in the modal. No
+  // intermediate Buy + Transfer; the economic outcome is what gets recorded.
+  if(ctx?.isCross) {
+    const dstSym = ctx.dstSym;
+    const dstW   = ctx.dstW;
+    const dstC   = ctx.dstC;
+    // Source qty needed: $amt / source-asset price (stablecoins ~= amt).
+    let srcRow = ctx.srcRow;
+    if(!srcRow) {
+      toast(`No ${h.sym} found at ${srcW}${srcC?'/'+srcC:''}`, true);
+      return;
+    }
+    const srcGecko = srcRow.geckoId || '';
+    const srcPx    = srcGecko ? (getPrice(srcGecko) || 0) : 1;
+    const sourceQty = srcPx > 0 ? (amt / srcPx) : amt;
+    if((srcRow.qty || 0) < sourceQty - 1e-9) {
+      toast(`Not enough ${h.sym} at source (have ${srcRow.qty||0}, need ${sourceQty.toFixed(4)})`, true);
+      return;
+    }
+    // Destination qty acquired: $amt / destination price (the modal's price field).
+    const destQty = amt / price;
+    // v47.96.1: build the full transaction object FIRST, before mutating Holdings.
+    // If anything in the object-literal throws (typos, undefined refs, bad
+    // template-string expressions, etc.), Holdings stay untouched. Only after
+    // the object is successfully constructed do we apply the debits/credits
+    // and persist. This prevents the "in-memory mutation without log" failure
+    // mode where a partial state could survive an exception and later be
+    // auto-saved to disk.
+    let dstRow = _findHoldingExact(dstSym, dstW, dstC);
+    const _destAvgCostBefore = dstRow ? dstRow.avgCost : null;
+    // Pre-compute the post-mutation source avgCost — needed inside revert payload.
+    const _srcAvgPost = srcRow.avgCost || 0;  // source avg basis is unchanged by a sell/swap-out
+    const txnObj = {
+      date: today(), type: 'Swap', sym: h.sym,
+      qty: sourceQty, price: srcPx, total: amt,
+      destSym: dstSym, destQty, destPrice: price,
+      destWallet: dstW, destChain: dstC,
+      from: `${srcW}${srcC ? ' ('+srcC+')' : ''}`,
+      to:   `${dstW}${dstC ? ' ('+dstC+')' : ''}`,
+      notes: `DCA — ${_freqLabel(h.dca.freq)} swap (confirmed): ${sourceQty.toFixed(4)} ${h.sym} \u2192 ${destQty.toFixed(destQty<1?6:4)} ${dstSym}`,
+      revert: {
+        type: 'swap',
+        sourceSym: h.sym, sourceWallet: srcW, sourceChain: srcC,
+        sourceQtyDelta: sourceQty, sourceAvgCost: _srcAvgPost,
+        sourceGeckoId: srcRow.geckoId || '', sourceCat: srcRow.cat || '',
+        destSym: dstSym, destWallet: dstW, destChain: dstC,
+        destQtyDelta: destQty, destCost: price,
+        destAvgCostBefore: _destAvgCostBefore,
+      },
     };
-    DB.holdings.push(srcRow);
-  }
-
-  // 1) BUY into source row, weighted avg cost
-  const newQtySrc = (srcRow.qty || 0) + qty;
-  srcRow.avgCost = newQtySrc > 0
-    ? (((srcRow.avgCost||0) * (srcRow.qty||0)) + (price * qty)) / newQtySrc
-    : price;
-  srcRow.qty = newQtySrc;
-  logTransaction({
-    date: today(), type: 'Buy', sym: h.sym, qty, price, total: amt,
-    from: 'Cash', to: `${srcW || 'Holdings'}${srcC ? ' ('+srcC+')' : ''}`,
-    notes: `DCA — ${_freqLabel(h.dca.freq)} schedule (confirmed)`,
-  });
-
-  // 2) Optional TRANSFER to destination row
-  const dstW = h.dca.destWallet || '';
-  const dstC = h.dca.destChain  || '';
-  const wantTransfer = !!dstW && document.getElementById('dca-xfer-on')?.checked;
-  let xferSummary = '';
-  if(wantTransfer) {
-    srcRow.qty = Math.max(0, (srcRow.qty||0) - qty);
-    let dstRow = _findHoldingExact(h.sym, dstW, dstC);
+    // Now safe to mutate Holdings — txnObj construction succeeded.
+    srcRow.qty = (srcRow.qty || 0) - sourceQty;
     if(!dstRow) {
       dstRow = {
-        id: uid(), sym: h.sym, geckoId: h.geckoId, cat: h.cat || '',
-        chain: dstC, wallet: dstW, avgCost: price, qty: 0,
+        id: uid(), sym: dstSym, geckoId: ctx.dstGecko || _findGeckoIdForSym(dstSym) || '',
+        cat: '', chain: dstC, wallet: dstW, avgCost: price, qty: 0,
       };
       DB.holdings.push(dstRow);
     }
     const prevQty = dstRow.qty || 0;
     const prevAvg = dstRow.avgCost || 0;
-    const newQtyDst = prevQty + qty;
-    dstRow.avgCost = newQtyDst > 0
-      ? ((prevAvg * prevQty) + (price * qty)) / newQtyDst
+    const newQty  = prevQty + destQty;
+    dstRow.avgCost = newQty > 0 ? ((prevAvg * prevQty) + (price * destQty)) / newQty : price;
+    dstRow.qty = newQty;
+    logTransaction(txnObj);
+    // Advance schedule.
+    h.dca.nextDue = _dcaAddPeriod(h.dca.nextDue || today(), h.dca.freq);
+    _dcaActiveId = null;
+    persist();
+    closeModal('dcaConfirmModal');
+    renderHoldings();
+    renderHeader();
+    toast(`DCA confirmed — ${sourceQty.toFixed(4)} ${h.sym} → ${destQty.toFixed(destQty<1?6:4)} ${dstSym} @ $${price.toFixed(2)}. Next due ${h.dca.nextDue}.`);
+    return;
+  }
+  // ── SAME-ASSET PATH (v47.89) — unchanged behavior ──────────────────────
+  const qty = amt / price;
+
+  let srcRow = _findHoldingExact(h.sym, srcW, srcC);
+  // Track whether we created the source row this cycle — affects whether
+  // a revert removes the row (yes, if newly-created and brought to zero)
+  // or just decrements it. Same pattern as v47.83 Buy/Swap reverts.
+  let _srcRowCreated = false;
+  if(!srcRow) {
+    srcRow = {
+      id: uid(), sym: h.sym, geckoId: h.geckoId, cat: h.cat || '',
+      chain: srcC, wallet: srcW, avgCost: 0, qty: 0,
+    };
+    _srcRowCreated = true;
+  }
+
+  // Pre-mutation snapshot for revert
+  const _srcAvgBefore = srcRow.avgCost || 0;
+  const _srcQtyBefore = srcRow.qty || 0;
+  const newQtySrc = _srcQtyBefore + qty;
+  const _srcAvgAfter = newQtySrc > 0
+    ? ((_srcAvgBefore * _srcQtyBefore) + (price * qty)) / newQtySrc
+    : price;
+
+  // Determine whether a transfer also runs this cycle
+  const dstW = h.dca.destWallet || '';
+  const dstC = h.dca.destChain  || '';
+  const wantTransfer = !!dstW && document.getElementById('dca-xfer-on')?.checked;
+  const pairId = wantTransfer ? uid() : null;
+
+  // v47.96.1: Build BOTH transaction objects first, before mutating anything.
+  // If either object literal throws during construction (typo / undefined ref),
+  // we abort with zero state change. Only after both objects are built do we
+  // apply the Holdings mutations and log the transactions.
+  const buyTxnObj = {
+    date: today(), type: 'Buy', sym: h.sym, qty, price, total: amt,
+    from: 'Cash', to: `${srcW || 'Holdings'}${srcC ? ' ('+srcC+')' : ''}`,
+    notes: `DCA — ${_freqLabel(h.dca.freq)} schedule (confirmed)`,
+    revert: {
+      type: 'buy', destId: srcRow.id,
+      destQtyDelta: qty, buyPrice: price,
+      destAvgCostBefore: _srcAvgBefore,
+    },
+    pairId,
+  };
+  let xferTxnObj = null;
+  let dstRowForXfer = null;
+  let _dstAvgBeforeXfer = null;
+  let _newQtyDstXfer = 0;
+  let _newAvgDstXfer = price;
+  let _dstRowCreatedXfer = false;
+  if(wantTransfer) {
+    dstRowForXfer = _findHoldingExact(h.sym, dstW, dstC);
+    _dstAvgBeforeXfer = dstRowForXfer ? dstRowForXfer.avgCost : null;
+    if(!dstRowForXfer) {
+      dstRowForXfer = {
+        id: uid(), sym: h.sym, geckoId: h.geckoId, cat: h.cat || '',
+        chain: dstC, wallet: dstW, avgCost: price, qty: 0,
+      };
+      _dstRowCreatedXfer = true;
+    }
+    const _prevQtyDst = dstRowForXfer.qty || 0;
+    const _prevAvgDst = dstRowForXfer.avgCost || 0;
+    _newQtyDstXfer = _prevQtyDst + qty;
+    _newAvgDstXfer = _newQtyDstXfer > 0
+      ? ((_prevAvgDst * _prevQtyDst) + (price * qty)) / _newQtyDstXfer
       : price;
-    dstRow.qty = newQtyDst;
-    logTransaction({
+    xferTxnObj = {
       date: today(), type: 'Transfer', sym: h.sym,
       qty, price: null, total: null,
       from: `${srcW}${srcC ? ' ('+srcC+')' : ''}`,
       to:   `${dstW}${dstC ? ' ('+dstC+')' : ''}`,
-      notes: `DCA auto-transfer — ${qty} ${h.sym} → long-term storage`,
-    });
+      notes: `DCA auto-transfer — ${qty} ${h.sym} \u2192 long-term storage`,
+      revert: {
+        type: 'transfer', sym: h.sym,
+        sourceWallet: srcW, sourceChain: srcC,
+        sourceAvgCost: _srcAvgAfter,
+        sourceCat: srcRow.cat || '', geckoId: srcRow.geckoId || '',
+        destWallet: dstW, destChain: dstC,
+        qtyDelta: qty,
+      },
+      pairId,
+    };
+  }
+
+  // ── All transaction objects built successfully — now apply Holdings mutations ──
+  if(_srcRowCreated) DB.holdings.push(srcRow);
+  srcRow.avgCost = _srcAvgAfter;
+  srcRow.qty = newQtySrc;
+  logTransaction(buyTxnObj);
+
+  let xferSummary = '';
+  if(wantTransfer) {
+    srcRow.qty = Math.max(0, (srcRow.qty||0) - qty);
+    if(_dstRowCreatedXfer) DB.holdings.push(dstRowForXfer);
+    dstRowForXfer.avgCost = _newAvgDstXfer;
+    dstRowForXfer.qty = _newQtyDstXfer;
+    logTransaction(xferTxnObj);
     xferSummary = ` then transferred to ${dstW}${dstC?'/'+dstC:''}`;
   }
 
@@ -11359,10 +11856,19 @@ function openHoldingModal(id=null, mode='new') {
     document.getElementById('hm-dca-src-chain').value  = h?.dca?.sourceChain  || h?.chain  || '';
     document.getElementById('hm-dca-dst-wallet').value = h?.dca?.destWallet   || '';
     document.getElementById('hm-dca-dst-chain').value  = h?.dca?.destChain    || '';
+    // v47.96: optional destination asset for cross-asset DCA (e.g. USDC → BTC).
+    // Blank = same-asset (existing v47.89 behavior).
+    document.getElementById('hm-dca-dst-sym').value    = h?.dca?.destSym      || '';
+    // v47.96: show ✕ Remove DCA button only if this holding has an active schedule
+    const _rmBtn = document.getElementById('hm-dca-remove-btn');
+    if(_rmBtn) _rmBtn.style.display = (h?.dca?.freq && +h.dca.amount > 0) ? '' : 'none';
   }
 
   // Set the active mode (also renders correct fields + button styles)
   hmSetMode(mode);
+
+  // v47.96: render the live DCA summary once on open
+  try { _dcaUpdateSummary(); } catch(e) {}
 
   document.getElementById('holdingModal').classList.add('open');
 }
@@ -11623,8 +12129,18 @@ function saveHoldingUnified() {
       const _srcC = v('hm-dca-src-chain')  || nh.chain  || '';
       const _dstW = v('hm-dca-dst-wallet') || '';
       const _dstC = v('hm-dca-dst-chain')  || '';
-      const _xferLine = (_dstW && _dstC)
-        ? `\nAuto-transfer after each Buy: ${_srcW||'(source)'}${_srcC?'/'+_srcC:''} → ${_dstW}/${_dstC}`
+      const _dstS = (v('hm-dca-dst-sym') || '').toUpperCase().trim();  // v47.96
+      // v47.96: forced-choice — all three or none
+      const _dstFilled = [_dstW, _dstC, _dstS].filter(Boolean).length;
+      if(_dstFilled > 0 && _dstFilled < 3) {
+        toast('Destination is incomplete — Wallet, Chain, and Token must all be set, or all be blank.', true);
+        return;
+      }
+      const _isCross = _dstFilled === 3 && _dstS !== (nh.sym||'').toUpperCase();
+      const _xferLine = _dstFilled === 3
+        ? (_isCross
+            ? `\n\nThis DCA will Swap, not Transfer.\nEach cycle: spend $${_dcaAmt} of ${nh.sym} from ${_srcW||'(source)'}${_srcC?'/'+_srcC:''}, gain ${_dstS} at ${_dstW}/${_dstC} at the price you confirm. Source ${nh.sym} debited; destination ${_dstS} credited.`
+            : `\nAuto-transfer after each Buy: ${_srcW||'(source)'}${_srcC?'/'+_srcC:''} → ${_dstW}/${_dstC}`)
         : '';
       if(!confirm(`Activate DCA alert for ${nh.sym}?\n\n${_freqLabel(_dcaFreq)} reminder for $${_dcaAmt}, starting ${_dcaStart}.${_xferLine}\n\nThe app will alert you when a DCA is due — you confirm each Buy.`)) {
         // user cancelled DCA but still wants to save the holding without DCA
@@ -11633,6 +12149,7 @@ function saveHoldingUnified() {
           freq: _dcaFreq, amount: _dcaAmt, startDate: _dcaStart, nextDue: _dcaStart,
           sourceWallet: _srcW, sourceChain: _srcC,
           destWallet:   _dstW, destChain:   _dstC,
+          destSym:      _dstS,   // v47.96: blank or same as nh.sym → same-asset behavior
         };
       }
     }
@@ -11704,6 +12221,7 @@ function saveHoldingUnified() {
     const _srcC = v('hm-dca-src-chain')  || h.chain  || '';
     const _dstW = v('hm-dca-dst-wallet') || '';
     const _dstC = v('hm-dca-dst-chain')  || '';
+    const _dstS = (v('hm-dca-dst-sym') || '').toUpperCase().trim();  // v47.96
     const _prev    = h.dca || null;
     const _changed = (_prev?.freq||'') !== _dcaFreq
                   || (+(_prev?.amount||0)) !== _dcaAmt
@@ -11711,7 +12229,8 @@ function saveHoldingUnified() {
                   || (_prev?.sourceWallet||'') !== _srcW
                   || (_prev?.sourceChain||'')  !== _srcC
                   || (_prev?.destWallet||'')   !== _dstW
-                  || (_prev?.destChain||'')    !== _dstC;
+                  || (_prev?.destChain||'')    !== _dstC
+                  || (_prev?.destSym||'')      !== _dstS;
     if(_changed) {
       if(!_dcaFreq || _dcaAmt <= 0) {
         // Turning DCA off
@@ -11722,10 +12241,19 @@ function saveHoldingUnified() {
         }
       } else {
         const startDate = _dcaStart || today();
-        const _xferLine = (_dstW && _dstC)
-          ? `\nAuto-transfer after each Buy: ${_srcW||'(source)'}${_srcC?'/'+_srcC:''} → ${_dstW}/${_dstC}`
+        // v47.96: forced-choice — all three or none
+        const _dstFilled = [_dstW, _dstC, _dstS].filter(Boolean).length;
+        if(_dstFilled > 0 && _dstFilled < 3) {
+          toast('Destination is incomplete — Wallet, Chain, and Token must all be set, or all be blank.', true);
+          return;
+        }
+        const _isCross = _dstFilled === 3 && _dstS !== (h.sym||'').toUpperCase();
+        const _xferLine = _dstFilled === 3
+          ? (_isCross
+              ? `\n\nThis DCA will Swap, not Transfer.\nEach cycle: spend $${_dcaAmt} of ${h.sym} from ${_srcW||'(source)'}${_srcC?'/'+_srcC:''}, gain ${_dstS} at ${_dstW}/${_dstC} at the price you confirm. Source ${h.sym} debited; destination ${_dstS} credited.`
+              : `\nAuto-transfer after each Buy: ${_srcW||'(source)'}${_srcC?'/'+_srcC:''} → ${_dstW}/${_dstC}`)
           : (_prev?.destWallet
-              ? `\nLong-term transfer: DISABLED (was → ${_prev.destWallet}/${_prev.destChain||''})`
+              ? `\nLong-term destination: REMOVED (was → ${_prev.destWallet}/${_prev.destChain||''}${_prev.destSym?' as '+_prev.destSym:''})`
               : '');
         const desc = _prev
           ? `Update DCA alert for ${h.sym}?\n\nWas: ${_freqLabel(_prev.freq)} $${_prev.amount}\nNew: ${_freqLabel(_dcaFreq)} $${_dcaAmt} starting ${startDate}${_xferLine}`
@@ -11740,6 +12268,7 @@ function saveHoldingUnified() {
                      : startDate,
             sourceWallet: _srcW, sourceChain: _srcC,
             destWallet:   _dstW, destChain:   _dstC,
+            destSym:      _dstS,   // v47.96
           };
         }
       }
