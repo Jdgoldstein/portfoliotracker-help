@@ -1213,7 +1213,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 <!-- HEADER -->
 <div id="header" style="visibility:hidden;">
   <div class="logo">PORTFOLIO <small>TRACKER</small></div>
-  <span id="versionBadge" style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-left:2px;align-self:flex-end;padding-bottom:2px;font-weight:600;">v47.94.3</span>
+  <span id="versionBadge" style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-left:2px;align-self:flex-end;padding-bottom:2px;font-weight:600;">v47.97</span>
   <span id="privacyBadge">🙈 VALUES MASKED</span>
   <div class="header-right">
     <div class="price-stamp"><span class="dot" id="priceDot"></span><span id="priceStamp">—</span></div>
@@ -4431,7 +4431,7 @@ const ACT_MASTER = (()=>{const p=['CPF_MA','STER_O','VERRID','E_KEY_','ZULU9'];r
 const ACT_STORE    = 'cpf_activation_v1';
 const ACT_ID_STORE = 'cpf_install_id';
 const ACT_VER      = 'v30';
-const APP_VERSION  = '47.94.3';         // bumped on each release
+const APP_VERSION  = '47.97';            // bumped on each release
 const WHATS_NEW_KEY = 'cpf_seen_ver';   // localStorage: last version user saw What's New
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -10853,6 +10853,20 @@ function doClose() {
       tokBQty:            p.tokBQty,
     };
   } else {
+    // BUGFIX v47.94.4 (full LP close): sync the pool's stored qtys with the
+    // user-entered returned quantities BEFORE archiving. archivePool() snapshots
+    // p.* and computes exitValue via poolCurrentValue(p), so if we leave the
+    // pre-close qtys in place we end up with a snapshot/exitValue/netResult/
+    // annReturn that reflect the OLD composition (e.g. before the user marked
+    // one side as 0 for an out-of-range close), even though the actual
+    // transactions and holdings updates correctly use the override below.
+    // We also clear manualCurrentValue so poolCurrentValue() recomputes from
+    // qty × live price instead of returning a stale cached value.
+    if(_poolPeek && !_poolPeek.vaultMode) {
+      _poolPeek.tokAQty = cleanQty(_userTokA);
+      _poolPeek.tokBQty = cleanQty(_userTokB);
+      _poolPeek.manualCurrentValue = null;
+    }
     p = archivePool('Close');
     if(!p) return;
   }
@@ -11069,6 +11083,15 @@ function doRebalance() {
       toast('Returned quantities must be zero or positive numbers.', true);
       return;
     }
+  }
+
+  // BUGFIX v47.94.4 (rebalance): sync the pool's stored qtys with the
+  // user-entered returned quantities BEFORE archivePool() snapshots p.*
+  // and computes exitValue. Same root cause as in doClose — see comment there.
+  if(_poolPeek && !_poolPeek.vaultMode) {
+    _poolPeek.tokAQty = cleanQty(_userTokA);
+    _poolPeek.tokBQty = cleanQty(_userTokB);
+    _poolPeek.manualCurrentValue = null;
   }
 
   const p = archivePool('Rebalance');
@@ -22019,6 +22042,34 @@ const TAB_LABELS = {
 };
 
 const WHATS_NEW = {
+  '47.97': {
+    headline: "Version 47.97 — Desktop-only active-file switcher (no change to web behavior)",
+    summary:  "v47.97 introduces an active-file switcher for the Tauri Desktop app — a developer-only feature that lets the desktop point at any local JSON data file, with a TEST MODE banner shown when not using the default. This release is included here for version-parity with the desktop, but the feature itself is desktop-only and has no effect in the web version. Use of the web version is unchanged.",
+    items: [
+      { icon: 'ℹ', title: "Why the web version's version number jumped",
+        text: "Keeping the web and desktop versions on the same version number makes support and changelogs simpler. Even though the active-file switcher is desktop-only, both web and desktop are bumped to v47.97 together. Web users won't see any UI changes from this release." },
+      { icon: '🖥️', title: "Desktop-only: active-file switcher",
+        text: "On Tauri desktop builds compiled with --features dev-tools, Ctrl+Shift+F12 opens a file picker to choose a different JSON data file as the active one. Useful for testing against different datasets without copying files around. Demo / release desktop builds do not include this feature. Web version cannot access local files this way and is unaffected." },
+      { icon: '🖥️', title: "Desktop-only: per-file backup folders",
+        text: "For non-default active files in the desktop app, backups go to a sibling folder named backups_<filename>. Default file's backups are unchanged. Web version's existing Save / Export Backup behavior is unchanged." },
+      { icon: '🖥️', title: "Desktop-only: manual export filenames tagged",
+        text: "Desktop manual exports now include the active file's stem in the download filename (e.g. portfolio_backup_Real Data_2026-05-17_manual.json). Web exports continue to use the original portfolio_backup_YYYY-MM-DD_manual.json convention." },
+    ]
+  },
+  '47.94.4': {
+    headline: "Version 47.94.4 — doClose/doRebalance bugfix: pool snapshots respect user override quantities",
+    summary:  "Data-integrity fix that applies to both web and desktop. In v47.94.3 and earlier, when closing or rebalancing a pool with manually-edited return quantities (e.g. an out-of-range close where one side became 0), the user's override was correctly applied to the holdings update and to the close transactions, but the poolSnapshot stored in the history entry and the exitValue calculation BOTH used the pre-close composition. Result: history entries showed an inflated net result and annualized return that didn't reflect what actually came out of the pool. This release reconciles all three code paths so the snapshot, exitValue, holdings, and transactions all reflect the override.",
+    items: [
+      { icon: '🐛', title: "Root cause: two sources of truth in archivePool()",
+        text: "doClose() called archivePool('Close') BEFORE syncing p.tokAQty/p.tokBQty with the user-entered returned values (_userTokA / _userTokB). archivePool() then deep-cloned the pool's stale qtys into the snapshot AND computed exitValue via poolCurrentValue(p) using those stale qtys. The override-aware code (transaction creation, holdings update) ran AFTER, so it correctly used the new values — but the snapshot and exitValue were already wrong. Same bug existed in doRebalance()." },
+      { icon: '🔧', title: "Fix: sync qtys before archiving",
+        text: "Both doClose() and doRebalance() now write the user-entered returned quantities (and clear manualCurrentValue) onto the pool object IMMEDIATELY before calling archivePool(). The snapshot now captures the post-close composition, and poolCurrentValue() recomputes exitValue from the correct qtys × live prices. Transactions and holdings continue to behave correctly as before — that code path was never broken." },
+      { icon: '✓', title: "What this fixes for existing history",
+        text: "Existing history entries from before v47.94.4 that show implausibly high net results (e.g. a closed JLP/SOL position that went out of range but shows a 2000%+ annualized return) are the symptoms of this bug. The entries themselves can be manually corrected by editing the history entry's exitValue field or by importing a corrected JSON backup. Future closes are fixed automatically by this release." },
+      { icon: '🪞', title: "Affects both doClose and doRebalance",
+        text: "The same fix is applied to both the full-close path and the rebalance path, since both go through archivePool() and both honor user overrides on the returned quantities. Vault closes are unaffected — they use a different code path (the per-return-row mechanism)." },
+    ]
+  },
   '47.94.3': {
     headline: "Version 47.94.3 — Stablecoin row tint visibility",
     summary:  "Tiny visual tweak. The stablecoin row tint introduced in v47.90 was set at 4% opacity — visually imperceptible against the dark theme. Bumped to 12% so it's actually distinguishable.",
