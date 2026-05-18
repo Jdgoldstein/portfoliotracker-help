@@ -243,36 +243,78 @@ thead th{
 /* v47.76: sticky captions global. Fixed-width page eliminates width inconsistency.
    Mac Safari hardening: will-change:transform forces thead onto composite layer;
    explicit table width:100% ensures consistent column computation. */
-/* v47.96.3: wide-table fix, scoped. v47.96.2 set overflow-x:auto globally on
-   .tbl-wrap to solve the Holdings cutoff on 1920x1200, but the combination
-   of overflow-x:auto with the sticky thead caused header rows to render
-   in the wrong position on tabs with fewer columns (notably LP Pools).
-   This version scopes the overflow-x change to only the tabs that actually
-   have many-column tables prone to right-edge cutoff: Holdings and History
-   (Transactions sub-tab). All other tabs keep the original overflow:visible
-   so their sticky theads pin to the page as intended. */
+/* v47.97.1 sticky-thead + no-horizontal-scroll fix:
+   Replaces the v47.96.5 opt-out and the v47.96.3 horizontal-scroll workaround.
+
+   Design goal: column captions stay pinned at top: 94px (just below the
+   sticky app header + tab bar) while data rows scroll. NEVER horizontally
+   scroll — columns shrink to fit instead, because horizontal scroll can
+   hide controls off-screen on laptop displays where the scrollbar isn't
+   visually obvious.
+
+   Implementation:
+   - .tbl-wrap on Holdings/History uses overflow: visible (no scroll context).
+     This restores sticky-thead's ability to anchor to the page-level scroll.
+   - Table uses table-layout: fixed so column widths are computed once from
+     thead column constraints, not from each row's content.
+   - Font sizes and padding compress responsively as viewport narrows.
+   - Sticky thead z-index increased to 15.
+*/
+/* v47.97.2: Extend sticky-thead fix to GEMS tab.
+   GEMS was previously omitted from this block, so its captions did not pin
+   below the tab bar at top: 94px the way Holdings/History did. GEMS uses the
+   same .tbl-wrap/thead structure, so the same overflow:visible + position:sticky
+   treatment applies. GEMS already has its own column-width CSS (#tab-gems
+   thead th:nth-child rules) and its own compact font sizing, so the responsive
+   font/padding compression below is intentionally NOT extended — it would
+   double-compress an already-tight 17-column layout. */
 #tab-holdings .tbl-wrap,
-#tab-history  .tbl-wrap {
-  overflow-x: auto !important;
-  overflow-y: visible !important;
+#tab-history  .tbl-wrap,
+#tab-gems     .tbl-wrap {
+  overflow: visible !important;
 }
-thead th {
+#tab-holdings .tbl-wrap table,
+#tab-history  .tbl-wrap table,
+#tab-gems     .tbl-wrap table {
+  table-layout: fixed;
+  width: 100%;
+}
+#tab-holdings thead th,
+#tab-history  thead th,
+#tab-gems     thead th {
+  position: sticky !important;
   top: 94px !important;
+  z-index: 15;
+  background: #c8d4e8;
   will-change: transform;
 }
-/* v47.80: Hedge tab — completely opt out of sticky theads. On the Hedge tab the
-   column captions were rendering in the middle of the data area instead of at
-   the top of the table. The Hedge tables are short, so captions stay visible
-   without sticky behavior. */
-/* v47.96.5: same opt-out for Holdings and History tabs. These tabs use
-   overflow-x:auto on .tbl-wrap to get a horizontal scrollbar for their wide
-   column sets — but the resulting scroll container conflicts with the page-
-   level sticky positioning of the thead, causing the header to appear mid-
-   table. Since overflow-x:auto is the more useful behavior for these tabs,
-   sticky is dropped here. */
-#tab-hedge thead th,
-#tab-holdings thead th,
-#tab-history thead th {
+body.dark #tab-holdings thead th,
+body.dark #tab-history  thead th,
+body.dark #tab-gems     thead th {
+  background: #1c2738 !important;
+}
+@media (max-width: 1400px) {
+  #tab-holdings table, #tab-history table { font-size: 0.92em; }
+  #tab-holdings thead th, #tab-history thead th,
+  #tab-holdings tbody td, #tab-history tbody td {
+    padding-left: 4px; padding-right: 4px;
+  }
+}
+@media (max-width: 1200px) {
+  #tab-holdings table, #tab-history table { font-size: 0.85em; }
+  #tab-holdings thead th, #tab-history thead th,
+  #tab-holdings tbody td, #tab-history tbody td {
+    padding-left: 3px; padding-right: 3px;
+  }
+  /* GEMS included here (not in the compression rules above) because its
+     17 captions need wrapping freedom at narrow widths. */
+  #tab-holdings thead th, #tab-history thead th, #tab-gems thead th {
+    white-space: normal; line-height: 1.1;
+  }
+}
+/* v47.80: Hedge tab — opt out of sticky theads. Captions stay visible naturally
+   on the short Hedge tables. */
+#tab-hedge thead th {
   position: static !important;
   top: auto !important;
   will-change: auto !important;
@@ -1213,7 +1255,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 <!-- HEADER -->
 <div id="header" style="visibility:hidden;">
   <div class="logo">PORTFOLIO <small>TRACKER</small></div>
-  <span id="versionBadge" style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-left:2px;align-self:flex-end;padding-bottom:2px;font-weight:600;">v47.97</span>
+  <span id="versionBadge" style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-left:2px;align-self:flex-end;padding-bottom:2px;font-weight:600;">v47.97.1</span>
   <span id="privacyBadge">🙈 VALUES MASKED</span>
   <div class="header-right">
     <div class="price-stamp"><span class="dot" id="priceDot"></span><span id="priceStamp">—</span></div>
@@ -4431,7 +4473,7 @@ const ACT_MASTER = (()=>{const p=['CPF_MA','STER_O','VERRID','E_KEY_','ZULU9'];r
 const ACT_STORE    = 'cpf_activation_v1';
 const ACT_ID_STORE = 'cpf_install_id';
 const ACT_VER      = 'v30';
-const APP_VERSION  = '47.97';            // bumped on each release
+const APP_VERSION  = '47.97.1';            // bumped on each release
 const WHATS_NEW_KEY = 'cpf_seen_ver';   // localStorage: last version user saw What's New
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -22042,6 +22084,20 @@ const TAB_LABELS = {
 };
 
 const WHATS_NEW = {
+  '47.97.1': {
+    headline: "Version 47.97.1 — Sticky column headers + no more horizontal scroll on wide tables",
+    summary:  "Two-part UX fix for Holdings and History tabs. (1) The column header row was scrolling off-screen with the data; it now pins at the top of the viewport so column labels stay visible while scrolling through long lists. (2) Wide tables on these tabs were horizontally scrolling on narrow displays, which could hide controls or columns off-screen without the scrollbar being visually obvious. Tables now shrink columns proportionally to always fit within the visible width — no horizontal scroll ever.",
+    items: [
+      { icon: '📌', title: "Column headers now stay pinned while scrolling",
+        text: "On Holdings and History tabs, the column header row is sticky-positioned at top: 94px (just below the global app header + tab bar, which were already sticky). Scroll down through a long holdings list and the column labels remain visible. Scrolling back up restores the section-head buttons and other controls naturally. This applies to all the History sub-tabs as well (closed pools, active pools, transactions, yield log, vaults)." },
+      { icon: '⬌', title: "No more horizontal scroll on wide tables",
+        text: "Previously, Holdings and History tabs would scroll horizontally when columns didn't fit. On laptop screens this could hide rightmost columns and controls without the horizontal scrollbar being visually obvious. The new layout uses table-layout: fixed and responsive font/padding sizing — at narrower viewports the columns shrink proportionally rather than overflowing the screen. At very narrow widths (under 1200px), multi-word column headers will wrap to two lines if needed, but nothing gets hidden." },
+      { icon: '📐', title: "Responsive sizing breakpoints",
+        text: "1400px+ uses the comfortable default sizing. 1200-1400px shrinks fonts to 0.92em and tightens column padding. Under 1200px shrinks further to 0.85em with wrappable headers. These breakpoints apply only to Holdings and History (the densest tables); other tabs keep their default sizing." },
+      { icon: '⚡', title: "Hedge tab unchanged",
+        text: "The Hedge tab uses a multi-row position layout (main row + colspan sub-row + optional alert banners) with its own positioning needs. Hedge continues to opt out of sticky thead; its tables are short enough (typically ≤4 positions) that captions stay visible without sticky behavior." },
+    ]
+  },
   '47.97': {
     headline: "Version 47.97 — Desktop-only active-file switcher (no change to web behavior)",
     summary:  "v47.97 introduces an active-file switcher for the Tauri Desktop app — a developer-only feature that lets the desktop point at any local JSON data file, with a TEST MODE banner shown when not using the default. This release is included here for version-parity with the desktop, but the feature itself is desktop-only and has no effect in the web version. Use of the web version is unchanged.",
