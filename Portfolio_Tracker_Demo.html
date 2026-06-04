@@ -1250,12 +1250,444 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 .pin-dot{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,0.15);transition:background .15s;}
 .pin-dot.filled{background:#3df5a0;}
 #pinLock.active{display:flex!important;}
+
+/* ==============================================================
+   PRICE LADDER FEATURE (v47.98) — additive styles for ladder UI
+   ============================================================== */
+/* Ladder alert pill — follows pattern of other alert pills in host app */
+#ladderAlertPill {
+  align-self: center;
+  cursor: pointer;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--mono);
+  white-space: nowrap;
+  transition: all .4s;
+}
+#ladderAlertPill.healthy {
+  color: #854d0e;
+  background: rgba(234,179,8,0.18);
+  border: 1px solid rgba(234,179,8,0.50);
+}
+#ladderAlertPill.warn {
+  color: #92400e;
+  background: rgba(184,104,0,0.18);
+  border: 1px solid rgba(184,104,0,0.45);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+#ladderAlertPill.fire {
+  color: #b91c1c;
+  background: rgba(204,34,0,0.15);
+  border: 1px solid rgba(204,34,0,0.45);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+#ladderAlertPill.hidden { display: none; }
+
+/* Persistent dashboard summary blocks (ladder + DCA warnings) */
+.ladder-summary-block {
+  background: linear-gradient(180deg, rgba(0,102,204,0.04) 0%, rgba(0,102,204,0.08) 100%);
+  border: 1px solid rgba(0,102,204,0.25);
+  border-left: 4px solid var(--accent2);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  margin-bottom: 14px;
+}
+.ladder-summary-block.dca-warn {
+  background: linear-gradient(180deg, rgba(184,104,0,0.05) 0%, rgba(184,104,0,0.09) 100%);
+  border-color: rgba(184,104,0,0.30);
+  border-left-color: var(--warn);
+}
+.ladder-summary-title {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.ladder-summary-title .ls-meta {
+  font-size: 10px;
+  color: var(--text3);
+  font-weight: 400;
+}
+.ladder-summary-line {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text2);
+  padding: 3px 0;
+  display: flex;
+  gap: 8px;
+}
+.ladder-summary-line .status-icon { width: 18px; flex-shrink: 0; }
+.ladder-summary-footer {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(0,102,204,0.25);
+  font-size: 11px;
+  color: var(--text3);
+  font-style: italic;
+}
+.ladder-summary-block.dca-warn .ladder-summary-footer {
+  border-top-color: rgba(184,104,0,0.25);
+}
+
+/* Tab bar inside strategy modal */
+.strategy-tab-bar {
+  display: flex;
+  gap: 0;
+  margin: 8px 0 14px;
+  border-bottom: 1px solid var(--border);
+}
+.strategy-tab-btn {
+  padding: 8px 16px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text3);
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.strategy-tab-btn .tab-icon {
+  font-size: 15px;
+  letter-spacing: 0;
+  text-transform: none;
+  line-height: 1;
+  display: inline-block;
+}
+.strategy-tab-btn:hover { color: var(--text2); }
+.strategy-tab-btn.active {
+  color: var(--accent2);
+  border-bottom-color: var(--accent2);
+}
+.strategy-tab-content { display: none; }
+.strategy-tab-content.active { display: block; }
+
+/* Ladder preview card */
+.ladder-preview-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  margin-top: 10px;
+}
+.ladder-preview-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+.ladder-preview-table {
+  width: 100%;
+  font-family: var(--mono);
+  font-size: 11px;
+  margin-bottom: 6px;
+}
+.ladder-preview-table td {
+  padding: 3px 0;
+  border-bottom: 1px dashed var(--border);
+}
+.ladder-preview-table td:first-child { width: 60px; color: var(--text3); }
+.ladder-preview-table td:nth-child(2) { color: var(--text); font-weight: 600; }
+.ladder-preview-table td:nth-child(3) { text-align: right; color: var(--accent2); font-weight: 600; }
+.ladder-preview-totals {
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 11px;
+  display: flex;
+  justify-content: space-between;
+}
+.ladder-preview-totals .balance-status.ok { color: var(--accent); font-weight: 700; }
+.ladder-preview-totals .balance-status.low { color: var(--warn); font-weight: 700; }
+.ladder-preview-warning {
+  margin-top: 6px;
+  padding: 6px 9px;
+  background: rgba(184,104,0,0.10);
+  border: 1px solid rgba(184,104,0,0.30);
+  border-radius: 4px;
+  font-size: 10.5px;
+  color: var(--warn);
+}
+
+/* Radio rows inside ladder config */
+.ladder-radio-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 4px 0;
+}
+.ladder-radio-row label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text2);
+  cursor: pointer;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.ladder-radio-row input[type="radio"] {
+  margin: 0;
+  cursor: pointer;
+}
+.ladder-radio-label-group {
+  font-size: var(--fs-label);
+  font-weight: 600;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* Per-asset ladder management card */
+.ladder-mgmt-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.ladder-mgmt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.ladder-mgmt-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+.ladder-mgmt-meta {
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+.rung-grid {
+  display: grid;
+  grid-template-columns: 50px 1fr 1fr 130px 1.5fr;
+  gap: 4px 14px;
+  font-family: var(--mono);
+  font-size: 11px;
+  align-items: center;
+}
+.rung-grid .rung-header {
+  font-size: 9px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--border);
+}
+.rung-grid .rung-cell {
+  padding: 5px 0;
+  border-bottom: 1px dashed var(--border);
+}
+.rung-status-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 600;
+}
+.rung-status-tag.filled { color: var(--accent); }
+.rung-status-tag.placed { color: var(--accent2); }
+.rung-status-tag.awaiting { color: var(--warn); }
+.rung-status-tag.cancelled { color: var(--danger); text-decoration: line-through; }
+.rung-status-tag.expired { color: var(--text3); text-decoration: line-through; }
+.ladder-mgmt-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.ladder-summary-stat {
+  background: var(--bg3);
+  padding: 6px 9px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+.ladder-summary-stat-label {
+  font-size: 9px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+}
+.ladder-summary-stat-val {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin-top: 2px;
+}
+
+/* Toast notifications */
+.toast {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent2);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--text);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  animation: slidein 0.3s ease-out;
+}
+.toast.ladder-fill { border-left-color: var(--accent); }
+.toast.ladder-placed { border-left-color: var(--accent2); }
+.toast.dca-warn { border-left-color: var(--warn); }
+.toast.cancelled { border-left-color: var(--danger); }
+.toast-title {
+  font-weight: 700;
+  font-family: var(--mono);
+  font-size: 10px;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.toast-body { font-family: var(--mono); color: var(--text2); font-size: 11px; }
+@keyframes slidein {
+  from { transform: translateX(20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Strategy modal overlay/dialog (matches host app modal pattern) */
+.ladder-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  z-index: 1000;
+  padding: 40px 20px;
+  overflow-y: auto;
+}
+.ladder-overlay.open { display: flex; }
+.ladder-modal {
+  background: var(--bg2);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 720px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.20);
+  border: 1px solid var(--border);
+}
+.ladder-modal-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.ladder-modal-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+.ladder-modal-close {
+  background: none;
+  border: none;
+  color: var(--text3);
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  padding: 2px 8px;
+}
+.ladder-modal-close:hover { color: var(--text); }
+.ladder-modal-body { padding: 18px; }
+.ladder-modal-footer {
+  padding: 12px 18px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  background: var(--bg3);
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+
+/* Form layout inside modal */
+.ladder-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.ladder-form-row.three-col { grid-template-columns: 1fr 1fr 1fr; }
+.ladder-form-group { display: flex; flex-direction: column; gap: 4px; }
+.ladder-form-group label {
+  font-size: var(--fs-label);
+  font-weight: 600;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.ladder-form-group input,
+.ladder-form-group select {
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 6px 8px;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  background: var(--bg2);
+  color: var(--text);
+}
+.ladder-form-group input:focus,
+.ladder-form-group select:focus {
+  outline: none;
+  border-color: var(--accent2);
+  box-shadow: 0 0 0 2px rgba(0,102,204,0.15);
+}
+.ladder-form-group input[readonly] {
+  background: var(--bg3);
+  cursor: default;
+}
+
+/* DCA tab info banner */
+.dca-info-banner {
+  background: rgba(109,40,217,0.06);
+  border: 1px solid rgba(109,40,217,0.2);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text2);
+}
+.dca-info-banner strong { color: var(--purple); }
+/* ==== END LADDER STYLES ==== */
 </style>
 
 <!-- HEADER -->
 <div id="header" style="visibility:hidden;">
   <div class="logo">PORTFOLIO <small>TRACKER</small></div>
-  <span id="versionBadge" style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-left:2px;align-self:flex-end;padding-bottom:2px;font-weight:600;">v47.97.1</span>
+  <span id="versionBadge" style="font-size:13px;color:var(--text3);font-family:var(--mono);margin-left:2px;align-self:flex-end;padding-bottom:2px;font-weight:600;">v48.25-demo</span>
   <span id="privacyBadge">🙈 VALUES MASKED</span>
   <div class="header-right">
     <div class="price-stamp"><span class="dot" id="priceDot"></span><span id="priceStamp">—</span></div>
@@ -1562,6 +1994,8 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     <span id="gemAlertPill"  style="display:inline-flex;align-self:center;margin-right:4px;cursor:pointer;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--mono);white-space:nowrap;transition:all .4s;color:#065f46;background:rgba(10,124,74,0.15);border:1px solid rgba(10,124,74,0.4);box-shadow:none;opacity:1;" onclick="switchTab('gems')"  title="No GEM alerts active">💎 GEMs ✓</span>
     <span id="hedgeAlertPill" style="display:inline-flex;align-self:center;margin-right:4px;cursor:pointer;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--mono);white-space:nowrap;transition:all .4s;color:#065f46;background:rgba(10,124,74,0.15);border:1px solid rgba(10,124,74,0.4);box-shadow:none;opacity:1;" onclick="switchTab('hedge')" title="Hedge ratio on target">⚖ Hedge ✓</span>
     <span id="dcaAlertPill" style="display:none;" onclick="_dcaPillClick()" title="DCA reminders"></span>
+    <!-- v47.98: Ladder alert pill — Price Ladder feature. Yellow/gold to distinguish from DCA. -->
+    <span id="ladderAlertPill" style="display:none;align-self:center;margin-right:4px;cursor:pointer;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--mono);white-space:nowrap;transition:all .4s;" onclick="ladderPillClick()" title="Price Ladder status"></span>
     <button id="globalHelpBtn" class="btn sm btn-help" onclick="openHelpModal(window._activeTab||'overview')" title="Help for current tab — click Overview tab for general introduction" style="align-self:center;margin-right:2px;">? Help</button>
     <button class="btn sm" onclick="openFeedbackModal()" title="Send feedback or a question" style="align-self:center;margin-right:4px;padding:4px 8px;font-size:12px;background:rgba(10,124,74,0.08);border-color:rgba(10,124,74,0.35);color:var(--accent);">📬 Feedback</button>
   </div>
@@ -1571,16 +2005,53 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     <div id="summaryContent"></div>
     <div style="margin-top:6px;">
       <div id="summaryMacroPulse" style="display:none;padding:7px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);font-size:11px;color:var(--text2);margin-bottom:8px;line-height:1.8;"></div>
-      <div style="border-top:1px solid var(--border);margin:2px 0 8px;"></div>
+      <!-- v47.98: Accumulation Strategies summary card — ladders and DCAs at a glance -->
+      <div id="summaryStrategiesCard"></div>
+    <!-- v48.19: portfolio allocation chart — complements the Summary totals above -->
+    <div id="allocChartWrap" style="margin-top:10px;display:none;">
       <div class="section-head" style="margin-bottom:6px;">
         <div>
-          <span class="section-title">⚖️ IL Break-Even Calculator</span>
+          <span class="section-title">📊 Allocation</span>
+          <span class="section-sub" id="allocSub">Share of portfolio — click a slice to drill into its assets</span>
+        </div>
+        <div class="section-actions" style="gap:8px;align-items:center;">
+          <label style="font-size:calc(var(--fs-base) - 2px);color:var(--text3);">Group:
+            <select id="allocGroupBy" onchange="allocResetAndRender()" title="Top-level grouping"
+              style="margin-left:4px;padding:5px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text1);font-family:var(--mono);font-size:var(--fs-mono);">
+              <option value="category">Category</option>
+              <option value="wallet">Wallet</option>
+              <option value="asset">Asset</option>
+            </select>
+          </label>
+          <label style="font-size:calc(var(--fs-base) - 2px);color:var(--text3);">Filter:
+            <select id="allocWallet" onchange="allocResetAndRender()" title="Limit to one wallet"
+              style="margin-left:4px;padding:5px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text1);font-family:var(--mono);font-size:var(--fs-mono);">
+              <option value="">All wallets</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <!-- breadcrumb / drilled-in banner -->
+      <div id="allocCrumb" style="display:none;align-items:center;gap:10px;margin-bottom:8px;padding:7px 12px;background:var(--bg3);border:1px solid var(--accent);border-radius:8px;">
+        <button class="btn sm primary" onclick="allocDrillUp()" style="white-space:nowrap;">← Back to overview</button>
+        <span id="allocCrumbText" style="font-size:calc(var(--fs-base) - 1px);color:var(--text2);"></span>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px;">
+        <div id="allocCanvasBox" style="max-width:560px;margin:0 auto;position:relative;"><canvas id="allocCanvas" height="260"></canvas></div>
+        <div id="allocLegend" style="margin-top:10px;font-size:calc(var(--fs-base) - 1px);"></div>
+      </div>
+    </div>
+      <div style="border-top:1px solid var(--border);margin:2px 0 8px;"></div>
+      <div class="section-head" style="margin-bottom:6px;cursor:pointer;" onclick="toggleIlCalc()" title="Show / hide the IL calculator">
+        <div>
+          <span class="section-title"><span id="ilToggleCaret">▸</span> ⚖️ IL Break-Even Calculator</span>
           <span class="section-sub">Model impermanent loss vs yield before entering a pool</span>
         </div>
         <div class="section-actions">
         </div>
       </div>
 
+      <div id="ilCalcBody" style="display:none;">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
         <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;">
           <div style="font-size:calc(var(--fs-base) - 2px);font-weight:700;letter-spacing:.16em;color:var(--accent);text-transform:uppercase;margin-bottom:8px;">Pool Setup</div>
@@ -1637,6 +2108,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
           <canvas id="il-canvas" height="200"></canvas>
         </div>
       </div>
+      </div><!-- /ilCalcBody -->
     </div>
   </div>
 
@@ -1751,6 +2223,12 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
         </div>
       </div>
     <div id="bollingerChartsArea" style="display:none;margin-bottom:10px;grid-template-columns:1fr 1fr;gap:12px;"></div>
+    <!-- v47.98: Strategy Management alert banner — visible when ladders/DCAs are active. Click toggles the management section open/closed. -->
+    <div id="ladderStrategyAlertBanner"></div>
+    <!-- v47.98: Persistent ladder + DCA-warning summary blocks -->
+    <div id="ladderPersistentSummary"></div>
+    <!-- v47.98: Per-asset ladder management cards (collapsible) -->
+    <div id="ladderManagementContainer"></div>
     <div class="tbl-wrap">
       <table>
         <thead>
@@ -2303,6 +2781,162 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 </div>
 
 <!-- ══════════════ MODALS ══════════════ -->
+
+<!-- ==== LADDER STRATEGY MODAL (v47.98) ==== -->
+<div class="ladder-overlay" id="strategyConfigModal">
+  <div class="ladder-modal">
+    <div class="ladder-modal-header">
+      <div class="ladder-modal-title">🪜 Ladder <span id="modalAssetSymbol" style="display:none;"></span></div>
+      <button class="ladder-modal-close" onclick="closeStrategyModal()">×</button>
+    </div>
+    <div class="ladder-modal-body">
+
+      <!-- Current Commitments panel -->
+      <div id="modalCommitmentsPanel" style="margin-bottom:14px;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);font-size:11px;font-family:var(--mono);color:var(--text2);display:none;">
+        <div style="font-family:var(--sans);font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.04em;font-size:10px;margin-bottom:6px;">Current Commitments on <span id="modalCommitmentsAsset">—</span></div>
+        <div id="modalCommitmentsBody"></div>
+      </div>
+
+      <!-- Source: wallet/chain/sym (where the funds come from) -->
+      <div style="margin-top:6px;padding-top:8px;border-top:1px solid rgba(96,168,240,0.15);">
+        <div style="font-size:9px;color:#70b8ff;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;font-weight:700;opacity:0.85;">Source — where funds come from</div>
+        <div class="ladder-form-row three-col">
+          <div class="ladder-form-group">
+            <label>Wallet</label>
+            <input type="text" id="modalSourceWallet" list="wallet-options" placeholder="e.g. DeFi Wallet" oninput="ladderUpdatePreview()">
+          </div>
+          <div class="ladder-form-group">
+            <label>Chain</label>
+            <input type="text" id="modalSourceChain" list="chain-options" placeholder="e.g. Ethereum" oninput="ladderUpdatePreview()">
+          </div>
+          <div class="ladder-form-group">
+            <label>Funding Token</label>
+            <input type="text" id="modalSourceSym" list="ladder-token-options" placeholder="USDC" style="text-transform:uppercase;" oninput="ladderUpdatePreview()">
+          </div>
+        </div>
+      </div>
+
+      <!-- Destination: asset + wallet + chain (where the bought asset lands) -->
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(96,168,240,0.15);">
+        <div style="font-size:9px;color:#70b8ff;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;font-weight:700;opacity:0.85;">Destination — what is bought and where it lands</div>
+        <div class="ladder-form-row three-col">
+          <div class="ladder-form-group">
+            <label>Asset</label>
+            <input type="text" id="modalAssetInput" list="ladder-token-options" placeholder="e.g. BTC, ETH" style="text-transform:uppercase;" oninput="ladderOnDestAssetChange()">
+          </div>
+          <div class="ladder-form-group">
+            <label>Wallet</label>
+            <input type="text" id="modalDestWallet" list="wallet-options" placeholder="e.g. Trezor Cold">
+          </div>
+          <div class="ladder-form-group">
+            <label>Chain</label>
+            <input type="text" id="modalDestChain" list="chain-options" placeholder="e.g. Bitcoin">
+          </div>
+        </div>
+      </div>
+
+      <!-- Ladder configuration -->
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(234,179,8,0.25);">
+        <div style="font-size:9px;color:#854d0e;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;font-weight:700;">📐 Ladder Configuration</div>
+
+        <div class="ladder-form-row">
+          <div class="ladder-form-group">
+            <label>Starting Price ($)</label>
+            <input type="number" id="ladStartPrice" value="0" step="any" oninput="ladderUpdatePreview()">
+          </div>
+          <div class="ladder-form-group">
+            <label>Number of Rungs</label>
+            <input type="number" id="ladRungs" value="5" min="2" max="10" oninput="ladderUpdatePreview()">
+          </div>
+        </div>
+
+        <div style="margin-bottom:12px;">
+          <span class="ladder-radio-label-group">Price Step Type</span>
+          <div class="ladder-radio-row">
+            <label><input type="radio" name="priceStepType" value="percentage" checked onchange="ladderToggleStepType()"> Percentage</label>
+            <label><input type="radio" name="priceStepType" value="fixed_dollar" onchange="ladderToggleStepType()"> Fixed Dollar</label>
+          </div>
+        </div>
+
+        <div class="ladder-form-row" id="pricePctRow">
+          <div class="ladder-form-group">
+            <label>% Drop per Step</label>
+            <input type="number" id="ladPctDrop" value="5" step="0.5" oninput="ladderUpdatePreview()">
+          </div>
+          <div></div>
+        </div>
+        <div class="ladder-form-row" id="priceDollarRow" style="display:none;">
+          <div class="ladder-form-group">
+            <label>$ Drop per Step</label>
+            <input type="number" id="ladDollarDrop" value="500" step="100" oninput="ladderUpdatePreview()">
+          </div>
+          <div></div>
+        </div>
+
+        <div style="margin-bottom:12px;">
+          <span class="ladder-radio-label-group">Funding Mode</span>
+          <div class="ladder-radio-row">
+            <label><input type="radio" name="fundingMode" value="fixed" checked onchange="ladderToggleFundingMode()"> Fixed</label>
+            <label><input type="radio" name="fundingMode" value="geometric_increase" onchange="ladderToggleFundingMode()"> Geometric Increase</label>
+          </div>
+        </div>
+
+        <div class="ladder-form-row">
+          <div class="ladder-form-group">
+            <label>Base Amount ($)</label>
+            <input type="number" id="ladBaseAmount" value="1000" step="100" oninput="ladderUpdatePreview()">
+          </div>
+          <div class="ladder-form-group" id="fundingIncGroup" style="display:none;">
+            <label>% Increase per Step</label>
+            <input type="number" id="ladFundingInc" value="10" step="1" oninput="ladderUpdatePreview()">
+          </div>
+        </div>
+
+        <div class="ladder-form-row">
+          <div class="ladder-form-group">
+            <label>Expiration</label>
+            <select id="ladExpiration" onchange="ladderToggleExpiration()">
+              <option value="gtc">Good 'Til Cancelled</option>
+              <option value="week">1 Week</option>
+              <option value="month" selected>1 Month</option>
+              <option value="specific">Specific Date</option>
+            </select>
+          </div>
+          <div class="ladder-form-group" id="ladSpecificDateGroup" style="display:none;">
+            <label>Expiration Date</label>
+            <input type="date" id="ladSpecificDate">
+          </div>
+        </div>
+
+        <div class="ladder-preview-card">
+          <div class="ladder-preview-title">🔍 Live Preview</div>
+          <table class="ladder-preview-table" id="ladderPreviewTable"></table>
+          <div class="ladder-preview-totals">
+            <span>Total Committed:</span>
+            <span id="ladderPreviewTotal">$0</span>
+          </div>
+          <div class="ladder-preview-totals">
+            <span>Source Available:</span>
+            <span id="ladderPreviewBalance" class="balance-status">$0</span>
+          </div>
+          <div id="ladderPreviewWarning"></div>
+        </div>
+      </div>
+
+    </div>
+    <div class="ladder-modal-footer">
+      <button class="btn" onclick="closeStrategyModal()">Cancel</button>
+      <button class="btn primary" id="modalArmBtn" onclick="armStrategy()">Arm Ladder</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==== TOAST CONTAINER (for ladder toasts) ==== -->
+<div id="toastContainer" style="position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:8px;z-index:2000;max-width:380px;"></div>
+
+<!-- v47.98: Token autocomplete datalist for ladder modal — populated by ladderRefreshTokenDatalist() -->
+<datalist id="ladder-token-options"></datalist>
+
 
 <!-- POOL MODAL -->
 <div class="overlay" id="poolModal">
@@ -3450,13 +4084,15 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
       </div>
 
       <!-- v47.87 / v47.89: DCA schedule (optional) — tracker + alert; never auto-buys -->
-      <div style="margin-top:6px;padding:10px;background:rgba(96,168,240,0.05);border:1px solid rgba(96,168,240,0.18);border-radius:var(--radius);">
+      <div style="margin-top:6px;padding:10px;background:rgba(59,130,246,0.10);border:1px solid rgba(59,130,246,0.40);border-radius:var(--radius);">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:8px;">
-          <div style="font-size:9px;color:#70b8ff;text-transform:uppercase;letter-spacing:.1em;font-weight:700;">
+          <div style="font-size:10px;color:#3b82f6;text-transform:uppercase;letter-spacing:.1em;font-weight:700;">
             📅 DCA Schedule <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;margin-left:4px;">— optional; reminds you when a Buy is due, you confirm each one</span>
           </div>
           <!-- v47.96: Remove DCA button — shown only when a schedule is active on the holding being edited -->
           <button type="button" id="hm-dca-remove-btn" onclick="_dcaRemoveFromForm()" style="display:none;background:rgba(248,113,113,0.10);border:1px solid rgba(248,113,113,0.35);color:#f87171;font-size:10px;padding:3px 8px;border-radius:4px;cursor:pointer;font-weight:600;white-space:nowrap;" title="Remove this DCA schedule from this holding">✕ Remove DCA</button>
+          <!-- v47.98: Configure Ladder launcher -->
+          <button type="button" id="hm-ladder-configure-btn" onclick="openLadderModalFromHoldingForm()" style="background:rgba(234,179,8,0.15);border:1px solid rgba(234,179,8,0.50);color:#854d0e;font-size:10px;padding:3px 8px;border-radius:4px;cursor:pointer;font-weight:600;white-space:nowrap;margin-left:6px;" title="Configure a Price Ladder">🪜 Configure Ladder</button>
         </div>
         <div class="form-grid cols3" style="gap:8px;">
           <div class="field" style="margin-bottom:0;">
@@ -4473,7 +5109,7 @@ const ACT_MASTER = (()=>{const p=['CPF_MA','STER_O','VERRID','E_KEY_','ZULU9'];r
 const ACT_STORE    = 'cpf_activation_v1';
 const ACT_ID_STORE = 'cpf_install_id';
 const ACT_VER      = 'v30';
-const APP_VERSION  = '47.97.1';            // bumped on each release
+const APP_VERSION  = '48.25-demo';            // bumped on each release
 const WHATS_NEW_KEY = 'cpf_seen_ver';   // localStorage: last version user saw What's New
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -4856,7 +5492,7 @@ async function actCheckAfterLink() {
     hideActivationScreen();
     toast('✓ Activation verified from backup file.');
     updateFsStatus(); fsStartAutoSave();
-    renderAll(); fetchPrices(); fetchBenchmarks(); fetchHedgeData(false);
+    renderAll(); startupNetworkBoot();
     initFileProtocolUI(); initHelpSync(); checkWhatsNew(); updateAppFileLinkUI();
     initPIN();
   }
@@ -4925,7 +5561,7 @@ async function showActivationScreen() {
             const authOk = await checkActivation();
             if(authOk) {
               hideActivationScreen();
-              updateFsStatus(); fsStartAutoSave(); renderAll(); fetchPrices(); fetchBenchmarks(); fetchHedgeData(false); initFileProtocolUI(); initHelpSync(); checkWhatsNew(); updateAppFileLinkUI();
+              updateFsStatus(); fsStartAutoSave(); renderAll(); startupNetworkBoot(); initFileProtocolUI(); initHelpSync(); checkWhatsNew(); updateAppFileLinkUI();
               initPIN();
               return;
             }
@@ -5378,7 +6014,7 @@ async function tapToOpenHandler() {
     // Always hide overlay first — before PIN or activation screen
     if(overlay) overlay.style.display = 'none';
     if(ok) {
-      try { updateFsStatus(); fsStartAutoSave(); renderAll(); fetchPrices(); fetchBenchmarks(); fetchHedgeData(false); initFileProtocolUI(); initHelpSync(); checkWhatsNew(); } catch(e){}
+      try { updateFsStatus(); fsStartAutoSave(); renderAll(); startupNetworkBoot(); initFileProtocolUI(); initHelpSync(); checkWhatsNew(); } catch(e){}
       initPIN(); // shows PIN screen or directly reveals header+main
     } else {
       _tapExit(true);
@@ -5616,7 +6252,7 @@ document.addEventListener('visibilitychange', async () => {
         const _m = document.getElementById('main');
         if(_h) _h.style.visibility = '';
         if(_m) _m.style.visibility = '';
-        renderAll(); fetchPrices(); fetchBenchmarks(); fetchHedgeData(false); initFileProtocolUI(); initHelpSync(); initPIN();
+        renderAll(); startupNetworkBoot(); initFileProtocolUI(); initHelpSync(); initPIN();
         checkWhatsNew();
         if(!IS_FILE_PROTOCOL) setTimeout(_showNoBackupBanner, 2000);
         return;
@@ -5633,7 +6269,7 @@ document.addEventListener('visibilitychange', async () => {
           const _m = document.getElementById('main');
           if(_h) _h.style.visibility = '';
           if(_m) _m.style.visibility = '';
-          renderAll(); fetchPrices(); fetchBenchmarks(); fetchHedgeData(false); initFileProtocolUI(); initHelpSync(); initPIN();
+          renderAll(); startupNetworkBoot(); initFileProtocolUI(); initHelpSync(); initPIN();
           checkWhatsNew();
           setTimeout(demoInjectBanner, 300);
           if(!IS_FILE_PROTOCOL) setTimeout(_showNoBackupBanner, 2000);
@@ -6163,6 +6799,33 @@ function allGeckoIds() {
   DB.holdings.forEach(h => { if(h.geckoId) ids.add(h.geckoId); });
   DB.gems.forEach(g => { if(g.geckoId) ids.add(g.geckoId); });
   return [...ids];
+}
+
+// v47.99: sequence the startup network calls instead of firing them in parallel.
+//
+// On boot the app previously did: renderAll(); fetchPrices(); fetchBenchmarks();
+// fetchHedgeData(false); — three async functions kicked off simultaneously,
+// which sent ~4 Coingecko requests in flight at the same time (1 from
+// fetchPrices for /coins/markets, 3 from fetchHedgeData for /market_chart on
+// BTC/ETH/SOL), plus a CPI source call. Coingecko's free tier silently slow-
+// queues bursts like this — the second-onward identical-prefix requests take
+// 10+ seconds to come back even though the first is fast. From the user's
+// perspective the app appears to hang on startup until prices land.
+//
+// Solution: run them sequentially with a small pause between, so Coingecko
+// (and any other rate-sensitive host) sees a polite trickle rather than a
+// burst. Manual refresh-button clicks remain unaffected — they still call
+// fetchPrices() directly with no delay. The 5-min auto-refresh interval also
+// remains direct.
+//
+// Order matters: prices first (drives most of the UI), then hedge data
+// (heaviest Coingecko hitter), then benchmarks (different host, cheap).
+async function startupNetworkBoot() {
+  try { await fetchPrices(); } catch(e) {}
+  await new Promise(r => setTimeout(r, 1200));
+  try { await fetchHedgeData(false); } catch(e) {}
+  await new Promise(r => setTimeout(r, 1200));
+  try { await fetchBenchmarks(); } catch(e) {}
 }
 
 async function fetchPrices(manual=false) {
@@ -6811,7 +7474,1902 @@ function _dcaDueList() {
   return out;
 }
 
-// ─── BADGES ─────────────────────────────────────────────────────────────────
+// ─── WALLET BALANCE HELPERS (v47.98 — ladder feature groundwork) ────────────
+// These helpers compute available, gross, and reserved balances for a given
+// wallet+chain+sym combination by querying DB.holdings directly. They are
+// thin wrappers over the existing _findHoldingExact / _resolveFundingHolding
+// pattern, with the addition of ladder-reservation accounting.
+//
+// IMPORTANT: at this point in v47.98, no ladder feature is wired yet — the
+// reservation accounting returns 0 because no holding has h.ladder populated.
+// Once the ladder UI and arming logic are integrated, the same helpers will
+// automatically subtract active reservations. This means we can use these
+// helpers everywhere now and they'll just work when ladders are added.
+//
+// Usage:
+//   walletGrossBalance('Coinbase Hot', 'Ethereum', 'USDC')
+//       → 1500   (raw qty in that wallet/chain/sym)
+//   walletReservedBalance('Coinbase Hot', 'Ethereum', 'USDC')
+//       → 0      (no ladders yet; will return sum of placed-rung allocations later)
+//   walletAvailableBalance('Coinbase Hot', 'Ethereum', 'USDC')
+//       → 1500   (gross minus reserved)
+//
+// All three accept omitted chain (pass '' or null) to match across chains —
+// useful when the caller only knows wallet+sym. The chain-omitted variant
+// sums qty across all matching holdings.
+
+/**
+ * Sum of qty across all DB.holdings matching the given wallet/chain/sym.
+ * If chain is omitted (empty/null), sums across all chains for that wallet+sym.
+ * Returns 0 if no holdings match.
+ */
+function walletGrossBalance(wallet, chain, sym) {
+  const walletL = (wallet || '').toLowerCase();
+  const chainL  = (chain  || '').toLowerCase();
+  const symU    = (sym    || '').toUpperCase();
+  if (!symU || !walletL) return 0;
+  let total = 0;
+  for (const h of DB.holdings) {
+    if ((h.sym || '').toUpperCase() !== symU) continue;
+    if ((h.wallet || '').toLowerCase() !== walletL) continue;
+    if (chainL && (h.chain || '').toLowerCase() !== chainL) continue;
+    total += (h.qty || 0);
+  }
+  return total;
+}
+
+/**
+ * Sum of ladder-rung reservations sourced from this wallet/chain/sym.
+ * A "reservation" is an allocatedFunds amount on a rung whose status is
+ * 'placed' (i.e., the limit order is live at the platform and funds are
+ * encumbered awaiting the price trigger). awaiting_funds rungs do NOT
+ * reserve — they have no platform order and no encumbrance.
+ *
+ * Returns 0 if no ladder feature has been wired yet (no h.ladder on any
+ * holding), or if no placed rungs match the given wallet/chain/sym.
+ */
+function walletReservedBalance(wallet, chain, sym) {
+  const walletL = (wallet || '').toLowerCase();
+  const chainL  = (chain  || '').toLowerCase();
+  const symU    = (sym    || '').toUpperCase();
+  if (!symU || !walletL) return 0;
+  let reserved = 0;
+  for (const h of DB.holdings) {
+    if (!h.ladder || h.ladder.status !== 'active') continue;
+    const cfg = h.ladder.config || {};
+    if ((cfg.sourceWallet || '').toLowerCase() !== walletL) continue;
+    if (chainL && (cfg.sourceChain || '').toLowerCase() !== chainL) continue;
+    if ((cfg.sourceSym || '').toUpperCase() !== symU) continue;
+    const rungs = h.ladder.rungs || [];
+    for (const r of rungs) {
+      if (r.status === 'placed') {
+        reserved += (r.allocatedFunds || 0) - (r.partialFillAmount || 0);
+      }
+    }
+  }
+  return reserved;
+}
+
+/**
+ * Available balance = gross minus reserved. The number the user can
+ * actually commit to new ladder rungs or DCA buys without overdrawing.
+ * Always >= 0.
+ */
+function walletAvailableBalance(wallet, chain, sym) {
+  const gross = walletGrossBalance(wallet, chain, sym);
+  const reserved = walletReservedBalance(wallet, chain, sym);
+  return Math.max(0, gross - reserved);
+}
+
+/**
+ * Returns a structured breakdown of all active commitments (ladder + DCA)
+ * sourced from a given wallet/chain/sym. Used by the ladder feature's
+ * "Current Commitments" panel and the persistent dashboard summary.
+ *
+ * Result shape:
+ *   {
+ *     gross:    number,
+ *     reserved: number,
+ *     available: number,
+ *     entries: [
+ *       {
+ *         holding: <ref to DB.holdings row>,
+ *         sym: string,
+ *         ladderActive: bool,
+ *         placedRungs: number,
+ *         awaitingRungs: number,
+ *         filledRungs: number,
+ *         totalRungs: number,
+ *         reserved: number,
+ *         filledTotal: number,
+ *         dcaActive: bool,
+ *         dcaAmount: number,
+ *         dcaFreq: string,
+ *         dcaNextDue: string
+ *       }
+ *     ]
+ *   }
+ */
+function walletCommitmentsBreakdown(wallet, chain, sym) {
+  const walletL = (wallet || '').toLowerCase();
+  const chainL  = (chain  || '').toLowerCase();
+  const symU    = (sym    || '').toUpperCase();
+  const entries = [];
+  let totalReserved = 0;
+
+  for (const h of DB.holdings) {
+    // Look at every holding — its ladder may source from this wallet/chain/sym
+    // even if the holding itself is a different asset (e.g., BTC ladder
+    // sourced from a USDC holding in Coinbase Hot).
+    let ladderActive = false;
+    let placedRungs = 0, awaitingRungs = 0, filledRungs = 0;
+    let reserved = 0, filledTotal = 0;
+
+    if (h.ladder && h.ladder.status === 'active') {
+      const cfg = h.ladder.config || {};
+      const matchesSource =
+        (cfg.sourceWallet || '').toLowerCase() === walletL &&
+        (!chainL || (cfg.sourceChain || '').toLowerCase() === chainL) &&
+        (cfg.sourceSym || '').toUpperCase() === symU;
+      if (matchesSource) {
+        ladderActive = true;
+        const rungs = h.ladder.rungs || [];
+        for (const r of rungs) {
+          if (r.status === 'placed') {
+            placedRungs++;
+            reserved += (r.allocatedFunds || 0) - (r.partialFillAmount || 0);
+          } else if (r.status === 'awaiting_funds') {
+            awaitingRungs++;
+          } else if (r.status === 'filled') {
+            filledRungs++;
+            filledTotal += (r.allocatedFunds || 0);
+          }
+        }
+        totalReserved += reserved;
+      }
+    }
+
+    // DCA: does this holding's DCA source from this wallet/chain/sym?
+    let dcaActive = false;
+    if (h.dca && h.dca.amount) {
+      const matchesDca =
+        (h.dca.sourceWallet || '').toLowerCase() === walletL &&
+        (!chainL || (h.dca.sourceChain || '').toLowerCase() === chainL) &&
+        // DCA source sym: prefer h.dca.sourceSym if present (post-v47.98 schema),
+        // else fall back to the source-wallet holding's own sym which the existing
+        // _dcaConfirm flow already infers from the resolved funding holding.
+        (((h.dca.sourceSym || '').toUpperCase() === symU) ||
+         (!h.dca.sourceSym && symU === 'USDC')); // conservative pre-v47.98 default
+      if (matchesDca) dcaActive = true;
+    }
+
+    if (ladderActive || dcaActive) {
+      entries.push({
+        holding: h,
+        sym: h.sym || '',
+        ladderActive: ladderActive,
+        placedRungs: placedRungs,
+        awaitingRungs: awaitingRungs,
+        filledRungs: filledRungs,
+        totalRungs: ladderActive ? (h.ladder.rungs || []).length : 0,
+        reserved: reserved,
+        filledTotal: filledTotal,
+        dcaActive: dcaActive,
+        dcaAmount: dcaActive ? h.dca.amount : 0,
+        dcaFreq: dcaActive ? h.dca.freq : null,
+        dcaNextDue: dcaActive ? h.dca.nextDue : null
+      });
+    }
+  }
+
+  const gross = walletGrossBalance(wallet, chain, sym);
+  return {
+    gross: gross,
+    reserved: totalReserved,
+    available: Math.max(0, gross - totalReserved),
+    entries: entries
+  };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PRICE LADDER FEATURE (v47.98)
+// Adapted from Ladder_Module.html via hook5_adapt_v2.py — conservative pass
+// preserving the validated test bench design. ladderFindHolding(symbol)
+// returns the destination holding matching the modal's asset; h.ladder lives
+// on that destination. DCA does not pre-reserve; ladder rungs reserve hard.
+// ═══════════════════════════════════════════════════════════════════════════
+
+/* === MODULE STATE ============================================ */
+/* Production: holdings live in DB.holdings. Wallet balances are computed
+ * via walletGrossBalance(). The module preserves the validated test bench's
+ * mental model: the asset symbol IS the destination, the source wallet
+ * provides the USDC funding. */
+const ladderModule = {
+  currentEditAsset: null  // the asset symbol whose modal is open (same as test bench)
+};
+
+/* === SECTION 1: DATA MODEL HELPERS =========================== */
+
+/**
+ * Ensures the holding has the ladder schema. Adds h.ladder if missing.
+ * Safe to call repeatedly. Migration target for older data.
+ */
+function ladderEnsureSchema(h) {
+  if (!h) return;
+  if (h.ladder === undefined) {
+    h.ladder = null;  // null = no ladder configured
+  }
+  if (h.ladder && !h.ladder.rungs) {
+    h.ladder.rungs = [];
+  }
+}
+
+/**
+ * True if the holding has an active ladder strategy.
+ */
+function ladderHasActive(h) {
+  return !!(h && h.ladder && h.ladder.status === 'active');
+}
+
+/**
+ * Returns the rungs array, empty array if none.
+ */
+function ladderGetRungs(h) {
+  if (!h || !h.ladder || !h.ladder.rungs) return [];
+  return h.ladder.rungs;
+}
+
+/* walletGrossBalance, walletReservedBalance, walletAvailableBalance, and
+ * walletCommitmentsBreakdown are provided by the host app (added before
+ * this module in Hook 3). They take (wallet, chain, sym) — pass '' for
+ * chain to match across all chains for that wallet+sym. */
+
+/**
+ * Finds a holding by symbol. Returns undefined if not found.
+ * In the demo, the same sym can exist in multiple wallets — we return the
+ * first match. (Production refinement could disambiguate, but matches the
+ * test bench's one-holding-per-symbol model.)
+ */
+function ladderFindHolding(symbol) {
+  if (!symbol) return undefined;
+  const symU = (symbol || '').toUpperCase();
+  return DB.holdings.find(h => (h.sym || '').toUpperCase() === symU);
+}
+
+/* === SECTION 2: PREVIEW COMPUTATION =========================== */
+
+/**
+ * Reads ladder configuration from the modal inputs.
+ */
+function ladderReadModalConfig() {
+  const priceStepType = document.querySelector('input[name="priceStepType"]:checked').value;
+  const fundingMode = document.querySelector('input[name="fundingMode"]:checked').value;
+  return {
+    startPrice: parseFloat(document.getElementById('ladStartPrice').value) || 0,
+    numRungs: parseInt(document.getElementById('ladRungs').value, 10) || 0,
+    priceStepType: priceStepType,
+    pctDrop: parseFloat(document.getElementById('ladPctDrop').value) || 0,
+    dollarDrop: parseFloat(document.getElementById('ladDollarDrop').value) || 0,
+    fundingMode: fundingMode,
+    baseAmount: parseFloat(document.getElementById('ladBaseAmount').value) || 0,
+    fundingInc: parseFloat(document.getElementById('ladFundingInc').value) || 0,
+    expiration: document.getElementById('ladExpiration').value,
+    specificDate: document.getElementById('ladSpecificDate').value,
+    sourceWallet: (document.getElementById('modalSourceWallet').value || '').trim(),
+    sourceChain: (document.getElementById('modalSourceChain') ? document.getElementById('modalSourceChain').value : '').trim(),
+    sourceSym: 'USDC',
+    destWallet: (document.getElementById('modalDestWallet').value || '').trim(),
+    destChain: (document.getElementById('modalDestChain') ? document.getElementById('modalDestChain').value : '').trim(),
+    destSym: ladderModule.currentEditAsset
+  };
+}
+
+/**
+ * Computes the rung array from a configuration. Pure function — used by both
+ * preview and arming.
+ */
+function ladderComputeRungs(config) {
+  const rungs = [];
+  for (let n = 1; n <= config.numRungs; n++) {
+    let triggerPrice;
+    if (config.priceStepType === 'percentage') {
+      triggerPrice = config.startPrice * Math.pow(1 - config.pctDrop / 100, n - 1);
+    } else {
+      triggerPrice = config.startPrice - (config.dollarDrop * (n - 1));
+    }
+    let allocated;
+    if (config.fundingMode === 'fixed') {
+      allocated = config.baseAmount;
+    } else {
+      allocated = config.baseAmount * Math.pow(1 + config.fundingInc / 100, n - 1);
+    }
+    rungs.push({
+      rungNumber: n,
+      triggerPrice: Math.round(triggerPrice * 100) / 100,
+      allocatedFunds: Math.round(allocated * 100) / 100
+    });
+  }
+  return rungs;
+}
+
+/**
+ * Reads modal inputs, computes preview, renders table, updates Arm button state.
+ */
+function ladderUpdatePreview() {
+  const config = ladderReadModalConfig();
+  const rungs = ladderComputeRungs(config);
+  const tbody = document.getElementById('ladderPreviewTable');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  let totalCommit = 0;
+  rungs.forEach(r => {
+    const tr = document.createElement('tr');
+    const sym = ladderModule.currentEditAsset || 'ASSET';
+    tr.innerHTML = '<td>Rung ' + r.rungNumber + '</td>' +
+                   '<td>' + sym + ' @ ' + fmtUSD(r.triggerPrice) + '</td>' +
+                   '<td>' + fmtUSD(r.allocatedFunds) + '</td>';
+    tbody.appendChild(tr);
+    totalCommit += r.allocatedFunds;
+  });
+  document.getElementById('ladderPreviewTotal').textContent = fmtUSD(totalCommit);
+  const available = walletAvailableBalance(config.sourceWallet, '', config.sourceSym);
+  const balanceEl = document.getElementById('ladderPreviewBalance');
+  balanceEl.textContent = fmtUSD(available);
+  balanceEl.className = 'balance-status ' + (available >= totalCommit ? 'ok' : 'low');
+
+  // Warnings
+  const warningEl = document.getElementById('ladderPreviewWarning');
+  warningEl.innerHTML = '';
+  if (rungs.length > 0) {
+    const deepestPrice = rungs[rungs.length - 1].triggerPrice;
+    if (deepestPrice <= 0) {
+      warningEl.innerHTML = '<div class="ladder-preview-warning">⚠ Dollar drop too large — deepest rung would be negative.</div>';
+    } else {
+      const deepDropPct = (1 - deepestPrice / config.startPrice) * 100;
+      if (deepDropPct > 50) {
+        warningEl.innerHTML = '<div class="ladder-preview-warning">⚠ Deepest rung is ' + deepDropPct.toFixed(1) + '% below current price. Are you sure?</div>';
+      }
+    }
+  }
+
+  // Arm button state
+  const armBtn = document.getElementById('modalArmBtn');
+  const blockArm = (rungs.length < 2) || (rungs.length > 0 && rungs[rungs.length - 1].triggerPrice <= 0);
+  armBtn.disabled = blockArm;
+  if (available >= totalCommit) {
+    armBtn.textContent = 'Arm Ladder (' + fmtUSD(totalCommit) + ' reserved)';
+  } else {
+    armBtn.textContent = 'Arm Ladder (' + fmtUSD(Math.min(available, totalCommit)) + ' reserved, rest pending funds)';
+  }
+}
+
+/* === SECTION 3: MODAL CONTROL ================================ */
+
+/**
+ * Opens the strategy modal for a given asset.
+ * @param {string} symbol - Asset symbol (e.g., 'BTC')
+ * @param {string} initialTab - 'dca' or 'ladder' (default 'dca')
+ */
+/**
+ * Populates the "Current Commitments" panel inside the strategy modal.
+ * Called when the modal opens. Shows the user what already exists on this
+ * asset (ladder rungs filled/placed/awaiting, DCA schedule, available funds)
+ * so they have full financial context before making changes.
+ */
+function populateModalCommitments(symbol) {
+  const h = ladderFindHolding(symbol);
+  if (!h) return;
+
+  const panel = document.getElementById('modalCommitmentsPanel');
+  const body = document.getElementById('modalCommitmentsBody');
+  const assetEl = document.getElementById('modalCommitmentsAsset');
+  if (!panel || !body || !assetEl) return;
+  assetEl.textContent = symbol;
+
+  const hasLadder = ladderHasActive(h);
+  const hasDca = !!(h.dca && h.dca.amount);
+
+  if (!hasLadder && !hasDca) {
+    // Show a calm "nothing here yet" state
+    panel.style.display = 'block';
+    panel.style.background = 'var(--bg3)';
+    panel.style.borderColor = 'var(--border)';
+    body.innerHTML = '<span style="color:var(--text3);font-style:italic;">No strategies configured yet on ' + symbol + '. Configure DCA or Ladder below.</span>';
+    return;
+  }
+
+  // Active commitments exist — show them
+  panel.style.display = 'block';
+  panel.style.background = 'rgba(0,102,204,0.04)';
+  panel.style.borderColor = 'rgba(0,102,204,0.20)';
+
+  let html = '';
+
+  if (hasLadder) {
+    const filled = h.ladder.rungs.filter(r => r.status === 'filled');
+    const placed = h.ladder.rungs.filter(r => r.status === 'placed');
+    const awaiting = h.ladder.rungs.filter(r => r.status === 'awaiting_funds');
+    const reserved = placed.reduce((s, r) => s + (r.allocatedFunds - (r.partialFillAmount || 0)), 0);
+    const filledTotal = filled.reduce((s, r) => s + r.allocatedFunds, 0);
+    const awaitingTotal = awaiting.reduce((s, r) => s + r.allocatedFunds, 0);
+    html += '<div style="padding:3px 0;">' +
+      '<span style="color:var(--accent2);font-weight:700;">📐 Ladder:</span> ' +
+      filled.length + ' of ' + h.ladder.rungs.length + ' rungs filled' +
+      (filledTotal > 0 ? ' (' + fmtUSD(filledTotal) + ' spent)' : '') +
+      '</div>';
+    if (placed.length > 0) {
+      html += '<div style="padding:3px 0 3px 16px;">' +
+        '<span style="color:var(--accent2);">◯</span> ' +
+        placed.length + ' placed at platform · <strong>' + fmtUSD(reserved) + ' reserved</strong>' +
+        '</div>';
+    }
+    if (awaiting.length > 0) {
+      html += '<div style="padding:3px 0 3px 16px;">' +
+        '<span style="color:var(--warn);">⏳</span> ' +
+        awaiting.length + ' awaiting funds (' + fmtUSD(awaitingTotal) + ' needed total)' +
+        '</div>';
+    }
+  }
+
+  if (hasDca) {
+    html += '<div style="padding:3px 0;' + (hasLadder ? 'margin-top:4px;border-top:1px dashed var(--border);padding-top:6px;' : '') + '">' +
+      '<span style="color:var(--purple);font-weight:700;">📅 DCA:</span> ' +
+      h.dca.freq + ' ' + fmtUSD(h.dca.amount) +
+      (h.dca.nextDue ? ' · next due ' + h.dca.nextDue : '') +
+      ' <span style="color:var(--text3);font-style:italic;">(no reservation — checked at fire time)</span>' +
+      '</div>';
+  }
+
+  // Footer: available funds in source wallet
+  const sourceWallet = (hasLadder && h.ladder.config.sourceWallet) ||
+                       (hasDca && h.dca.sourceWallet) || '';
+  const sourceChain = (hasLadder && h.ladder.config.sourceChain) ||
+                      (hasDca && h.dca.sourceChain) || '';
+  const sourceSym = (hasLadder && h.ladder.config.sourceSym) ||
+                    (hasDca && h.dca.sourceSym) || 'USDC';
+  const avail = sourceWallet ? walletAvailableBalance(sourceWallet, sourceChain, sourceSym) : 0;
+  html += '<div style="padding:6px 0 0;margin-top:6px;border-top:1px dashed var(--border);">' +
+    '<span style="color:var(--text3);">Available in ' + sourceWallet + ':</span> ' +
+    '<strong style="color:' + (avail > 0 ? 'var(--accent)' : 'var(--danger)') + ';">' + fmtUSD(avail) + ' ' + sourceSym + '</strong>' +
+    '</div>';
+
+  body.innerHTML = html;
+}
+
+function openLadderModalForSymbol(symbol) {
+  // v47.98: 'symbol' is the sym of the holding the user clicked Configure
+  // Ladder from. Source is pre-filled from the holding's context. Destination
+  // fields are ALWAYS left blank (or restored from a prior ladder config) so
+  // the user must explicitly choose them — this serves as confirmation and
+  // prevents accidental self-funding ladders.
+  //
+  // If ladderModule.editingExistingId is set (set by ladderEdit), look up
+  // by id instead of sym to disambiguate when multiple holdings share a sym.
+  let h;
+  if (ladderModule.editingExistingId) {
+    h = (DB.holdings || []).find(x => x && x.id === ladderModule.editingExistingId);
+  }
+  if (!h) h = ladderFindHolding(symbol);
+  if (!h) {
+    console.warn('No holding found for symbol:', symbol);
+    return;
+  }
+  ladderModule.currentEditAsset = symbol;
+
+  // Refresh the token autocomplete list
+  if (typeof ladderRefreshTokenDatalist === 'function') ladderRefreshTokenDatalist();
+
+  const sourceWalletEl = document.getElementById('modalSourceWallet');
+  const sourceChainEl = document.getElementById('modalSourceChain');
+  const sourceSymEl = document.getElementById('modalSourceSym');
+  const destAssetEl = document.getElementById('modalAssetInput');
+  const destWalletEl = document.getElementById('modalDestWallet');
+  const destChainEl = document.getElementById('modalDestChain');
+
+  if (h.ladder && h.ladder.config) {
+    // Restoring an existing ladder config — show what it was set to
+    const cfg = h.ladder.config;
+    sourceWalletEl.value = cfg.sourceWallet || '';
+    if (sourceChainEl) sourceChainEl.value = cfg.sourceChain || '';
+    if (sourceSymEl) sourceSymEl.value = cfg.sourceSym || 'USDC';
+    if (destAssetEl) destAssetEl.value = cfg.destSym || '';
+    if (destWalletEl) destWalletEl.value = cfg.destWallet || '';
+    if (destChainEl) destChainEl.value = cfg.destChain || '';
+    ladderModule.currentEditAsset = cfg.destSym || '';
+  } else {
+    // Fresh ladder: pre-fill SOURCE from the holding's context.
+    // Leave DESTINATION fields BLANK — user must choose explicitly.
+    sourceWalletEl.value = h.wallet || '';
+    if (sourceChainEl) sourceChainEl.value = h.chain || '';
+    if (sourceSymEl) sourceSymEl.value = (h.sym || 'USDC').toUpperCase();
+    if (destAssetEl) destAssetEl.value = '';
+    if (destWalletEl) destWalletEl.value = '';
+    if (destChainEl) destChainEl.value = '';
+    ladderModule.currentEditAsset = '';
+  }
+
+  // Update header symbol display
+  const titleEl = document.getElementById('modalAssetSymbol');
+  if (titleEl) {
+    const t = ladderModule.currentEditAsset;
+    titleEl.textContent = t ? ' · ' + t : '';
+    titleEl.style.display = t ? '' : 'none';
+  }
+
+  // Populate the Current Commitments panel
+  populateModalCommitments(symbol);
+
+  // Set default ladder start price from destination asset's market price
+  // (only if destination is already known from a restored config)
+  const startPriceInput = document.getElementById('ladStartPrice');
+  const destSymForPrice = ladderModule.currentEditAsset;
+  let curPrice = null;
+  if (destSymForPrice) {
+    let geckoId = '';
+    if ((h.sym || '').toUpperCase() === destSymForPrice.toUpperCase() && h.geckoId) {
+      geckoId = h.geckoId;
+    } else if (typeof _findGeckoIdForSym === 'function') {
+      geckoId = _findGeckoIdForSym(destSymForPrice);
+    }
+    if (geckoId && typeof getPrice === 'function') {
+      curPrice = getPrice(geckoId);
+    }
+  }
+  if (curPrice) {
+    startPriceInput.value = curPrice;
+  } else {
+    startPriceInput.value = '';  // user fills in once they specify destination
+  }
+
+  // Pre-fill ladder if already configured
+  if (h.ladder && h.ladder.config) {
+    const cfg = h.ladder.config;
+    if (cfg.startPrice) document.getElementById('ladStartPrice').value = cfg.startPrice;
+    if (cfg.numRungs) document.getElementById('ladRungs').value = cfg.numRungs;
+    if (cfg.priceStepType) {
+      const radios = document.getElementsByName('priceStepType');
+      for (let r of radios) r.checked = (r.value === cfg.priceStepType);
+    }
+    if (cfg.pctDrop !== undefined) document.getElementById('ladPctDrop').value = cfg.pctDrop;
+    if (cfg.dollarDrop !== undefined) document.getElementById('ladDollarDrop').value = cfg.dollarDrop;
+    if (cfg.fundingMode) {
+      const radios = document.getElementsByName('fundingMode');
+      for (let r of radios) r.checked = (r.value === cfg.fundingMode);
+    }
+    if (cfg.baseAmount) document.getElementById('ladBaseAmount').value = cfg.baseAmount;
+    if (cfg.fundingInc !== undefined) document.getElementById('ladFundingInc').value = cfg.fundingInc;
+    if (cfg.expiration) document.getElementById('ladExpiration').value = cfg.expiration;
+    if (cfg.specificDate) document.getElementById('ladSpecificDate').value = cfg.specificDate;
+  }
+
+  ladderToggleStepType();
+  ladderToggleFundingMode();
+  ladderToggleExpiration();
+  switchStrategyTab('ladder');  // demo modal is ladder-only
+  ladderUpdatePreview();
+
+  document.getElementById('strategyConfigModal').classList.add('open');
+}
+
+// Alias for backwards compatibility with the launcher
+function openStrategyModal(symbol) { openLadderModalForSymbol(symbol); }
+
+function closeStrategyModal() {
+  document.getElementById('strategyConfigModal').classList.remove('open');
+  ladderModule.currentEditAsset = null;
+  ladderModule.editingExisting = null;
+  ladderModule.editingExistingId = null;
+}
+
+function switchStrategyTab(tab) {
+  // Null-safe: launcher modal has no DCA tab elements
+  const tbDca = document.getElementById('tabBtnDca');
+  const tbLad = document.getElementById('tabBtnLadder');
+  const tcDca = document.getElementById('tabContentDca');
+  const tcLad = document.getElementById('tabContentLadder');
+  if (tbDca) tbDca.classList.toggle('active', tab === 'dca');
+  if (tbLad) tbLad.classList.toggle('active', tab === 'ladder');
+  if (tcDca) tcDca.classList.toggle('active', tab === 'dca');
+  if (tcLad) tcLad.classList.toggle('active', tab === 'ladder');
+  const armBtn = document.getElementById('modalArmBtn');
+  if (armBtn && tab === 'dca') {
+    armBtn.textContent = 'Set DCA Schedule';
+    armBtn.disabled = false;
+  } else if (armBtn) {
+    ladderUpdatePreview();
+  }
+}
+
+function ladderToggleStepType() {
+  const mode = document.querySelector('input[name="priceStepType"]:checked').value;
+  document.getElementById('pricePctRow').style.display = (mode === 'percentage') ? 'grid' : 'none';
+  document.getElementById('priceDollarRow').style.display = (mode === 'fixed_dollar') ? 'grid' : 'none';
+  ladderUpdatePreview();
+}
+
+function ladderToggleFundingMode() {
+  const mode = document.querySelector('input[name="fundingMode"]:checked').value;
+  document.getElementById('fundingIncGroup').style.display = (mode === 'geometric_increase') ? 'flex' : 'none';
+  ladderUpdatePreview();
+}
+
+function ladderToggleExpiration() {
+  const val = document.getElementById('ladExpiration').value;
+  document.getElementById('ladSpecificDateGroup').style.display = (val === 'specific') ? 'flex' : 'none';
+}
+
+/* === SECTION 4: ARMING ======================================= */
+
+/**
+ * Main arming dispatch — called when user clicks Arm Strategy.
+ * Routes to DCA or ladder based on active tab.
+ */
+function armStrategy() {
+  // Demo's launcher-button modal is ladder-only (DCA is configured in the
+  // holding modal). Always arm a ladder.
+  armLadder(ladderModule.currentEditAsset);
+}
+
+/**
+ * Arms a DCA schedule on the given holding.
+ */
+/* armDCA removed — demo's existing DCA section is the production path. */
+
+/* dcaComputeNextDue removed — demo's _dcaAddPeriod handles this. */
+
+/* dcaFireScheduledBuy removed — demo's _dcaConfirm is the production path. */
+
+/**
+ * Arms a ladder strategy on the given holding.
+ * Per locked design: partial armament. Rungs that have funds are placed
+ * at platform; others stay as awaiting_funds. No platform order is
+ * submitted for awaiting_funds rungs.
+ */
+function armLadder(symbol) {
+  // Note: 'symbol' here is the modal's currentEditAsset, which is also the
+  // destination asset. We look up or create the destination holding and
+  // attach the ladder there.
+  const config = ladderReadModalConfig();
+  const rungData = ladderComputeRungs(config);
+
+  // v47.98: if this is an edit (user clicked ✎ Edit on an existing ladder),
+  // we need to confirm the cancel-and-replace and then clear the existing
+  // ladder before proceeding. Per locked design (option C): no partial edits.
+  const editingSym = ladderModule.editingExisting;
+  const editingId = ladderModule.editingExistingId;
+  if (editingSym || editingId) {
+    // v47.98: prefer id-based lookup so we always target the right holding
+    // when multiple rows share a sym (e.g. BTC in multiple wallets).
+    let existingH = null;
+    if (editingId) {
+      existingH = (DB.holdings || []).find(x => x && x.id === editingId);
+    }
+    if (!existingH && editingSym) {
+      existingH = ladderFindHolding(editingSym);
+    }
+    if (existingH && existingH.ladder && existingH.ladder.status === 'active') {
+      const filled = existingH.ladder.rungs.filter(r => r.status === 'filled').length;
+      const placed = existingH.ladder.rungs.filter(r => r.status === 'placed').length;
+      const awaiting = existingH.ladder.rungs.filter(r => r.status === 'awaiting_funds').length;
+      const msg = 'Editing the ' + editingSym + ' ladder will replace it.\n\n' +
+                  filled + ' filled rungs will be preserved (asset acquired stays).\n' +
+                  placed + ' placed rungs will be cancelled (funds released).\n' +
+                  (awaiting > 0 ? awaiting + ' awaiting rungs will be discarded.\n' : '') +
+                  '\nA new ladder will be armed with your updated configuration.\n\nProceed?';
+      if (!confirm(msg)) {
+        ladderModule.editingExisting = null;
+        return;
+      }
+      // Cancel the existing ladder in place (don't call ladderCancel — it
+      // shows its own confirm and we'd double-prompt). Inline the work:
+      existingH.ladder.rungs.forEach(r => {
+        if (r.status === 'placed' || r.status === 'awaiting_funds') {
+          r.status = 'cancelled';
+          r.platformOrderId = null;
+        }
+      });
+      existingH.ladder.status = 'cancelled';
+      // Persist the cancellation step so reservation accounting reflects
+      // the released funds before the new ladder claims them
+      try { persist(); } catch(e) {}
+    }
+    ladderModule.editingExisting = null;
+    ladderModule.editingExistingId = null;
+  }
+
+  // v47.98: required-field validation
+  if (!config.destSym) {
+    alert('Destination Asset is required (what are you accumulating?).');
+    return;
+  }
+  if (!config.sourceWallet) {
+    alert('Source wallet is required (where do funds come from?).');
+    return;
+  }
+  if (!config.destWallet) {
+    alert('Destination wallet is required (where does the bought asset land?).');
+    return;
+  }
+  // v47.98: refuse self-funding ladder — source and destination cannot be
+  // the same asset in the same wallet (would be a no-op or worse)
+  const srcKey = (config.sourceWallet || '').toLowerCase() + '|' +
+                 (config.sourceChain || '').toLowerCase() + '|' +
+                 (config.sourceSym || '').toUpperCase();
+  const dstKey = (config.destWallet || '').toLowerCase() + '|' +
+                 (config.destChain || '').toLowerCase() + '|' +
+                 (config.destSym || '').toUpperCase();
+  if (srcKey === dstKey) {
+    alert('Source and destination cannot be the same wallet/chain/token. A ladder swaps from one asset to another.');
+    return;
+  }
+
+  if (rungData.length < 2) {
+    alert('Ladder requires at least 2 rungs.');
+    return;
+  }
+  if (rungData[rungData.length - 1].triggerPrice <= 0) {
+    alert('Configuration produces negative deepest-rung price. Adjust step settings.');
+    return;
+  }
+
+  // v47.98: find or create the destination holding — the ladder lives there
+  const destSymU = (config.destSym || '').toUpperCase();
+  let targetHolding = DB.holdings.find(x =>
+    (x.sym || '').toUpperCase() === destSymU &&
+    (x.wallet || '').toLowerCase() === (config.destWallet || '').toLowerCase() &&
+    (!config.destChain || (x.chain || '').toLowerCase() === (config.destChain || '').toLowerCase())
+  );
+  if (!targetHolding) {
+    // The destination holding doesn't exist yet — create a stub. It will
+    // populate as rungs fill.
+    const hRef = ladderFindHolding(symbol);  // for category/geckoId hints
+    targetHolding = {
+      id: (typeof uid === 'function') ? uid() : ('lad-dest-' + Date.now()),
+      sym: destSymU,
+      geckoId: (typeof _findGeckoIdForSym === 'function') ? _findGeckoIdForSym(destSymU) : '',
+      cat: (hRef && hRef.cat) || '',
+      chain: config.destChain || '',
+      wallet: config.destWallet || '',
+      avgCost: 0,
+      qty: 0
+    };
+    DB.holdings.push(targetHolding);
+  }
+
+  // Build the ladder object on the destination holding
+  targetHolding.ladder = {
+    status: 'active',
+    createdAt: ladderNow(),
+    expirationDate: ladderComputeExpirationDate(config),
+    config: config,
+    rungs: []
+  };
+
+  // Decide placed vs awaiting_funds for each rung. Hard reservation:
+  // funds are encumbered the moment a rung is placed.
+  let available = walletAvailableBalance(config.sourceWallet, '', config.sourceSym);
+  let placedCount = 0;
+  let awaitingCount = 0;
+
+  rungData.forEach(rData => {
+    const rung = {
+      rungNumber: rData.rungNumber,
+      triggerPrice: rData.triggerPrice,
+      allocatedFunds: rData.allocatedFunds,
+      status: 'awaiting_funds',
+      placedAt: null,
+      filledAt: null,
+      fillPrice: null,
+      fillAmountAsset: null,
+      partialFillAmount: 0,
+      platformOrderId: null
+    };
+    if (available >= rung.allocatedFunds) {
+      ladderPlaceRungAtPlatform(targetHolding, rung);
+      available -= rung.allocatedFunds;
+      placedCount++;
+    } else {
+      awaitingCount++;
+    }
+    targetHolding.ladder.rungs.push(rung);
+  });
+
+  const sym = targetHolding.sym || symbol || '';
+  let summary = placedCount + ' of ' + targetHolding.ladder.rungs.length + ' rungs placed at platform.';
+  if (awaitingCount > 0) summary += ' ' + awaitingCount + ' awaiting funds.';
+  ladderToast('ladder-placed', 'Ladder Armed · ' + sym, summary);
+
+  try { persist(); } catch(e) { console.warn('persist after armLadder failed', e); }
+  closeStrategyModal();
+  // After arming, immediately evaluate against current price — rung 1 may
+  // already be at or below trigger if user configured it that way.
+  ladderEvaluateAllRungs();
+  ladderRefreshAll();
+}
+
+/**
+ * Places a single rung at the platform. In production, this submits a
+ * limit order to the CEX/DeFi platform and stores the returned order ID.
+ * In this test bench, we just mark it placed with a synthetic order ID.
+ */
+function ladderPlaceRungAtPlatform(h, rung) {
+  // In production:
+  //   const orderId = await platformAPI.submitLimitOrder({...});
+  //   rung.platformOrderId = orderId;
+  rung.platformOrderId = 'SIM-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+  rung.placedAt = ladderNow();
+  rung.status = 'placed';
+}
+
+function ladderComputeExpirationDate(config) {
+  if (config.expiration === 'gtc') return null;
+  const now = new Date(ladderNow());
+  if (config.expiration === 'week') {
+    return new Date(now.getTime() + 7 * 86400 * 1000).toISOString();
+  }
+  if (config.expiration === 'month') {
+    return new Date(now.getTime() + 30 * 86400 * 1000).toISOString();
+  }
+  if (config.expiration === 'specific') {
+    return config.specificDate ? new Date(config.specificDate).toISOString() : null;
+  }
+  return null;
+}
+
+/* === SECTION 5: EVALUATION & FILLS =========================== */
+
+/**
+ * Scans all active ladders, fires any placed rungs whose trigger has
+ * been crossed by current price.
+ *
+ * In production, this function is unnecessary — the platform fires the
+ * order and notifies us via webhook. The test bench uses this to
+ * simulate platform behavior.
+ */
+function ladderEvaluateAllRungs() {
+  DB.holdings.forEach(h => {
+    if (!ladderHasActive(h)) return;
+    // Demo: price comes from getPrice(geckoId)
+    const currentPrice = (typeof getPrice === 'function' && h.geckoId) ? getPrice(h.geckoId) : null;
+    if (!currentPrice) return;
+    h.ladder.rungs.forEach(rung => {
+      if (rung.status === 'placed' && currentPrice <= rung.triggerPrice) {
+        // Trigger crossed — simulate platform fill at current price.
+        ladderFillRung(h, rung, currentPrice);
+      }
+    });
+    // Check if strategy is now complete
+    const anyOpen = h.ladder.rungs.some(r => r.status === 'placed' || r.status === 'awaiting_funds');
+    if (!anyOpen && h.ladder.status === 'active') {
+      h.ladder.status = 'completed';
+      const filled = h.ladder.rungs.filter(r => r.status === 'filled');
+      const totalSpent = filled.reduce((s, r) => s + r.allocatedFunds, 0);
+      ladderToast('ladder-fill', 'Ladder Complete · ' + (h.sym || ''),
+        'All ' + h.ladder.rungs.length + ' rungs filled. Total invested: ' + fmtUSD(totalSpent));
+      try { persist(); } catch(e) {}
+    }
+  });
+}
+
+/**
+ * Marks a rung as filled. In production, this is called from the platform's
+ * fill webhook handler. The fill price comes from the platform.
+ */
+function ladderFillRung(h, rung, fillPrice) {
+  rung.status = 'filled';
+  rung.filledAt = ladderNow();
+  rung.fillPrice = fillPrice;
+  rung.fillAmountAsset = rung.allocatedFunds / fillPrice;
+
+  // Demo asset movement: mirror the _dcaConfirm pattern.
+  // 1. Debit the source USDC holding by rung.allocatedFunds
+  // 2. Find or create destination row for h.sym at destWallet/destChain;
+  //    credit it with fillAmountAsset.
+  const cfg = h.ladder.config;
+  let srcHoldingRef = null;  // captured for transaction log
+  try {
+    // SOURCE: find USDC holding at sourceWallet (any chain or matching chain)
+    const srcSymU = (cfg.sourceSym || 'USDC').toUpperCase();
+    const srcHolding = DB.holdings.find(x =>
+      (x.sym || '').toUpperCase() === srcSymU &&
+      (x.wallet || '').toLowerCase() === (cfg.sourceWallet || '').toLowerCase() &&
+      (!cfg.sourceChain || (x.chain || '').toLowerCase() === (cfg.sourceChain || '').toLowerCase())
+    );
+    if (srcHolding) {
+      srcHolding.qty = Math.max(0, (srcHolding.qty || 0) - rung.allocatedFunds);
+      srcHoldingRef = srcHolding;
+    }
+
+    // DESTINATION: find or create holding for h.sym at destWallet/destChain
+    const destSymU = (h.sym || '').toUpperCase();
+    if (cfg.destWallet) {
+      let destHolding = DB.holdings.find(x =>
+        (x.sym || '').toUpperCase() === destSymU &&
+        (x.wallet || '').toLowerCase() === (cfg.destWallet || '').toLowerCase() &&
+        (!cfg.destChain || (x.chain || '').toLowerCase() === (cfg.destChain || '').toLowerCase())
+      );
+      if (destHolding) {
+        // Update avgCost as a quantity-weighted average
+        const prevQty = destHolding.qty || 0;
+        const prevCost = (destHolding.avgCost || 0) * prevQty;
+        const newQty = prevQty + rung.fillAmountAsset;
+        const newCost = prevCost + rung.allocatedFunds;
+        destHolding.qty = newQty;
+        destHolding.avgCost = newQty > 0 ? newCost / newQty : fillPrice;
+      } else {
+        // Create new holding row for destination
+        DB.holdings.push({
+          id: (typeof uid === 'function') ? uid() : ('lad-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7)),
+          sym: destSymU,
+          geckoId: h.geckoId || (typeof _findGeckoIdForSym === 'function' ? _findGeckoIdForSym(destSymU) : ''),
+          cat: h.cat || '',
+          chain: cfg.destChain || '',
+          wallet: cfg.destWallet || '',
+          avgCost: fillPrice,
+          qty: rung.fillAmountAsset
+        });
+      }
+    } else {
+      // No destination configured — credit the source holding's own row directly
+      h.qty = (h.qty || 0) + rung.fillAmountAsset;
+    }
+
+    // v47.98: log the fill to the Transactions history so the user can see it
+    if (typeof logTransaction === 'function') {
+      const fromLabel = (cfg.sourceWallet || '') + (cfg.sourceChain ? ' (' + cfg.sourceChain + ')' : '');
+      const toLabel = (cfg.destWallet || '') + (cfg.destChain ? ' (' + cfg.destChain + ')' : '');
+      const srcSymU2 = (cfg.sourceSym || 'USDC').toUpperCase();
+      const destSymU2 = (h.sym || '').toUpperCase();
+      // Source price: typically $1 for stables; for non-stable funding,
+      // look up its market price
+      let srcPx = 1;
+      if (srcHoldingRef && srcHoldingRef.geckoId && typeof getPrice === 'function') {
+        const p = getPrice(srcHoldingRef.geckoId);
+        if (p) srcPx = p;
+      }
+      logTransaction({
+        date: (typeof today === 'function') ? today() : new Date().toISOString().slice(0,10),
+        type: 'Swap',
+        sym: srcSymU2,
+        qty: rung.allocatedFunds / srcPx,  // amount of source token spent
+        price: srcPx,
+        total: rung.allocatedFunds,
+        destSym: destSymU2,
+        destQty: rung.fillAmountAsset,
+        destPrice: fillPrice,
+        destWallet: cfg.destWallet || '',
+        destChain: cfg.destChain || '',
+        from: fromLabel,
+        to: toLabel,
+        notes: 'Ladder rung ' + rung.rungNumber + '/' + (h.ladder.rungs.length) +
+               ' filled at ' + fmtUSD(fillPrice) +
+               ' (trigger ' + fmtUSD(rung.triggerPrice) + ')'
+      });
+    }
+  } catch(e) {
+    console.warn('Ladder fill asset movement failed:', e);
+  }
+
+  const divergencePct = ((fillPrice - rung.triggerPrice) / rung.triggerPrice) * 100;
+  let divNote = '';
+  if (Math.abs(divergencePct) > 0.5) {
+    divNote = ' (' + fmtPct(divergencePct) + ' vs trigger)';
+  }
+  ladderToast('ladder-fill', 'Rung Filled · ' + (h.sym || (h.sym || h.symbol || '') || ''),
+    'Rung ' + rung.rungNumber + ' of ' + h.ladder.rungs.length + ': ' +
+    fmtUSD(rung.allocatedFunds) + ' at ' + fmtUSD(fillPrice) + divNote);
+  try { persist(); } catch(e) { console.warn('persist after fillRung failed', e); }
+}
+
+/**
+ * Wallet credit handler. When funds arrive in a wallet, promote
+ * awaiting_funds rungs to placed in priority order (oldest strategy
+ * first, then by rung number).
+ *
+ * Locked design: ladder takes priority over DCA when funds are tight.
+ * The DCA forward warning will surface separately if its next buy
+ * becomes underfunded as a result.
+ */
+function ladderPromoteAwaitingRungs(walletName, sym) {
+  const candidates = [];
+  DB.holdings.forEach(h => {
+    if (!ladderHasActive(h)) return;
+    if ((h.ladder.config.sourceWallet || '').toLowerCase() !== (walletName || '').toLowerCase()) return;
+    if ((h.ladder.config.sourceSym || '').toUpperCase() !== (sym || '').toUpperCase()) return;
+    h.ladder.rungs.forEach(r => {
+      if (r.status === 'awaiting_funds') {
+        candidates.push({ h: h, rung: r });
+      }
+    });
+  });
+  // Sort: strategy.createdAt ascending, then rungNumber ascending
+  candidates.sort((a, b) => {
+    if (a.h.ladder.createdAt !== b.h.ladder.createdAt) {
+      return (a.h.ladder.createdAt < b.h.ladder.createdAt) ? -1 : 1;
+    }
+    return a.rung.rungNumber - b.rung.rungNumber;
+  });
+
+  let promoted = 0;
+  candidates.forEach(({ h, rung }) => {
+    const avail = walletAvailableBalance(walletName, '', sym);
+    if (avail >= rung.allocatedFunds) {
+      ladderPlaceRungAtPlatform(h, rung);
+      promoted++;
+      ladderToast('ladder-placed', 'Rung Placed · ' + (h.sym || ''),
+        'Rung ' + rung.rungNumber + ' placed at ' + fmtUSD(rung.triggerPrice));
+    }
+  });
+
+  if (promoted > 0) {
+    try { persist(); } catch(e) { console.warn('persist after promote failed', e); }
+    // Newly placed rungs may already be triggered if current price is below
+    ladderEvaluateAllRungs();
+  }
+  return promoted;
+}
+
+/* === SECTION 6: KILL SWITCH & EXPIRATION ===================== */
+
+/**
+ * Cancels the active ladder on the given holding. Shows confirmation.
+ * Per locked design:
+ *   - Filled rungs are untouched (asset already in long-term wallet).
+ *   - Placed rungs are cancelled at platform (platformOrderId set to null).
+ *   - Awaiting_funds rungs are cancelled locally (no platform call).
+ *   - Reservations are released.
+ */
+function ladderCancel(holdingIdOrSymbol) {
+  // v47.98: accept either a holding id (preferred) or a sym (backwards-compat).
+  // Try id first; if no match, fall back to sym lookup.
+  let h = (DB.holdings || []).find(x => x && x.id === holdingIdOrSymbol);
+  if (!h) h = ladderFindHolding(holdingIdOrSymbol);
+  if (!h || !ladderHasActive(h)) return;
+  const symbol = h.sym || '';
+
+  const filled = h.ladder.rungs.filter(r => r.status === 'filled');
+  const placed = h.ladder.rungs.filter(r => r.status === 'placed');
+  const awaiting = h.ladder.rungs.filter(r => r.status === 'awaiting_funds');
+  const unfilledTotal = placed.reduce((s, r) => s + r.allocatedFunds - (r.partialFillAmount || 0), 0) +
+                       awaiting.reduce((s, r) => s + r.allocatedFunds, 0);
+
+  const msg = 'Cancel ladder on ' + symbol + '?\n\n' +
+    filled.length + ' rungs already filled (asset preserved).\n' +
+    (placed.length + awaiting.length) + ' unfilled rungs will be cancelled.\n' +
+    fmtUSD(unfilledTotal) + ' will be released back to ' + (h.ladder.config.sourceWallet || 'source wallet') + '.';
+  if (!confirm(msg)) return;
+
+  // Cancel placed orders at platform
+  placed.forEach(r => {
+    // In production: platformAPI.cancelOrder(r.platformOrderId)
+    r.status = 'cancelled';
+    r.platformOrderId = null;
+  });
+  awaiting.forEach(r => {
+    r.status = 'cancelled';
+  });
+  h.ladder.status = 'cancelled';
+
+  ladderToast('cancelled', 'Ladder Cancelled · ' + symbol,
+    filled.length + ' rungs filled, ' + fmtUSD(unfilledTotal) + ' released.');
+  try { persist(); } catch(e) { console.warn('persist after cancel failed', e); }
+  ladderRefreshAll();
+}
+
+/**
+ * Daily expiration check. Cancels all unfilled rungs for ladders that have
+ * passed their expiration date. Filled rungs are preserved.
+ */
+function ladderRunExpirationCheck() {
+  const now = ladderNow();
+  DB.holdings.forEach(h => {
+    if (!ladderHasActive(h)) return;
+    if (!h.ladder.expirationDate) return;
+    if (h.ladder.expirationDate >= now) return;
+
+    let cancelled = 0;
+    let releasedTotal = 0;
+    h.ladder.rungs.forEach(r => {
+      if (r.status === 'placed' || r.status === 'awaiting_funds') {
+        const release = r.allocatedFunds - (r.partialFillAmount || 0);
+        if (r.status === 'placed') {
+          // In production: cancel at platform
+          r.platformOrderId = null;
+        }
+        r.status = 'expired';
+        cancelled++;
+        releasedTotal += release;
+      }
+    });
+    h.ladder.status = 'expired';
+    if (cancelled > 0) {
+      ladderToast('cancelled', 'Ladder Expired · ' + (h.sym || ''),
+        cancelled + ' unfilled rungs cancelled. ' + fmtUSD(releasedTotal) + ' released.');
+      try { persist(); } catch(e) { console.warn('persist after expiration failed', e); }
+    }
+  });
+}
+
+/* === SECTION 7: RENDERING ==================================== */
+
+/**
+ * Updates the #ladderAlertPill in the host app header.
+ * States:
+ *   - hidden: no active ladders
+ *   - healthy: all rungs progressing normally
+ *   - warn: one or more rungs awaiting funds
+ *   - fire: composite alert (awaiting funds AND DCA underfunded)
+ */
+function ladderRenderPill() {
+  const pill = document.getElementById('ladderAlertPill');
+  if (!pill) return;
+
+  const activeLadders = DB.holdings.filter(h => ladderHasActive(h));
+
+  // Check DCA underfunding across all holdings (independent of ladder state)
+  const dcaShortCount = DB.holdings.filter(h => ladderDcaForwardWarning(h)).length;
+
+  // Hide pill only if there are no ladders AND no DCA warnings
+  if (activeLadders.length === 0 && dcaShortCount === 0) {
+    pill.classList.add('hidden');
+    pill.classList.remove('healthy', 'warn', 'fire');
+    return;
+  }
+  pill.classList.remove('hidden');
+
+  let placedCount = 0, awaitingCount = 0;
+  activeLadders.forEach(h => {
+    h.ladder.rungs.forEach(r => {
+      if (r.status === 'placed') placedCount++;
+      else if (r.status === 'awaiting_funds') awaitingCount++;
+    });
+  });
+
+  pill.classList.remove('healthy', 'warn', 'fire');
+
+  // State priority: fire (composite or DCA short) > warn (awaiting rungs only) > healthy
+  if (dcaShortCount > 0 && awaitingCount > 0) {
+    // Composite — both DCA short AND ladder rungs awaiting funds
+    pill.classList.add('fire');
+    pill.textContent = '⚠ DCA short · 📐 ' + awaitingCount + ' rung' + (awaitingCount === 1 ? '' : 's') + ' awaiting funds';
+  } else if (dcaShortCount > 0) {
+    // DCA short, but no awaiting ladder rungs (ladder may have all placed or no ladder)
+    pill.classList.add('fire');
+    if (activeLadders.length > 0) {
+      pill.textContent = '⚠ DCA short · 📐 ladder OK (' + placedCount + ' rung' + (placedCount === 1 ? '' : 's') + ')';
+    } else {
+      pill.textContent = '⚠ DCA funds short';
+    }
+  } else if (awaitingCount > 0) {
+    // Awaiting rungs but DCA is fine
+    pill.classList.add('warn');
+    pill.textContent = '📐 ' + placedCount + ' placed, ' + awaitingCount + ' awaiting funds';
+  } else {
+    // All healthy
+    pill.classList.add('healthy');
+    pill.textContent = '📐 Ladders: ' + placedCount + ' placed ✓';
+  }
+}
+
+/**
+ * Returns a warning object if the holding's next DCA buy would be underfunded.
+ * Returns null otherwise.
+ */
+function ladderDcaForwardWarning(h) {
+  if (!h || !h.dca || !h.dca.amount) return null;
+  const wallet = h.dca.sourceWallet || h.ladder?.config?.sourceWallet;
+  const chain = h.dca.sourceChain || h.ladder?.config?.sourceChain || '';
+  const sym = h.dca.sourceSym || 'USDC';
+  if (!wallet) return null;
+  const avail = walletAvailableBalance(wallet, chain, sym);
+  if (avail >= h.dca.amount) return null;
+  return {
+    holding: h,
+    nextAmount: h.dca.amount,
+    available: avail,
+    shortfall: h.dca.amount - avail,
+    sourceWallet: wallet
+  };
+}
+
+/**
+ * Renders the persistent dashboard summary block(s).
+ * One block per active ladder. Additional block per DCA forward warning.
+ */
+function ladderRenderPersistentSummary() {
+  // v47.98: disabled — duplicated by the Strategy Management section's cards
+  // on the Holdings tab. Stubbed to a no-op so other callers (_dcaConfirm
+  // refresh, ladderRefreshAll, etc.) continue to work without error.
+  const container = document.getElementById('ladderPersistentSummary');
+  if (container) container.innerHTML = '';
+}
+
+/**
+ * Renders the per-asset ladder management view for a holding.
+ * Called for each holding that has a ladder. Cards appear in the
+ * #ladderManagementContainer below the main dashboard.
+ */
+function ladderRenderManagementViews() {
+  const container = document.getElementById('ladderManagementContainer');
+  const banner = document.getElementById('ladderStrategyAlertBanner');
+  if (!container) return;
+
+  // v47.98: only show ACTIVE ladders and active DCAs in the management view.
+  // Historical state lives in the Transactions log.
+  const activeLadders = DB.holdings.filter(h => h.ladder && h.ladder.status === 'active');
+  const activeDcas = DB.holdings.filter(h => h.dca && h.dca.amount);
+
+  if (activeLadders.length === 0 && activeDcas.length === 0) {
+    container.innerHTML = '';
+    if (banner) banner.innerHTML = '';
+    return;
+  }
+
+  // v47.98: detect warning conditions to auto-expand (option C)
+  const anyAwaitingRungs = activeLadders.some(h =>
+    h.ladder.rungs.some(r => r.status === 'awaiting_funds')
+  );
+  const anyDcaShort = activeDcas.some(h => {
+    if (typeof ladderDcaForwardWarning !== 'function') return false;
+    return !!ladderDcaForwardWarning(h);
+  });
+  const hasWarning = anyAwaitingRungs || anyDcaShort;
+
+  // Determine collapsed state. Default: collapsed (option C from spec).
+  // First render: initialize based on whether warnings exist.
+  if (typeof ladderModule.mgmtSectionCollapsed === 'undefined') {
+    ladderModule.mgmtSectionCollapsed = !hasWarning;
+  }
+  // If warning newly appears and was previously collapsed quietly, auto-expand once
+  if (hasWarning && ladderModule._lastWarningState === false) {
+    ladderModule.mgmtSectionCollapsed = false;
+  }
+  ladderModule._lastWarningState = hasWarning;
+
+  // ── Render the alert banner ──
+  if (banner) {
+    const countParts = [];
+    if (activeLadders.length > 0) countParts.push('🪜 ' + activeLadders.length + (activeLadders.length === 1 ? ' ladder' : ' ladders'));
+    if (activeDcas.length > 0) countParts.push('📅 ' + activeDcas.length + (activeDcas.length === 1 ? ' DCA' : ' DCAs'));
+    const warnBadge = hasWarning
+      ? '<span style="background:rgba(185,28,28,0.18);border:1px solid rgba(185,28,28,0.50);color:#b91c1c;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:8px;animation:pulse 1.5s ease-in-out infinite;">⚠ Attention needed</span>'
+      : '';
+    const arrow = ladderModule.mgmtSectionCollapsed ? '▶' : '▼';
+    const action = ladderModule.mgmtSectionCollapsed ? 'Click to view' : 'Click to hide';
+    banner.innerHTML =
+      '<div onclick="ladderToggleMgmtSection()" style="margin-bottom:10px;padding:8px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:12px;transition:background 0.15s;" onmouseover="this.style.background=\'var(--bg3)\'" onmouseout="this.style.background=\'var(--bg2)\'">'
+        + '<div style="display:flex;align-items:center;gap:8px;">'
+          + '<span style="color:var(--text3);font-size:11px;">' + arrow + '</span>'
+          + '<span style="font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;font-size:10px;">🎯 Strategy Management</span>'
+          + '<span style="font-size:11px;color:var(--text2);font-family:var(--mono);">' + countParts.join(' · ') + '</span>'
+          + warnBadge
+        + '</div>'
+        + '<span style="font-size:10px;color:var(--text3);">' + action + '</span>'
+      + '</div>';
+  }
+
+  // If collapsed, hide the body
+  if (ladderModule.mgmtSectionCollapsed) {
+    container.innerHTML = '';
+    return;
+  }
+
+  // ── Build ladder cards (left column) with 2-pane internal layout ──
+  const ladderCardsHtml = activeLadders.map(h => {
+    const filled = h.ladder.rungs.filter(r => r.status === 'filled');
+    const placed = h.ladder.rungs.filter(r => r.status === 'placed');
+    const awaiting = h.ladder.rungs.filter(r => r.status === 'awaiting_funds');
+    const totalCommitted = h.ladder.rungs.reduce((s, r) => s + r.allocatedFunds, 0);
+    const totalFilled = filled.reduce((s, r) => s + r.allocatedFunds, 0);
+    const totalDryPowder = placed.reduce((s, r) => s + r.allocatedFunds, 0) +
+                           awaiting.reduce((s, r) => s + r.allocatedFunds, 0);
+    const totalAssetAcquired = filled.reduce((s, r) => s + (r.fillAmountAsset || 0), 0);
+    const costBasis = totalAssetAcquired > 0 ? totalFilled / totalAssetAcquired : null;
+    const expLabel = h.ladder.expirationDate
+      ? new Date(h.ladder.expirationDate).toLocaleDateString()
+      : 'GTC';
+
+    // Rungs table — left sub-panel
+    let rungsHtml = '<div class="rung-grid" style="font-size:10px;">' +
+      '<div class="rung-header">#</div>' +
+      '<div class="rung-header">Trigger</div>' +
+      '<div class="rung-header">Alloc</div>' +
+      '<div class="rung-header">Status</div>' +
+      '<div class="rung-header">Fill</div>';
+    h.ladder.rungs.forEach(r => {
+      let statusHtml = '', fillHtml = '<span style="color:var(--text3);">—</span>';
+      if (r.status === 'filled') {
+        statusHtml = '<span class="rung-status-tag filled">✓</span>';
+        fillHtml = fmtUSD(r.fillPrice) + '<br><span style="color:var(--text3);font-size:9px;">' + (r.fillAmountAsset || 0).toFixed(6) + '</span>';
+      } else if (r.status === 'placed') {
+        statusHtml = '<span class="rung-status-tag placed">◯</span>';
+      } else if (r.status === 'awaiting_funds') {
+        statusHtml = '<span class="rung-status-tag awaiting">⏳</span>';
+      }
+      rungsHtml += '<div class="rung-cell">' + r.rungNumber + '</div>' +
+                   '<div class="rung-cell">' + fmtUSD(r.triggerPrice) + '</div>' +
+                   '<div class="rung-cell">' + fmtUSD(r.allocatedFunds) + '</div>' +
+                   '<div class="rung-cell">' + statusHtml + '</div>' +
+                   '<div class="rung-cell" style="font-size:9.5px;">' + fillHtml + '</div>';
+    });
+    rungsHtml += '</div>';
+
+    // Summary stats — right sub-panel (vertical stack of stat blocks)
+    const statsHtml =
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:10px;">' +
+        '<div class="ladder-summary-stat"><div class="ladder-summary-stat-label">Committed</div><div class="ladder-summary-stat-val">' + fmtUSD(totalCommitted) + '</div></div>' +
+        '<div class="ladder-summary-stat"><div class="ladder-summary-stat-label">Filled</div><div class="ladder-summary-stat-val">' + fmtUSD(totalFilled) + '</div></div>' +
+        '<div class="ladder-summary-stat"><div class="ladder-summary-stat-label">Dry Powder</div><div class="ladder-summary-stat-val">' + fmtUSD(totalDryPowder) + '</div></div>' +
+        '<div class="ladder-summary-stat"><div class="ladder-summary-stat-label">Cost Basis</div><div class="ladder-summary-stat-val">' + (costBasis ? fmtUSD(costBasis) : '—') + '</div></div>' +
+        '<div class="ladder-summary-stat" style="grid-column:1 / -1;"><div class="ladder-summary-stat-label">Acquired</div><div class="ladder-summary-stat-val">' + (totalAssetAcquired > 0 ? totalAssetAcquired.toFixed(6) + ' ' + (h.sym || '') : '—') + '</div></div>' +
+      '</div>';
+
+    const collapsed = ladderModule.collapsedCards && ladderModule.collapsedCards['lad-' + (h.sym || '')];
+    const toggleArrow = collapsed ? '▶' : '▼';
+    const sym = (h.sym || h.symbol || '');
+
+    return '<div class="ladder-mgmt-card" style="margin-bottom:8px;">' +
+      '<div class="ladder-mgmt-header" style="cursor:pointer;" onclick="ladderToggleCard(\'lad-' + sym + '\')">' +
+        '<div style="flex:1;">' +
+          '<div class="ladder-mgmt-title">' +
+            '<span style="color:var(--text3);font-size:11px;margin-right:6px;">' + toggleArrow + '</span>' +
+            '🪜 ' + sym + ' Ladder' +
+            ' <span style="font-size:10px;color:var(--text3);font-weight:400;margin-left:8px;">' +
+              filled.length + ' filled · ' + placed.length + ' placed' +
+              (awaiting.length > 0 ? ' · <span style="color:#b91c1c;">' + awaiting.length + ' awaiting</span>' : '') +
+            '</span>' +
+          '</div>' +
+          '<div class="ladder-mgmt-meta" style="font-size:10px;">' +
+            'Started ' + new Date(h.ladder.createdAt).toLocaleDateString() +
+            ' · Expires ' + expLabel +
+          '</div>' +
+        '</div>' +
+        '<div onclick="event.stopPropagation();" style="display:flex;gap:4px;">' +
+          '<button class="btn sm" onclick="ladderEdit(\'' + h.id + '\')" title="Edit ladder (cancels existing and replaces)">✎ Edit</button>' +
+          '<button class="btn danger sm" onclick="ladderCancel(\'' + h.id + '\')">✕ Cancel</button>' +
+        '</div>' +
+      '</div>' +
+      (collapsed ? '' : (
+        // Side-by-side: rungs (left) + summary stats (right)
+        '<div style="display:grid;grid-template-columns:1.6fr 1fr;gap:10px;align-items:start;margin-top:8px;">' +
+          '<div>' + rungsHtml + '</div>' +
+          '<div>' + statsHtml + '</div>' +
+        '</div>'
+      )) +
+    '</div>';
+  }).join('');
+
+  // ── Build DCA cards (right column) ──
+  const dcaCardsHtml = activeDcas.map(h => {
+    const dca = h.dca;
+    const warn = (typeof ladderDcaForwardWarning === 'function') ? ladderDcaForwardWarning(h) : null;
+    const srcW = dca.sourceWallet || h.wallet || '?';
+    const srcC = dca.sourceChain || h.chain || '';
+    const dstW = dca.destWallet || h.wallet || '?';
+    const dstC = dca.destChain || h.chain || '';
+    const dstS = (dca.destSym || h.sym || '').toUpperCase();
+    const isCross = dstS && dstS !== (h.sym || '').toUpperCase();
+    const collapsed = ladderModule.collapsedCards && ladderModule.collapsedCards['dca-' + h.id];
+    const toggleArrow = collapsed ? '▶' : '▼';
+    // v47.98: title should show what's being ACCUMULATED (destination),
+    // not the funding token (source). If cross-asset, use destSym; else
+    // fall back to h.sym (DCAs that buy more of the same asset).
+    const sym = (h.sym || '');
+    const labelSym = isCross ? dstS : sym;
+    const warnLine = warn
+      ? '<div style="margin-top:6px;padding:6px 8px;background:rgba(185,28,28,0.10);border:1px solid rgba(185,28,28,0.35);border-radius:4px;font-size:10px;color:#b91c1c;font-weight:600;">⚠ Next cycle short ' + fmtUSD(warn.shortfall) + ' — top up ' + warn.sourceWallet + '</div>'
+      : '';
+
+    return '<div class="ladder-mgmt-card" style="margin-bottom:8px;border-color:rgba(59,130,246,0.30);">' +
+      '<div class="ladder-mgmt-header" style="cursor:pointer;" onclick="ladderToggleCard(\'dca-' + h.id + '\')">' +
+        '<div style="flex:1;">' +
+          '<div class="ladder-mgmt-title">' +
+            '<span style="color:var(--text3);font-size:11px;margin-right:6px;">' + toggleArrow + '</span>' +
+            '📅 ' + labelSym + ' DCA' +
+            ' <span style="font-size:10px;color:var(--text3);font-weight:400;margin-left:8px;">' +
+              (dca.freq || '?') + ' · ' + fmtUSD(dca.amount || 0) +
+            '</span>' +
+          '</div>' +
+          '<div class="ladder-mgmt-meta" style="font-size:10px;">' +
+            'Next due ' + (dca.nextDue || '—') +
+          '</div>' +
+        '</div>' +
+        '<div onclick="event.stopPropagation();" style="display:flex;gap:4px;">' +
+          '<button class="btn sm" onclick="dcaEdit(\'' + h.id + '\')" title="Edit this DCA schedule">✎ Edit</button>' +
+          '<button class="btn danger sm" onclick="dcaRemove(\'' + h.id + '\')">✕ Remove</button>' +
+        '</div>' +
+      '</div>' +
+      (collapsed ? '' : (
+        '<div style="font-size:10.5px;color:var(--text2);padding:6px 2px;line-height:1.6;">' +
+          '<div><span style="color:var(--text3);">Source:</span> ' + srcW + (srcC ? ' · ' + srcC : '') + (dca.sourceSym ? ' · ' + dca.sourceSym : ' · USDC') + '</div>' +
+          '<div><span style="color:var(--text3);">Destination:</span> ' + dstW + (dstC ? ' · ' + dstC : '') + (isCross ? ' (' + dstS + ')' : '') + '</div>' +
+          (dca.lastFilledAt ? '<div><span style="color:var(--text3);">Last fill:</span> ' + new Date(dca.lastFilledAt).toLocaleDateString() + (dca.lastFillPrice ? ' @ ' + fmtUSD(dca.lastFillPrice) : '') + '</div>' : '') +
+        '</div>' +
+        warnLine
+      )) +
+    '</div>';
+  }).join('');
+
+  // ── Assemble final layout: 2 columns (Ladders + DCAs) ──
+  // Each Ladder card internally has rungs+stats side-by-side; DCA cards single column.
+  let html = '<div style="display:grid;grid-template-columns:1.6fr 1fr;gap:10px;margin-top:8px;">';
+  // Left column: Ladders (each with internal 2-pane split)
+  html += '<div>';
+  if (activeLadders.length === 0) {
+    html += '<div style="font-size:11px;color:var(--text3);font-style:italic;padding:14px;text-align:center;background:var(--bg2);border:1px dashed var(--border);border-radius:8px;">No active ladders</div>';
+  } else {
+    html += ladderCardsHtml;
+  }
+  html += '</div>';
+  // Right column: DCAs
+  html += '<div>';
+  if (activeDcas.length === 0) {
+    html += '<div style="font-size:11px;color:var(--text3);font-style:italic;padding:14px;text-align:center;background:var(--bg2);border:1px dashed var(--border);border-radius:8px;">No active DCA schedules</div>';
+  } else {
+    html += dcaCardsHtml;
+  }
+  html += '</div>';
+  html += '</div>';
+
+  container.innerHTML = html;
+}
+
+/**
+ * v47.98: Toggle the entire Strategy Management section open/closed.
+ * Called by the alert banner click.
+ */
+function ladderToggleMgmtSection() {
+  ladderModule.mgmtSectionCollapsed = !ladderModule.mgmtSectionCollapsed;
+  ladderRenderManagementViews();
+}
+
+/**
+ * v47.98: Toggle collapsed state of a management card.
+ * Cards are keyed by 'lad-{sym}' or 'dca-{holdingId}'.
+ */
+function ladderToggleCard(key) {
+  if (!ladderModule.collapsedCards) ladderModule.collapsedCards = {};
+  ladderModule.collapsedCards[key] = !ladderModule.collapsedCards[key];
+  ladderRenderManagementViews();
+}
+
+/**
+ * v47.98: Edit a ladder. Opens the strategy modal pre-filled with the
+ * current ladder config. On Arm, the existing ladder will be cancelled
+ * (releasing reservations) and a new one armed with the new config.
+ *
+ * Per locked design (option C): no in-place partial edits. Edit = replace.
+ */
+function ladderEdit(holdingId) {
+  // v47.98: look up by holding id directly so we always target the right
+  // row when multiple holdings share a symbol (e.g. BTC in multiple wallets).
+  const h = (DB.holdings || []).find(x => x && x.id === holdingId);
+  if (!h || !h.ladder || h.ladder.status !== 'active') {
+    console.warn('ladderEdit: holding not found or no active ladder', holdingId);
+    return;
+  }
+  const symbol = h.sym || '';
+  // Mark the modal session as an edit so armLadder knows to confirm replace
+  ladderModule.editingExisting = symbol;
+  ladderModule.editingExistingId = h.id;
+  openLadderModalForSymbol(symbol);
+}
+
+/**
+ * v47.98: Edit an existing DCA schedule. Opens the holding modal in edit
+ * mode — the demo's existing DCA section will be pre-filled with the
+ * current schedule for the user to adjust.
+ */
+function dcaEdit(holdingId) {
+  if (typeof openHoldingModal === 'function') {
+    openHoldingModal(holdingId, 'edit');
+  }
+}
+
+/**
+ * v47.98: Remove a DCA schedule. Confirms then clears h.dca and persists.
+ */
+function dcaRemove(holdingId) {
+  const h = DB.holdings.find(x => x.id === holdingId);
+  if (!h || !h.dca) return;
+  if (!confirm('Remove DCA schedule on ' + (h.sym || '') + '?\n\n' +
+               h.dca.freq + ' ' + fmtUSD(h.dca.amount || 0) +
+               (h.dca.nextDue ? ' · next due ' + h.dca.nextDue : '') +
+               '\n\nNo Holdings or Transaction history will be touched.')) return;
+  delete h.dca;
+  try { persist(); } catch(e) {}
+  ladderRefreshAll();
+  if (typeof renderHoldings === 'function') { try { renderHoldings(); } catch(e) {} }
+  ladderToast('cancelled', 'DCA Removed · ' + (h.sym || ''), 'Schedule cleared.');
+}
+
+/**
+ * Convenience function — call after any state change to refresh all visuals.
+ * In the host app, this would be wired into the existing render() cycle.
+ */
+function ladderRefreshAll() {
+  ladderRenderPill();
+  ladderRenderPersistentSummary();
+  ladderRenderManagementViews();
+  ladderRenderSummaryStrategies();
+  // Re-render the demo's holdings table since rung fills change qty
+  if (typeof renderHoldings === 'function') {
+    try { renderHoldings(); } catch(e) {}
+  }
+  if (typeof renderHeader === 'function') {
+    try { renderHeader(); } catch(e) {}
+  }
+}
+
+/**
+ * v47.98: Renders a unified "Accumulation Strategies" card on the Summary tab.
+ * Two-column layout — ladders on the left, DCAs on the right. Hides entirely
+ * if neither exists. Provides quick navigation to the Holdings tab management
+ * views for details.
+ */
+function ladderRenderSummaryStrategies() {
+  const container = document.getElementById('summaryStrategiesCard');
+  if (!container) return;
+
+  // Collect active ladders and active DCAs
+  const activeLadders = (DB.holdings || []).filter(h => h && ladderHasActive(h));
+  const activeDcas = (DB.holdings || []).filter(h => h && h.dca && h.dca.amount);
+
+  if (activeLadders.length === 0 && activeDcas.length === 0) {
+    container.innerHTML = '';
+    container.style.display = 'none';
+    return;
+  }
+  container.style.display = '';
+
+  // Build header with at-a-glance totals
+  const countParts = [];
+  if (activeLadders.length > 0) countParts.push(activeLadders.length + (activeLadders.length === 1 ? ' ladder' : ' ladders'));
+  if (activeDcas.length > 0) countParts.push(activeDcas.length + (activeDcas.length === 1 ? ' DCA' : ' DCAs'));
+  const headerCounts = countParts.join(' · ');
+
+  // ── Build ladder column ──
+  let ladderHtml = '';
+  if (activeLadders.length === 0) {
+    ladderHtml = '<div style="font-size:11px;color:var(--text3);font-style:italic;padding:12px;text-align:center;">No active ladders</div>';
+  } else {
+    ladderHtml = activeLadders.map(h => {
+      const rungs = h.ladder.rungs || [];
+      const filled = rungs.filter(r => r.status === 'filled').length;
+      const placed = rungs.filter(r => r.status === 'placed').length;
+      const awaiting = rungs.filter(r => r.status === 'awaiting_funds').length;
+      const totalCommitted = rungs.reduce((s, r) => s + (r.allocatedFunds || 0), 0);
+      const cfg = h.ladder.config || {};
+      const src = (cfg.sourceWallet || '?') + (cfg.sourceChain ? ' · ' + cfg.sourceChain : '');
+      const dst = (cfg.destWallet || '?') + (cfg.destChain ? ' · ' + cfg.destChain : '');
+      const awaitingWarn = awaiting > 0
+        ? '<span style="color:#b91c1c;font-weight:600;">⚠ ' + awaiting + ' awaiting funds</span>'
+        : '';
+      return '<div style="background:rgba(234,179,8,0.06);border:1px solid rgba(234,179,8,0.25);border-radius:6px;padding:10px 12px;margin-bottom:6px;display:flex;flex-direction:column;height:calc(100% - 6px);">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">'
+          + '<div style="font-weight:700;font-size:13px;color:var(--text1);">' + (h.sym || '?') + ' Ladder</div>'
+          + '<div style="font-size:10px;color:var(--text3);font-family:var(--mono);">$' + fmtUSDNumber(totalCommitted) + ' committed</div>'
+        + '</div>'
+        + '<div style="font-size:10.5px;color:var(--text2);font-family:var(--mono);margin-bottom:3px;">'
+          + rungs.length + ' rungs · '
+          + '<span style="color:#16a34a;">' + filled + ' filled</span> · '
+          + '<span style="color:#0284c7;">' + placed + ' placed</span> · '
+          + (awaiting > 0 ? '<span style="color:#b91c1c;">' + awaiting + ' awaiting</span>' : '<span style="color:var(--text3);">0 awaiting</span>')
+        + '</div>'
+        + '<div style="font-size:10px;color:var(--text3);">'
+          + 'From: ' + src + ' → ' + dst
+        + '</div>'
+        + (awaitingWarn ? '<div style="margin-top:4px;font-size:10px;">' + awaitingWarn + '</div>' : '')
+        + '<div style="margin-top:auto;padding-top:6px;text-align:right;">'
+          + '<a href="#" onclick="ladderJumpToManagement(\'' + (h.sym || '') + '\');return false;" style="font-size:10px;color:#854d0e;text-decoration:none;font-weight:600;">Manage →</a>'
+        + '</div>'
+      + '</div>';
+    }).join('');
+  }
+
+  // ── Build DCA column ──
+  let dcaHtml = '';
+  if (activeDcas.length === 0) {
+    dcaHtml = '<div style="font-size:11px;color:var(--text3);font-style:italic;padding:12px;text-align:center;">No active DCA schedules</div>';
+  } else {
+    dcaHtml = activeDcas.map(h => {
+      const dca = h.dca;
+      const warn = ladderDcaForwardWarning(h);
+      const warnLine = warn
+        ? '<div style="margin-top:4px;font-size:10px;color:#b91c1c;font-weight:600;">⚠ Shortfall $' + fmtUSDNumber(warn.shortfall) + ' for next cycle</div>'
+        : '';
+      const srcW = dca.sourceWallet || h.wallet || '?';
+      const srcC = dca.sourceChain || h.chain || '';
+      const dstW = dca.destWallet || h.wallet || '?';
+      const dstC = dca.destChain || h.chain || '';
+      const dstS = (dca.destSym || h.sym || '').toUpperCase();
+      const isCross = (dstS && dstS !== (h.sym || '').toUpperCase());
+      const srcLabel = srcW + (srcC ? ' · ' + srcC : '');
+      const dstLabel = dstW + (dstC ? ' · ' + dstC : '') + (isCross ? ' (' + dstS + ')' : '');
+      // v47.98: title shows destination sym (what's accumulated), not source sym
+      const _sumLabelSym = isCross ? dstS : (h.sym || '?');
+      return '<div style="background:rgba(96,168,240,0.06);border:1px solid rgba(96,168,240,0.25);border-radius:6px;padding:10px 12px;margin-bottom:6px;display:flex;flex-direction:column;height:calc(100% - 6px);">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">'
+          + '<div style="font-weight:700;font-size:13px;color:var(--text1);">' + _sumLabelSym + ' DCA</div>'
+          + '<div style="font-size:10px;color:var(--text3);font-family:var(--mono);">' + (dca.freq || '?') + ' · $' + fmtUSDNumber(dca.amount || 0) + '</div>'
+        + '</div>'
+        + '<div style="font-size:10.5px;color:var(--text2);font-family:var(--mono);margin-bottom:3px;">'
+          + 'Next due: <span style="color:var(--text1);font-weight:600;">' + (dca.nextDue || '—') + '</span>'
+        + '</div>'
+        + '<div style="font-size:10px;color:var(--text3);">'
+          + 'From: ' + srcLabel + ' → ' + dstLabel
+        + '</div>'
+        + warnLine
+        + '<div style="margin-top:auto;padding-top:6px;text-align:right;">'
+          + '<a href="#" onclick="ladderJumpToManagement(\'' + _sumLabelSym + '\');return false;" style="font-size:10px;color:#3b82f6;text-decoration:none;font-weight:600;">Manage →</a>'
+        + '</div>'
+      + '</div>';
+    }).join('');
+  }
+
+  // ── Assemble card ──
+  container.innerHTML =
+    '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;">'
+      + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
+        + '<div style="font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--accent);text-transform:uppercase;">'
+          + '🎯 Accumulation Strategies'
+        + '</div>'
+        + '<div style="font-size:10px;color:var(--text3);font-family:var(--mono);">'
+          + headerCounts
+        + '</div>'
+      + '</div>'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:stretch;">'
+        + '<div style="display:flex;flex-direction:column;">'
+          + '<div style="font-size:9px;font-weight:700;color:#854d0e;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;">🪜 Ladders</div>'
+          + ladderHtml
+        + '</div>'
+        + '<div style="display:flex;flex-direction:column;">'
+          + '<div style="font-size:9px;font-weight:700;color:#3b82f6;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;">📅 DCA Schedules</div>'
+          + dcaHtml
+        + '</div>'
+      + '</div>'
+    + '</div>';
+}
+
+/**
+ * Helper: format a number as a dollar string without the $ prefix.
+ * Uses thousands separators and minimal decimals.
+ */
+function fmtUSDNumber(n) {
+  n = +n || 0;
+  if (Math.abs(n) >= 1000) return n.toLocaleString(undefined, { maximumFractionDigits: 0 });
+  if (Math.abs(n) >= 1) return n.toLocaleString(undefined, { maximumFractionDigits: 2 });
+  return n.toFixed(2);
+}
+
+/**
+ * Jump from a Summary "Manage →" link to the corresponding Ladder Management
+ * card on the Holdings tab.
+ */
+function ladderJumpToManagement(symbol) {
+  // Switch to Holdings tab if not already on it
+  const holdingsTab = document.querySelector('[onclick*="tab-holdings"]') || document.getElementById('tab-holdings-btn');
+  if (typeof switchTab === 'function') {
+    try { switchTab('holdings'); } catch(e) {}
+  } else if (holdingsTab && holdingsTab.click) {
+    try { holdingsTab.click(); } catch(e) {}
+  }
+  // v47.98: force-expand the Strategy Management section so the cards are
+  // visible — the user clicked through from Summary specifically to see them.
+  // Also ensure the target card itself is expanded (not individually collapsed).
+  ladderModule.mgmtSectionCollapsed = false;
+  if (ladderModule.collapsedCards && symbol) {
+    // Expand both possible card keys for this symbol
+    delete ladderModule.collapsedCards['lad-' + symbol];
+    // For DCAs the key uses holding id, not symbol — find and expand it too
+    const dcaHolding = (DB.holdings || []).find(h => h && h.sym === symbol && h.dca);
+    if (dcaHolding) delete ladderModule.collapsedCards['dca-' + dcaHolding.id];
+  }
+  // Re-render the management view so the expansion takes effect
+  if (typeof ladderRenderManagementViews === 'function') {
+    try { ladderRenderManagementViews(); } catch(e) {}
+  }
+  // v47.98: scroll to the alert banner (top of the section) so the whole
+  // expanded management row stays visible. Scrolling to an individual card
+  // would put that card at the viewport top and push its siblings (and the
+  // banner) above the fold, hiding context.
+  setTimeout(() => {
+    const banner = document.getElementById('ladderStrategyAlertBanner');
+    const container = document.getElementById('ladderManagementContainer');
+    const target = banner || container;
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, 150);
+}
+
+/* === SECTION 8: NOTIFICATIONS ================================ */
+
+/**
+ * Fires a toast notification. Types correspond to CSS classes:
+ *   - 'ladder-fill' (green border) — a rung filled
+ *   - 'ladder-placed' (blue border) — a rung placed at platform
+ *   - 'dca-warn' (orange border) — DCA underfunding warning
+ *   - 'cancelled' (red border) — ladder or rung cancelled/expired
+ */
+function ladderToast(type, title, body) {
+  const container = document.getElementById('toastContainer');
+  if (!container) return;
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.innerHTML = '<div class="toast-title">' + title + '</div>' +
+                 '<div class="toast-body">' + body + '</div>';
+  container.appendChild(el);
+  setTimeout(() => {
+    el.style.transition = 'opacity 0.3s, transform 0.3s';
+    el.style.opacity = '0';
+    el.style.transform = 'translateX(20px)';
+    setTimeout(() => el.remove(), 300);
+  }, 5000);
+}
+
+/**
+ * Pill click handler — in the host app, scrolls to the ladder management
+ * section. In the test bench, scrolls to the management container.
+ */
+function ladderPillClick() {
+  const mgmt = document.getElementById('ladderManagementContainer');
+  if (mgmt && mgmt.innerHTML.trim()) {
+    mgmt.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+/* === SECTION 9: BOOT INIT =================================== */
+
+/**
+ * Called once on app boot. Migrates older holdings (adds h.ladder = null),
+ * runs an expiration check, and renders initial state.
+ */
+function ladderInit() {
+  if (typeof DB === 'undefined' || !DB.holdings) {
+    console.warn('ladderInit called before DB ready; deferring');
+    setTimeout(ladderInit, 200);
+    return;
+  }
+  DB.holdings.forEach(h => ladderEnsureSchema(h));
+  ladderRunExpirationCheck();
+  ladderRefreshTokenDatalist();
+  ladderRefreshAll();
+}
+
+/**
+ * v47.98: Populates the ladder-token-options datalist with known tokens
+ * (from KNOWN_TOKENS) plus any symbols present in DB.holdings. Called on
+ * boot and whenever the modal opens so the autocomplete is fresh.
+ */
+function ladderRefreshTokenDatalist() {
+  const dl = document.getElementById('ladder-token-options');
+  if (!dl) return;
+  const syms = new Set();
+  // Add known tokens
+  if (typeof KNOWN_TOKENS !== 'undefined') {
+    KNOWN_TOKENS.forEach(t => { if (t.sym) syms.add(t.sym.toUpperCase()); });
+  }
+  // Add common stables that may not be in KNOWN_TOKENS
+  ['USDC','USDT','DAI','FRAX','TUSD','LUSD','GUSD','USDP'].forEach(s => syms.add(s));
+  // Add any symbols already in DB.holdings
+  if (DB && DB.holdings) {
+    DB.holdings.forEach(h => { if (h && h.sym) syms.add((h.sym || '').toUpperCase()); });
+  }
+  // Sort and inject
+  const sorted = [...syms].sort();
+  dl.innerHTML = sorted.map(s => '<option value="' + s + '">').join('');
+}
+
+/* === UTILITY HELPERS ======================================== */
+
+function fmtUSD(n) {
+  if (n === null || n === undefined || isNaN(n)) return '—';
+  return '$' + Number(n).toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: n < 100 ? 2 : 0
+  });
+}
+
+function fmtPct(n) {
+  if (n === null || n === undefined || isNaN(n)) return '—';
+  return (n >= 0 ? '+' : '') + Number(n).toFixed(2) + '%';
+}
+
+/**
+ * Returns the current time as ISO string. In the test bench, uses
+ * the simulated clock if active; in production, uses real time.
+ */
+function ladderNow() {
+  return new Date().toISOString();
+}
+
+
+/**
+ * Called when the user types in the Destination Asset field. Updates
+ * ladderModule.currentEditAsset live so the rest of the module uses the
+ * right symbol for previews, reservations, and arming.
+ */
+function ladderOnDestAssetChange() {
+  const destAssetEl = document.getElementById('modalAssetInput');
+  if (!destAssetEl) return;
+  const val = (destAssetEl.value || '').toUpperCase().trim();
+  ladderModule.currentEditAsset = val;
+
+  // Update header symbol display
+  const titleEl = document.getElementById('modalAssetSymbol');
+  if (titleEl) {
+    titleEl.textContent = val ? ' · ' + val : '';
+    titleEl.style.display = val ? '' : 'none';
+  }
+
+  // Refresh starting price suggestion if we recognize the asset
+  if (val) {
+    let destGeckoId = '';
+    if (typeof _findGeckoIdForSym === 'function') {
+      destGeckoId = _findGeckoIdForSym(val);
+    }
+    if (destGeckoId && typeof getPrice === 'function') {
+      const px = getPrice(destGeckoId);
+      if (px) {
+        const startPriceInput = document.getElementById('ladStartPrice');
+        const cur = parseFloat(startPriceInput.value) || 0;
+        // Only auto-update if user hasn't customized
+        if (cur === 0 || cur === 1 || cur === ladderModule._lastSuggestedStartPrice) {
+          startPriceInput.value = px;
+          ladderModule._lastSuggestedStartPrice = px;
+        }
+      }
+    }
+  }
+  ladderUpdatePreview();
+}
+
+/**
+ * Wrapper invoked by the holding modal's "🪜 Configure Ladder" button.
+ * Opens the ladder modal for the holding currently being edited.
+ *
+ * Faithful to the validated test bench: the holding's sym IS the destination
+ * asset by default (the modal accumulates INTO this holding). The user can
+ * change the destination in the modal if they want to ladder a different asset.
+ */
+function openLadderModalFromHoldingForm() {
+  const editId = document.getElementById('hm-edit-id') ? document.getElementById('hm-edit-id').value : '';
+  if (editId) {
+    // Editing existing holding — use its sym as the default destination
+    const h = DB.holdings.find(x => x.id === editId);
+    if (h) {
+      openLadderModalForSymbol(h.sym || '');
+      return;
+    }
+  }
+  // New holding being added — synthesize a tmp row, then open with its sym
+  const sym = (document.getElementById('hm-sym') ? document.getElementById('hm-sym').value : '') ||
+              (document.getElementById('hm-search') ? document.getElementById('hm-search').value : '');
+  if (!sym) {
+    toast('Add an Asset (Token) first, then configure a ladder.', true);
+    return;
+  }
+  const wallet = document.getElementById('hm-wallet') ? document.getElementById('hm-wallet').value : '';
+  const chain = document.getElementById('hm-chain') ? document.getElementById('hm-chain').value : '';
+  const symU = (sym || '').toUpperCase();
+  const tmpId = 'tmp-ladder-' + Date.now();
+  DB.holdings.push({
+    id: tmpId,
+    sym: symU,
+    wallet: wallet,
+    chain: chain,
+    qty: 0,
+    avgCost: 0,
+    cat: document.getElementById('hm-cat') ? document.getElementById('hm-cat').value : '',
+    geckoId: (typeof _findGeckoIdForSym === 'function') ? _findGeckoIdForSym(sym) : ''
+  });
+  if (document.getElementById('hm-edit-id')) {
+    document.getElementById('hm-edit-id').value = tmpId;
+  }
+  openLadderModalForSymbol(symU);
+}
+
 function rangeBadge(status) {
   const map = {'In Range':'b-in','Watch':'b-watch','Act Now':'b-act','OUT OF RANGE':'b-oor','set-range':'b-set','Like':'b-neutral'};
   return `<span class="badge ${map[status]||'b-set'}">${status==='set-range'?'Set Range':status}</span>`;
@@ -8532,10 +11090,30 @@ function quickSaveAll(poolId, tokAId, tokASym, tokBId, tokBSym, rewardId, reward
     }
   } else {
     // Normal LP mode
-    const aqty = +(document.getElementById(`qy-aqty-${poolId}`)?.value);
-    if(aqty) { p.tokAQty = aqty; msgs.push(`${tokASym} qty → ${aqty}`); }
-    const bqty = +(document.getElementById(`qy-bqty-${poolId}`)?.value);
-    if(bqty) { p.tokBQty = bqty; msgs.push(`${tokBSym} qty → ${bqty}`); }
+    // v47.99: distinguish "blank — leave alone" from "user typed 0 — write 0".
+    // Previously `if(aqty)` (falsy-check on the coerced number) silently dropped
+    // a literal "0" entry, so an out-of-range pool where one side fully
+    // converted couldn't be marked as such on the yield page. The pool would
+    // re-render showing the old non-zero qty and Close/Rebalance would later
+    // pre-fill from that stale qty. Now: check the raw string for emptiness.
+    const rawAqty = document.getElementById(`qy-aqty-${poolId}`)?.value;
+    const rawBqty = document.getElementById(`qy-bqty-${poolId}`)?.value;
+    const aqtyStr = (rawAqty == null ? '' : String(rawAqty)).trim();
+    const bqtyStr = (rawBqty == null ? '' : String(rawBqty)).trim();
+    if(aqtyStr !== '') {
+      const aqty = +aqtyStr;
+      if(isFinite(aqty) && aqty >= 0) {
+        p.tokAQty = aqty;
+        msgs.push(`${tokASym} qty → ${aqty}`);
+      }
+    }
+    if(bqtyStr !== '') {
+      const bqty = +bqtyStr;
+      if(isFinite(bqty) && bqty >= 0) {
+        p.tokBQty = bqty;
+        msgs.push(`${tokBSym} qty → ${bqty}`);
+      }
+    }
 
     const ayld = +(document.getElementById(`qy-ayld-${poolId}`)?.value)||0;
     if(ayld) {
@@ -10182,8 +12760,15 @@ function openCloseModal(poolId) {
     // v47.85 — Principle 1: pool state is authoritative. Pre-fill returned
     // quantities from the pool's stored qty so the user doesn't have to retype
     // (and can't fat-finger). User can still override for a partial withdrawal.
-    if(retA) retA.value = (p.tokAQty != null && p.tokAQty > 0) ? String(p.tokAQty) : '';
-    if(retB) retB.value = (p.tokBQty != null && p.tokBQty > 0) ? String(p.tokBQty) : '';
+    // v47.99: when the stored qty is exactly 0 (out-of-range case: one side
+    // fully converted to the other), pre-fill the literal "0" rather than an
+    // empty string. Empty was being rejected by the validator as "missing
+    // input," forcing the user to type "0" manually. Storing "0" lets the
+    // close/rebalance go through directly while still being explicit.
+    if(retA) retA.value = (p.tokAQty != null && p.tokAQty > 0) ? String(p.tokAQty)
+                        : (p.tokAQty === 0 ? '0' : '');
+    if(retB) retB.value = (p.tokBQty != null && p.tokBQty > 0) ? String(p.tokBQty)
+                        : (p.tokBQty === 0 ? '0' : '');
     // Trigger the USD readout so it reflects the pre-filled values
     if(typeof clUpdateReturnUsd === 'function') clUpdateReturnUsd();
     const usdEl = document.getElementById('cl-ret-usd');
@@ -10614,7 +13199,19 @@ function _acmFindRow(sym, wallet, chain) {
 }
 
 function _acmPreviewRow(sym, qty, wallet, chain, entryPrice, entryQty) {
-  if(!sym || !qty || qty <= 0 || !wallet) return null;
+  // v47.99: do NOT drop rows when qty === 0. A 0-quantity return is a
+  // legitimate, common case for concentrated-liquidity pools that have
+  // moved out of range (one side fully converted to the other). Previously
+  // the row vanished from the preview, leaving the user unable to tell
+  // whether their 0 entry had been registered. Render an explicit
+  // "no return for this token" line instead. Bail only on missing
+  // sym/wallet (which indicate a malformed call, not a deliberate 0).
+  if(!sym || !wallet) return null;
+  if(qty == null || !isFinite(qty) || qty < 0) return null;
+  if(qty === 0) {
+    return `<div style="color:var(--text);font-weight:700;margin-top:8px;">${sym} 0 → ${wallet}${chain?' / '+chain:''}</div>` +
+           `<div style="color:var(--text3);padding-left:14px;font-style:italic;">none returned — fully converted to the other side, no Holdings change for ${sym}</div>`;
+  }
   const row = _acmFindRow(sym, wallet, chain);
   const overflow = Math.max(0, qty - (entryQty||0));
   const preserved = Math.min(qty, entryQty||0);
@@ -11813,8 +14410,20 @@ function _dcaConfirm() {
     const srcGecko = srcRow.geckoId || '';
     const srcPx    = srcGecko ? (getPrice(srcGecko) || 0) : 1;
     const sourceQty = srcPx > 0 ? (amt / srcPx) : amt;
-    if((srcRow.qty || 0) < sourceQty - 1e-9) {
-      toast(`Not enough ${h.sym} at source (have ${srcRow.qty||0}, need ${sourceQty.toFixed(4)})`, true);
+    // v47.98: respect ladder reservations when checking DCA funds availability.
+    // walletAvailableBalance returns gross qty minus active ladder reservations
+    // from the same wallet/chain/sym. If a ladder has placed rungs reserving
+    // funds, DCA sees a lower available number — and refuses to fire if short.
+    const _availableForDca = (typeof walletAvailableBalance === 'function')
+      ? walletAvailableBalance(srcW, srcC, h.sym || '')
+      : (srcRow.qty || 0);
+    if(_availableForDca < sourceQty - 1e-9) {
+      const _gross = (typeof walletGrossBalance === 'function') ? walletGrossBalance(srcW, srcC, h.sym || '') : (srcRow.qty || 0);
+      const _reserved = Math.max(0, _gross - _availableForDca);
+      const _reservedNote = _reserved > 0
+        ? ` ($${_reserved.toFixed(2)} reserved by ladder rungs)`
+        : '';
+      toast(`Not enough ${h.sym} available (have ${_availableForDca.toFixed(4)}, need ${sourceQty.toFixed(4)})${_reservedNote}`, true);
       return;
     }
     // Destination qty acquired: $amt / destination price (the modal's price field).
@@ -11983,6 +14592,10 @@ function _dcaConfirm() {
   renderHeader();
   const qStr = qty.toFixed(qty < 1 ? 6 : 4);
   toast(`DCA confirmed — ${qStr} ${h.sym} @ $${price.toFixed(4)}${xferSummary}. Next due ${h.dca.nextDue}.`);
+  // v47.98: recompute ladder persistent summary so DCA forward-warning updates
+  if (typeof ladderRenderPersistentSummary === 'function') {
+    try { ladderRenderPersistentSummary(); } catch(e) {}
+  }
 }
 function _dcaSkip() {
   const id = _dcaActiveId;
@@ -12315,6 +14928,22 @@ function saveHoldingUnified() {
       avgCost: +v('hm-cost')||0, qty: +v('hm-qty')||0,
     };
     if(!nh.sym){ toast('Token required',true); return; }
+    // v47.98: clean up any tmp-ladder row created by the launcher
+    const _tmpEditId = document.getElementById('hm-edit-id') ? document.getElementById('hm-edit-id').value : '';
+    if (_tmpEditId && _tmpEditId.startsWith('tmp-ladder-')) {
+      const _tmpIdx = DB.holdings.findIndex(x => x && x.id === _tmpEditId);
+      if (_tmpIdx >= 0) {
+        const _tmpRow = DB.holdings[_tmpIdx];
+        // If user armed a ladder while adding this new holding, the ladder
+        // lives on the destination row (which may or may not be this tmp row).
+        // If the tmp row got the ladder, transfer it to nh.
+        if (_tmpRow.ladder) {
+          nh.ladder = _tmpRow.ladder;
+        }
+        DB.holdings.splice(_tmpIdx, 1);
+      }
+      document.getElementById('hm-edit-id').value = '';
+    }
     // v47.87 / v47.89: DCA schedule — confirm before activating, include
     // source + long-term destination if specified.
     const _dcaFreq = v('hm-dca-freq');
@@ -12946,7 +15575,7 @@ function renderTxnTab() {
       <td style="font-family:var(--mono);font-weight:600;">${t.total!=null?$f(t.total):'—'}</td>
       <td class="left" style="color:var(--text3);font-size:11px;">${t.from||'—'}</td>
       <td class="left" style="color:var(--text3);font-size:11px;">${t.to||'—'}</td>
-      <td class="left" style="color:var(--text3);font-size:11px;">${t.notes||''}</td>
+      <td class="left" style="color:var(--text3);font-size:11px;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${(t.notes||'').replace(/"/g, '&quot;')}">${t.notes||''}</td>
       <td style="white-space:nowrap;text-decoration:none;">
         ${revertBtn}
         <button class="btn sm ghost" onclick="editTxn('${t.id}')" title="Edit this transaction" style="margin-right:3px;">✎</button>
@@ -16013,19 +18642,98 @@ async function testPushover() {
     if(statusEl) { statusEl.textContent = '✗ Failed — check keys'; statusEl.style.color = 'var(--neg)'; }
   }
 }
-async function sendPushover(userKey, appToken, title, message, color=null, sound=null) {
+// v47.99: serialize and dedupe outgoing Pushover requests.
+//
+// Pushover's per-app rate limit is roughly 1 message every few seconds.
+// checkAlerts() can legitimately fire many notifications in the same tick
+// (e.g. on first launch when several pools are out of range and several
+// gems are above their alert thresholds simultaneously) — each call hits
+// Pushover in parallel and triggers 429 "Too Many Requests" responses, so
+// users miss alerts that should have gone through. The queue below:
+//   1) Serializes sends with a ~3500ms gap between attempts.
+//   2) Deduplicates by (title + message) within a 60s window so two
+//      instances of the same alert text from concurrent triggers don't
+//      both go out (cheap insurance for the dual-instance case where the
+//      desktop and web app are both running with the same Pushover keys).
+//   3) Retries once on 429 after waiting a longer interval, then drops.
+//
+// This does not change behavior at any caller site — sendPushover() still
+// returns a Promise<boolean>. The boolean now resolves once the message
+// has either been sent successfully or definitively dropped from the queue.
+const _pushoverQueue = [];
+let _pushoverPumpRunning = false;
+const _pushoverRecentSent = new Map();
+const PUSHOVER_GAP_MS    = 3500;
+const PUSHOVER_DEDUPE_MS = 60 * 1000;
+const PUSHOVER_RETRY_MS  = 12000;
+
+function _pushoverDedupeKey(title, message) {
+  return (title || '') + '||' + (message || '');
+}
+
+async function _pushoverPump() {
+  if(_pushoverPumpRunning) return;
+  _pushoverPumpRunning = true;
   try {
-    const payload = {token:appToken, user:userKey, title, message, html:1};
-    if(color) payload.color = color;
-    if(sound) payload.sound = sound;
-    if(sound === 'siren') payload.priority = 1;
-    const r = await fetch('https://api.pushover.net/1/messages.json', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify(payload)
-    });
-    return r.ok;
-  } catch(e) { return false; }
+    while(_pushoverQueue.length) {
+      const job = _pushoverQueue.shift();
+      const key = _pushoverDedupeKey(job.title, job.message);
+      const recent = _pushoverRecentSent.get(key);
+      if(recent && Date.now() - recent < PUSHOVER_DEDUPE_MS) {
+        job.resolve(true);
+        continue;
+      }
+      let ok = false;
+      try {
+        const r = await fetch('https://api.pushover.net/1/messages.json', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify(job.payload),
+        });
+        if(r.status === 429) {
+          await new Promise(res => setTimeout(res, PUSHOVER_RETRY_MS));
+          try {
+            const r2 = await fetch('https://api.pushover.net/1/messages.json', {
+              method:'POST',
+              headers:{'Content-Type':'application/json'},
+              body: JSON.stringify(job.payload),
+            });
+            ok = r2.ok;
+          } catch(e) { ok = false; }
+        } else {
+          ok = r.ok;
+        }
+      } catch(e) { ok = false; }
+      if(ok) _pushoverRecentSent.set(key, Date.now());
+      job.resolve(ok);
+      if(_pushoverRecentSent.size > 200) {
+        const cutoff = Date.now() - PUSHOVER_DEDUPE_MS;
+        for(const [k, ts] of _pushoverRecentSent) {
+          if(ts < cutoff) _pushoverRecentSent.delete(k);
+        }
+      }
+      if(_pushoverQueue.length) {
+        await new Promise(res => setTimeout(res, PUSHOVER_GAP_MS));
+      }
+    }
+  } finally {
+    _pushoverPumpRunning = false;
+  }
+}
+
+async function sendPushover(userKey, appToken, title, message, color=null, sound=null) {
+  if(!userKey || !appToken) return false;
+  const dKey = _pushoverDedupeKey(title, message);
+  const recent = _pushoverRecentSent.get(dKey);
+  if(recent && Date.now() - recent < PUSHOVER_DEDUPE_MS) return true;
+  const payload = { token: appToken, user: userKey, title, message, html: 1 };
+  if(color) payload.color = color;
+  if(sound) payload.sound = sound;
+  if(sound === 'siren') payload.priority = 1;
+  return new Promise(resolve => {
+    _pushoverQueue.push({ payload, title, message, resolve });
+    _pushoverPump();
+  });
 }
 
 
@@ -16299,14 +19007,30 @@ async function fetchHedgeData(force=false) {
     });
 
     // 2. Deribit DVOL for BTC + ETH
+    // v47.99: Deribit deprecated `get_index_price?index_name=btc_dvol/eth_dvol`
+    // (returns HTTP 400). The current endpoint is
+    // public/get_volatility_index_data which returns OHLC candles. Pull the
+    // last ~1 hour at 60-second resolution and use the close of the latest
+    // candle. Values come back as decimals (e.g. 0.7252 = 72.52% vol); the
+    // rest of the app stores IV as a percentage like 72.52, so multiply by
+    // 100 on ingress.
     for(const sym of ['BTC','ETH']) {
       try {
-        const dRes = await fetch(`https://www.deribit.com/api/v2/public/get_index_price?index_name=${sym.toLowerCase()}_dvol`);
+        const end   = Date.now();
+        const start = end - 60 * 60 * 1000; // last hour
+        const dRes  = await fetch(
+          `https://www.deribit.com/api/v2/public/get_volatility_index_data` +
+          `?currency=${sym}&start_timestamp=${start}&end_timestamp=${end}&resolution=60`
+        );
         const dData = await dRes.json();
-        const iv = dData?.result?.index_price;
-        if(iv) {
-          if(!cache[sym]) cache[sym] = {};
-          cache[sym].iv = parseFloat(iv);
+        const candles = dData?.result?.data || [];
+        if(candles.length) {
+          const last = candles[candles.length - 1]; // [ts, open, high, low, close]
+          const close = last[4];
+          if(close != null && isFinite(close)) {
+            if(!cache[sym]) cache[sym] = {};
+            cache[sym].iv = parseFloat(close) * 100;
+          }
         }
       } catch(e) { /* fallback to realised vol */ }
     }
@@ -19460,7 +22184,7 @@ async function reCheckActivationAfterLink() {
       } catch(e){}
       hideActivationScreen();
       updateFsStatus(); fsStartAutoSave();
-      renderAll(); fetchPrices(); fetchBenchmarks(); fetchHedgeData(false);
+      renderAll(); startupNetworkBoot();
       initFileProtocolUI(); initHelpSync(); checkWhatsNew(); updateAppFileLinkUI();
       initPIN();
       toast('✓ Activated and data restored from backup');
@@ -21283,6 +24007,12 @@ function renderSummary() {
         </div>`;
       })() : ''}
     </div>`;
+  // v47.98: refresh accumulation strategies card alongside the main summary
+  if (typeof ladderRenderSummaryStrategies === 'function') {
+    try { ladderRenderSummaryStrategies(); } catch(e) {}
+  }
+  // ported: render the allocation chart alongside the summary (shares the price gate)
+  try { renderAllocChart(); } catch(e) {}
 }
 
 // ─── IL CALCULATOR ────────────────────────────────────────────────────────────
@@ -21293,6 +24023,296 @@ function ilMath(ratio, type) {
   return (2*Math.sqrt(ratio)/(1+ratio))-1;
 }
 function ilPreset(div) { document.getElementById('il-div').value=div; }
+// ── Summary allocation chart + collapsible IL (ported from web v48.19–48.25) ──
+// ── v48.19: collapsible IL calculator ────────────────────────────────────────
+function toggleIlCalc(force) {
+  const body = document.getElementById('ilCalcBody');
+  const caret = document.getElementById('ilToggleCaret');
+  if(!body) return;
+  const open = (force !== undefined) ? force : (body.style.display === 'none');
+  body.style.display = open ? '' : 'none';
+  if(caret) caret.textContent = open ? '▾' : '▸';
+  try { localStorage.setItem('cpf_il_open', open ? '1' : '0'); } catch(e){}
+}
+function _initIlCalcState() {
+  let open = false;
+  try { open = localStorage.getItem('cpf_il_open') === '1'; } catch(e){}
+  toggleIlCalc(open);
+}
+
+// ── v48.19: portfolio allocation chart ───────────────────────────────────────
+// Standalone so it never disturbs renderSummary internals. Uses the SAME value
+// functions the rest of the app uses (poolCurrentValue, getPrice) so figures
+// agree with the header. Mask-aware; shares the price-loading gate.
+let _allocChart = null;
+let _allocDrill = null;   // when set, we're drilled into a category/wallet -> show its assets
+const _ALLOC_TOPN = 7;    // top-N slices then "Others" (tunable)
+const _ALLOC_COLORS = ['#4ea0f5','#3df5a0','#f5a04e','#b48ef5','#f56e9e','#5ad2e0','#e0d24e','#8ea0b5','#f57e5a','#7ef58e'];
+
+function _maskOn(){ try { return !!(window.maskMode || document.body.classList.contains('masked') || (typeof isMasked==='function' && isMasked())); } catch(e){ return false; } }
+function _fmtUsd(v){ if(v==null) return '—'; if(_maskOn()) return '•••'; return '$'+Math.round(v).toLocaleString(); }
+
+// Changing a dropdown resets any drill-down so you return to the overview cleanly.
+function allocResetAndRender(){ _allocDrill = null; renderAllocChart(); }
+function allocDrillUp(){
+  // v48.23: if we drilled in from a wallet slice (which set the Filter dropdown),
+  // clear that filter on the way back so "Back" returns to the true overview.
+  if(_allocDrill && _allocDrill._setWallet) {
+    const wsel = document.getElementById('allocWallet'); if(wsel) wsel.value = '';
+  }
+  _allocDrill = null; renderAllocChart();
+}
+
+// Custom plugin: draw "name + %" labels on donut slices (no extra dependency).
+const _allocLabelPlugin = {
+  id: 'allocSliceLabels',
+  afterDatasetsDraw(chart, args, opts) {
+    if(chart.config.type !== 'doughnut') return;
+    const {ctx} = chart;
+    const meta = chart.getDatasetMeta(0);
+    const data = chart.data.datasets[0].data;
+    const total = data.reduce((s,v)=>s+v,0);
+    if(total<=0) return;
+    ctx.save();
+    ctx.font = '600 11px "IBM Plex Mono", monospace';
+    ctx.fillStyle = '#0a0e14';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    meta.data.forEach((arc, i) => {
+      const pct = data[i]/total*100;
+      if(pct < 4) return;               // skip tiny slices to avoid clutter
+      const ang = (arc.startAngle + arc.endAngle)/2;
+      const r = (arc.innerRadius + arc.outerRadius)/2;
+      const x = arc.x + Math.cos(ang)*r;
+      const y = arc.y + Math.sin(ang)*r;
+      const label = chart.data.labels[i];
+      ctx.fillStyle = 'rgba(10,14,20,0.85)';
+      ctx.fillText(label, x, y-6);
+      ctx.fillText(pct.toFixed(0)+'%', x, y+7);
+    });
+    ctx.restore();
+  }
+};
+
+// Build the value list for the current grouping. Returns [{label, value}] unsorted.
+function _allocData(groupBy, walletFilter) {
+  const wf = walletFilter || '';
+  const catTotals = () => {
+    let pools=0, vaults=0, holds=0, hedge=0;
+    // v48.24: pools/vaults aren't per-record wallet-tagged — they belong to the
+    // single configured DeFi wallet (DB.settings.defiWallet). So when a wallet
+    // filter is active, include pools/vaults only if that wallet IS the DeFi
+    // wallet (honor a per-record wallet too, if one ever exists, as a fallback).
+    const defiW = (DB.settings && DB.settings.defiWallet) || '';
+    const poolVaultMatches = (rec) => !wf || (rec.wallet ? rec.wallet===wf : wf===defiW);
+    (DB.pools||[]).forEach(p => { if(!poolVaultMatches(p)) return; const c=poolCurrentValue(p); if(c!=null) pools += c + (typeof poolYieldTotal==='function'?poolYieldTotal(p):0); });
+    (DB.vaults||[]).forEach(v => { if(!poolVaultMatches(v)) return; const pr=getPrice(v.tokGeckoId); if(pr){ vaults += (v.qty||0)*pr + (v.yieldEarned||0); } });
+    (DB.holdings||[]).forEach(h => { if(wf && (h.wallet||'')!==wf) return; let pr=getPrice(h.geckoId); if(!pr && h.cat==='Stablecoin') pr=1; if(pr) holds += (h.qty||0)*pr; });
+    (DB.hedgePositions||[]).forEach(p => { if(!poolVaultMatches(p)) return; const pr=getPrice(p.geckoId||p.asset); if(pr && p.qty) hedge += Math.abs((p.qty||0)*pr); });
+    // v48.25: GEMs are a watchlist; count ONLY funded positions (qty>0), mirroring
+    // the summary's gemVal. So GEMs shows $0/absent until you actually hold some,
+    // then appears automatically. Treated as DeFi-wallet-associated for filtering.
+    let gems=0;
+    (DB.gems||[]).forEach(g => { if(!poolVaultMatches(g)) return; const lp=getPrice(g.geckoId); if(lp && g.qty) gems += lp*g.qty; });
+    return [
+      {label:'Pools', value:pools}, {label:'Vaults', value:vaults},
+      {label:'Holdings', value:holds}, {label:'Hedge', value:hedge}, {label:'GEMs', value:gems}
+    ].filter(d => d.value > 0);
+  };
+  if(groupBy === 'category') return catTotals();
+  if(groupBy === 'wallet') {
+    const byW = {};
+    (DB.holdings||[]).forEach(h => { let pr=getPrice(h.geckoId); if(!pr && h.cat==='Stablecoin') pr=1; if(!pr) return; const w=(h.wallet||'—').trim()||'—'; byW[w]=(byW[w]||0)+(h.qty||0)*pr; });
+    return Object.keys(byW).map(w => ({label:w, value:byW[w]})).filter(d=>d.value>0);
+  }
+  const byA = {};
+  (DB.holdings||[]).forEach(h => { if(wf && (h.wallet||'')!==wf) return; let pr=getPrice(h.geckoId); if(!pr && h.cat==='Stablecoin') pr=1; if(!pr) return; const s=(h.sym||'?'); byA[s]=(byA[s]||0)+(h.qty||0)*pr; });
+  return Object.keys(byA).map(s => ({label:s, value:byA[s]})).filter(d=>d.value>0);
+}
+
+// v48.21: items WITHIN a drilled category/wallet. category is one of
+// 'Pools'|'Vaults'|'Holdings'|'Hedge' (when drilled from category grouping),
+// or null when drilled from a wallet slice (then walletFilter scopes holdings).
+function _allocDrillData(drill, walletFilter) {
+  const wf = (drill && drill.wallet) ? drill.wallet : (walletFilter || '');
+  const cat = drill && drill.category;
+  const defiW = (DB.settings && DB.settings.defiWallet) || '';
+  const pvMatches = (rec) => !wf || (rec.wallet ? rec.wallet===wf : wf===defiW);
+  if(cat === 'Pools') {
+    return (DB.pools||[]).filter(pvMatches).map(p => {
+      const c = poolCurrentValue(p);
+      const v = (c==null) ? 0 : c + (typeof poolYieldTotal==='function'?poolYieldTotal(p):0);
+      const nm = p.name || ((p.tokASym||p.tokA||'?')+'/'+(p.tokBSym||p.tokB||'?'));
+      return {label:nm, value:v};
+    }).filter(d=>d.value>0);
+  }
+  if(cat === 'Vaults') {
+    return (DB.vaults||[]).filter(pvMatches).map(v => {
+      const pr = getPrice(v.tokGeckoId);
+      const val = pr ? (v.qty||0)*pr + (v.yieldEarned||0) : 0;
+      const nm = v.name || v.tokSym || v.tok || v.tokGeckoId || '?';
+      return {label:nm, value:val};
+    }).filter(d=>d.value>0);
+  }
+  if(cat === 'Hedge') {
+    return (DB.hedgePositions||[]).filter(pvMatches).map(p => {
+      const pr = getPrice(p.geckoId||p.asset);
+      const val = (pr && p.qty) ? Math.abs((p.qty||0)*pr) : 0;
+      return {label:(p.asset||p.sym||'?'), value:val};
+    }).filter(d=>d.value>0);
+  }
+  if(cat === 'GEMs') {
+    return (DB.gems||[]).filter(pvMatches).map(g => {
+      const lp = getPrice(g.geckoId);
+      const val = (lp && g.qty) ? lp*g.qty : 0;   // funded only
+      return {label:(g.sym||g.name||g.geckoId||'?'), value:val};
+    }).filter(d=>d.value>0);
+  }
+  // Holdings category, or a wallet drill → holdings assets (optionally wallet-scoped)
+  const byA = {};
+  (DB.holdings||[]).forEach(h => {
+    if(wf && (h.wallet||'')!==wf) return;
+    let pr=getPrice(h.geckoId); if(!pr && h.cat==='Stablecoin') pr=1; if(!pr) return;
+    const s=(h.sym||'?'); byA[s]=(byA[s]||0)+(h.qty||0)*pr;
+  });
+  return Object.keys(byA).map(s => ({label:s, value:byA[s]})).filter(d=>d.value>0);
+}
+
+function _topNplusOthers(rows, n) {
+  const sorted = rows.slice().sort((a,b)=>b.value-a.value);
+  if(sorted.length <= n) return sorted;
+  const top = sorted.slice(0, n);
+  const rest = sorted.slice(n);
+  const othersVal = rest.reduce((s,r)=>s+r.value, 0);
+  if(othersVal > 0) top.push({label:`Others (${rest.length})`, value:othersVal, _isOthers:true});
+  return top;
+}
+
+function renderAllocChart() {
+  const wrap = document.getElementById('allocChartWrap');
+  const canvas = document.getElementById('allocCanvas');
+  if(!wrap || !canvas || typeof Chart === 'undefined') return;
+  const priceCount = Object.keys(prices||{}).filter(k => !k.endsWith('__24h')).length;
+  if(priceCount === 0) { wrap.style.display='none'; return; }
+
+  const wsel = document.getElementById('allocWallet');
+  if(wsel) {
+    const names = Array.from(new Set((DB.holdings||[]).map(h=>(h.wallet||'').trim()).filter(Boolean))).sort();
+    const cur = wsel.value;
+    wsel.innerHTML = '<option value="">All wallets</option>' + names.map(n=>`<option value="${n.replace(/"/g,'&quot;')}">${n}</option>`).join('');
+    if(cur) wsel.value = cur;
+  }
+
+  const groupBy = document.getElementById('allocGroupBy')?.value || 'category';
+  const walletFilter = document.getElementById('allocWallet')?.value || '';
+  const sub = document.getElementById('allocSub');
+  const crumb = document.getElementById('allocCrumb');
+  const crumbText = document.getElementById('allocCrumbText');
+  const box = document.getElementById('allocCanvasBox');
+
+  // OVERVIEW = donut (few slices, labeled). DRILLED = bars (many assets, obvious banner).
+  let rows, isBar;
+  if(_allocDrill) {
+    rows = _allocDrillData(_allocDrill, walletFilter);
+    isBar = true;
+    if(crumb){ crumb.style.display='flex'; }
+    if(crumbText){ crumbText.innerHTML = `Drilled into <strong style="color:var(--text1);">${_allocDrill.label}</strong> — showing its assets as bars`; }
+  } else {
+    rows = _allocData(groupBy, walletFilter);
+    isBar = (groupBy === 'asset');     // "Asset" grouping is inherently many -> bars
+    if(crumb) crumb.style.display='none';
+  }
+
+  const total = rows.reduce((s,r)=>s+r.value, 0);
+  if(total <= 0) { wrap.style.display='none'; return; }
+  wrap.style.display = '';
+
+  const display = isBar ? rows.slice().sort((a,b)=>b.value-a.value) : _topNplusOthers(rows, _ALLOC_TOPN);
+  const labels = display.map(d=>d.label);
+  const values = display.map(d=>d.value);
+  const colors = display.map((d,i)=> d._isOthers ? '#8ea0b5' : _ALLOC_COLORS[i % _ALLOC_COLORS.length]);
+
+  // v48.22: size the container so it never spills off the page.
+  // Bars: ~30px per bar; the box is a CAPPED scroll viewport (fits a laptop/Mac),
+  // the canvas fills the full needed height inside it and scrolls. Donut: square box.
+  let innerHeight = null;
+  if(box) {
+    if(isBar) {
+      innerHeight = Math.max(160, display.length * 30 + 40);
+      box.style.maxWidth = '100%';
+      box.style.height = Math.min(innerHeight, 440) + 'px';
+      box.style.maxHeight = '62vh';        // never exceed ~62% of viewport height
+      box.style.overflowY = 'auto';
+    } else {
+      box.style.maxWidth = '420px';
+      box.style.height = '';
+      box.style.maxHeight = '';
+      box.style.overflowY = 'hidden';
+    }
+  }
+
+  if(_allocChart) { try{ _allocChart.destroy(); }catch(e){} _allocChart=null; }
+  // For bars, give the canvas its full (possibly tall) height so it scrolls inside
+  // the capped box; donut uses a fixed square and keeps its aspect ratio.
+  if(isBar && innerHeight) { canvas.style.height = innerHeight + 'px'; canvas.height = innerHeight; }
+  else { canvas.style.height = ''; canvas.height = 260; }
+  const ctx = canvas.getContext('2d');
+  const masked = _maskOn();
+
+  _allocChart = new Chart(ctx, {
+    type: isBar ? 'bar' : 'doughnut',
+    data: { labels, datasets:[{ data: values, backgroundColor: colors, borderColor:'rgba(0,0,0,0.25)', borderWidth:1 }] },
+    options: {
+      indexAxis: isBar ? 'y' : 'x',
+      responsive:true, maintainAspectRatio: isBar ? false : true,
+      cutout: isBar ? undefined : '58%',
+      plugins: {
+        legend: { display:false },
+        tooltip: { callbacks: { label: (c)=> {
+          // horizontal bar (indexAxis 'y'): value is on x. donut: c.parsed is the value.
+          const v = isBar ? c.parsed.x : (c.parsed!=null && typeof c.parsed==='object' ? (c.parsed.y!=null?c.parsed.y:c.parsed.x) : c.parsed);
+          const pct = total>0 ? (v/total*100).toFixed(1) : '0';
+          return `${c.label}: ${masked?'•••':_fmtUsd(v)} (${pct}%)`;
+        } } }
+      },
+      scales: isBar ? { x: { ticks:{ callback:(v)=> masked?'':'$'+Number(v).toLocaleString(), color:'#8ea0b5' }, grid:{color:'rgba(142,160,181,0.1)'} }, y:{ ticks:{color:'#cdd9e5'}, grid:{display:false} } } : {},
+      onClick: (evt, els) => {
+        if(_allocDrill || isBar) return;
+        if(!els.length) return;
+        const d = display[els[0].index];
+        if(d._isOthers) return;
+        // v48.23: drilling a WALLET slice sets the Filter dropdown to that wallet
+        // so the breadcrumb and the dropdown never disagree.
+        if(groupBy==='wallet') {
+          const wsel2 = document.getElementById('allocWallet');
+          if(wsel2) wsel2.value = d.label;
+        }
+        _allocDrill = { label:d.label, wallet: (groupBy==='wallet'? d.label : walletFilter), category:(groupBy==='category'? d.label:null), _setWallet:(groupBy==='wallet') };
+        renderAllocChart();
+      }
+    },
+    plugins: isBar ? [] : [_allocLabelPlugin]
+  });
+
+  if(sub) sub.textContent = _allocDrill
+    ? ('Assets in ' + _allocDrill.label + (masked?'':' · total '+_fmtUsd(total)))
+    : ((groupBy==='category'?'By category':groupBy==='wallet'?'By wallet':'By asset') + ' — ' + (isBar?'sorted by value':'click a slice to drill in') + (masked?'':' · total '+_fmtUsd(total)));
+
+  const legend = document.getElementById('allocLegend');
+  if(legend) {
+    legend.innerHTML = display.map((d,i)=>{
+      const pct = total>0 ? (d.value/total*100).toFixed(1) : '0';
+      const col = colors[i];
+      return `<span style="display:inline-flex;align-items:center;gap:5px;margin:2px 12px 2px 0;">
+        <span style="width:10px;height:10px;border-radius:2px;background:${col};display:inline-block;"></span>
+        <span style="color:var(--text2);">${d.label}</span>
+        <span style="color:var(--text3);">${_fmtUsd(d.value)} · ${pct}%</span></span>`;
+    }).join('');
+  }
+}
+// ── end Summary allocation port ──
+try { document.addEventListener('DOMContentLoaded', () => { try { _initIlCalcState(); } catch(e){} }); } catch(e){}
+
 function ilCalc() {
   const type   = document.getElementById('il-type').value;
   const entryV = +document.getElementById('il-entry').value||10000;
@@ -21881,8 +24901,9 @@ function _renderWhatsNew() {
 
   // Sort versions descending
   const versions = Object.keys(WHATS_NEW).sort((a,b) => {
-    const [aMaj,aMin] = a.split('.').map(Number);
-    const [bMaj,bMin] = b.split('.').map(Number);
+    // parseInt tolerates suffixes like '48.25-demo' (→ major 48, minor 25)
+    const [aMaj,aMin] = a.split('.').map(s => parseInt(s,10) || 0);
+    const [bMaj,bMin] = b.split('.').map(s => parseInt(s,10) || 0);
     return bMaj !== aMaj ? bMaj - aMaj : bMin - aMin;
   });
 
@@ -22084,6 +25105,44 @@ const TAB_LABELS = {
 };
 
 const WHATS_NEW = {
+  '48.25-demo': {
+    headline: "Summary page — portfolio allocation chart + collapsible IL calculator",
+    summary:  "The Summary page now leads with a visual breakdown of your portfolio that complements the totals above it. A donut chart shows your portfolio shape at a glance — by Category, Wallet, or Asset — and you can click any slice to drill into its assets. The IL Break-Even Calculator now sits behind a collapsible header (collapsed by default) so the allocation view is front and center. All read-only and presentation-only.",
+    items: [
+      { icon: '📊', title: "Allocation donut with drill-down",
+        text: "A donut shows your portfolio shape at a glance — by Category (Pools / Vaults / Holdings / Hedge / GEMs), by Wallet, or by Asset. Slice labels show name and %, the largest positions show individually, and the long tail rolls into a single ‘Others’ slice so it stays readable. Click a slice to drill into its assets as a sorted bar chart, with a clear ‘← Back to overview’ to return." },
+      { icon: '🗂', title: "Group & Filter controls",
+        text: "Two dropdowns let you re-cut the view: Group (Category / Wallet / Asset) and Filter (All wallets, or one wallet). Because pools and vaults belong to your configured DeFi wallet, filtering to it correctly includes them alongside its holdings." },
+      { icon: '⚖️', title: "Collapsible IL Break-Even Calculator",
+        text: "The IL calculator now lives behind a collapsible header — collapsed by default, one click to open, and it remembers whether you left it open or closed. This brings the allocation chart to the top of the Summary page where it’s most useful." },
+      { icon: '💎', title: "GEMs counted only when funded",
+        text: "GEMs appear as an allocation category only for positions actually held (a funded quantity); watchlist-only GEMs don’t inflate the total. The slice appears automatically if one is ever funded." },
+    ]
+  },
+  '47.98': {
+    headline: "Version 47.98 — Price Ladder accumulation feature + DCA priority semantics",
+    summary:  "Major new feature for accumulation strategies. The Price Ladder lets you set a multi-rung 'staircase' of limit orders that fire as a target asset drops in price — buying more aggressively the lower it goes — funded from a stablecoin (or any) source wallet. Each rung reserves funds the moment it's placed, so your DCA schedule sees the lower available balance and won't fire if a ladder has the funds tied up. Strategies are surfaced on the Summary tab at-a-glance and managed in detail on Holdings.",
+    items: [
+      { icon: '🪜', title: "Configure Price Ladder from any holding",
+        text: "Open a holding's edit modal and click '🪜 Configure Ladder' next to the DCA controls. Choose source wallet/chain/token (where funds come from), destination asset/wallet/chain (where the bought asset lands), a starting price, number of rungs, and either percentage or fixed-dollar step down. Funding mode can be fixed amount per rung or geometric increase (e.g. 10% more per rung as price drops). Self-funding ladders (source == destination) are refused. Filled rungs accumulate weighted-average cost basis on the destination holding." },
+      { icon: '📅', title: "DCA respects ladder reservations (priority funds semantics)",
+        text: "Ladder rungs HARD-RESERVE their allocated funds the moment they're placed. DCA does NOT pre-reserve; it checks availability at fire time using walletAvailableBalance(), which already subtracts ladder reservations. If a DCA's next cycle would be underfunded because a ladder has the funds tied up, the DCA fire is refused with a toast 'Not enough X available — Y reserved by ladder rungs' and the persistent dashboard alert shows the shortfall. This matches the real-world pattern: users typically replenish DCA source wallets regularly, so DCA shouldn't pre-reserve, but ladders need hard reservations so partial liquidity doesn't get accidentally swept." },
+      { icon: '🎯', title: "Strategy Management on Holdings (collapsible, half-width layout)",
+        text: "Holdings tab gains a 'Strategy Management' section with two columns: Ladders on the left, DCAs on the right. Each ladder card shows rung table + summary stats (Committed, Filled, Dry Powder, Cost Basis, Acquired) side-by-side. Each DCA card shows source → destination flow, next due, frequency, and any forward-warning. The section is collapsed by default when everything is healthy and auto-expands when an awaiting/shortfall warning fires. A small alert banner at the top of Holdings shows counts and lets you toggle the section open/closed." },
+      { icon: '🎯', title: "Accumulation Strategies card on Summary tab",
+        text: "Summary gets a unified 'Accumulation Strategies' card showing all active ladders and DCAs at a glance. Ladders show committed amount, rung counts (filled/placed/awaiting), and source → destination flow. DCAs show frequency, amount, next-due, and any forward-warning. Both have 'Manage →' links that jump to the corresponding management card on Holdings. The card hides entirely if no strategies are active." },
+      { icon: '💰', title: "Ladder fills logged to Transactions",
+        text: "Every rung fill writes a Swap entry to the transaction log with full source/destination wallet labels, source qty (e.g. USDC spent), destination qty (e.g. BTC acquired), and notes like 'Ladder rung 3/5 filled at $66,500 (trigger $66,500)'. The transaction history is the canonical record — cancelled and completed ladders no longer clutter the management view." },
+      { icon: '✎', title: "Edit / Cancel / Remove on every active strategy",
+        text: "Each active strategy card has '✎ Edit' and '✕ Cancel/Remove' buttons. Editing a ladder opens the modal pre-filled with the current config; on Arm you get a confirmation: 'N filled rungs preserved, N placed cancelled, N awaiting discarded — proceed?' and the old ladder is cancelled-and-replaced (no in-place partial edits). DCA edit opens the holding modal with the existing DCA section. Cards individually collapse/expand to keep dense management surfaces tidy." },
+      { icon: '🔔', title: "Header pill + persistent alerts",
+        text: "A 🪜 ladder pill in the header tracks ladder state (healthy / awaiting funds / has shortfalls). When red, it pulses to draw attention. Click to jump to the management section. The pill complements the existing 📅 DCA pill — both now use saturated colors (yellow for ladder, blue for DCA) so neither dominates the visual weight." },
+      { icon: '🎨', title: "Smaller polish items",
+        text: "DCA section header on the holding modal got a more saturated blue (was previously almost invisible next to the bright yellow ladder button). Transactions Notes column now ellipsis-truncates with full text on hover so it doesn't push the action buttons off-screen. Token autocomplete dropdown on the ladder modal pulls from KNOWN_TOKENS + any symbols already in DB.holdings." },
+      { icon: '🧪', title: "Testing notes",
+        text: "Configure a ladder with rung 1 set ABOVE current market price (e.g. for BTC at $77k, set start price $78k). When you arm, rung 1 will fire immediately since the live price is already below trigger. This lets you exercise the full source-debit / destination-credit / transaction-log flow without waiting for a price drop. The Summary card should populate immediately. Reload the page and the state should persist." },
+    ]
+  },
   '47.97.1': {
     headline: "Version 47.97.1 — Sticky column headers + no more horizontal scroll on wide tables",
     summary:  "Two-part UX fix for Holdings and History tabs. (1) The column header row was scrolling off-screen with the data; it now pins at the top of the viewport so column labels stay visible while scrolling through long lists. (2) Wide tables on these tabs were horizontally scrolling on narrow displays, which could hide controls or columns off-screen without the scrollbar being visually obvious. Tables now shrink columns proportionally to always fit within the visible width — no horizontal scroll ever.",
@@ -24356,6 +27415,19 @@ if(typeof _v4785_origPersist === 'function') {
   };
 }
 
+
+// v47.98: Ladder boot init — runs once after page load to migrate schemas,
+// run expiration check, and render initial pill + summary.
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => setTimeout(() => {
+    try { if (typeof ladderInit === 'function') ladderInit(); } catch(e) { console.warn('ladderInit failed:', e); }
+  }, 500));
+} else {
+  setTimeout(() => {
+    try { if (typeof ladderInit === 'function') ladderInit(); } catch(e) { console.warn('ladderInit failed:', e); }
+  }, 500);
+}
+
 </script>
 
 <div class="overlay" id="helpModal">
@@ -24540,7 +27612,7 @@ function demoStartAndEnter() {
   demoStartTrial();
   demoMarkWelcomeSeen();
   document.getElementById('demoWelcome').style.display = 'none';
-  renderAll(); fetchPrices(); fetchBenchmarks(); fetchHedgeData(false); initFileProtocolUI(); initHelpSync(); initPIN();
+  renderAll(); startupNetworkBoot(); initFileProtocolUI(); initHelpSync(); initPIN();
   checkWhatsNew();
   setTimeout(demoInjectBanner, 300);
   // Start polling worker for activation status while trial is running.
