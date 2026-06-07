@@ -110,16 +110,16 @@
 
   <div class="intro">
     <h1>Welcome to Portfolio Tracker</h1>
-    <p>A self-contained crypto portfolio tracker that runs entirely in your browser — no installation, no account, no cloud. Choose your download option below then follow the setup steps.</p>
-    <div class="badge">✓ Works in Chrome or Edge &nbsp;·&nbsp; No installation needed &nbsp;·&nbsp; Your data never leaves your machine</div>
+    <p>A self-contained crypto portfolio tracker — your data never leaves your machine, no account, no cloud. Try it instantly in your browser, or install the Desktop app for the full experience. Pick an option below.</p>
+    <div class="badge">✓ Browser demo or Desktop app &nbsp;·&nbsp; No account, no cloud &nbsp;·&nbsp; Your data never leaves your machine</div>
   </div>
 
   <!-- Download choice -->
   <div class="dl-choice">
-    <div class="dl-choice-title">⚠ Step zero — choose your download</div>
+    <div class="dl-choice-title">👉 Choose how to run it</div>
     <p style="font-size:13px;color:var(--muted);line-height:1.75;">
-      <strong style="color:var(--text);">Always connected to the internet?</strong> Download just the HTML — help images load automatically from the web.<br>
-      <strong style="color:var(--text);">Want offline access or local images?</strong> Download the full zip — includes the app and all help images.
+      <strong style="color:var(--text);">Just want a quick look?</strong> Use the browser demo — nothing to install, runs in Chrome or Edge.<br>
+      <strong style="color:var(--text);">Ready for the full app?</strong> Download the Desktop version — installs locally, with a 7-day free trial.
     </p>
     <div class="dl-options">
       <div class="dl-option">
@@ -130,16 +130,18 @@
         <div style="font-size:11px;color:var(--muted);margin-top:8px;">Right-click → Save link as… if it opens instead of downloading</div>
       </div>
       <div class="dl-option">
-        <div class="dl-option-title">📦 Full package — offline use</div>
-        <div class="dl-option-desc">Zip file containing the app and all help images. Works fully offline. Unzip before opening — do not open directly from the zip.</div>
-        <div class="dl-option-size">~1.7MB zip</div>
-        <a class="dl-secondary" href="PortfolioTracker_Demo_with_images.zip" download>↓ &nbsp;Download with Images</a>
-        <div style="font-size:11px;color:var(--muted);margin-top:8px;">Unzip first, then open <code style="font-size:10px;">Portfolio_Tracker_Demo.html</code></div>
+        <div class="dl-option-title">🖥 Desktop Version — full app</div>
+        <div class="dl-option-desc">The complete tracker as a native desktop app: local file storage, on-chain verification, and automatic backups. Includes a 7-day free trial — register in-app to keep using it.</div>
+        <div class="dl-option-size">~5MB · Windows &amp; macOS</div>
+        <a class="dl-secondary" href="https://github.com/jdgoldstein/portfoliotracker-help/releases/latest/download/Portfolio-Tracker-Setup.exe">↓ &nbsp;Windows (.exe)</a>
+        <a class="dl-secondary" href="https://github.com/jdgoldstein/portfoliotracker-help/releases/latest/download/Portfolio-Tracker.dmg" style="margin-top:8px;">↓ &nbsp;macOS (.dmg)</a>
+        <div style="font-size:11px;color:var(--muted);margin-top:8px;">First launch needs one approval — see <a href="#desktop-setup" style="color:var(--accent);">Desktop app — setup</a>.</div>
       </div>
     </div>
   </div>
 
   <div class="section-label">Setup steps — do these once, in order</div>
+  <p style="font-size:12px;color:var(--muted);line-height:1.7;margin:-4px 0 14px;">These steps are for the <strong style="color:var(--text);">browser demo</strong>. Installed the <strong style="color:var(--text);">Desktop app</strong> instead? Skip ahead to <a href="#desktop-setup" style="color:var(--accent);font-weight:600;">Desktop app — setup</a> at the bottom.</p>
 
   <!-- STEP 1 -->
   <div class="step">
@@ -292,6 +294,47 @@
     <div class="step-body">
       <div class="step-title">Questions or feedback?</div>
       <div class="step-desc">Use the <strong>💬 Feedback</strong> button inside the tracker. Your Install ID is included automatically.</div>
+    </div>
+  </div>
+
+  <!-- DESKTOP APP SETUP -->
+  <div class="section-label" id="desktop-setup">🖥 Desktop app — setup</div>
+  <p style="font-size:12px;color:var(--muted);line-height:1.7;margin:-4px 0 14px;">For the installed Desktop app (Windows or Mac) only. No working folder, browser settings, or file-linking needed — the app stores and backs up your data automatically.</p>
+
+  <div class="step">
+    <div class="num green">1</div>
+    <div class="step-body">
+      <div class="step-title">Install it</div>
+      <div class="step-desc">
+        <strong>Windows:</strong> run the downloaded <code>.exe</code> installer.<br><br>
+        <strong>Mac:</strong> open the downloaded <code>.dmg</code> and drag <strong>Portfolio Tracker</strong> into your <strong>Applications</strong> folder.
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num blue">2</div>
+    <div class="step-body">
+      <div class="step-title">Approve it on first launch <span class="tag tag-mac">Once only</span></div>
+      <div class="step-desc">
+        Because the app isn't from a registered store publisher yet, your OS asks you to approve it the first time — once per machine.<br><br>
+        <strong>Windows:</strong> if you see <em>"Windows protected your PC,"</em> click <strong>More info → Run anyway</strong>.<br><br>
+        <strong>Mac:</strong> double-click the app; when it says it can't be verified, click <strong>Done</strong>. Then open <strong>System Settings → Privacy &amp; Security</strong>, scroll down to <strong>Security</strong>, click <strong>Open Anyway</strong> next to the app's name, and confirm with your password. (On macOS Sequoia and later, the old right-click → Open no longer works — you must use System Settings.)
+        <div class="callout amber" style="margin-top:10px;">
+          <strong>Mac note:</strong> after the one-time approval it opens normally every time. A future signed &amp; notarized Mac build will remove this step entirely.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num green">3</div>
+    <div class="step-body">
+      <div class="step-title">Start your trial &amp; register</div>
+      <div class="step-desc">
+        Launch the app and click <strong>▶ Start Free Trial</strong> — 7 days of full use, with your data saved automatically.<br><br>
+        To keep using it after the trial, open the in-app <strong>registration</strong> (name &amp; email). Once your request is approved, the app activates itself automatically — no codes to copy by hand.
+      </div>
     </div>
   </div>
 
