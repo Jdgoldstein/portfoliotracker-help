@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio Tracker — Desktop App</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230d6b4a'/%3E%3Crect x='8' y='17' width='4' height='7' fill='%233df5a0'/%3E%3Crect x='14' y='12' width='4' height='12' fill='%233df5a0'/%3E%3Crect x='20' y='8' width='4' height='16' fill='%233df5a0'/%3E%3C/svg%3E">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0d1728;--surface:#111f35;--card:#162033;--border:rgba(61,245,160,0.15);
+    --accent:#3df5a0;--accentD:#0a9f6a;--blue:#5b8dee;--text:#e2e8f0;--muted:#7a9ab5;--warn:#f59e0b;
+    --font:'Segoe UI',system-ui,sans-serif;--mono:'Consolas','Courier New',monospace;
+  }
+  body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 60px}
+  .page-header{background:var(--surface);border-bottom:1px solid var(--border);padding:22px 40px;display:flex;align-items:center;gap:18px}
+  .logo-icon{width:48px;height:48px;background:linear-gradient(135deg,#1e3a6b,#13234a);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+  .logo-title{font-size:20px;font-weight:700;color:var(--accent);letter-spacing:.04em}
+  .logo-sub{font-size:12px;color:var(--muted);margin-top:2px}
+  .container{max-width:760px;margin:0 auto;padding:30px 24px 0}
+  .back-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);text-decoration:none;margin-bottom:20px;transition:color .15s}
+  .back-link:hover{color:var(--accent)}
+  .intro{text-align:center;margin-bottom:26px}
+  .intro h1{font-size:23px;font-weight:700;color:var(--text);margin-bottom:8px}
+  .intro p{font-size:14px;color:var(--muted);line-height:1.75;max-width:540px;margin:0 auto}
+
+  .dl-card{background:rgba(91,141,238,0.06);border:2px solid rgba(91,141,238,0.35);border-radius:12px;padding:22px 24px;margin-bottom:28px;text-align:center}
+  .dl-card h2{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px}
+  .dl-card p{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:8px;max-width:520px;margin-left:auto;margin-right:auto}
+  .dl-size{font-size:11px;color:var(--muted);opacity:.7;margin-bottom:16px}
+  .dl-os{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 28px;min-width:230px;background:rgba(91,141,238,0.14);color:#93b4f7;font-size:14px;font-weight:700;border:1px solid rgba(91,141,238,0.45);border-radius:8px;text-decoration:none;transition:background .15s}
+  .dl-os:hover{background:rgba(91,141,238,0.26)}
+  .dl-os+.dl-os{margin-top:10px}
+  .dl-hint{font-size:11px;color:var(--muted);margin-top:12px}
+
+  .section-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:14px}
+  .step{display:flex;gap:16px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:10px}
+  .step.mac-only{border-color:rgba(91,141,238,0.3);background:rgba(91,141,238,0.04)}
+  .num{width:34px;height:34px;min-width:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;margin-top:1px}
+  .num.green{background:var(--accentD)}.num.blue{background:#2563eb}.num.grey{background:rgba(255,255,255,0.12);font-size:20px}
+  .step-body{flex:1;min-width:0}
+  .step-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:5px;line-height:1.4}
+  .tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;margin-left:8px;vertical-align:middle}
+  .tag-mac{background:rgba(91,141,238,0.15);color:#93b4f7}
+  .step-desc{font-size:13px;color:var(--muted);line-height:1.72}
+  .step-desc strong{color:var(--text)}
+  .step-desc em{color:var(--muted)}
+  .step-desc code{font-family:var(--mono);font-size:11.5px;background:rgba(255,255,255,0.07);border-radius:4px;padding:1px 6px;color:var(--accent)}
+  .callout{border-radius:8px;padding:12px 16px;margin-top:11px;font-size:12.5px;line-height:1.72}
+  .callout.amber{background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.25);color:var(--muted)}
+  .callout strong{color:var(--text)}
+  .divider{height:1px;background:var(--border);margin:24px 0}
+  .footer{text-align:center;margin-top:36px;font-size:11px;color:rgba(122,154,181,0.45);line-height:1.9}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="logo-icon">🖥️</div>
+  <div style="line-height:1.3;">
+    <div class="logo-title">PORTFOLIO TRACKER</div>
+    <div class="logo-sub">Desktop App — Setup Guide</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <a class="back-link" href="START_HERE.html">← &nbsp;Back to start</a>
+
+  <div class="intro">
+    <h1>Desktop App</h1>
+    <p>The full tracker as a native app — local storage, on-chain verification, and automatic backups, with no working folder or browser settings to configure. Includes a 7-day free trial.</p>
+  </div>
+
+  <!-- Download -->
+  <div class="dl-card">
+    <h2>🖥 Download the app</h2>
+    <p>Pick your operating system. The app stores and backs up your data automatically — there's nothing to link by hand.</p>
+    <div class="dl-size">~5 MB · Windows &amp; macOS</div>
+    <a class="dl-os" href="https://github.com/jdgoldstein/portfoliotracker-help/releases/latest/download/Portfolio-Tracker-Setup.exe">↓ &nbsp;Windows (.exe)</a><br>
+    <a class="dl-os" href="https://github.com/jdgoldstein/portfoliotracker-help/releases/latest/download/Portfolio-Tracker.dmg">↓ &nbsp;macOS (.dmg)</a>
+    <div class="dl-hint">First launch needs one approval — see Step 2 below.</div>
+  </div>
+
+  <div class="section-label">Setup steps — do these once</div>
+
+  <!-- STEP 1 -->
+  <div class="step">
+    <div class="num green">1</div>
+    <div class="step-body">
+      <div class="step-title">Install it</div>
+      <div class="step-desc">
+        <strong>Windows:</strong> run the downloaded <code>.exe</code> installer.<br><br>
+        <strong>Mac:</strong> open the downloaded <code>.dmg</code> and drag <strong>Portfolio Tracker</strong> into your <strong>Applications</strong> folder.
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step mac-only">
+    <div class="num blue">2</div>
+    <div class="step-body">
+      <div class="step-title">Approve it on first launch <span class="tag tag-mac">Once only</span></div>
+      <div class="step-desc">
+        Because the app isn't from a registered store publisher yet, your OS asks you to approve it the first time — once per machine.<br><br>
+        <strong>Windows:</strong> if you see <em>"Windows protected your PC,"</em> click <strong>More info → Run anyway</strong>.<br><br>
+        <strong>Mac:</strong> double-click the app; when it says it can't be verified, click <strong>Done</strong>. Then open <strong>System Settings → Privacy &amp; Security</strong>, scroll down to <strong>Security</strong>, click <strong>Open Anyway</strong> next to the app's name, and confirm with your password. (On macOS Sequoia and later, the old right-click → Open no longer works — you must use System Settings.)
+        <div class="callout amber">
+          <strong>Mac note:</strong> after the one-time approval it opens normally every time. A future signed &amp; notarized Mac build will remove this step entirely.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step">
+    <div class="num green">3</div>
+    <div class="step-body">
+      <div class="step-title">Start your trial &amp; register</div>
+      <div class="step-desc">
+        Launch the app and click <strong>▶ Start Free Trial</strong> — 7 days of full use, with your data saved automatically.<br><br>
+        To keep using it after the trial, open the in-app <strong>registration</strong> (name &amp; email). Once your request is approved, the app activates itself automatically — no codes to copy by hand.
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="footer">
+    Portfolio Tracker &nbsp;·&nbsp; Desktop App &nbsp;·&nbsp; <a href="START_HERE.html" style="color:var(--muted);">Back to start</a><br>
+    For informational purposes only — not financial advice, not tax software, no warranty.
+  </div>
+
+</div>
+</body>
+</html>

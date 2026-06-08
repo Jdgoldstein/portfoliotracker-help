@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio Tracker — Browser Demo</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230d6b4a'/%3E%3Crect x='8' y='17' width='4' height='7' fill='%233df5a0'/%3E%3Crect x='14' y='12' width='4' height='12' fill='%233df5a0'/%3E%3Crect x='20' y='8' width='4' height='16' fill='%233df5a0'/%3E%3C/svg%3E">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0d1728;--surface:#111f35;--card:#162033;--border:rgba(61,245,160,0.15);
+    --accent:#3df5a0;--accentD:#0a9f6a;--blue:#5b8dee;--text:#e2e8f0;--muted:#7a9ab5;--warn:#f59e0b;
+    --font:'Segoe UI',system-ui,sans-serif;--mono:'Consolas','Courier New',monospace;
+  }
+  body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 60px}
+  .page-header{background:var(--surface);border-bottom:1px solid var(--border);padding:22px 40px;display:flex;align-items:center;gap:18px}
+  .logo-icon{width:48px;height:48px;background:linear-gradient(135deg,#0a9f6a,#0d6b4a);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+  .logo-title{font-size:20px;font-weight:700;color:var(--accent);letter-spacing:.04em}
+  .logo-sub{font-size:12px;color:var(--muted);margin-top:2px}
+  .container{max-width:760px;margin:0 auto;padding:30px 24px 0}
+  .back-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);text-decoration:none;margin-bottom:20px;transition:color .15s}
+  .back-link:hover{color:var(--accent)}
+  .intro{text-align:center;margin-bottom:26px}
+  .intro h1{font-size:23px;font-weight:700;color:var(--text);margin-bottom:8px}
+  .intro p{font-size:14px;color:var(--muted);line-height:1.75;max-width:540px;margin:0 auto}
+
+  .dl-card{background:rgba(61,245,160,0.06);border:2px solid rgba(61,245,160,0.3);border-radius:12px;padding:22px 24px;margin-bottom:28px;text-align:center}
+  .dl-card h2{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px}
+  .dl-card p{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:8px;max-width:520px;margin-left:auto;margin-right:auto}
+  .dl-size{font-size:11px;color:var(--muted);opacity:.7;margin-bottom:16px}
+  .dl-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 28px;background:linear-gradient(135deg,#0a9f6a,#0d6b4a);color:#fff;font-size:14px;font-weight:700;border:none;border-radius:8px;cursor:pointer;text-decoration:none;box-shadow:0 4px 18px rgba(10,159,106,.3);transition:opacity .15s}
+  .dl-primary:hover{opacity:.88}
+  .dl-hint{font-size:11px;color:var(--muted);margin-top:10px}
+
+  .section-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:14px}
+  .step{display:flex;gap:16px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:10px}
+  .step.critical{border-color:rgba(239,68,68,0.45);background:rgba(239,68,68,0.04)}
+  .step.optional{border-color:rgba(91,141,238,0.3);background:rgba(91,141,238,0.04)}
+  .step.mac-only{border-color:rgba(91,141,238,0.3);background:rgba(91,141,238,0.04)}
+  .num{width:34px;height:34px;min-width:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;margin-top:1px}
+  .num.green{background:var(--accentD)}.num.red{background:#dc2626}.num.blue{background:#2563eb}.num.grey{background:rgba(255,255,255,0.12);font-size:20px}
+  .step-body{flex:1;min-width:0}
+  .step-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:5px;line-height:1.4}
+  .tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;margin-left:8px;vertical-align:middle}
+  .tag-critical{background:rgba(239,68,68,0.2);color:#f87171}.tag-optional{background:rgba(91,141,238,0.2);color:#93b4f7}.tag-mac{background:rgba(91,141,238,0.15);color:#93b4f7}
+  .step-desc{font-size:13px;color:var(--muted);line-height:1.72}
+  .step-desc strong{color:var(--text)}
+  .step-desc code{font-family:var(--mono);font-size:11.5px;background:rgba(255,255,255,0.07);border-radius:4px;padding:1px 6px;color:var(--accent)}
+  ol.substeps{margin:10px 0 4px 0;padding-left:0;list-style:none;counter-reset:sub}
+  ol.substeps li{counter-increment:sub;display:flex;gap:10px;margin-bottom:7px;font-size:13px;color:var(--muted);line-height:1.6}
+  ol.substeps li::before{content:counter(sub);min-width:20px;height:20px;background:rgba(255,255,255,0.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text);flex-shrink:0;margin-top:1px}
+  ol.substeps strong{color:var(--text)}ol.substeps em{font-size:11px;color:var(--muted);opacity:.8}
+  .callout{border-radius:8px;padding:12px 16px;margin-top:11px;font-size:12.5px;line-height:1.72}
+  .callout.green{background:rgba(10,124,74,0.08);border:1px solid rgba(10,124,74,0.25);color:var(--muted)}
+  .callout.amber{background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.25);color:var(--muted)}
+  .callout strong{color:var(--text)}.callout code{font-family:var(--mono);font-size:11px;background:rgba(255,255,255,0.07);border-radius:3px;padding:1px 5px;color:var(--accent)}
+  .icon-row{display:flex;align-items:center;gap:14px;background:rgba(91,141,238,0.06);border:1px solid rgba(91,141,238,0.25);border-radius:10px;padding:14px 18px;margin-top:11px}
+  .icon-text{flex:1;font-size:12px;color:var(--muted);line-height:1.5}
+  .icon-text strong{color:var(--text);font-size:13px;display:block;margin-bottom:2px}
+  .dl-btn{padding:8px 16px;background:rgba(91,141,238,0.12);border:1px solid rgba(91,141,238,0.35);border-radius:7px;color:var(--blue);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;text-decoration:none;transition:background .15s;flex-shrink:0}
+  .dl-btn:hover{background:rgba(91,141,238,0.22)}
+  .divider{height:1px;background:var(--border);margin:24px 0}
+  .footer{text-align:center;margin-top:36px;font-size:11px;color:rgba(122,154,181,0.45);line-height:1.9}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="logo-icon">🌐</div>
+  <div style="line-height:1.3;">
+    <div class="logo-title">PORTFOLIO TRACKER</div>
+    <div class="logo-sub">Browser Demo — Setup Guide</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <a class="back-link" href="START_HERE.html">← &nbsp;Back to start</a>
+
+  <div class="intro">
+    <h1>Browser Demo</h1>
+    <p>Runs straight in Chrome or Edge — nothing to install. Download the file, then follow the steps below once to get auto-save working.</p>
+  </div>
+
+  <!-- Download -->
+  <div class="dl-card">
+    <h2>📄 Download the demo</h2>
+    <p>A single HTML file. Help images load from the web automatically, so an internet connection is needed to view them.</p>
+    <div class="dl-size">~833 KB · one file</div>
+    <a class="dl-primary" href="Portfolio_Tracker_Demo.html" download>↓ &nbsp;Download Demo (HTML)</a>
+    <div class="dl-hint">If it opens instead of downloading: right-click → <strong>Save link as…</strong></div>
+  </div>
+
+  <div class="section-label">Setup steps — do these once, in order</div>
+
+  <!-- STEP 1 -->
+  <div class="step">
+    <div class="num green">1</div>
+    <div class="step-body">
+      <div class="step-title">Create a permanent working folder and move the file in</div>
+      <div class="step-desc">
+        Create a dedicated folder somewhere permanent — for example <code>C:\PortfolioTracker\</code> on Windows or <code>Documents/PortfolioTracker/</code> on Mac. Move <code>Portfolio_Tracker_Demo.html</code> into it (out of your Downloads folder).
+        <div class="callout amber">
+          <strong>Why permanent?</strong> In Step 3 you link the tracker to a data file that sits next to this HTML. If you later move or delete the folder, just re-link — your data is never lost, only the link.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step critical">
+    <div class="num red">2</div>
+    <div class="step-body">
+      <div class="step-title">Tell Chrome to ask where to save files <span class="tag tag-critical">Important</span></div>
+      <div class="step-desc">
+        By default Chrome saves files to Downloads — which means the tracker's data file ends up in the wrong place.
+        <ol class="substeps">
+          <li>In Chrome paste <strong>chrome://settings/downloads</strong> into the address bar and press Enter<br><em>(Edge: <strong>edge://settings/downloads</strong>)</em></li>
+          <li>Turn <strong>ON</strong> — <strong>"Ask where to save each file before downloading"</strong></li>
+          <li>Close Settings</li>
+        </ol>
+        <div class="callout amber">
+          <strong>Why this matters:</strong> When Chrome asks where to save, you point your data file at your working folder in Step 3. Your other downloads are unaffected.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step critical">
+    <div class="num red">3</div>
+    <div class="step-body">
+      <div class="step-title">Open the tracker and link your data file <span class="tag tag-critical">Most important</span></div>
+      <div class="step-desc">
+        Double-click <code>Portfolio_Tracker_Demo.html</code> from your working folder. <strong>Not from Downloads.</strong>
+        <ol class="substeps">
+          <li>Click <strong>▶ Start Free Trial</strong></li>
+          <li>Click <strong>⛁ Data ▾ → Link / Change File</strong></li>
+          <li>Navigate to your working folder</li>
+          <li>Type <strong>portfolio_data.json</strong> and click <strong>Save</strong></li>
+          <li>Status dot turns <strong style="color:#3df5a0;">green ●</strong> — auto-save active</li>
+        </ol>
+        <div class="callout green">
+          <strong>Green dot = protected.</strong> Saves every 7 minutes automatically.
+        </div>
+        <div class="callout amber" style="margin-top:8px;">
+          <strong>If the dot turns grey:</strong> click <strong>⛁ Data ▾ → Link / Change File</strong> and re-select your <code>portfolio_data.json</code>. Data is safe — just re-link.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step">
+    <div class="num green">4</div>
+    <div class="step-body">
+      <div class="step-title">Create a desktop shortcut</div>
+      <div class="step-desc">
+        <strong>Windows:</strong> Right-click <code>Portfolio_Tracker_Demo.html</code> in Explorer → <strong>Send to → Desktop (create shortcut)</strong>.<br><br>
+        <strong>Mac:</strong> Hold <strong>Cmd + Opt</strong> and drag the HTML file to the Desktop.
+      </div>
+      <div class="icon-row">
+        <div class="icon-text">
+          <strong>Optional — give your shortcut the tracker icon (Windows)</strong>
+          Download <code>Portfolio_Tracker.ico</code> using the button, then right-click your shortcut → <strong>Properties → Change Icon… → Browse…</strong> → select it → OK → Apply.
+        </div>
+        <a class="dl-btn" href="Portfolio_Tracker.ico" download>↓ Icon</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Optional PWA -->
+  <div class="section-label">Optional — install as a desktop app</div>
+  <div class="step optional">
+    <div class="num grey">⊕</div>
+    <div class="step-body">
+      <div class="step-title">Install as a PWA <span class="tag tag-optional">Optional</span></div>
+      <div class="step-desc">
+        Chrome and Edge can install the tracker as a standalone app with its own window and taskbar icon. Most users don't need this.<br><br>
+        With the tracker open: click <strong>⊕ Install App</strong> in the top-right header, or use Chrome's menu (⋮) → <strong>Save and share → Install page as app</strong>. Once installed it appears in your Start Menu with the correct icon automatically.
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Mac -->
+  <div class="section-label">🍎 Mac users — one extra step</div>
+  <div class="step mac-only">
+    <div class="num blue">!</div>
+    <div class="step-body">
+      <div class="step-title">Allow Chrome to save files automatically <span class="tag tag-mac">Mac only</span></div>
+      <div class="step-desc">
+        The first time the tracker auto-saves, Chrome asks <strong>"Allow this site to download multiple files?"</strong> — click <strong>Allow</strong>. Only appears once.<br><br>
+        <strong>Restoring after a cache clear:</strong> Click <strong>⛁ Data ▾ → Import Backup</strong>, select <code>portfolio_data.json</code>, then re-link via <strong>Link / Change File</strong>.
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Tips -->
+  <div class="section-label">Good to know</div>
+
+  <div class="step">
+    <div class="num grey">💡</div>
+    <div class="step-body">
+      <div class="step-title">Your data lives in two places</div>
+      <div class="step-desc">
+        <strong style="color:#3df5a0;">Safe copy:</strong> <code>portfolio_data.json</code> — saved every 7 minutes automatically.<br><br>
+        <strong style="color:var(--warn);">Temporary:</strong> Browser localStorage — wiped if you clear cache. Always keep the <code>.json</code> file safe.<br><br>
+        Use <strong>⛁ Data ▾ → Save / Export Backup</strong> occasionally for an extra dated copy.
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num grey">💡</div>
+    <div class="step-body">
+      <div class="step-title">Updating to a new version</div>
+      <div class="step-desc">
+        Download the new <code>Portfolio_Tracker_Demo.html</code> and drop it into your working folder — overwriting the old one. <strong>Do not replace</strong> your <code>portfolio_data.json</code> unless specifically told to. Your data stays intact.
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num grey">💡</div>
+    <div class="step-body">
+      <div class="step-title">Use Chrome or Edge — not Firefox or Safari</div>
+      <div class="step-desc">The File System Access API used for auto-save is not supported in Firefox or Safari.</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num grey">💡</div>
+    <div class="step-body">
+      <div class="step-title">Questions or feedback?</div>
+      <div class="step-desc">Use the <strong>💬 Feedback</strong> button inside the tracker. Your Install ID is included automatically.</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="footer">
+    Portfolio Tracker &nbsp;·&nbsp; Browser Demo &nbsp;·&nbsp; <a href="START_HERE.html" style="color:var(--muted);">Back to start</a><br>
+    For informational purposes only — not financial advice, not tax software, no warranty.
+  </div>
+
+</div>
+</body>
+</html>
