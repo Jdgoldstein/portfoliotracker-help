@@ -157,7 +157,7 @@ input[type="date"] { color-scheme: dark; }
 /* ── MAIN LAYOUT ── */
 #main{padding:10px 12px 30px;display:flex;flex-direction:column;gap:14px;
   /* v47.78: min-width 1280px floor, no max cap — page fills window width. */
-  min-width:1280px;margin:0 auto;}
+  min-width:0;margin:0 auto;}
 
 /* ── SECTION ── */
 .section{}
@@ -1121,6 +1121,72 @@ body.dark tr.grp-asset-hdr td:hover { background:#1e2e50 !important; }
 body.dark tr.grp-child { background:rgba(20,36,64,0.4) !important; }
 body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 .grp-toggle-btn.active { background:rgba(10,124,74,.15) !important; border-color:rgba(10,124,74,.4) !important; color:var(--accent) !important; }
+
+/* ── v48.63: FIT-TO-VIEWPORT — no horizontal scroll on any tab ─────────────
+   The 1280px page floor is removed, so the layout follows the actual screen
+   width. Every data table uses fixed layout and so can never exceed its
+   container: columns shrink to fit and clip at their own edge instead of
+   overwriting the next column. Font + padding compress as the viewport
+   narrows so numbers stay readable on laptops. Scoped to the five data tabs;
+   Hedge / Wallets / Summary are intentionally left untouched. No .tbl-wrap is
+   made a scroll container, so the existing sticky column headers keep working. */
+#tab-pools .tbl-wrap table,
+#tab-vaults .tbl-wrap table,
+#tab-holdings .tbl-wrap table,
+#tab-history .tbl-wrap table,
+#tab-gems .tbl-wrap table {
+  table-layout: fixed !important;
+  width: 100% !important;
+}
+#tab-pools .tbl-wrap td, #tab-pools .tbl-wrap th,
+#tab-vaults .tbl-wrap td, #tab-vaults .tbl-wrap th,
+#tab-holdings .tbl-wrap td, #tab-holdings .tbl-wrap th,
+#tab-history .tbl-wrap td, #tab-history .tbl-wrap th,
+#tab-gems .tbl-wrap td, #tab-gems .tbl-wrap th {
+  /* v48.63: wrap to multiple lines instead of clipping — no visual data loss. */
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+#tab-pools .tbl-wrap .cell-in,
+#tab-vaults .tbl-wrap .cell-in,
+#tab-holdings .tbl-wrap .cell-in,
+#tab-history .tbl-wrap .cell-in,
+#tab-gems .tbl-wrap .cell-in {
+  min-width: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box;
+}
+@media (max-width: 1400px) {
+  #tab-pools .tbl-wrap table, #tab-vaults .tbl-wrap table, #tab-holdings .tbl-wrap table, #tab-history .tbl-wrap table, #tab-gems .tbl-wrap table { font-size: 0.92em; }
+  #tab-pools .tbl-wrap th, #tab-pools .tbl-wrap td, #tab-vaults .tbl-wrap th, #tab-vaults .tbl-wrap td, #tab-holdings .tbl-wrap th, #tab-holdings .tbl-wrap td, #tab-history .tbl-wrap th, #tab-history .tbl-wrap td, #tab-gems .tbl-wrap th, #tab-gems .tbl-wrap td { padding-left: 4px; padding-right: 4px; }
+}
+@media (max-width: 1200px) {
+  #tab-pools .tbl-wrap table, #tab-vaults .tbl-wrap table, #tab-holdings .tbl-wrap table, #tab-history .tbl-wrap table, #tab-gems .tbl-wrap table { font-size: 0.84em; }
+  #tab-pools .tbl-wrap th, #tab-pools .tbl-wrap td, #tab-vaults .tbl-wrap th, #tab-vaults .tbl-wrap td, #tab-holdings .tbl-wrap th, #tab-holdings .tbl-wrap td, #tab-history .tbl-wrap th, #tab-history .tbl-wrap td, #tab-gems .tbl-wrap th, #tab-gems .tbl-wrap td { padding-left: 3px; padding-right: 3px; }
+  #tab-pools .tbl-wrap thead th, #tab-vaults .tbl-wrap thead th, #tab-holdings .tbl-wrap thead th, #tab-history .tbl-wrap thead th, #tab-gems .tbl-wrap thead th { white-space: normal; line-height: 1.12; }
+}
+@media (max-width: 1024px) {
+  #tab-pools .tbl-wrap table, #tab-vaults .tbl-wrap table, #tab-holdings .tbl-wrap table, #tab-history .tbl-wrap table, #tab-gems .tbl-wrap table { font-size: 0.76em; }
+  #tab-pools .tbl-wrap th, #tab-pools .tbl-wrap td, #tab-vaults .tbl-wrap th, #tab-vaults .tbl-wrap td, #tab-holdings .tbl-wrap th, #tab-holdings .tbl-wrap td, #tab-history .tbl-wrap th, #tab-history .tbl-wrap td, #tab-gems .tbl-wrap th, #tab-gems .tbl-wrap td { padding-left: 2px; padding-right: 2px; }
+}
+
+/* ── v48.63b: contain dense action cells — wrap button clusters, drop forced
+   min-widths — so content can't push past the fixed column's right edge and
+   extend the page (fixes residual History spillover). No clipping, no scroll. */
+#tab-pools .tbl-wrap td, #tab-pools .tbl-wrap th,
+#tab-vaults .tbl-wrap td, #tab-vaults .tbl-wrap th,
+#tab-holdings .tbl-wrap td, #tab-holdings .tbl-wrap th,
+#tab-history .tbl-wrap td, #tab-history .tbl-wrap th,
+#tab-gems .tbl-wrap td, #tab-gems .tbl-wrap th { min-width: 0 !important; }
+#tab-pools .tbl-wrap td > div[style*="flex"],
+#tab-vaults .tbl-wrap td > div[style*="flex"],
+#tab-holdings .tbl-wrap td > div[style*="flex"],
+#tab-history .tbl-wrap td > div[style*="flex"],
+#tab-gems .tbl-wrap td > div[style*="flex"] {
+  flex-wrap: wrap !important;
+  justify-content: flex-end;
+}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
@@ -3935,7 +4001,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
         <input type="hidden" id="vm-tok-sym">
       </div>
       <div class="field"><label>Qty Deposited</label><input id="vm-qty" type="number" placeholder="0"></div>
-      <div class="field"><label>APY (e.g. 0.04)</label><input id="vm-apy" type="number" step="any" placeholder="0.04"></div>
+      <div class="field"><label>APY % (e.g. 4)</label><input id="vm-apy" type="number" step="any" placeholder="4"></div>
     </div>
     <div class="form-grid">
       <div class="field"><label>Entry Date</label><input id="vm-date" type="date"></div>
@@ -5507,6 +5573,18 @@ async function showActivationScreen() {
   document.getElementById('header').style.visibility = 'hidden';
   document.getElementById('main').style.visibility   = 'hidden';
 
+  // Demo: when the lock appears because the 7-day trial ran out, say so explicitly
+  // instead of showing the generic "Activation Required" copy.
+  try {
+    if(typeof DEMO_MODE !== 'undefined' && DEMO_MODE &&
+       typeof demoTrialExpired === 'function' && demoTrialExpired()) {
+      const _t = document.querySelector('#activationLock .act-title');
+      const _s = document.querySelector('#activationLock .act-sub');
+      if(_t) _t.textContent = '\u23F3 Your 7-day free trial has ended';
+      if(_s) _s.innerHTML = 'To keep using Portfolio Tracker, request an activation code by email below \u2014 or link a backup file that already contains your licence.';
+    }
+  } catch(e){}
+
   // If we have a stored handle in IDB, set up a silent auto-reconnect on first
   // user gesture (click/keypress anywhere). Chrome requires a gesture to call
   // requestPermission — this is the closest we can get to "fully automatic".
@@ -6030,11 +6108,26 @@ async function tapToOpenHandler() {
 // ── DEMO MODE constants — must be declared before bootActivationCheck runs ──
 const DEMO_MODE        = true;
 const DEMO_SEEN_KEY    = 'cpf_demo_welcome_seen';
-const DEMO_EXPIRES     = '2026-05-09';  // ← update with each new demo release
-function demoExpired()        { return new Date() > new Date(DEMO_EXPIRES); }
+const DEMO_TRIAL_KEY   = 'cpf_demo_trial_start';   // first-launch time (ms since epoch)
+const DEMO_TRIAL_DAYS  = 7;                          // length of the free trial
+// Per-install 7-day trial. The clock starts on THIS machine's first launch (the
+// first time the start time is read, which happens at boot) and is stored locally
+// — it counts from when the demo was first opened here, not from a global date.
+function demoTrialStart() {
+  let v = null;
+  try { v = localStorage.getItem(DEMO_TRIAL_KEY); } catch(e){}
+  if(!v) {
+    v = String(Date.now());
+    try { localStorage.setItem(DEMO_TRIAL_KEY, v); } catch(e){}
+  }
+  const n = parseInt(v, 10);
+  return Number.isFinite(n) ? n : Date.now();
+}
+function demoDaysLeft()       { return DEMO_TRIAL_DAYS - Math.floor((Date.now() - demoTrialStart()) / 86400000); }
 function demoWelcomeSeen()    { return !!localStorage.getItem(DEMO_SEEN_KEY); }
 function demoMarkWelcomeSeen(){ localStorage.setItem(DEMO_SEEN_KEY, '1'); }
-function demoStartTrial()     {}
+function demoStartTrial()     { demoTrialStart(); }   // seeds the clock if not already set
+function demoExpired()        { return demoDaysLeft() <= 0; }
 function demoTrialExpired()   { return demoExpired(); }
 
 // ── Worker activation check + polling ───────────────────────────────────────
@@ -7435,6 +7528,14 @@ function pf(n) {
 function pfp(n) {
   if(n===null||n===undefined||isNaN(n)) return '—';
   return (n*100).toFixed(1)+'%';
+}
+// v48.62: Vault APY is stored canonically as a decimal FRACTION (0.04 = 4%).
+// This guard repairs legacy / loosely-typed values: anything with abs > 1 was
+// entered as a percent number (e.g. 6.12) and is converted back to a fraction,
+// so the APY column and the yield estimate always agree on units.
+function vaultApyFrac(apy){
+  if(apy===null||apy===undefined||isNaN(apy)) return null;
+  return Math.abs(apy) > 1 ? apy/100 : apy;
 }
 function nf(n,d=4) {
   if(n===null||n===undefined||isNaN(n)) return '—';
@@ -9743,7 +9844,7 @@ function renderVaults() {
     // Estimate yield from APY if nothing logged yet
     const hasActual = yld > 0;
     const estYld = (!hasActual && v.apy && v.entryValue && days)
-      ? +(v.entryValue * (v.apy/100) * (days/365)).toFixed(2)
+      ? +(v.entryValue * vaultApyFrac(v.apy) * (days/365)).toFixed(2)
       : 0;
     const effYld = hasActual ? yld : estYld; // use for ann return calc
     const net  = cur!==null ? cur + effYld - (v.entryValue||0) : null;
@@ -9754,7 +9855,7 @@ function renderVaults() {
     // Yield cell: show actual (green) or estimated (muted, italic)
     const yieldCell = hasActual
       ? `<div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
-           <input class="cell-in narrow prv-input" value="${yld}" onchange="inlineVault('${v.id}','yieldEarned',+this.value)" title="Cumulative yield earned $" style="text-align:center;">
+           <input class="cell-in narrow prv-input" value="${+(+yld).toFixed(2)}" onchange="inlineVault('${v.id}','yieldEarned',+this.value)" title="Cumulative yield earned $" style="text-align:center;">
            <span style="font-size:9px;color:var(--accent);font-weight:700;letter-spacing:.04em;">ACTUAL</span>
          </div>`
       : `<div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
@@ -9776,7 +9877,7 @@ function renderVaults() {
       <td><input class="cell-in date" type="date" value="${v.entryDate||''}" onchange="inlineVault('${v.id}','entryDate',this.value)"></td>
       <td>${$f(v.entryValue)}</td>
       <td class="${cur!==null?cc(cur-v.entryValue):''}">${$f(cur)}</td>
-      <td>${v.apy!=null?pf(v.apy):'—'}</td>
+      <td>${v.apy!=null?pf(vaultApyFrac(v.apy)):'—'}</td>
       <td class="${hasActual?'pos':'neu'}" style="padding:3px 4px;">${yieldCell}</td>
       <td>${days||'—'}</td>
       <td class="${ann!==null?cc(ann):'neu'}" title="Total annualized return = price change + ${hasActual?'actual':'estimated'} yield&#10;Yield-only APR: ${effYld>0&&v.entryValue?((effYld/v.entryValue)*(365/(days||365))*100).toFixed(2)+'%':'—'}">
@@ -13857,7 +13958,7 @@ function openVaultModal(id=null) {
   document.getElementById('vm-tok-id').value     = v2?.tokGeckoId||'';
   document.getElementById('vm-tok-sym').value    = v2?.tokSym||'';
   document.getElementById('vm-qty').value        = v2?.qty||'';
-  document.getElementById('vm-apy').value        = v2?.apy||'';
+  document.getElementById('vm-apy').value        = (v2&&v2.apy!=null) ? +(vaultApyFrac(v2.apy)*100).toFixed(4) : '';
   document.getElementById('vm-date').value       = v2?.entryDate||'';
   document.getElementById('vm-entry').value      = v2?.entryValue||'';
   // Current Value field — shown only when editing; pre-fill with entry + yield
@@ -13930,7 +14031,7 @@ function saveVault() {
     tokSym:      document.getElementById('vm-tok-sym').value || v('vm-tok-search'),
     tokGeckoId:  document.getElementById('vm-tok-id').value,
     qty:         +v('vm-qty')||0,
-    apy:         +v('vm-apy')||null,
+    apy:         (function(){ const a=+v('vm-apy'); if(!a) return null; return Math.abs(a)>1 ? a/100 : a; })(),
     entryDate:   v('vm-date'),
     entryValue:  entryVal,
     yieldEarned: yieldEarned,
@@ -17476,7 +17577,11 @@ async function gemPanelSaveNow(id) {
   }
   _gemPanelSaveIndicator(id, 'saving');
   if(IS_FILE_PROTOCOL) {
-    exportJSONFixed();
+    // Demo / double-clicked file:// — every panel field already auto-saves to
+    // localStorage on blur. The blur flush above has run, so just persist once
+    // more and confirm in-app. (To instead download a dated backup here, call
+    // exportJSONFixed() in place of the two lines below.)
+    try { persist(); } catch(e) {}
     _gemPanelSaveIndicator(id, 'saved');
     return;
   }
@@ -17744,7 +17849,7 @@ function _gemPanelHtml(g) {
             <span id="gem-save-ind-${g.id}" style="font-size:calc(var(--fs-base) - 2px);font-family:var(--mono);color:var(--text3);opacity:0;transition:opacity .3s;margin-left:4px;"></span>
           </div>
           <div style="display:flex;gap:6px;align-items:center;">
-            ${IS_FILE_PROTOCOL ? '' : `<button class="btn sm ghost" onclick="gemPanelSaveNow('${g.id}')" title="Force immediate save to backup file" style="color:var(--accent);border-color:var(--accent);">⛁ Save</button>`}
+            <button class="btn sm ghost" onclick="gemPanelSaveNow('${g.id}')" title="Save GEM details" style="color:var(--accent);border-color:var(--accent);">⛁ Save</button>
             <button class="btn sm ghost" onclick="toggleGemPanel('${g.id}')" style="color:var(--text2);">▲ Close Panel</button>
             <button class="btn sm ghost" onclick="openGemModal('${g.id}')" title="Edit token / chain details">✎ Token Details</button>
             <button class="btn sm danger" onclick="deleteGem('${g.id}')">✕ Remove</button>
@@ -27571,7 +27676,7 @@ if (document.readyState === 'loading') {
 
 <script>
 // ══ DEMO MODE ══════════════════════════════════════════════════════════════════
-// Note: DEMO_MODE, DEMO_SEEN_KEY, DEMO_EXPIRES and core demo functions are
+// Note: DEMO_MODE, DEMO_SEEN_KEY, DEMO_TRIAL_KEY and core demo functions are
 // declared before bootActivationCheck() above so they are available at boot time.
 
 function demoInjectBanner() {
@@ -27584,9 +27689,10 @@ function demoInjectBanner() {
   const expired = demoExpired();
   const colour = expired ? '#cc2200' : '#0a7c4a';
   b.style.cssText = `position:fixed;top:0;left:0;right:0;z-index:1000;background:${colour};color:#fff;text-align:center;padding:5px 12px;font-size:11px;font-weight:600;font-family:var(--sans);display:flex;align-items:center;justify-content:center;gap:16px;cursor:pointer;`;
+  const _dl = demoDaysLeft();
   const label = expired
-    ? `\uD83D\uDD11 DEMO EXPIRED — Click to activate`
-    : `\uD83D\uDD11 DEMO v${APP_VERSION} — Expires ${DEMO_EXPIRES} · Click to activate`;
+    ? `\uD83D\uDD11 TRIAL ENDED — Click to activate`
+    : `\uD83D\uDD11 DEMO v${APP_VERSION} — ${_dl} ${_dl === 1 ? 'day' : 'days'} left in your free trial · Click to activate`;
   b.innerHTML = `<span>${label}</span>`;
   b.addEventListener('click', () => showActivationScreen());
   document.body.prepend(b);
@@ -27658,7 +27764,7 @@ async function demoCreateFile() {
     <div style="font-size:18px;font-weight:700;color:var(--text1);margin-bottom:8px;letter-spacing:.02em;">Portfolio Tracker — Demo</div>
     <div style="font-size:12px;color:var(--text2);line-height:1.8;margin-bottom:20px;">
       Explore the full feature set — LP pools, vaults, holdings, GEMs watchlist, hedge calculator, yield tracking, and more.<br><br>
-      <span style="color:var(--accent);font-weight:600;">Fully functional until ${DEMO_EXPIRES} — all features available.</span>
+      <span style="color:var(--accent);font-weight:600;">Free to explore for 7 days — all features available.</span>
     </div>
     <div style="display:flex;flex-direction:column;gap:10px;">
       <button class="btn primary" style="padding:11px 16px;font-size:13px;font-weight:700;" onclick="demoStartAndEnter()">
@@ -27669,7 +27775,7 @@ async function demoCreateFile() {
       </button>
     </div>
     <div style="margin-top:16px;font-size:10px;color:var(--text3);line-height:1.6;">
-      Demo expires ${DEMO_EXPIRES}. All data saved locally in your browser.<br>
+      Your free trial runs for 7 days from first launch. All data saved locally in your browser.<br>
       Contact us for a licence code to unlock the full version permanently.
     </div>
   </div>
