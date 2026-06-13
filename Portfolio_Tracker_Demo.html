@@ -1753,7 +1753,7 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
 <!-- HEADER -->
 <div id="header" style="visibility:hidden;">
   <div class="logo">PORTFOLIO <small>TRACKER</small></div>
-  <span id="versionBadge" style="font-size:13px;color:var(--text3);font-family:var(--mono);margin-left:2px;align-self:flex-end;padding-bottom:2px;font-weight:600;">v48.25-demo</span>
+  <span id="versionBadge" style="font-size:13px;color:var(--text3);font-family:var(--mono);margin-left:2px;align-self:flex-end;padding-bottom:2px;font-weight:600;">v48.26-demo</span>
   <span id="privacyBadge">🙈 VALUES MASKED</span>
   <div class="header-right">
     <div class="price-stamp"><span class="dot" id="priceDot"></span><span id="priceStamp">—</span></div>
@@ -1891,6 +1891,11 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
     <div id="saveStamp" style="display:none;align-items:center;gap:5px;cursor:pointer;padding:3px 7px;border:1px solid var(--border);border-radius:6px;background:var(--bg3);" onclick="saveNow()" title="Click to save now">
       <span id="saveStampDot" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#b86800;flex-shrink:0;"></span>
       <span id="saveStampText" style="font-size:10px;font-family:var(--mono);color:var(--text3);white-space:nowrap;">not saved</span>
+    </div>
+    <!-- Active-file badge — always shows the live linked demo backup, colour-coded -->
+    <div id="activeFileBadge" style="display:none;align-items:center;gap:6px;cursor:pointer;padding:3px 9px;border:1px solid var(--border);border-radius:6px;background:var(--bg3);max-width:340px;" onclick="cpfCopyActiveFileName()" title="Active demo backup — click to copy its name">
+      <span id="activeFileBadgeDot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#888;flex-shrink:0;"></span>
+      <span id="activeFileBadgeText" style="font-size:10px;font-family:var(--mono);color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:300px;">no file linked</span>
     </div>
     <button class="btn sm" id="lockBtn" onclick="lockApp()" title="Lock tracker" style="display:none;">🔒 Lock</button>
     <button class="btn sm" id="pwaInstallBtn" onclick="pwaInstall()" title="Install as app for automatic file access on open" style="display:none;background:rgba(109,40,217,.08);border-color:rgba(109,40,217,.3);color:#6d28d9;">⊕ Install App</button>
@@ -5175,7 +5180,7 @@ const ACT_MASTER = (()=>{const p=['CPF_MA','STER_O','VERRID','E_KEY_','ZULU9'];r
 const ACT_STORE    = 'cpf_activation_v1';
 const ACT_ID_STORE = 'cpf_install_id';
 const ACT_VER      = 'v30';
-const APP_VERSION  = '48.25-demo';            // bumped on each release
+const APP_VERSION  = '48.26-demo';            // bumped on each release
 const WHATS_NEW_KEY = 'cpf_seen_ver';   // localStorage: last version user saw What's New
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -21286,19 +21291,35 @@ function toast(msg, err=false, duration=3000) {
 
 // ─── EXPORT / IMPORT ────────────────────────────────────────────────────────
 async function exportJSON() {
-  const dt = today();
-  // Helper — downloads a dated manual copy
-  function downloadDatedCopy() {
+  // Demo port of the v48.74 "Save / Export" overhaul (plaintext only — the demo
+  // has no vault). Three additions aimed squarely at the "which file am I even
+  // connected to?" confusion newcomers hit:
+  //   1) Short, demo-tagged names: PortfolioDemo_W-P_v48.25_2026-06-10.json
+  //   2) A single self-cleaning "!ACTIVE — …​.txt" pointer at the top of the
+  //      backup folder, naming the live demo backup in plain English.
+  //   3) The written file is ADOPTED as the linked handle, so future saves flow
+  //      into it and the header badge reflects it.
+  // Primary path uses a folder picker (to hold a directory handle for the
+  // pointer). Browsers without it fall back to Save-As, then to a plain download.
+
+  const verShort = String(APP_VERSION).replace('-demo', '').replace(/^v/, '');
+  const parts = {
+    env: 'W', enc: 'P', ver: verShort, date: today(),
+    base: `PortfolioDemo_W-P_v${verShort}_${today()}`
+  };
+
+  // ── Build the plain v2 envelope from current DB ──
+  function buildPlainEnvelope() {
     const toExport = Object.assign({}, DB, { savedAt: Date.now(), backupType: 'manual' });
     delete toExport.prices;
-    if(toExport.hedgeCache) {
+    if (toExport.hedgeCache) {
       const uo = {};
       Object.keys(toExport.hedgeCache).forEach(k => {
-        if(k.startsWith('ratio_') || k.startsWith('limitBuy_') || k === 'ivSpreadBaseline') uo[k] = toExport.hedgeCache[k];
+        if (k.startsWith('ratio_') || k.startsWith('limitBuy_') || k === 'ivSpreadBaseline') uo[k] = toExport.hedgeCache[k];
       });
       toExport.hedgeCache = uo;
     }
-    if(toExport.gems) {
+    if (toExport.gems) {
       toExport.gems = toExport.gems.map(g => {
         const {_lp,_chg,_chg24,_funded,_val,_volMc,_volMcPrev,_volMcCur,
                _volMc1hr,_volMc24hr,_volMc48hr,...rest} = g;
@@ -21310,53 +21331,161 @@ async function exportJSON() {
     const envelope = {
       schemaVersion: 2,
       savedAt: Date.now(),
+      _app: 'Portfolio Tracker (Demo)',   // self-identify regardless of filename
+      _appVersion: APP_VERSION,
       backupType: 'manual',
       _lic: toExport._lic,
       db: toExport,
       hpcHistory: hpcHist
     };
-    const blob = new Blob([JSON.stringify(envelope,null,2)], {type:'application/json'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `portfolio_backup_${dt}_manual.json`;
-    a.click();
-    URL.revokeObjectURL(a.href);
+    return JSON.stringify(envelope, null, 2);
   }
-  // If a backup file is linked, save directly to it
-  if(fsFileHandle) {
-    const ok = await fsWriteNow(true);
-    if(ok) {
-      // Detect if the linked file's name has a stale date (browser API
-      // doesn't allow renaming a linked file, so the date stays whatever
-      // it was when first created/linked).
-      const linkedName = fsFileHandle.name || '';
-      const dateMatch = linkedName.match(/(\d{4}-\d{2}-\d{2})/);
-      const isStale = dateMatch && dateMatch[1] !== dt;
 
-      const alsoCopy = !!(DB.settings && DB.settings.alsoDownloadCopy);
-      if(alsoCopy || isStale) {
-        // Always give the user a freshly-dated copy when the linked
-        // filename is stale. They can delete the old linked file and
-        // re-link the fresh one if they want the filename to track dates.
-        downloadDatedCopy();
-        if(isStale) {
-          toast(`✓ Saved to ${linkedName} · Also downloaded fresh portfolio_backup_${dt}_manual.json (linked filename shows ${dateMatch[1]} — browser doesn't allow renaming linked files)`, false, 8000);
-        } else {
-          toast(`✓ Saved to ${linkedName} + downloaded portfolio_backup_${dt}_manual.json`);
-        }
-      } else {
-        toast(`✓ Saved to linked file: ${linkedName} — reconnect this file after clearing cache`);
-      }
-    } else {
-      toast('⚠ Save to linked file failed — downloading dated copy instead', true);
-      downloadDatedCopy();
+  // ── Adopt a freshly-written file as the live linked handle ──
+  async function adoptHandle(handle) {
+    fsFileHandle = handle;
+    try { await storeHandleIDB('fsFileHandle', handle); } catch (e) {}
+    _fsBackupVerified = true;   // we wrote current in-memory data → known-good
+    let _fullPath = handle.name;
+    try { const _pf = await handle.getFile(); if (_pf && _pf.path) _fullPath = _pf.path; } catch (e) {}
+    try {
+      fsMetaSave({ name: handle.name, fullPath: _fullPath,
+                   lastSaved: new Date().toISOString(), linkedAt: new Date().toISOString() });
+    } catch (e) {}
+    if (_fullPath && _fullPath !== handle.name) {
+      const _sep = _fullPath.includes('\\') ? '\\' : '/';
+      const _lastSep = _fullPath.lastIndexOf(_sep);
+      if (_lastSep > 0) { try { localStorage.setItem('cpf_user_folder_path', _fullPath.substring(0, _lastSep + 1)); } catch (e) {} }
     }
+    try { const _nb = document.getElementById('noBackupBanner'); if (_nb) _nb.style.display = 'none'; } catch (e) {}
+    fsLastSaved = new Date();
+    try { fsStartAutoSave(); } catch (e) {}
+    try { updateFsStatus(); } catch (e) {}
+  }
+
+  // ── Acquire (or reuse) the backup directory handle ──
+  async function getBackupDir() {
+    let dir = fsDirHandle;
+    if (!dir) { try { dir = await loadHandleIDB('fsDirHandle'); } catch (e) {} }
+    if (dir) {
+      try {
+        let perm = await dir.queryPermission({ mode: 'readwrite' });
+        if (perm !== 'granted') perm = await dir.requestPermission({ mode: 'readwrite' });
+        if (perm !== 'granted') dir = null;
+      } catch (e) { dir = null; }
+    }
+    if (!dir) {
+      toast('Choose the folder where this demo keeps its backups.', false, 4000);
+      dir = await window.showDirectoryPicker({ mode: 'readwrite', startIn: 'documents', id: 'cpfBackupDir' });
+    }
+    if (dir) { fsDirHandle = dir; try { await storeHandleIDB('fsDirHandle', dir); } catch (e) {} }
+    return dir;
+  }
+
+  // ── Maintain exactly one "!ACTIVE — <base>.txt" pointer in the folder ──
+  async function writeActivePointer(dirHandle, dataName) {
+    if (!dirHandle) return;
+    try {
+      if (dirHandle.entries) {
+        for await (const [nm, h] of dirHandle.entries()) {
+          if (h.kind === 'file' && nm.indexOf('!ACTIVE') === 0 && nm.toLowerCase().endsWith('.txt')) {
+            try { await dirHandle.removeEntry(nm); } catch (e) {}
+          }
+        }
+      }
+      const now = new Date();
+      const stamp = now.toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' })
+                  + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const text =
+'ACTIVE PORTFOLIO TRACKER \u2014 DEMO BACKUP\n' +
+'======================================\n\n' +
+'This marks the demo backup file the app is currently saving to.\n\n' +
+'  File:         ' + dataName + '\n' +
+'  App:          Portfolio Tracker (Demo) v' + APP_VERSION + '\n' +
+'  Type:         Demo \u00b7 Web \u00b7 Plaintext  (W-P)\n' +
+'  Active since: ' + stamp + '\n\n' +
+'Legend:  W = Web  \u00b7  P = Plaintext   (the demo is always plaintext)\n\n' +
+'This is a DEMO backup — keep it separate from any real Portfolio Tracker\n' +
+'data. This file is auto-generated to show which demo backup in this folder\n' +
+'is the live one. It is safe to ignore or delete — it is recreated every\n' +
+'time you Save / Export.\n';
+      const ptrName = '!ACTIVE \u2014 ' + parts.base + '.txt';
+      const ph = await dirHandle.getFileHandle(ptrName, { create: true });
+      const pw = await ph.createWritable();
+      await pw.write(text);
+      await pw.close();
+    } catch (e) {
+      console.warn('cpf: active-pointer write failed (non-fatal — data file saved):', e);
+    }
+  }
+
+  // ── PRIMARY: folder picker → write data file → pointer → adopt ──
+  if ('showDirectoryPicker' in window) {
+    let dir;
+    try { dir = await getBackupDir(); }
+    catch (e) { if (e && e.name === 'AbortError') return; toast('Could not open folder: ' + (e.message || e), true); return; }
+    if (!dir) { toast('No folder selected.', true); return; }
+
+    const bytes = buildPlainEnvelope();
+    const dataName = parts.base + '.json';
+    let dataHandle;
+    try {
+      dataHandle = await dir.getFileHandle(dataName, { create: true });
+      const w = await dataHandle.createWritable();
+      await w.write(bytes);
+      await w.close();
+    } catch (e) { toast('Save failed: ' + (e.message || e), true); return; }
+
+    await writeActivePointer(dir, dataName);   // non-fatal
+    await adoptHandle(dataHandle);
+    toast('\u2713 Saved & linked: ' + dataName + ' \u00b7 !ACTIVE marker refreshed in folder', false, 7000);
     return;
   }
-  // No linked file — always download a dated manual copy
-  downloadDatedCopy();
-  toast(`✓ Saved as portfolio_backup_${dt}_manual.json — after clearing cache, use ⛁ Link Backup to reconnect`);
+
+  // ── FALLBACK 1: Save-As (no folder handle → no pointer; prefix marks the file) ──
+  if ('showSaveFilePicker' in window) {
+    const dataName = '!ACTIVE_' + parts.base + '.json';
+    let handle;
+    try {
+      handle = await window.showSaveFilePicker({
+        id: 'cpfBackupDir', suggestedName: dataName, startIn: 'documents',
+        types: [{ description: 'Portfolio Demo Backup (.json)', accept: { 'application/json': ['.json'] } }]
+      });
+    } catch (e) { if (e && e.name === 'AbortError') return; toast('Could not open the save dialog: ' + (e.message || e), true); return; }
+    try { const perm = await handle.requestPermission({ mode: 'readwrite' }); if (perm !== 'granted') { toast('Write permission denied.', true); return; } } catch (e) {}
+    try { const w = await handle.createWritable(); await w.write(buildPlainEnvelope()); await w.close(); }
+    catch (e) { toast('Save failed: ' + (e.message || e), true); return; }
+    await adoptHandle(handle);
+    toast('\u2713 Exported & linked: ' + handle.name, false, 7000);
+    return;
+  }
+
+  // ── FALLBACK 2: plain download (file://, Firefox, Safari) ──
+  try {
+    const blob = new Blob([buildPlainEnvelope()], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = parts.base + '.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    toast('\u2713 Downloaded ' + parts.base + '.json — use \u26c1 Link Backup to reconnect', false, 8000);
+  } catch (e) {
+    toast('⚠ Export failed — file NOT written. ' + (e.message || ''), true);
+  }
 }
+
+// Copy the active linked file name to the clipboard (badge click).
+function cpfCopyActiveFileName() {
+  try {
+    let name = (fsFileHandle && fsFileHandle.name) || '';
+    if (!name) { try { name = (fsMetaLoad() || {}).name || ''; } catch (e) {} }
+    if (!name) { toast('No backup file is linked yet.', true); return; }
+    navigator.clipboard.writeText(name)
+      .then(() => toast('\u2713 Copied: ' + name))
+      .catch(() => toast('Copy failed — ' + name, true));
+  } catch (e) { toast('Copy failed', true); }
+}
+
 // ── CSV Export ────────────────────────────────────────────────────────────────
 function exportCSV(section) {
   const dt = today();
@@ -22885,6 +23014,9 @@ function updateFsStatus() {
   const stampDot=document.getElementById('saveStampDot');
   const stampText=document.getElementById('saveStampText');
   const saveNowBtn=document.getElementById('saveNowBtn');
+  const afBadge=document.getElementById('activeFileBadge');
+  const afBadgeDot=document.getElementById('activeFileBadgeDot');
+  const afBadgeText=document.getElementById('activeFileBadgeText');
   if(!fsSupported()){
     if(btn){ btn.textContent='⛁ Not Supported'; btn.disabled=true; }
     if(dot) dot.style.background='#cc2200';
@@ -22930,6 +23062,15 @@ function updateFsStatus() {
     if(dot){ dot.style.background=_dotColor; dot.title=_dotTitle; }
     if(dot2){ dot2.style.background=_dotColor; dot2.title=_dotTitle; }
     if(menuBtn) menuBtn.style.borderColor='rgba(10,124,74,0.5)';
+    // Active-file badge — name + colour by verified state (demo is plaintext, no lock)
+    if(afBadge && afBadgeText && afBadgeDot){
+      afBadge.style.display='inline-flex';
+      afBadgeText.textContent = '\uD83D\uDCCD ' + name;
+      afBadge.title = '\uD83D\uDCC4 ' + fullPath + '  \u00b7  click to copy file name';
+      const _badgeColor = _fsBackupVerified ? '#0a7c4a' : '#f59e0b';
+      afBadgeDot.style.background = _badgeColor;
+      afBadge.style.borderColor = _fsBackupVerified ? 'rgba(10,124,74,0.55)' : 'rgba(245,158,11,0.55)';
+    }
     if(backupNameEl){ backupNameEl.style.display='block'; backupNameEl.textContent='📄 '+name+' · saved '+savedShort; }
     if(backupRowEl){ const b=backupRowEl.querySelector('button'); if(b) b.textContent='⛁ Change File'; }
     // Save stamp — always visible when file is linked
@@ -22953,6 +23094,7 @@ function updateFsStatus() {
     if(dot){ dot.style.background='#b86800'; dot.title='No backup linked'; }
     if(dot2){ dot2.style.background='#b86800'; dot2.title='No backup linked'; }
     if(menuBtn) menuBtn.style.borderColor='';
+    if(afBadge) afBadge.style.display='none';
     if(backupNameEl) backupNameEl.style.display='none';
     if(backupRowEl){ const b=backupRowEl.querySelector('button'); if(b) b.textContent='⛁ Link Backup File'; }
     if(stamp) stamp.style.display='none';
@@ -25210,6 +25352,20 @@ const TAB_LABELS = {
 };
 
 const WHATS_NEW = {
+  '48.26-demo': {
+    headline: "Version 48.26 — Know exactly which backup file is the live one",
+    summary:  "The most common demo mix-up is connecting the wrong backup file and wondering why nothing looks right. Three changes make the live file obvious: backups now have short, demo-tagged names; the app keeps a single ACTIVE marker pinned to the top of your backup folder that names the current file in plain English; and a colour-coded badge in the header always shows what's connected — click it to copy the name. Save / Export is also a true manual export again: it writes to your folder and points future saves at that file.",
+    items: [
+      { icon: '\uD83C\uDFF7', title: "Short, demo-tagged backup names",
+        text: "Saved files now read like <strong>PortfolioDemo_W-P_v48.26_2026-06-10.json</strong> — the word Demo makes it unmistakable that it is demo data, not a real portfolio, and W-P means Web and Plaintext. Saving twice in a day reuses that day's file instead of leaving duplicates behind." },
+      { icon: '\uD83D\uDCCD', title: "An ACTIVE marker that names the live file",
+        text: "Save / Export writes into your chosen backup folder and keeps one pointer file pinned to the top of it, named like <strong>!ACTIVE \u2014 PortfolioDemo_W-P_v48.26_2026-06-10.txt</strong>. Open it and it tells you in plain English which demo backup is live — so you connect the right one every time. It is rewritten on every save and safe to delete." },
+      { icon: '\uD83D\uDFE2', title: "A live file badge in the header",
+        text: "A colour-coded badge beside the save stamp always shows the connected file: <strong>green</strong> when verified, <strong>amber</strong> when linked but not yet verified. Click it to copy the file name to your clipboard, ready to paste into your folder's search box." },
+      { icon: '\uD83D\uDCBE', title: "Save / Export is a true manual export again",
+        text: "Save / Export now opens a folder picker, writes a freshly-named file there, and adopts it — so every later save flows into the correctly-named file, and the name no longer gets stuck on an old date." },
+    ]
+  },
   '48.25-demo': {
     headline: "Summary page — portfolio allocation chart + collapsible IL calculator",
     summary:  "The Summary page now leads with a visual breakdown of your portfolio that complements the totals above it. A donut chart shows your portfolio shape at a glance — by Category, Wallet, or Asset — and you can click any slice to drill into its assets. The IL Break-Even Calculator now sits behind a collapsible header (collapsed by default) so the allocation view is front and center. All read-only and presentation-only.",
