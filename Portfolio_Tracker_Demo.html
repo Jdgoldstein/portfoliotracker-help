@@ -3162,6 +3162,31 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
         </div>
       </div>
     </div>
+    <!-- Funding source — new pool only. Single source wallet (defaults to the DeFi wallet); chain follows the pool. -->
+    <div id="pm-funded-section" style="margin-bottom:10px;background:rgba(10,124,74,0.05);border:1px solid rgba(10,124,74,0.2);border-radius:var(--radius);padding:12px;">
+      <div style="margin-bottom:8px;">
+        <span style="font-size:9px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;color:var(--accent);">📤 Funding Source</span>
+        <span style="font-size:10px;color:var(--text3);margin-left:8px;">— deducted from Holdings when the pool is saved</span>
+      </div>
+      <div class="field" style="margin-bottom:8px;">
+        <label>Source Wallet <span style="font-weight:400;color:var(--text3);font-size:10px;text-transform:none;letter-spacing:0;">— defaults to your DeFi wallet; change it if funded elsewhere</span></label>
+        <select id="pm-source-wallet" onchange="pmSyncSource()" style="width:100%;padding:6px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:12px;"></select>
+      </div>
+      <div id="pm-source-deduct" style="font-size:11px;color:var(--text3);line-height:1.6;"></div>
+      <div id="pm-sources" style="display:none;"></div>
+    </div>
+    <!-- read-only summary of what was funded at entry — shown only when editing -->
+    <div id="pm-funded-readonly" style="display:none;margin-bottom:10px;background:rgba(128,128,128,0.05);border:1px solid var(--border);border-radius:var(--radius);padding:12px;"></div>
+    <div class="form-grid" id="pm-wallet-row">
+      <div class="field">
+        <label>Default Return Wallet <span style="font-weight:400;color:var(--text3);font-size:10px;text-transform:none;letter-spacing:0;">— where yield &amp; closed pool proceeds land</span></label>
+        <select id="pm-default-wallet" style="width:100%;padding:6px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:12px;">
+          <option value="">— auto-detect from Holdings —</option>
+        </select>
+        <div class="hint">Pre-selects this wallet every time you log yield for this pool. Overridable per-harvest in the yield panel.</div>
+        <div id="pm-return-receives" style="font-size:11px;color:var(--text3);line-height:1.5;margin-top:4px;"></div>
+      </div>
+    </div>
     <div class="form-grid">
       <div class="field">
         <label>Reward Token (optional)</label>
@@ -3191,27 +3216,6 @@ body.dark tr.grp-child:hover td { background:rgba(30,50,80,0.6) !important; }
           <input id="pm-alertWatch" type="number" min="0.1" max="50" step="0.5" placeholder="e.g. 15">
         </div>
       </div>
-    </div>
-    <div class="form-grid" id="pm-wallet-row">
-      <div class="field">
-        <label>Default Return Wallet <span style="font-weight:400;color:var(--text3);font-size:10px;text-transform:none;letter-spacing:0;">— where yield &amp; closed pool proceeds land</span></label>
-        <select id="pm-default-wallet" style="width:100%;padding:6px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:12px;">
-          <option value="">— auto-detect from Holdings —</option>
-        </select>
-        <div class="hint">Pre-selects this wallet every time you log yield for this pool. Overridable per-harvest in the yield panel.</div>
-      </div>
-    </div>
-    <!-- Funded From Holdings — new pool only -->
-    <div id="pm-funded-section" style="margin-top:14px;background:rgba(10,124,74,0.05);border:1px solid rgba(10,124,74,0.2);border-radius:var(--radius);padding:12px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-        <div>
-          <span style="font-size:9px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;color:var(--accent);">📤 Funded From Holdings</span>
-          <span style="font-size:10px;color:var(--text3);margin-left:8px;">— tokens deducted from Holdings when pool is saved</span>
-        </div>
-        <button class="btn sm" onclick="pmAddSourceRow()" style="font-size:11px;padding:3px 9px;">+ Add Source</button>
-      </div>
-      <div id="pm-sources" style="display:flex;flex-direction:column;gap:6px;"></div>
-      <div style="font-size:10px;color:var(--text3);margin-top:6px;line-height:1.5;">Optional — specify which tokens and wallets funded this position. Quantities will be deducted from Holdings automatically.</div>
     </div>
     <!-- Bottom action bar: Pool Actions (edit-only) + Cancel/Save all in one row -->
     <div style="display:flex;align-items:center;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid var(--border);">
@@ -5180,7 +5184,7 @@ const ACT_MASTER = (()=>{const p=['CPF_MA','STER_O','VERRID','E_KEY_','ZULU9'];r
 const ACT_STORE    = 'cpf_activation_v1';
 const ACT_ID_STORE = 'cpf_install_id';
 const ACT_VER      = 'v30';
-const APP_VERSION  = '48.26-demo';            // bumped on each release
+const APP_VERSION  = '48.28-demo';            // bumped on each release
 const WHATS_NEW_KEY = 'cpf_seen_ver';   // localStorage: last version user saw What's New
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -11319,6 +11323,26 @@ function inlineHolding(id, key, val) {
 }
 
 // ─── POOL MODAL ──────────────────────────────────────────────────────────────
+// v48.27: build the read-only "Funded at entry" summary for the edit view.
+// Reads the transaction log for funding transfers into this pool; if none are
+// found it surfaces a clear "no deduction recorded" notice so a silent miss is
+// visible after the fact (the deduction is new-pool-only and otherwise invisible).
+function _poolFundedSummary(p) {
+  if(!p || !p.name) return '';
+  const tx = (DB.transactions || []).filter(t =>
+    t && t.type === 'Transfer' &&
+    t.to === 'Pool: ' + p.name &&
+    /^Funded pool/.test(t.notes || '')
+  );
+  if(tx.length) {
+    const parts = tx.map(t => `${qf(t.qty)} ${t.sym} from ${t.from || 'Holdings'}`);
+    return '<div style="font-size:9px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;color:var(--accent);">\uD83D\uDCE4 Funded from Holdings</div>'
+      + '<div style="font-size:11px;color:var(--text2);margin-top:4px;line-height:1.5;">' + parts.join(' \u00B7 ') + '</div>';
+  }
+  return '<div style="font-size:9px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;color:#d97706;">\u26A0 No Holdings deduction recorded</div>'
+    + '<div style="font-size:11px;color:var(--text3);margin-top:4px;line-height:1.5;">This pool\u2019s tokens were not auto-deducted from Holdings at entry. To fund a further deposit use \u2795 Add Capital; otherwise adjust Holdings manually.</div>';
+}
+
 function openPoolModal(id=null) {
   editingPoolId = id;
   // Set the authoritative hidden field — openAddCapitalModal reads this, not the global
@@ -11397,9 +11421,12 @@ function openPoolModal(id=null) {
   const pmWallet = document.getElementById('pm-default-wallet');
   if(pmWallet) {
     const allWallets = [...new Set(DB.holdings.map(h=>h.wallet).filter(Boolean).map(w=>w.trim()))].sort();
+    const _defiW = ((DB.settings&&DB.settings.defiWallet)||'').trim();
+    if(_defiW && !allWallets.includes(_defiW)) allWallets.unshift(_defiW);
+    const _selW = p ? (p.defaultWallet||'') : _defiW; // edit: keep saved; new pool: default to the DeFi wallet
     pmWallet.innerHTML = '<option value="">— auto-detect from Holdings —</option>'
-      + allWallets.map(w => `<option value="${w}"${p?.defaultWallet===w?' selected':''}>${w}</option>`).join('')
-      + `<option value="💵 Cash"${p?.defaultWallet==='💵 Cash'?' selected':''}>💵 Cash</option>`;
+      + allWallets.map(w => `<option value="${w}"${_selW===w?' selected':''}>${w}${w===_defiW?' \u00b7 DeFi wallet':''}</option>`).join('')
+      + `<option value="💵 Cash"${_selW==='💵 Cash'?' selected':''}>💵 Cash</option>`;
   }
   onPoolTypeChange();
   // Funded-from: only for new pools, hidden when editing
@@ -11407,6 +11434,35 @@ function openPoolModal(id=null) {
   const pmSources = document.getElementById('pm-sources');
   if(pmFunded) pmFunded.style.display = id ? 'none' : '';
   if(pmSources) pmSources.innerHTML = '';
+  // Single Source Wallet, defaulting to the configured DeFi wallet.
+  const pmSrcSel = document.getElementById('pm-source-wallet');
+  if(pmSrcSel && !id){
+    const allW = [...new Set(DB.holdings.map(h=>h.wallet).filter(Boolean).map(w=>w.trim()))].sort();
+    const defi = ((DB.settings&&DB.settings.defiWallet)||'').trim();
+    if(defi && !allW.includes(defi)) allW.unshift(defi);
+    pmSrcSel.innerHTML = '<option value="">— select source wallet —</option>'
+      + allW.map(w => '<option value="'+_pmEsc(w)+'"'+(w===defi?' selected':'')+'>'+_pmEsc(w)+(w===defi?' \u00b7 DeFi wallet':'')+'</option>').join('');
+  }
+  ['pm-tokA-sym','pm-tokB-sym','pm-tokA-qtyEntry','pm-tokB-qtyEntry'].forEach(fid=>{
+    const el = document.getElementById(fid);
+    if(el && !el._pmSrcHooked){ el.addEventListener('input', pmSyncSource); el._pmSrcHooked = true; }
+  });
+  const _pmNet = document.getElementById('pm-network');
+  if(_pmNet && !_pmNet._pmSrcHooked){ _pmNet.addEventListener('change', pmSyncSource); _pmNet._pmSrcHooked = true; }
+  pmSyncSource();
+  // v48.27: read-only "funded at entry" summary — shown only when editing, so a
+  // pool that was created without a Holdings deduction is visibly flagged.
+  const pmFundedRO = document.getElementById('pm-funded-readonly');
+  if(pmFundedRO) {
+    if(id) {
+      const _pObj = DB.pools.find(x => x.id === id);
+      pmFundedRO.innerHTML = _poolFundedSummary(_pObj);
+      pmFundedRO.style.display = '';
+    } else {
+      pmFundedRO.style.display = 'none';
+      pmFundedRO.innerHTML = '';
+    }
+  }
   document.getElementById('poolModal').classList.add('open');
 }
 function savePool(id) {
@@ -11471,6 +11527,7 @@ function savePool(id) {
   // v47.63 / v47.88: deposit-side validation — for NEW pools, check each source row
   // against Holdings before anything is persisted. Abort cleanly on shortage.
   if(!resolvedId) {
+    pmSyncSource(); // rebuild hidden #pm-sources from the single Source Wallet + entry tokens before validate/deduct
     const fundingRows = Array.from(document.querySelectorAll('#pm-sources > div')).map(row => {
       const enc = row.querySelector('.pm-src-wallet')?.value;
       const dec = _decWalletChain(enc);
@@ -11485,6 +11542,16 @@ function savePool(id) {
     if(!check.ok) {
       toast(`Cannot fund pool: ${check.errors.join(' · ')}`, true);
       return;
+    }
+    // v48.27: if the pool has entry token quantities but no funding sources were
+    // entered, Holdings won't be reduced — warn before saving so it isn't a silent
+    // no-op (the Funded From Holdings box being empty leaves no transaction/warning).
+    const _hasFundingRows = fundingRows.some(r => (r.sym||'').trim() && (+r.qty||0) > 0);
+    const _hasTokenQty = (+p.tokAQtyEntry||0) > 0 || (+p.tokBQtyEntry||0) > 0;
+    if(_hasTokenQty && !_hasFundingRows) {
+      if(!confirm('No funding sources set under \u201CFunded From Holdings\u201D \u2014 your Holdings will NOT be reduced for the tokens going into this pool.\n\nOK = save anyway (no deduction)\nCancel = go back and add sources')) {
+        return;
+      }
     }
   }
 
@@ -12096,6 +12163,47 @@ function _buildSourceRow(containerId, symClass, qtyClass, walletClass) {
     </div>
     <button class="btn sm danger" onclick="document.getElementById('${rowId}').remove()" style="margin-bottom:0;padding:3px 7px;">✕</button>`;
   container.appendChild(row);
+}
+function _pmEsc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+// Keep the hidden #pm-sources rows (read by savePool's deduct engine) in sync with
+// the single Source Wallet + the pool's two entry tokens. Chain follows the pool.
+// Also paints the read-only "Deducts …" preview and the return "Receives …" line.
+function pmSyncSource(){
+  const host = document.getElementById('pm-sources');
+  if(!host) return;
+  const wallet  = (document.getElementById('pm-source-wallet')||{}).value || '';
+  const network = (document.getElementById('pm-network')||{}).value || '';
+  const enc = (typeof _encWalletChain==='function') ? _encWalletChain(wallet, network) : (wallet + (network?('::'+network):''));
+  const toks = [
+    { sym:((document.getElementById('pm-tokA-sym')||{}).value||'').trim().toUpperCase(), qty:(document.getElementById('pm-tokA-qtyEntry')||{}).value||'' },
+    { sym:((document.getElementById('pm-tokB-sym')||{}).value||'').trim().toUpperCase(), qty:(document.getElementById('pm-tokB-qtyEntry')||{}).value||'' },
+  ].filter(t => t.sym && (+t.qty||0) > 0);
+  host.innerHTML = wallet ? toks.map(t =>
+    '<div><input type="hidden" class="pm-src-sym" value="'+_pmEsc(t.sym)+'">'+
+    '<input type="hidden" class="pm-src-qty" value="'+_pmEsc(String(t.qty))+'">'+
+    '<input type="hidden" class="pm-src-wallet" value="'+_pmEsc(enc)+'"></div>'
+  ).join('') : '';
+  const recv = document.getElementById('pm-return-receives');
+  if(recv){
+    const _sa = ((document.getElementById('pm-tokA-sym')||{}).value||'').trim().toUpperCase();
+    const _sb = ((document.getElementById('pm-tokB-sym')||{}).value||'').trim().toUpperCase();
+    const _syms = [_sa,_sb].filter(Boolean);
+    recv.innerHTML = _syms.length
+      ? 'Receives <span style="color:var(--text);">'+_syms.map(_pmEsc).join(', ')+'</span>'+(network?(' on '+_pmEsc(network)):'')+' when yield is logged or the pool is closed.'
+      : '';
+  }
+  const dec = document.getElementById('pm-source-deduct');
+  if(dec){
+    if(!wallet){
+      dec.innerHTML = 'Select a source wallet — its Holdings are reduced by the deposited tokens.';
+    } else if(!toks.length){
+      dec.innerHTML = 'Enter the pool\u2019s token quantities above; they\u2019ll be deducted from <strong>'+_pmEsc(wallet)+'</strong> here.';
+    } else {
+      const chainLabel = network ? ' on '+_pmEsc(network) : '';
+      dec.innerHTML = 'Deducts from <strong>'+_pmEsc(wallet)+'</strong>'+chainLabel+': '+
+        toks.map(t => '<span style="color:var(--text);">'+_pmEsc(String(t.qty))+' '+_pmEsc(t.sym)+'</span>').join(' \u00b7 ');
+    }
+  }
 }
 function pmAddSourceRow() { _buildSourceRow('pm-sources','pm-src-sym','pm-src-qty','pm-src-wallet'); }
 function vmAddSourceRow() { _buildSourceRow('vm-sources','vm-src-sym','vm-src-qty','vm-src-wallet'); }
@@ -25352,6 +25460,28 @@ const TAB_LABELS = {
 };
 
 const WHATS_NEW = {
+  '48.28-demo': {
+    headline: "Version 48.28 \u2014 Pool funding & return, simplified: one source wallet, one return wallet, both defaulting to your DeFi wallet",
+    summary:  "Adding an LP pool now follows the actual flow of capital. A single Source Wallet (defaulting to your configured DeFi wallet) is deducted from Holdings for exactly the tokens you deposited, and the Return Wallet defaults to that same wallet and shows what it will receive. The old multi-row, per-token funding box is gone \u2014 splitting and per-source chains were unnecessary, since anything upstream (a transfer in, a swap) is already its own transaction. The form is reordered so funding and return sit right after the position, ahead of rewards and alerts.",
+    items: [
+      { icon: '\uD83D\uDCE4', title: "One Source Wallet, defaulting to your DeFi wallet",
+        text: "The funding box is now a single Source Wallet that pre-selects your configured DeFi wallet and deducts the pool\u2019s deposited tokens from its Holdings on save, with a live read-out of exactly what will be deducted. Funded from a CEX or another wallet instead? Just switch the wallet \u2014 it\u2019s still deducted there. No more per-token rows, no split, no chain picker: the deposit chain always follows the pool, and any swap or bridge stays its own transaction." },
+      { icon: '\uD83D\uDCE5', title: "Return wallet defaults to the same DeFi wallet",
+        text: "The return wallet now defaults to your DeFi wallet too, and shows the pool\u2019s own tokens as what it receives when yield is logged or the position is closed. Same chain, overridable per pool." },
+      { icon: '\uD83E\uDDED', title: "The form follows the money",
+        text: "Funding source and return wallet now sit directly beneath the position itself (tokens and range), ahead of the reward token, notes, and alerts \u2014 so the form reads top-to-bottom as: define the position, account for the capital, set up monitoring. Row spacing was normalized to one uniform rhythm." },
+    ]
+  },
+  '48.27-demo': {
+    headline: "Version 48.27 — Pool funding is no longer silent: a \u201Cfunded at entry\u201D check and an empty-source warning",
+    summary:  "Two safeguards around the \u201CFunded From Holdings\u201D step when you create a pool. Editing a pool now shows whether its tokens were actually deducted from Holdings at entry, and creating a pool with token quantities but no funding source now warns you before saving — so a pool can\u2019t quietly skip the deduction without you noticing.",
+    items: [
+      { icon: '\uD83D\uDCE4', title: "Edit view shows what was funded at entry",
+        text: "Opening a pool to edit it now shows a read-only line: either the tokens that were deducted from Holdings when the pool was created (e.g. <strong>64.8 AAVE from Ledger X1 (Base)</strong>), or a clear <strong>\u26A0 No Holdings deduction recorded</strong> notice if none were. The funding-source inputs stay new-pool-only (so a routine edit never re-deducts), but now you can always see after the fact whether the deduction happened." },
+      { icon: '\u26A0\uFE0F', title: "Warning when a new pool has tokens but no funding source",
+        text: "If you create a pool with token quantities but leave the Funded From Holdings box empty, the tracker now asks before saving — because an empty box means your Holdings won\u2019t be reduced, and previously that produced no transaction and no warning at all. You can still save without a deduction (just confirm). Note: the Default Return Wallet only sets where yield / closed-pool proceeds land — it does not fund the position; use Funded From Holdings for that." },
+    ]
+  },
   '48.26-demo': {
     headline: "Version 48.26 — Know exactly which backup file is the live one",
     summary:  "The most common demo mix-up is connecting the wrong backup file and wondering why nothing looks right. Three changes make the live file obvious: backups now have short, demo-tagged names; the app keeps a single ACTIVE marker pinned to the top of your backup folder that names the current file in plain English; and a colour-coded badge in the header always shows what's connected — click it to copy the name. Save / Export is also a true manual export again: it writes to your folder and points future saves at that file.",
