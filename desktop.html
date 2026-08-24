@@ -33,6 +33,21 @@
   .dl-os+.dl-os{margin-top:10px}
   .dl-hint{font-size:11px;color:var(--muted);margin-top:12px}
 
+  /* v1.1 - the Mac first-run block, directly under the .dmg button.
+     BLUE, not amber. This is information, not a warning: the app is fine, macOS
+     simply does not know the publisher yet. An amber panel makes a careful
+     person hesitate over something that is expected and harmless, and hesitation
+     is what turns a 20-second step into a support message. */
+  .mac-first-run{margin-top:14px;text-align:left;background:rgba(91,141,238,0.07);
+    border:1px solid rgba(91,141,238,0.35);border-radius:10px;padding:14px 16px}
+  .mfr-head{font-size:13px;font-weight:700;color:var(--blue);margin-bottom:8px}
+  .mfr-body{font-size:12.5px;color:var(--text);line-height:1.65}
+  .mfr-steps{margin:10px 0 0 0;padding-left:20px}
+  .mfr-steps li{margin-bottom:5px}
+  .mfr-steps code{font-family:var(--mono);font-size:11.5px;background:rgba(255,255,255,0.07);
+    border-radius:4px;padding:1px 6px;color:var(--accent)}
+  .mfr-foot{margin-top:10px;font-size:11px;color:var(--muted);font-style:italic}
+
   .section-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:14px}
   .step{display:flex;gap:16px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:10px}
   .step.mac-only{border-color:rgba(91,141,238,0.3);background:rgba(91,141,238,0.04)}
@@ -79,7 +94,36 @@
     <div class="dl-size">~5 MB · Windows &amp; macOS</div>
     <a class="dl-os" href="https://github.com/Jdgoldstein/portfoliotracker-help/releases/latest/download/Portfolio-Tracker-Windows-Setup.exe">↓ &nbsp;Windows (.exe)</a><br>
     <a class="dl-os" href="https://github.com/Jdgoldstein/portfoliotracker-help/releases/latest/download/Portfolio-Tracker-macOS.dmg">↓ &nbsp;macOS (.dmg)</a>
-    <div class="dl-hint">First launch needs one approval — see Step 2 below.</div>
+
+    <!-- v1.1 (2026-08-23) - THE MAC STEPS MOVED UP HERE.
+         This used to read "First launch needs one approval - see Step 2 below",
+         which asks someone to go and find something BEFORE they have hit the
+         problem. Nobody does. They download, double-click, macOS blocks them,
+         and the instruction is a screen they already scrolled past - so it
+         reads as a broken app rather than a one-time approval.
+         The steps now sit under the button that causes them, and they lead with
+         "this is expected" rather than with the instruction. Being told to
+         expect the dialog changes the reaction entirely. Step 2 below still
+         carries the full version for anyone who scrolls. -->
+    <div class="mac-first-run">
+      <div class="mfr-head">On a Mac, the first launch is blocked — that's expected</div>
+      <div class="mfr-body">
+        macOS blocks apps from developers it doesn't recognise yet. It takes about
+        20 seconds to allow it, <strong>once per computer</strong>. After that it opens
+        normally every time.
+        <ol class="mfr-steps">
+          <li>Open the <code>.dmg</code>, drag <strong>Portfolio Tracker</strong> into <strong>Applications</strong></li>
+          <li>Double-click it. macOS says it can't be opened — click <strong>Done</strong></li>
+          <li>Open <strong>System Settings → Privacy &amp; Security</strong></li>
+          <li>Scroll down to <strong>Security</strong>. You'll see <em>"Portfolio Tracker Desktop was blocked&hellip;"</em></li>
+          <li>Click <strong>Open Anyway</strong> and enter your password</li>
+          <li>Click <strong>Open</strong> on the last dialog. Done — it won't ask again.</li>
+        </ol>
+        <div class="mfr-foot">Right-clicking and choosing Open no longer works on macOS Sequoia and later — it has to be System Settings.</div>
+      </div>
+    </div>
+
+    <div class="dl-hint">Windows may show <em>"Windows protected your PC"</em> — click <strong>More info → Run anyway</strong>. Also once only.</div>
   </div>
 
   <div class="section-label">Setup steps — do these once</div>
@@ -104,7 +148,14 @@
       <div class="step-desc">
         Because the app isn't from a registered store publisher yet, your OS asks you to approve it the first time — once per machine.<br><br>
         <strong>Windows:</strong> if you see <em>"Windows protected your PC,"</em> click <strong>More info → Run anyway</strong>.<br><br>
-        <strong>Mac:</strong> double-click the app; when it says it can't be verified, click <strong>Done</strong>. Then open <strong>System Settings → Privacy &amp; Security</strong>, scroll down to <strong>Security</strong>, click <strong>Open Anyway</strong> next to the app's name, and confirm with your password. (On macOS Sequoia and later, the old right-click → Open no longer works — you must use System Settings.)
+        <!-- v1.1 - the Mac steps now appear IN FULL under the .dmg button above,
+             where the person who needs them actually is. Repeating them verbatim
+             here would be two copies to keep in step, and the one further from
+             the download is the one that would go stale. Summary plus a pointer. -->
+        <strong>Mac:</strong> the app is blocked on first launch and you allow it in
+        <strong>System Settings → Privacy &amp; Security → Open Anyway</strong>. The full
+        six steps are next to the macOS download button above. (Right-click → Open no longer
+        works on macOS Sequoia and later.)
         <div class="callout amber">
           <strong>Mac note:</strong> after the one-time approval it opens normally every time. A future signed &amp; notarized Mac build will remove this step entirely.
         </div>
