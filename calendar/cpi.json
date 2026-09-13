@@ -1,0 +1,14 @@
+{
+  "updatedAt": "2026-09-12",
+  "rates": {
+    "US": {
+      "rate": 3.4,
+      "source": "U.S. Bureau of Labor Statistics",
+      "asOf": "2026-08",
+      "core": 2.4,
+      "mom": 0.4,
+      "series": "CUUR0000SA0",
+      "basis": "CPI-U, all items, NSA, year-over-year"
+    }
+  }
+}
