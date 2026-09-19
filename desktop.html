@@ -48,6 +48,23 @@
     border-radius:4px;padding:1px 6px;color:var(--accent)}
   .mfr-foot{margin-top:10px;font-size:11px;color:var(--muted);font-style:italic}
 
+  /* v1.2 - THE OTHER MAC DIALOG, THE ONE WITH NO WAY OUT.
+     The six steps above answer "blocked because the developer is unknown",
+     which has an Open Anyway button. A download whose signature macOS considers
+     broken produces a DIFFERENT dialog - "is damaged and can't be opened" - and
+     that one has NO Open Anyway button anywhere in System Settings. Someone
+     following the steps above finds nothing to click and concludes the app is
+     broken. It is a one-line fix, but only if you know it exists. Kept visually
+     quieter than the main block because most people never see this dialog. */
+  .mac-damaged{margin-top:10px;text-align:left;background:rgba(255,255,255,0.03);
+    border:1px solid rgba(122,154,181,0.25);border-radius:10px;padding:12px 14px}
+  .mdg-head{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px}
+  .mdg-body{font-size:12px;color:var(--muted);line-height:1.65}
+  .mdg-body strong{color:var(--text)}
+  .mdg-cmd{display:block;margin:8px 0 0;font-family:var(--mono);font-size:11.5px;
+    background:rgba(0,0,0,0.35);border:1px solid rgba(61,245,160,0.18);border-radius:6px;
+    padding:8px 10px;color:var(--accent);overflow-x:auto;white-space:nowrap}
+
   .section-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:14px}
   .step{display:flex;gap:16px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:10px}
   .step.mac-only{border-color:rgba(91,141,238,0.3);background:rgba(91,141,238,0.04)}
@@ -115,11 +132,30 @@
           <li>Open the <code>.dmg</code>, drag <strong>Portfolio Tracker</strong> into <strong>Applications</strong></li>
           <li>Double-click it. macOS says it can't be opened — click <strong>Done</strong></li>
           <li>Open <strong>System Settings → Privacy &amp; Security</strong></li>
-          <li>Scroll down to <strong>Security</strong>. You'll see <em>"Portfolio Tracker Desktop was blocked&hellip;"</em></li>
+          <!-- v1.2 - the app's own name, not a second one. This line used to
+               quote "Portfolio Tracker Desktop was blocked", while step 1 above
+               says to drag "Portfolio Tracker" across. Someone scanning the
+               Security pane for the wrong name concludes the message is not
+               there. One name, and it is the one on the icon they just dragged. -->
+          <li>Scroll down to <strong>Security</strong>. You'll see <em>"Portfolio Tracker was blocked&hellip;"</em> — the same name you dragged into Applications</li>
           <li>Click <strong>Open Anyway</strong> and enter your password</li>
           <li>Click <strong>Open</strong> on the last dialog. Done — it won't ask again.</li>
         </ol>
-        <div class="mfr-foot">Right-clicking and choosing Open no longer works on macOS Sequoia and later — it has to be System Settings.</div>
+        <div class="mfr-foot">Right-clicking and choosing Open no longer works on macOS Sequoia and later — it has to be System Settings. The <strong>Open Anyway</strong> button only appears for about an hour after a blocked launch; if it isn't there, double-click the app again and go straight back to Settings.</div>
+      </div>
+    </div>
+
+    <!-- v1.2 - see the note on .mac-damaged above. -->
+    <div class="mac-damaged">
+      <div class="mdg-head">If macOS says the app "is damaged and can't be opened"</div>
+      <div class="mdg-body">
+        That is a different message from the one above, and it has <strong>no Open Anyway
+        button</strong> — nothing in System Settings will help. The app is not damaged;
+        macOS has flagged the downloaded copy. Open <strong>Terminal</strong>
+        (⌘-Space, type <em>Terminal</em>), paste this line, press Return, then open the
+        app again:
+        <code class="mdg-cmd">xattr -dr com.apple.quarantine "/Applications/Portfolio Tracker.app"</code>
+        It asks for your password. Nothing else on your Mac is affected.
       </div>
     </div>
 
@@ -154,7 +190,8 @@
              the download is the one that would go stale. Summary plus a pointer. -->
         <strong>Mac:</strong> the app is blocked on first launch and you allow it in
         <strong>System Settings → Privacy &amp; Security → Open Anyway</strong>. The full
-        six steps are next to the macOS download button above. (Right-click → Open no longer
+        six steps are next to the macOS download button above, along with the one-line
+        fix for the rarer <em>"is damaged"</em> message. (Right-click → Open no longer
         works on macOS Sequoia and later.)
         <div class="callout amber">
           <strong>Mac note:</strong> after the one-time approval it opens normally every time. A future signed &amp; notarized Mac build will remove this step entirely.
