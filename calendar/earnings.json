@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-21",
+  "updatedAt": "2026-09-22",
   "source": "tradier-calendar+yfinance",
   "fetched": 1759,
   "covered": 1520,
@@ -9,12 +9,7 @@
       "when": "amc",
       "confirmed": true
     },
-    "WOR": {
-      "next": "2026-09-22",
-      "when": "amc",
-      "confirmed": true
-    },
-    "AZO": {
+    "THO": {
       "next": "2026-09-22",
       "when": "bmo",
       "confirmed": true
@@ -24,22 +19,27 @@
       "when": "bmo",
       "confirmed": true
     },
-    "THO": {
+    "AZO": {
       "next": "2026-09-22",
       "when": "bmo",
       "confirmed": true
     },
-    "AIR": {
+    "WOR": {
       "next": "2026-09-22",
       "when": "amc",
-      "confirmed": false
+      "confirmed": true
+    },
+    "CTAS": {
+      "next": "2026-09-23",
+      "when": "bmo",
+      "confirmed": true
     },
     "FUL": {
       "next": "2026-09-23",
       "when": "amc",
       "confirmed": true
     },
-    "CTAS": {
+    "PAYX": {
       "next": "2026-09-23",
       "when": "bmo",
       "confirmed": true
@@ -49,14 +49,29 @@
       "when": "bmo",
       "confirmed": true
     },
-    "PAYX": {
+    "CBRL": {
       "next": "2026-09-23",
       "when": "bmo",
       "confirmed": true
     },
-    "CBRL": {
-      "next": "2026-09-23",
+    "AIR": {
+      "next": "2026-09-22",
+      "when": "amc",
+      "confirmed": false
+    },
+    "SNX": {
+      "next": "2026-09-24",
       "when": "bmo",
+      "confirmed": true
+    },
+    "SCHL": {
+      "next": "2026-09-24",
+      "when": "amc",
+      "confirmed": true
+    },
+    "COST": {
+      "next": "2026-09-24",
+      "when": "amc",
       "confirmed": true
     },
     "DRI": {
@@ -69,21 +84,6 @@
       "when": "amc",
       "confirmed": false
     },
-    "SCHL": {
-      "next": "2026-09-24",
-      "when": "amc",
-      "confirmed": true
-    },
-    "COST": {
-      "next": "2026-09-24",
-      "when": "amc",
-      "confirmed": true
-    },
-    "SNX": {
-      "next": "2026-09-24",
-      "when": "bmo",
-      "confirmed": true
-    },
     "CNXC": {
       "next": "2026-09-24",
       "when": "amc",
@@ -94,8 +94,8 @@
       "when": "bmo",
       "confirmed": false
     },
-    "JBL": {
-      "next": "2026-09-24",
+    "ACN": {
+      "next": "2026-10-01",
       "when": "bmo",
       "confirmed": false
     },
@@ -104,8 +104,8 @@
       "when": null,
       "confirmed": false
     },
-    "ACN": {
-      "next": "2026-10-01",
+    "JBL": {
+      "next": "2026-09-24",
       "when": "bmo",
       "confirmed": false
     },
@@ -129,9 +129,19 @@
       "when": "amc",
       "confirmed": false
     },
+    "CALM": {
+      "next": "2026-09-30",
+      "when": "bmo",
+      "confirmed": true
+    },
     "MU": {
       "next": "2026-09-30",
       "when": "amc",
+      "confirmed": true
+    },
+    "FDS": {
+      "next": "2026-09-30",
+      "when": "bmo",
       "confirmed": true
     },
     "LW": {
@@ -139,13 +149,23 @@
       "when": "bmo",
       "confirmed": false
     },
-    "CALM": {
-      "next": "2026-09-30",
+    "NKE": {
+      "next": "2026-10-01",
+      "when": "amc",
+      "confirmed": true
+    },
+    "MKC": {
+      "next": "2026-10-01",
       "when": "bmo",
       "confirmed": true
     },
-    "FDS": {
-      "next": "2026-09-30",
+    "RPM": {
+      "next": "2026-10-01",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "AYI": {
+      "next": "2026-10-01",
       "when": "bmo",
       "confirmed": true
     },
@@ -154,32 +174,12 @@
       "when": "bmo",
       "confirmed": false
     },
-    "MKC": {
-      "next": "2026-10-01",
-      "when": "bmo",
-      "confirmed": true
-    },
-    "AYI": {
-      "next": "2026-10-01",
-      "when": "bmo",
-      "confirmed": true
-    },
-    "NKE": {
-      "next": "2026-10-01",
-      "when": "amc",
-      "confirmed": true
-    },
-    "RPM": {
-      "next": "2026-10-01",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "NEOG": {
+    "PENG": {
       "next": "2026-10-06",
       "when": "amc",
       "confirmed": true
     },
-    "PENG": {
+    "NEOG": {
       "next": "2026-10-06",
       "when": "amc",
       "confirmed": true
@@ -200,9 +200,9 @@
       "confirmed": false
     },
     "DAL": {
-      "next": "2026-10-08",
+      "next": "2026-10-09",
       "when": "bmo",
-      "confirmed": false
+      "confirmed": true
     },
     "PEP": {
       "next": "2026-10-08",
@@ -224,7 +224,7 @@
       "when": "bmo",
       "confirmed": true
     },
-    "GS": {
+    "UNH": {
       "next": "2026-10-13",
       "when": "bmo",
       "confirmed": true
@@ -234,40 +234,15 @@
       "when": "bmo",
       "confirmed": true
     },
-    "UNH": {
-      "next": "2026-10-13",
-      "when": "bmo",
-      "confirmed": true
-    },
     "C": {
       "next": "2026-10-13",
       "when": "bmo",
       "confirmed": true
     },
-    "ASML": {
-      "next": "2026-10-14",
+    "GS": {
+      "next": "2026-10-13",
       "when": "bmo",
       "confirmed": true
-    },
-    "STT": {
-      "next": "2026-10-14",
-      "when": "bmo",
-      "confirmed": true
-    },
-    "HWC": {
-      "next": "2026-10-13",
-      "when": "amc",
-      "confirmed": false
-    },
-    "HOMB": {
-      "next": "2026-10-14",
-      "when": "amc",
-      "confirmed": true
-    },
-    "FBK": {
-      "next": "2026-10-13",
-      "when": "amc",
-      "confirmed": false
     },
     "BAC": {
       "next": "2026-10-14",
@@ -279,12 +254,17 @@
       "when": "bmo",
       "confirmed": true
     },
-    "ACI": {
-      "next": "2026-10-13",
+    "FAST": {
+      "next": "2026-10-14",
       "when": "bmo",
+      "confirmed": true
+    },
+    "HWC": {
+      "next": "2026-10-13",
+      "when": "amc",
       "confirmed": false
     },
-    "FAST": {
+    "ASML": {
       "next": "2026-10-14",
       "when": "bmo",
       "confirmed": true
@@ -292,6 +272,46 @@
     "BLK": {
       "next": "2026-10-14",
       "when": "bmo",
+      "confirmed": false
+    },
+    "ACI": {
+      "next": "2026-10-13",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "FBK": {
+      "next": "2026-10-13",
+      "when": "amc",
+      "confirmed": false
+    },
+    "HOMB": {
+      "next": "2026-10-14",
+      "when": "amc",
+      "confirmed": true
+    },
+    "STT": {
+      "next": "2026-10-14",
+      "when": "bmo",
+      "confirmed": true
+    },
+    "BNY": {
+      "next": "2026-10-15",
+      "when": "bmo",
+      "confirmed": true
+    },
+    "MRSH": {
+      "next": "2026-10-15",
+      "when": "bmo",
+      "confirmed": true
+    },
+    "FR": {
+      "next": "2026-10-21",
+      "when": "amc",
+      "confirmed": false
+    },
+    "BANR": {
+      "next": "2026-10-14",
+      "when": "amc",
       "confirmed": false
     },
     "UAL": {
@@ -304,24 +324,14 @@
       "when": "bmo",
       "confirmed": true
     },
-    "MRSH": {
-      "next": "2026-10-15",
+    "ABT": {
+      "next": "2026-10-14",
       "when": "bmo",
-      "confirmed": true
-    },
-    "REXR": {
-      "next": "2026-10-14",
-      "when": "amc",
       "confirmed": false
     },
-    "FR": {
-      "next": "2026-10-21",
-      "when": "amc",
-      "confirmed": false
-    },
-    "BANR": {
+    "FHN": {
       "next": "2026-10-14",
-      "when": "amc",
+      "when": "bmo",
       "confirmed": false
     },
     "WINA": {
@@ -329,7 +339,7 @@
       "when": "amc",
       "confirmed": false
     },
-    "FHN": {
+    "SYF": {
       "next": "2026-10-14",
       "when": "bmo",
       "confirmed": false
@@ -339,29 +349,19 @@
       "when": "amc",
       "confirmed": false
     },
-    "PLD": {
-      "next": "2026-10-15",
-      "when": "bmo",
-      "confirmed": true
-    },
-    "BNY": {
-      "next": "2026-10-15",
-      "when": "bmo",
-      "confirmed": true
-    },
-    "SYF": {
-      "next": "2026-10-14",
-      "when": "bmo",
-      "confirmed": false
-    },
     "PNC": {
       "next": "2026-10-15",
       "when": "bmo",
       "confirmed": true
     },
-    "ABT": {
-      "next": "2026-10-14",
+    "PLD": {
+      "next": "2026-10-15",
       "when": "bmo",
+      "confirmed": true
+    },
+    "REXR": {
+      "next": "2026-10-14",
+      "when": "amc",
       "confirmed": false
     },
     "CBSH": {
@@ -374,12 +374,22 @@
       "when": "amc",
       "confirmed": false
     },
-    "FNB": {
+    "SCHW": {
       "next": "2026-10-15",
-      "when": "amc",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "SLB": {
+      "next": "2026-10-23",
+      "when": "bmo",
       "confirmed": false
     },
     "MAN": {
+      "next": "2026-10-15",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "CMC": {
       "next": "2026-10-15",
       "when": "bmo",
       "confirmed": false
@@ -389,23 +399,8 @@
       "when": "amc",
       "confirmed": false
     },
-    "CMC": {
+    "WAFD": {
       "next": "2026-10-15",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "WABC": {
-      "next": "2026-10-15",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CSX": {
-      "next": "2026-10-22",
-      "when": "amc",
-      "confirmed": false
-    },
-    "BANF": {
-      "next": "2026-10-16",
       "when": "amc",
       "confirmed": false
     },
@@ -419,6 +414,21 @@
       "when": "bmo",
       "confirmed": false
     },
+    "INDB": {
+      "next": "2026-10-22",
+      "when": "amc",
+      "confirmed": false
+    },
+    "TRV": {
+      "next": "2026-10-16",
+      "when": "bmo",
+      "confirmed": true
+    },
+    "AA": {
+      "next": "2026-10-16",
+      "when": "amc",
+      "confirmed": true
+    },
     "RF": {
       "next": "2026-10-16",
       "when": "bmo",
@@ -429,43 +439,38 @@
       "when": "amc",
       "confirmed": false
     },
-    "TFIN": {
-      "next": "2026-10-14",
-      "when": "amc",
-      "confirmed": false
-    },
-    "TFC": {
-      "next": "2026-10-16",
-      "when": "bmo",
-      "confirmed": true
-    },
     "SNA": {
       "next": "2026-10-15",
       "when": "bmo",
       "confirmed": false
     },
-    "SCHW": {
+    "SFNC": {
       "next": "2026-10-15",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "SLB": {
-      "next": "2026-10-23",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "AA": {
-      "next": "2026-10-16",
       "when": "amc",
-      "confirmed": true
-    },
-    "TRV": {
-      "next": "2026-10-16",
-      "when": "bmo",
-      "confirmed": true
+      "confirmed": false
     },
     "IBKR": {
       "next": "2026-10-20",
+      "when": "amc",
+      "confirmed": false
+    },
+    "TFIN": {
+      "next": "2026-10-14",
+      "when": "amc",
+      "confirmed": false
+    },
+    "CSX": {
+      "next": "2026-10-22",
+      "when": "amc",
+      "confirmed": false
+    },
+    "WABC": {
+      "next": "2026-10-15",
+      "when": "amc",
+      "confirmed": false
+    },
+    "FNB": {
+      "next": "2026-10-15",
       "when": "amc",
       "confirmed": false
     },
@@ -474,13 +479,8 @@
       "when": "bmo",
       "confirmed": true
     },
-    "INDB": {
-      "next": "2026-10-22",
-      "when": "amc",
-      "confirmed": false
-    },
-    "WAFD": {
-      "next": "2026-10-15",
+    "PNFP": {
+      "next": "2026-10-14",
       "when": "amc",
       "confirmed": false
     },
@@ -494,37 +494,47 @@
       "when": "amc",
       "confirmed": false
     },
-    "SFNC": {
-      "next": "2026-10-15",
-      "when": "amc",
-      "confirmed": false
-    },
     "MTB": {
       "next": "2026-10-16",
       "when": "bmo",
-      "confirmed": false
+      "confirmed": true
     },
-    "PNFP": {
-      "next": "2026-10-14",
+    "BANF": {
+      "next": "2026-10-16",
       "when": "amc",
       "confirmed": false
+    },
+    "TFC": {
+      "next": "2026-10-16",
+      "when": "bmo",
+      "confirmed": true
     },
     "WBS": {
       "next": "2026-10-22",
       "when": "amc",
       "confirmed": false
     },
-    "FITB": {
-      "next": "2026-10-19",
-      "when": "bmo",
-      "confirmed": true
-    },
     "ZION": {
       "next": "2026-10-19",
       "when": "amc",
       "confirmed": true
     },
+    "STLD": {
+      "next": "2026-10-19",
+      "when": "amc",
+      "confirmed": true
+    },
+    "FITB": {
+      "next": "2026-10-19",
+      "when": "bmo",
+      "confirmed": true
+    },
     "KEY": {
+      "next": "2026-10-20",
+      "when": "bmo",
+      "confirmed": true
+    },
+    "MSCI": {
       "next": "2026-10-20",
       "when": "bmo",
       "confirmed": true
@@ -534,17 +544,37 @@
       "when": "bmo",
       "confirmed": true
     },
-    "NFLX": {
+    "EWBC": {
       "next": "2026-10-20",
       "when": "amc",
       "confirmed": true
+    },
+    "RLI": {
+      "next": "2026-10-19",
+      "when": "amc",
+      "confirmed": false
+    },
+    "WTFC": {
+      "next": "2026-10-19",
+      "when": "amc",
+      "confirmed": false
     },
     "PFBC": {
       "next": "2026-10-19",
       "when": "bmo",
       "confirmed": false
     },
-    "MSCI": {
+    "WRB": {
+      "next": "2026-10-19",
+      "when": "amc",
+      "confirmed": false
+    },
+    "NFLX": {
+      "next": "2026-10-20",
+      "when": "amc",
+      "confirmed": true
+    },
+    "NOC": {
       "next": "2026-10-20",
       "when": "bmo",
       "confirmed": true
@@ -554,44 +584,29 @@
       "when": "amc",
       "confirmed": false
     },
-    "RLI": {
-      "next": "2026-10-19",
-      "when": "amc",
-      "confirmed": false
-    },
-    "NOC": {
-      "next": "2026-10-20",
-      "when": "bmo",
-      "confirmed": true
-    },
     "CLF": {
       "next": "2026-10-19",
       "when": "bmo",
       "confirmed": false
     },
-    "EWBC": {
-      "next": "2026-10-20",
+    "CB": {
+      "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": false
+    },
+    "MOH": {
+      "next": "2026-10-21",
       "when": "amc",
       "confirmed": true
-    },
-    "WTFC": {
-      "next": "2026-10-19",
-      "when": "amc",
-      "confirmed": false
-    },
-    "STLD": {
-      "next": "2026-10-19",
-      "when": "amc",
-      "confirmed": false
-    },
-    "WRB": {
-      "next": "2026-10-19",
-      "when": "amc",
-      "confirmed": false
     },
     "BMI": {
       "next": "2026-10-21",
       "when": "bmo",
+      "confirmed": false
+    },
+    "NBHC": {
+      "next": "2026-10-27",
+      "when": "amc",
       "confirmed": false
     },
     "HAFC": {
@@ -604,12 +619,12 @@
       "when": "bmo",
       "confirmed": false
     },
-    "PCAR": {
-      "next": "2026-10-27",
+    "NTRS": {
+      "next": "2026-10-21",
       "when": "bmo",
-      "confirmed": false
+      "confirmed": true
     },
-    "ADC": {
+    "PEGA": {
       "next": "2026-10-20",
       "when": "amc",
       "confirmed": false
@@ -619,9 +634,9 @@
       "when": "amc",
       "confirmed": true
     },
-    "BCPC": {
-      "next": "2026-10-20",
-      "when": "bmo",
+    "WAL": {
+      "next": "2026-10-21",
+      "when": "amc",
       "confirmed": false
     },
     "PKG": {
@@ -629,12 +644,7 @@
       "when": "amc",
       "confirmed": true
     },
-    "RTX": {
-      "next": "2026-10-20",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "PEGA": {
+    "EQT": {
       "next": "2026-10-20",
       "when": "amc",
       "confirmed": false
@@ -649,24 +659,14 @@
       "when": "amc",
       "confirmed": false
     },
-    "EQT": {
-      "next": "2026-10-20",
-      "when": "amc",
-      "confirmed": false
-    },
     "DHR": {
       "next": "2026-10-20",
       "when": "bmo",
       "confirmed": false
     },
-    "KO": {
-      "next": "2026-10-20",
+    "PCAR": {
+      "next": "2026-10-27",
       "when": "bmo",
-      "confirmed": false
-    },
-    "TRST": {
-      "next": "2026-10-20",
-      "when": "amc",
       "confirmed": false
     },
     "MMM": {
@@ -674,29 +674,14 @@
       "when": "bmo",
       "confirmed": false
     },
-    "GPC": {
+    "GATX": {
       "next": "2026-10-20",
       "when": "bmo",
-      "confirmed": false
-    },
-    "COF": {
-      "next": "2026-10-20",
-      "when": "amc",
       "confirmed": false
     },
     "EFX": {
       "next": "2026-10-20",
       "when": "bmo",
-      "confirmed": false
-    },
-    "MCRI": {
-      "next": "2026-10-20",
-      "when": "amc",
-      "confirmed": false
-    },
-    "TXN": {
-      "next": "2026-10-27",
-      "when": "amc",
       "confirmed": false
     },
     "ELV": {
@@ -714,6 +699,31 @@
       "when": "bmo",
       "confirmed": true
     },
+    "FAF": {
+      "next": "2026-10-21",
+      "when": "amc",
+      "confirmed": true
+    },
+    "LMT": {
+      "next": "2026-10-20",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "PMT": {
+      "next": "2026-10-20",
+      "when": "amc",
+      "confirmed": false
+    },
+    "PNR": {
+      "next": "2026-10-20",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "CBU": {
+      "next": "2026-10-27",
+      "when": "bmo",
+      "confirmed": false
+    },
     "VICR": {
       "next": "2026-10-20",
       "when": "bmo",
@@ -729,12 +739,77 @@
       "when": "bmo",
       "confirmed": false
     },
-    "T": {
+    "GLXY": {
+      "next": "2026-10-20",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "MANH": {
+      "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": false
+    },
+    "ADC": {
+      "next": "2026-10-20",
+      "when": "amc",
+      "confirmed": false
+    },
+    "VMI": {
+      "next": "2026-10-20",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "MCRI": {
+      "next": "2026-10-20",
+      "when": "amc",
+      "confirmed": false
+    },
+    "GPC": {
+      "next": "2026-10-20",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "GE": {
+      "next": "2026-10-20",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "KO": {
+      "next": "2026-10-20",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "IBM": {
+      "next": "2026-10-21",
+      "when": "amc",
+      "confirmed": true
+    },
+    "CCK": {
+      "next": "2026-10-19",
+      "when": "amc",
+      "confirmed": false
+    },
+    "FULT": {
+      "next": "2026-10-20",
+      "when": "amc",
+      "confirmed": false
+    },
+    "GM": {
+      "next": "2026-10-20",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "TXN": {
+      "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": false
+    },
+    "PM": {
       "next": "2026-10-21",
       "when": "bmo",
       "confirmed": true
     },
-    "GLXY": {
+    "RTX": {
       "next": "2026-10-20",
       "when": "bmo",
       "confirmed": false
@@ -744,104 +819,44 @@
       "when": "amc",
       "confirmed": false
     },
-    "GE": {
-      "next": "2026-10-20",
-      "when": "bmo",
-      "confirmed": false
-    },
     "CATY": {
       "next": "2026-10-21",
       "when": "amc",
       "confirmed": false
     },
-    "VMI": {
+    "TRST": {
       "next": "2026-10-20",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "CCK": {
-      "next": "2026-10-19",
       "when": "amc",
       "confirmed": false
     },
-    "PM": {
+    "T": {
       "next": "2026-10-21",
       "when": "bmo",
       "confirmed": true
     },
-    "FAF": {
-      "next": "2026-10-21",
-      "when": "amc",
-      "confirmed": true
-    },
-    "NTRS": {
-      "next": "2026-10-21",
-      "when": "bmo",
-      "confirmed": true
-    },
-    "IBM": {
-      "next": "2026-10-21",
-      "when": "amc",
-      "confirmed": true
-    },
-    "LMT": {
+    "BCPC": {
       "next": "2026-10-20",
       "when": "bmo",
       "confirmed": false
     },
-    "MOH": {
-      "next": "2026-10-21",
-      "when": "amc",
-      "confirmed": true
-    },
-    "PMT": {
+    "COF": {
       "next": "2026-10-20",
       "when": "amc",
       "confirmed": false
     },
-    "MANH": {
-      "next": "2026-10-27",
-      "when": "amc",
-      "confirmed": false
-    },
-    "GATX": {
+    "WFRD": {
       "next": "2026-10-20",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "NBHC": {
-      "next": "2026-10-27",
       "when": "amc",
       "confirmed": false
     },
-    "WAL": {
+    "GSHD": {
       "next": "2026-10-21",
       "when": "amc",
       "confirmed": false
     },
-    "CBU": {
-      "next": "2026-10-27",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "CB": {
-      "next": "2026-10-27",
+    "NLY": {
+      "next": "2026-10-21",
       "when": "amc",
-      "confirmed": false
-    },
-    "FULT": {
-      "next": "2026-10-20",
-      "when": "amc",
-      "confirmed": false
-    },
-    "PNR": {
-      "next": "2026-10-20",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "GM": {
-      "next": "2026-10-20",
-      "when": "bmo",
       "confirmed": false
     },
     "ELS": {
@@ -849,35 +864,45 @@
       "when": "amc",
       "confirmed": false
     },
-    "WGO": {
-      "next": "2026-10-21",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "BANC": {
-      "next": "2026-10-21",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "GEV": {
-      "next": "2026-10-28",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "HXL": {
+    "LRCX": {
       "next": "2026-10-21",
       "when": "amc",
       "confirmed": false
     },
-    "HCSG": {
+    "LVS": {
+      "next": "2026-10-21",
+      "when": "amc",
+      "confirmed": false
+    },
+    "SEIC": {
+      "next": "2026-10-21",
+      "when": "amc",
+      "confirmed": false
+    },
+    "SON": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "TCBI": {
+      "next": "2026-10-21",
+      "when": "amc",
+      "confirmed": false
+    },
+    "WAB": {
       "next": "2026-10-21",
       "when": "bmo",
       "confirmed": false
     },
-    "NLY": {
+    "EGBN": {
       "next": "2026-10-21",
       "when": "amc",
       "confirmed": false
+    },
+    "DOW": {
+      "next": "2026-10-22",
+      "when": "bmo",
+      "confirmed": true
     },
     "SF": {
       "next": "2026-10-21",
@@ -899,47 +924,67 @@
       "when": "bmo",
       "confirmed": true
     },
-    "TDY": {
+    "CACI": {
       "next": "2026-10-21",
-      "when": "bmo",
+      "when": "amc",
       "confirmed": false
     },
-    "DOW": {
+    "EPRT": {
+      "next": "2026-10-21",
+      "when": "amc",
+      "confirmed": false
+    },
+    "LUV": {
       "next": "2026-10-22",
-      "when": "bmo",
+      "when": "amc",
       "confirmed": true
-    },
-    "MCO": {
-      "next": "2026-10-21",
-      "when": "bmo",
-      "confirmed": false
     },
     "WDFC": {
       "next": "2026-10-21",
       "when": "amc",
       "confirmed": false
     },
-    "MSM": {
-      "next": "2026-10-22",
+    "MCO": {
+      "next": "2026-10-21",
       "when": "bmo",
-      "confirmed": true
-    },
-    "R": {
-      "next": "2026-10-22",
-      "when": "bmo",
-      "confirmed": true
+      "confirmed": false
     },
     "OII": {
       "next": "2026-10-21",
       "when": "amc",
       "confirmed": false
     },
-    "ONB": {
+    "R": {
+      "next": "2026-10-22",
+      "when": "bmo",
+      "confirmed": true
+    },
+    "WGO": {
       "next": "2026-10-21",
       "when": "bmo",
       "confirmed": false
     },
-    "CCI": {
+    "BANC": {
+      "next": "2026-10-21",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "GEV": {
+      "next": "2026-10-28",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "HXL": {
+      "next": "2026-10-21",
+      "when": "amc",
+      "confirmed": false
+    },
+    "SIGI": {
+      "next": "2026-10-21",
+      "when": "amc",
+      "confirmed": false
+    },
+    "TSLA": {
       "next": "2026-10-21",
       "when": "amc",
       "confirmed": false
@@ -954,15 +999,25 @@
       "when": "bmo",
       "confirmed": false
     },
-    "GGG": {
+    "RHI": {
       "next": "2026-10-21",
       "when": "amc",
       "confirmed": false
     },
-    "VLO": {
-      "next": "2026-10-22",
+    "MEDP": {
+      "next": "2026-10-19",
+      "when": "amc",
+      "confirmed": false
+    },
+    "NVR": {
+      "next": "2026-10-21",
       "when": "bmo",
-      "confirmed": true
+      "confirmed": false
+    },
+    "WH": {
+      "next": "2026-10-21",
+      "when": "amc",
+      "confirmed": false
     },
     "LII": {
       "next": "2026-10-28",
@@ -971,6 +1026,11 @@
     },
     "PLXS": {
       "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "KALU": {
+      "next": "2026-10-21",
       "when": "amc",
       "confirmed": false
     },
@@ -984,15 +1044,20 @@
       "when": "amc",
       "confirmed": false
     },
-    "LUV": {
-      "next": "2026-10-22",
-      "when": "amc",
-      "confirmed": true
-    },
-    "KALU": {
+    "WSBC": {
       "next": "2026-10-21",
       "when": "amc",
       "confirmed": false
+    },
+    "FCFS": {
+      "next": "2026-10-22",
+      "when": "bmo",
+      "confirmed": true
+    },
+    "PHM": {
+      "next": "2026-10-22",
+      "when": "bmo",
+      "confirmed": true
     },
     "AVY": {
       "next": "2026-10-21",
@@ -1009,17 +1074,7 @@
       "when": "amc",
       "confirmed": false
     },
-    "PRG": {
-      "next": "2026-10-28",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "TMO": {
-      "next": "2026-10-21",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "LRCX": {
+    "SSB": {
       "next": "2026-10-21",
       "when": "amc",
       "confirmed": false
@@ -1029,17 +1084,12 @@
       "when": "bmo",
       "confirmed": false
     },
-    "SON": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "LVS": {
+    "UNF": {
       "next": "2026-10-21",
-      "when": "amc",
+      "when": "bmo",
       "confirmed": false
     },
-    "KNX": {
+    "GGG": {
       "next": "2026-10-21",
       "when": "amc",
       "confirmed": false
@@ -1049,88 +1099,18 @@
       "when": "bmo",
       "confirmed": false
     },
-    "WAB": {
+    "CCI": {
+      "next": "2026-10-21",
+      "when": "amc",
+      "confirmed": false
+    },
+    "HCSG": {
       "next": "2026-10-21",
       "when": "bmo",
-      "confirmed": false
-    },
-    "PHM": {
-      "next": "2026-10-22",
-      "when": "bmo",
-      "confirmed": true
-    },
-    "RHI": {
-      "next": "2026-10-21",
-      "when": "amc",
-      "confirmed": false
-    },
-    "SIGI": {
-      "next": "2026-10-21",
-      "when": "amc",
-      "confirmed": false
-    },
-    "MEDP": {
-      "next": "2026-10-19",
-      "when": "amc",
-      "confirmed": false
-    },
-    "TSLA": {
-      "next": "2026-10-21",
-      "when": "amc",
-      "confirmed": false
-    },
-    "WH": {
-      "next": "2026-10-21",
-      "when": "amc",
-      "confirmed": false
-    },
-    "SSB": {
-      "next": "2026-10-21",
-      "when": "amc",
-      "confirmed": false
-    },
-    "FCFS": {
-      "next": "2026-10-22",
-      "when": "bmo",
-      "confirmed": true
-    },
-    "STC": {
-      "next": "2026-10-21",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CACI": {
-      "next": "2026-10-21",
-      "when": "amc",
-      "confirmed": false
-    },
-    "SEIC": {
-      "next": "2026-10-21",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CHCO": {
-      "next": "2026-10-21",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "EGBN": {
-      "next": "2026-10-21",
-      "when": "amc",
-      "confirmed": false
-    },
-    "EFOR": {
-      "next": "2026-10-28",
-      "when": "amc",
       "confirmed": false
     },
     "MLI": {
       "next": "2026-10-20",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "TNL": {
-      "next": "2026-10-21",
       "when": "bmo",
       "confirmed": false
     },
@@ -1139,53 +1119,98 @@
       "when": "amc",
       "confirmed": false
     },
-    "HBAN": {
+    "KNX": {
+      "next": "2026-10-21",
+      "when": "amc",
+      "confirmed": false
+    },
+    "ONB": {
+      "next": "2026-10-21",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "STC": {
+      "next": "2026-10-21",
+      "when": "amc",
+      "confirmed": false
+    },
+    "VLO": {
       "next": "2026-10-22",
       "when": "bmo",
       "confirmed": true
     },
-    "TCBI": {
-      "next": "2026-10-21",
+    "EFOR": {
+      "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
     },
-    "WSBC": {
-      "next": "2026-10-21",
-      "when": "amc",
+    "PRG": {
+      "next": "2026-10-28",
+      "when": "bmo",
       "confirmed": false
+    },
+    "HBAN": {
+      "next": "2026-10-22",
+      "when": "bmo",
+      "confirmed": true
     },
     "CCS": {
       "next": "2026-10-21",
       "when": "amc",
       "confirmed": false
     },
-    "GSHD": {
-      "next": "2026-10-21",
-      "when": "amc",
-      "confirmed": false
-    },
-    "EPRT": {
-      "next": "2026-10-21",
-      "when": "amc",
-      "confirmed": false
-    },
-    "NVR": {
+    "TDY": {
       "next": "2026-10-21",
       "when": "bmo",
       "confirmed": false
     },
-    "UNF": {
+    "TNL": {
       "next": "2026-10-21",
       "when": "bmo",
-      "confirmed": false
-    },
-    "WFRD": {
-      "next": "2026-10-20",
-      "when": "amc",
       "confirmed": false
     },
     "VRT": {
       "next": "2026-10-21",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "CHCO": {
+      "next": "2026-10-21",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "MSM": {
+      "next": "2026-10-22",
+      "when": "bmo",
+      "confirmed": true
+    },
+    "TMO": {
+      "next": "2026-10-21",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "VRSN": {
+      "next": "2026-10-22",
+      "when": "amc",
+      "confirmed": false
+    },
+    "CBRE": {
+      "next": "2026-10-22",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "DOC": {
+      "next": "2026-10-22",
+      "when": "amc",
+      "confirmed": false
+    },
+    "NIC": {
+      "next": "2026-10-20",
+      "when": "amc",
+      "confirmed": false
+    },
+    "PCG": {
+      "next": "2026-10-22",
       "when": "bmo",
       "confirmed": false
     },
@@ -1209,44 +1234,24 @@
       "when": "amc",
       "confirmed": false
     },
+    "LAZ": {
+      "next": "2026-10-22",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "ORI": {
+      "next": "2026-10-22",
+      "when": "bmo",
+      "confirmed": false
+    },
     "MHK": {
       "next": "2026-10-29",
       "when": "amc",
       "confirmed": false
     },
-    "FLG": {
-      "next": "2026-10-23",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "NSC": {
+    "HTH": {
       "next": "2026-10-22",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "ORLY": {
-      "next": "2026-10-28",
       "when": "amc",
-      "confirmed": false
-    },
-    "VC": {
-      "next": "2026-10-22",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "FHB": {
-      "next": "2026-10-23",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "NIC": {
-      "next": "2026-10-20",
-      "when": "amc",
-      "confirmed": false
-    },
-    "PCG": {
-      "next": "2026-10-22",
-      "when": "bmo",
       "confirmed": false
     },
     "TMP": {
@@ -1274,22 +1279,7 @@
       "when": "amc",
       "confirmed": false
     },
-    "WSFS": {
-      "next": "2026-10-22",
-      "when": "amc",
-      "confirmed": false
-    },
-    "BYD": {
-      "next": "2026-10-22",
-      "when": "amc",
-      "confirmed": false
-    },
-    "DECK": {
-      "next": "2026-10-22",
-      "when": "amc",
-      "confirmed": false
-    },
-    "PECO": {
+    "ALK": {
       "next": "2026-10-22",
       "when": "amc",
       "confirmed": false
@@ -1310,16 +1300,6 @@
       "confirmed": false
     },
     "IRDM": {
-      "next": "2026-10-22",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "EBC": {
-      "next": "2026-10-22",
-      "when": "amc",
-      "confirmed": false
-    },
-    "HAS": {
       "next": "2026-10-22",
       "when": "bmo",
       "confirmed": false
@@ -1354,38 +1334,18 @@
       "when": "amc",
       "confirmed": false
     },
-    "STBA": {
-      "next": "2026-10-22",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "BAH": {
+    "FLG": {
       "next": "2026-10-23",
       "when": "bmo",
-      "confirmed": true
-    },
-    "URI": {
-      "next": "2026-10-21",
-      "when": "amc",
       "confirmed": false
     },
-    "UNP": {
+    "NSC": {
       "next": "2026-10-22",
       "when": "bmo",
       "confirmed": false
     },
-    "FCX": {
-      "next": "2026-10-22",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "MRTN": {
-      "next": "2026-10-22",
-      "when": "amc",
-      "confirmed": false
-    },
-    "SLM": {
-      "next": "2026-10-22",
+    "ORLY": {
+      "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
     },
@@ -1404,27 +1364,22 @@
       "when": "bmo",
       "confirmed": false
     },
-    "ALLE": {
+    "UNP": {
       "next": "2026-10-22",
       "when": "bmo",
       "confirmed": false
     },
-    "BKR": {
+    "FCX": {
+      "next": "2026-10-22",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "MRTN": {
       "next": "2026-10-22",
       "when": "amc",
       "confirmed": false
     },
-    "GNTX": {
-      "next": "2026-10-23",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "HFWA": {
-      "next": "2026-10-22",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "UBSI": {
+    "THRM": {
       "next": "2026-10-22",
       "when": "bmo",
       "confirmed": false
@@ -1444,6 +1399,11 @@
       "when": "amc",
       "confirmed": false
     },
+    "DCOM": {
+      "next": "2026-10-22",
+      "when": "bmo",
+      "confirmed": false
+    },
     "SMPL": {
       "next": "2026-10-22",
       "when": "bmo",
@@ -1454,13 +1414,23 @@
       "when": "amc",
       "confirmed": false
     },
-    "NEM": {
+    "GTY": {
+      "next": "2026-10-21",
+      "when": "amc",
+      "confirmed": false
+    },
+    "DAR": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "FIX": {
       "next": "2026-10-22",
       "when": "amc",
       "confirmed": false
     },
-    "DCOM": {
-      "next": "2026-10-22",
+    "ITGR": {
+      "next": "2026-10-29",
       "when": "bmo",
       "confirmed": false
     },
@@ -1504,18 +1474,8 @@
       "when": "amc",
       "confirmed": false
     },
-    "MXL": {
-      "next": "2026-10-22",
-      "when": "amc",
-      "confirmed": false
-    },
-    "TXT": {
-      "next": "2026-10-22",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "CRS": {
-      "next": "2026-10-22",
+    "EEFT": {
+      "next": "2026-10-21",
       "when": "bmo",
       "confirmed": false
     },
@@ -1524,39 +1484,24 @@
       "when": "amc",
       "confirmed": false
     },
-    "ORI": {
+    "LNN": {
       "next": "2026-10-22",
       "when": "bmo",
       "confirmed": false
     },
-    "THRM": {
-      "next": "2026-10-22",
+    "FHB": {
+      "next": "2026-10-23",
       "when": "bmo",
       "confirmed": false
     },
-    "DAR": {
-      "next": "2026-10-29",
+    "NEM": {
+      "next": "2026-10-22",
+      "when": "amc",
+      "confirmed": false
+    },
+    "ALLE": {
+      "next": "2026-10-22",
       "when": "bmo",
-      "confirmed": false
-    },
-    "DOC": {
-      "next": "2026-10-22",
-      "when": "amc",
-      "confirmed": false
-    },
-    "HTH": {
-      "next": "2026-10-22",
-      "when": "amc",
-      "confirmed": false
-    },
-    "VRSN": {
-      "next": "2026-10-22",
-      "when": "amc",
-      "confirmed": false
-    },
-    "SAM": {
-      "next": "2026-10-29",
-      "when": "amc",
       "confirmed": false
     },
     "ALV": {
@@ -1564,19 +1509,39 @@
       "when": "bmo",
       "confirmed": true
     },
-    "HON": {
+    "ROP": {
       "next": "2026-10-22",
       "when": "bmo",
       "confirmed": false
     },
-    "FFIN": {
+    "SAM": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "NXT": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "BYD": {
       "next": "2026-10-22",
       "when": "amc",
       "confirmed": false
     },
-    "GTY": {
-      "next": "2026-10-21",
-      "when": "amc",
+    "MRP": {
+      "next": "2026-11-11",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "HAS": {
+      "next": "2026-10-22",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "TXT": {
+      "next": "2026-10-22",
+      "when": "bmo",
       "confirmed": false
     },
     "BX": {
@@ -1584,18 +1549,18 @@
       "when": "bmo",
       "confirmed": false
     },
-    "EEFT": {
-      "next": "2026-10-21",
+    "HFWA": {
+      "next": "2026-10-22",
       "when": "bmo",
       "confirmed": false
     },
-    "AXP": {
-      "next": "2026-10-23",
+    "PG": {
+      "next": "2026-10-22",
       "when": "bmo",
-      "confirmed": true
+      "confirmed": false
     },
-    "MRP": {
-      "next": "2026-11-11",
+    "UBSI": {
+      "next": "2026-10-22",
       "when": "bmo",
       "confirmed": false
     },
@@ -1604,13 +1569,48 @@
       "when": "amc",
       "confirmed": false
     },
-    "PG": {
+    "SLM": {
+      "next": "2026-10-22",
+      "when": "amc",
+      "confirmed": false
+    },
+    "EBC": {
+      "next": "2026-10-22",
+      "when": "amc",
+      "confirmed": false
+    },
+    "MXL": {
+      "next": "2026-10-22",
+      "when": "amc",
+      "confirmed": false
+    },
+    "BKR": {
+      "next": "2026-10-22",
+      "when": "amc",
+      "confirmed": false
+    },
+    "VC": {
       "next": "2026-10-22",
       "when": "bmo",
       "confirmed": false
     },
-    "LNN": {
+    "STBA": {
       "next": "2026-10-22",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "URI": {
+      "next": "2026-10-21",
+      "when": "amc",
+      "confirmed": false
+    },
+    "HON": {
+      "next": "2026-10-22",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "GNTX": {
+      "next": "2026-10-23",
       "when": "bmo",
       "confirmed": false
     },
@@ -1619,17 +1619,22 @@
       "when": "bmo",
       "confirmed": false
     },
-    "TMUS": {
+    "WSFS": {
       "next": "2026-10-22",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "NXT": {
-      "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
     },
-    "FIX": {
+    "AXP": {
+      "next": "2026-10-23",
+      "when": "bmo",
+      "confirmed": true
+    },
+    "BAH": {
+      "next": "2026-10-23",
+      "when": "bmo",
+      "confirmed": true
+    },
+    "PECO": {
       "next": "2026-10-22",
       "when": "amc",
       "confirmed": false
@@ -1639,19 +1644,24 @@
       "when": "bmo",
       "confirmed": false
     },
-    "LAZ": {
+    "CRS": {
       "next": "2026-10-22",
       "when": "bmo",
       "confirmed": false
     },
-    "ALK": {
+    "FFIN": {
       "next": "2026-10-22",
       "when": "amc",
       "confirmed": false
     },
-    "ITGR": {
-      "next": "2026-10-29",
+    "TMUS": {
+      "next": "2026-10-22",
       "when": "bmo",
+      "confirmed": false
+    },
+    "DECK": {
+      "next": "2026-10-22",
+      "when": "amc",
       "confirmed": false
     },
     "WRLD": {
@@ -1659,32 +1669,32 @@
       "when": "bmo",
       "confirmed": false
     },
-    "CBRE": {
-      "next": "2026-10-22",
-      "when": "bmo",
-      "confirmed": false
+    "ARE": {
+      "next": "2026-10-26",
+      "when": "amc",
+      "confirmed": true
     },
-    "ROP": {
-      "next": "2026-10-22",
-      "when": "bmo",
-      "confirmed": false
+    "BRX": {
+      "next": "2026-10-26",
+      "when": "amc",
+      "confirmed": true
     },
     "NUE": {
       "next": "2026-10-26",
       "when": "amc",
       "confirmed": true
     },
-    "ARE": {
+    "PFG": {
       "next": "2026-10-26",
       "when": "amc",
-      "confirmed": true
+      "confirmed": false
     },
     "ACGL": {
       "next": "2026-10-26",
       "when": "amc",
       "confirmed": false
     },
-    "BRO": {
+    "SBCF": {
       "next": "2026-10-26",
       "when": "amc",
       "confirmed": false
@@ -1694,17 +1704,7 @@
       "when": "amc",
       "confirmed": false
     },
-    "FFIV": {
-      "next": "2026-10-26",
-      "when": "amc",
-      "confirmed": false
-    },
-    "BRX": {
-      "next": "2026-10-27",
-      "when": "amc",
-      "confirmed": true
-    },
-    "PFG": {
+    "HTO": {
       "next": "2026-10-26",
       "when": "amc",
       "confirmed": false
@@ -1714,14 +1714,9 @@
       "when": "amc",
       "confirmed": false
     },
-    "BMRN": {
-      "next": "2026-10-26",
-      "when": "amc",
-      "confirmed": false
-    },
-    "PSMT": {
+    "CNC": {
       "next": "2026-10-27",
-      "when": "amc",
+      "when": "bmo",
       "confirmed": true
     },
     "BOH": {
@@ -1739,12 +1734,7 @@
       "when": "bmo",
       "confirmed": false
     },
-    "CAR": {
-      "next": "2026-10-27",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CDNS": {
+    "FFIV": {
       "next": "2026-10-26",
       "when": "amc",
       "confirmed": false
@@ -1754,27 +1744,7 @@
       "when": "amc",
       "confirmed": false
     },
-    "KDP": {
-      "next": "2026-10-26",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "LSTR": {
-      "next": "2026-10-27",
-      "when": "amc",
-      "confirmed": true
-    },
-    "NOV": {
-      "next": "2026-10-27",
-      "when": "amc",
-      "confirmed": true
-    },
-    "DORM": {
-      "next": "2026-10-26",
-      "when": "amc",
-      "confirmed": false
-    },
-    "PRK": {
+    "AGYS": {
       "next": "2026-10-26",
       "when": "amc",
       "confirmed": false
@@ -1794,37 +1764,7 @@
       "when": "amc",
       "confirmed": true
     },
-    "LKFN": {
-      "next": "2026-10-26",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "CR": {
-      "next": "2026-10-26",
-      "when": "amc",
-      "confirmed": false
-    },
-    "PYPL": {
-      "next": "2026-10-27",
-      "when": "bmo",
-      "confirmed": true
-    },
-    "LEG": {
-      "next": "2026-10-26",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "SBCF": {
-      "next": "2026-10-26",
-      "when": "amc",
-      "confirmed": false
-    },
-    "ABCB": {
-      "next": "2026-10-26",
-      "when": "amc",
-      "confirmed": false
-    },
-    "AMKR": {
+    "DORM": {
       "next": "2026-10-26",
       "when": "amc",
       "confirmed": false
@@ -1834,24 +1774,44 @@
       "when": "amc",
       "confirmed": false
     },
-    "SSD": {
+    "ABCB": {
       "next": "2026-10-26",
       "when": "amc",
       "confirmed": false
     },
-    "AGYS": {
-      "next": "2026-10-26",
-      "when": "amc",
+    "CRI": {
+      "next": "2026-11-02",
+      "when": "bmo",
       "confirmed": false
     },
-    "HIW": {
-      "next": "2026-10-27",
-      "when": "amc",
-      "confirmed": true
-    },
-    "RVTY": {
+    "LKFN": {
       "next": "2026-10-26",
       "when": "bmo",
+      "confirmed": false
+    },
+    "AMKR": {
+      "next": "2026-10-26",
+      "when": "amc",
+      "confirmed": false
+    },
+    "PYPL": {
+      "next": "2026-10-27",
+      "when": "bmo",
+      "confirmed": true
+    },
+    "WHR": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "LEG": {
+      "next": "2026-10-26",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "BRO": {
+      "next": "2026-10-26",
+      "when": "amc",
       "confirmed": false
     },
     "CINF": {
@@ -1859,19 +1819,24 @@
       "when": "amc",
       "confirmed": false
     },
+    "RVTY": {
+      "next": "2026-10-26",
+      "when": "bmo",
+      "confirmed": false
+    },
     "NTST": {
       "next": "2026-10-26",
       "when": "amc",
       "confirmed": false
     },
-    "CNC": {
+    "PSMT": {
       "next": "2026-10-27",
-      "when": "bmo",
+      "when": "amc",
       "confirmed": true
     },
-    "CRI": {
-      "next": "2026-11-02",
-      "when": "bmo",
+    "SSD": {
+      "next": "2026-10-26",
+      "when": "amc",
       "confirmed": false
     },
     "RMBS": {
@@ -1879,14 +1844,64 @@
       "when": "amc",
       "confirmed": false
     },
-    "WHR": {
+    "CDNS": {
+      "next": "2026-10-26",
+      "when": "amc",
+      "confirmed": false
+    },
+    "CAR": {
+      "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": false
+    },
+    "KDP": {
+      "next": "2026-10-26",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "HIW": {
+      "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": true
+    },
+    "LSTR": {
+      "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": true
+    },
+    "CR": {
+      "next": "2026-10-26",
+      "when": "amc",
+      "confirmed": false
+    },
+    "PRK": {
+      "next": "2026-10-26",
+      "when": "amc",
+      "confirmed": false
+    },
+    "NOV": {
+      "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": true
+    },
+    "BMRN": {
+      "next": "2026-10-26",
+      "when": "amc",
+      "confirmed": false
+    },
+    "AWI": {
+      "next": "2026-10-27",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "FCPT": {
       "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
     },
-    "HTO": {
-      "next": "2026-10-26",
-      "when": "amc",
+    "REGN": {
+      "next": "2026-10-28",
+      "when": "bmo",
       "confirmed": false
     },
     "RRR": {
@@ -1899,15 +1914,15 @@
       "when": "amc",
       "confirmed": false
     },
-    "CSGP": {
-      "next": "2026-10-27",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CURB": {
+    "IVZ": {
       "next": "2026-10-27",
       "when": "bmo",
       "confirmed": false
+    },
+    "MTH": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": true
     },
     "FDX": {
       "next": "2026-10-28",
@@ -1919,33 +1934,28 @@
       "when": "bmo",
       "confirmed": false
     },
-    "SHW": {
+    "WM": {
+      "next": "2026-10-26",
+      "when": "amc",
+      "confirmed": false
+    },
+    "ABG": {
       "next": "2026-10-27",
       "when": "bmo",
       "confirmed": false
     },
-    "ATI": {
+    "AIT": {
       "next": "2026-10-27",
       "when": "bmo",
       "confirmed": false
     },
-    "BTSG": {
-      "next": "2026-10-30",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "BXP": {
+    "BKNG": {
       "next": "2026-10-27",
       "when": "amc",
       "confirmed": false
     },
-    "IP": {
-      "next": "2026-10-28",
-      "when": "bmo",
-      "confirmed": true
-    },
-    "REGN": {
-      "next": "2026-10-28",
+    "GLW": {
+      "next": "2026-10-27",
       "when": "bmo",
       "confirmed": false
     },
@@ -1964,40 +1974,20 @@
       "when": "amc",
       "confirmed": false
     },
-    "UCTT": {
+    "JBGS": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "KAI": {
       "next": "2026-11-03",
       "when": "amc",
-      "confirmed": false
-    },
-    "VFC": {
-      "next": "2026-10-26",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "SCCO": {
-      "next": "2026-10-27",
-      "when": "amc",
-      "confirmed": false
-    },
-    "PSX": {
-      "next": "2026-10-28",
-      "when": "bmo",
-      "confirmed": true
-    },
-    "RCL": {
-      "next": "2026-10-27",
-      "when": "bmo",
       "confirmed": false
     },
     "AWK": {
       "next": "2026-10-28",
       "when": "amc",
       "confirmed": true
-    },
-    "MSA": {
-      "next": "2026-10-27",
-      "when": "amc",
-      "confirmed": false
     },
     "APH": {
       "next": "2026-10-28",
@@ -2014,24 +2004,39 @@
       "when": "amc",
       "confirmed": false
     },
-    "CMG": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": true
-    },
-    "EIX": {
-      "next": "2026-10-27",
-      "when": "amc",
-      "confirmed": false
-    },
-    "UPS": {
+    "SHW": {
       "next": "2026-10-27",
       "when": "bmo",
       "confirmed": false
     },
-    "XYL": {
+    "ATI": {
+      "next": "2026-10-27",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "BTSG": {
+      "next": "2026-10-30",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "RNR": {
       "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": false
+    },
+    "AOS": {
+      "next": "2026-10-27",
       "when": "bmo",
+      "confirmed": false
+    },
+    "MDLZ": {
+      "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": false
+    },
+    "THC": {
+      "next": "2026-10-27",
+      "when": "amc",
       "confirmed": false
     },
     "ZWS": {
@@ -2049,50 +2054,35 @@
       "when": "bmo",
       "confirmed": false
     },
-    "SYY": {
+    "TRMK": {
+      "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": false
+    },
+    "WPC": {
+      "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": false
+    },
+    "AAT": {
+      "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": false
+    },
+    "ESI": {
+      "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": false
+    },
+    "IQV": {
       "next": "2026-11-03",
       "when": "bmo",
       "confirmed": false
     },
-    "AOS": {
-      "next": "2026-10-27",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "MDLZ": {
-      "next": "2026-10-27",
+    "RJF": {
+      "next": "2026-10-28",
       "when": "amc",
-      "confirmed": false
-    },
-    "RNR": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CARR": {
-      "next": "2026-10-27",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "HIG": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CHE": {
-      "next": "2026-10-27",
-      "when": "amc",
-      "confirmed": false
-    },
-    "GPI": {
-      "next": "2026-10-27",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "MIR": {
-      "next": "2026-10-27",
-      "when": "amc",
-      "confirmed": false
+      "confirmed": true
     },
     "ALKS": {
       "next": "2026-10-28",
@@ -2109,29 +2099,9 @@
       "when": "bmo",
       "confirmed": false
     },
-    "LH": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "NBIX": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "OLN": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "RCUS": {
+    "UPS": {
       "next": "2026-10-27",
-      "when": "amc",
-      "confirmed": false
-    },
-    "TER": {
-      "next": "2026-10-21",
-      "when": "amc",
+      "when": "bmo",
       "confirmed": false
     },
     "ECL": {
@@ -2154,6 +2124,36 @@
       "when": "amc",
       "confirmed": false
     },
+    "CTS": {
+      "next": "2026-10-27",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "CZR": {
+      "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": false
+    },
+    "EXLS": {
+      "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": false
+    },
+    "REG": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "RNST": {
+      "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": false
+    },
+    "MOD": {
+      "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": false
+    },
     "ST": {
       "next": "2026-10-27",
       "when": "amc",
@@ -2169,52 +2169,17 @@
       "when": "bmo",
       "confirmed": false
     },
+    "NEO": {
+      "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": false
+    },
     "SOFI": {
       "next": "2026-10-27",
       "when": "bmo",
       "confirmed": false
     },
-    "PII": {
-      "next": "2026-10-26",
-      "when": "amc",
-      "confirmed": false
-    },
-    "JBGS": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "AXTA": {
-      "next": "2026-10-28",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "KAI": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CTS": {
-      "next": "2026-10-27",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "CZR": {
-      "next": "2026-10-27",
-      "when": "amc",
-      "confirmed": false
-    },
-    "AMT": {
-      "next": "2026-10-27",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "PHIN": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "PPG": {
+    "ENPH": {
       "next": "2026-10-27",
       "when": "amc",
       "confirmed": false
@@ -2224,27 +2189,87 @@
       "when": "bmo",
       "confirmed": false
     },
-    "GLW": {
-      "next": "2026-10-27",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "ABG": {
-      "next": "2026-10-27",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "TRMK": {
+    "BXP": {
       "next": "2026-10-27",
       "when": "amc",
       "confirmed": false
     },
-    "MTH": {
+    "UHS": {
+      "next": "2026-10-26",
+      "when": "amc",
+      "confirmed": false
+    },
+    "SCCO": {
+      "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": false
+    },
+    "XYL": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "PSX": {
+      "next": "2026-10-28",
+      "when": "bmo",
+      "confirmed": true
+    },
+    "CURB": {
+      "next": "2026-10-27",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "RCL": {
+      "next": "2026-10-27",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "MUSA": {
       "next": "2026-10-28",
       "when": "amc",
       "confirmed": true
     },
-    "THC": {
+    "NBIX": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "NXRT": {
+      "next": "2026-10-27",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "PHIN": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "VFC": {
+      "next": "2026-10-26",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "PPG": {
+      "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": false
+    },
+    "CMG": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": true
+    },
+    "CHE": {
+      "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": false
+    },
+    "RGEN": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "EIX": {
       "next": "2026-10-27",
       "when": "amc",
       "confirmed": false
@@ -2254,17 +2279,72 @@
       "when": "bmo",
       "confirmed": false
     },
-    "BKNG": {
-      "next": "2026-10-27",
-      "when": "amc",
-      "confirmed": false
-    },
-    "AIT": {
+    "GPI": {
       "next": "2026-10-27",
       "when": "bmo",
       "confirmed": false
     },
-    "NEO": {
+    "TER": {
+      "next": "2026-10-21",
+      "when": "amc",
+      "confirmed": false
+    },
+    "LH": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "UCTT": {
+      "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": false
+    },
+    "PII": {
+      "next": "2026-10-26",
+      "when": "amc",
+      "confirmed": false
+    },
+    "APAM": {
+      "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": false
+    },
+    "AXTA": {
+      "next": "2026-10-28",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "SYY": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "CSGP": {
+      "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": false
+    },
+    "IP": {
+      "next": "2026-10-28",
+      "when": "bmo",
+      "confirmed": true
+    },
+    "HIG": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "HUBB": {
+      "next": "2026-10-27",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "OLN": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "MIR": {
       "next": "2026-10-27",
       "when": "amc",
       "confirmed": false
@@ -2274,105 +2354,55 @@
       "when": "amc",
       "confirmed": false
     },
-    "MOD": {
+    "RCUS": {
       "next": "2026-10-27",
       "when": "amc",
       "confirmed": false
     },
-    "RNST": {
-      "next": "2026-10-27",
-      "when": "amc",
-      "confirmed": false
-    },
-    "ESI": {
-      "next": "2026-10-27",
-      "when": "amc",
-      "confirmed": false
-    },
-    "AWI": {
+    "AMT": {
       "next": "2026-10-27",
       "when": "bmo",
       "confirmed": false
     },
-    "HUBB": {
+    "MSA": {
+      "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": false
+    },
+    "CARR": {
       "next": "2026-10-27",
       "when": "bmo",
       "confirmed": false
     },
-    "REG": {
+    "ALGN": {
       "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
     },
-    "WPC": {
-      "next": "2026-10-27",
+    "BIO": {
+      "next": "2026-10-29",
       "when": "amc",
       "confirmed": false
     },
-    "AAT": {
-      "next": "2026-10-27",
-      "when": "amc",
-      "confirmed": false
-    },
-    "IQV": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "UHS": {
+    "CALX": {
       "next": "2026-10-26",
       "when": "amc",
       "confirmed": false
     },
-    "RJF": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": true
-    },
-    "WM": {
-      "next": "2026-10-26",
-      "when": "amc",
-      "confirmed": false
-    },
-    "EXLS": {
-      "next": "2026-10-27",
-      "when": "amc",
-      "confirmed": false
-    },
-    "IVZ": {
-      "next": "2026-10-27",
+    "KEX": {
+      "next": "2026-10-29",
       "when": "bmo",
       "confirmed": false
     },
-    "RGEN": {
-      "next": "2026-11-03",
+    "KRG": {
+      "next": "2026-11-04",
       "when": "bmo",
       "confirmed": false
     },
-    "APAM": {
-      "next": "2026-10-27",
-      "when": "amc",
-      "confirmed": false
-    },
-    "NXRT": {
-      "next": "2026-10-27",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "FCPT": {
+    "MYRG": {
       "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
-    },
-    "ENPH": {
-      "next": "2026-10-27",
-      "when": "amc",
-      "confirmed": false
-    },
-    "MUSA": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": true
     },
     "BBT": {
       "next": "2026-10-28",
@@ -2389,9 +2419,14 @@
       "when": "amc",
       "confirmed": false
     },
-    "CLH": {
-      "next": "2026-11-04",
-      "when": "bmo",
+    "RRC": {
+      "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": false
+    },
+    "BNL": {
+      "next": "2026-10-28",
+      "when": "amc",
       "confirmed": false
     },
     "ETR": {
@@ -2404,47 +2439,57 @@
       "when": "amc",
       "confirmed": false
     },
-    "CVI": {
+    "ROG": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "THG": {
       "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
     },
-    "FBRT": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "MO": {
+    "CAT": {
       "next": "2026-10-29",
       "when": "bmo",
+      "confirmed": false
+    },
+    "GEHC": {
+      "next": "2026-10-28",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "NWE": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "PBI": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "ATR": {
+      "next": "2026-10-29",
+      "when": "amc",
       "confirmed": true
     },
-    "OTIS": {
+    "AVTR": {
       "next": "2026-10-28",
       "when": "bmo",
       "confirmed": false
     },
-    "TMDX": {
-      "next": "2026-10-29",
+    "EXR": {
+      "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
     },
-    "BMY": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": true
-    },
-    "ESAB": {
-      "next": "2026-10-29",
+    "LFUS": {
+      "next": "2026-10-28",
       "when": "bmo",
       "confirmed": false
     },
-    "KRG": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "MYRG": {
+    "PSA": {
       "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
@@ -2464,35 +2509,25 @@
       "when": "amc",
       "confirmed": false
     },
-    "VZ": {
-      "next": "2026-10-20",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "CHRW": {
+    "MAA": {
       "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
     },
-    "FORM": {
+    "WAY": {
       "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
     },
-    "LAD": {
+    "AMH": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "MRK": {
       "next": "2026-10-29",
       "when": "bmo",
       "confirmed": true
-    },
-    "MORN": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "VRRM": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
     },
     "WHD": {
       "next": "2026-11-04",
@@ -2539,46 +2574,6 @@
       "when": "bmo",
       "confirmed": false
     },
-    "ATR": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": true
-    },
-    "AVTR": {
-      "next": "2026-10-28",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "EXR": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "LFUS": {
-      "next": "2026-10-28",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "EBAY": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "EHC": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "KLAC": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "NI": {
-      "next": "2026-10-28",
-      "when": "bmo",
-      "confirmed": false
-    },
     "SLGN": {
       "next": "2026-10-28",
       "when": "bmo",
@@ -2600,6 +2595,16 @@
       "confirmed": false
     },
     "IEX": {
+      "next": "2026-10-28",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "KLAC": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "NI": {
       "next": "2026-10-28",
       "when": "bmo",
       "confirmed": false
@@ -2629,57 +2634,27 @@
       "when": "amc",
       "confirmed": false
     },
-    "ROL": {
+    "CVI": {
       "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
     },
-    "SHEN": {
-      "next": "2026-10-28",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "BXMT": {
-      "next": "2026-10-28",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "ESS": {
-      "next": "2026-10-27",
-      "when": "amc",
-      "confirmed": false
-    },
-    "FTV": {
-      "next": "2026-10-28",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "TYL": {
+    "FBRT": {
       "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
     },
-    "OSK": {
+    "MO": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": true
+    },
+    "OTIS": {
       "next": "2026-10-28",
       "when": "bmo",
       "confirmed": false
     },
-    "RRX": {
-      "next": "2026-10-28",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "SCI": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "USLM": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "VIAV": {
+    "RUSHA": {
       "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
@@ -2699,63 +2674,58 @@
       "when": "amc",
       "confirmed": false
     },
-    "RUSHA": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "STAG": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "TTMI": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CNXN": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "FLEX": {
+    "OSK": {
       "next": "2026-10-28",
       "when": "bmo",
       "confirmed": false
     },
-    "GRBK": {
+    "FCF": {
+      "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": false
+    },
+    "NOW": {
       "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
     },
-    "AM": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "FIBK": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "GNRC": {
+    "OSW": {
       "next": "2026-10-28",
       "when": "bmo",
       "confirmed": false
     },
-    "ODFL": {
-      "next": "2026-10-28",
+    "VZ": {
+      "next": "2026-10-20",
       "when": "bmo",
       "confirmed": false
     },
-    "SBUX": {
+    "WEX": {
       "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
     },
     "FLS": {
       "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": false
+    },
+    "TYL": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "HAYW": {
+      "next": "2026-10-27",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "KHC": {
+      "next": "2026-10-28",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "META": {
+      "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
     },
@@ -2769,37 +2739,52 @@
       "when": "bmo",
       "confirmed": false
     },
-    "ROG": {
+    "COHU": {
       "next": "2026-10-29",
       "when": "amc",
       "confirmed": false
     },
-    "MRK": {
+    "LLY": {
       "next": "2026-10-29",
       "when": "bmo",
       "confirmed": true
     },
-    "PSA": {
+    "PAG": {
+      "next": "2026-10-28",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "SCL": {
+      "next": "2026-10-28",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "CFFN": {
+      "next": "2026-10-28",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "DVA": {
       "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
     },
-    "XPO": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": true
+    "MC": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
     },
-    "HAYW": {
+    "ITT": {
       "next": "2026-10-27",
       "when": "bmo",
       "confirmed": false
     },
-    "KHC": {
-      "next": "2026-10-28",
-      "when": "bmo",
-      "confirmed": false
+    "PEB": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": true
     },
-    "META": {
+    "PI": {
       "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
@@ -2864,8 +2849,8 @@
       "when": "bmo",
       "confirmed": false
     },
-    "ALSN": {
-      "next": "2026-10-29",
+    "VLTO": {
+      "next": "2026-10-21",
       "when": "amc",
       "confirmed": false
     },
@@ -2874,22 +2859,47 @@
       "when": "amc",
       "confirmed": false
     },
-    "MTRN": {
-      "next": "2026-10-28",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "REYN": {
+    "PB": {
       "next": "2026-11-04",
       "when": "bmo",
       "confirmed": false
     },
-    "THG": {
+    "ESAB": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "TTMI": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "TKR": {
+      "next": "2026-10-28",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "TMDX": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "EPR": {
       "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
     },
-    "MSFT": {
+    "MAS": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "VRRM": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "AM": {
       "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
@@ -2899,107 +2909,17 @@
       "when": "amc",
       "confirmed": false
     },
-    "ALGN": {
+    "STAG": {
       "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
     },
-    "VLTO": {
-      "next": "2026-10-21",
-      "when": "amc",
-      "confirmed": false
-    },
-    "DVA": {
+    "ROL": {
       "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
     },
-    "BLKB": {
-      "next": "2026-10-28",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "CTSH": {
-      "next": "2026-10-28",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "PAG": {
-      "next": "2026-10-28",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "VIRT": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "PB": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "BIO": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "TKR": {
-      "next": "2026-10-28",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "AMH": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CALX": {
-      "next": "2026-10-26",
-      "when": "amc",
-      "confirmed": false
-    },
-    "AROC": {
-      "next": "2026-10-27",
-      "when": "amc",
-      "confirmed": false
-    },
-    "VTR": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "PEB": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": true
-    },
-    "PI": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "WAY": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "MAA": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "COHU": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "UTHR": {
-      "next": "2026-10-28",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "GEHC": {
+    "SHEN": {
       "next": "2026-10-28",
       "when": "bmo",
       "confirmed": false
@@ -3009,62 +2929,7 @@
       "when": "amc",
       "confirmed": false
     },
-    "MC": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "PBI": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "AMSF": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "ITT": {
-      "next": "2026-10-27",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "EPR": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "OSW": {
-      "next": "2026-10-28",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "BNL": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "AEP": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "SCL": {
-      "next": "2026-10-28",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "CFFN": {
-      "next": "2026-10-28",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "NAVI": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "OGE": {
+    "MTRN": {
       "next": "2026-10-28",
       "when": "bmo",
       "confirmed": false
@@ -3074,29 +2939,84 @@
       "when": "bmo",
       "confirmed": false
     },
-    "LLY": {
+    "ESS": {
+      "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": false
+    },
+    "LAD": {
       "next": "2026-10-29",
       "when": "bmo",
       "confirmed": true
     },
-    "MAS": {
+    "XPO": {
       "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": true
+    },
+    "ODFL": {
+      "next": "2026-10-28",
       "when": "bmo",
       "confirmed": false
     },
-    "NOW": {
+    "EBAY": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "SBUX": {
       "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
     },
-    "KEX": {
+    "ALSN": {
       "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "AROC": {
+      "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": false
+    },
+    "CNXN": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "FLEX": {
+      "next": "2026-10-28",
       "when": "bmo",
       "confirmed": false
     },
-    "NWE": {
+    "AMSF": {
       "next": "2026-10-28",
       "when": "amc",
+      "confirmed": false
+    },
+    "GRBK": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "SCI": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "MORN": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "REYN": {
+      "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "FTV": {
+      "next": "2026-10-28",
+      "when": "bmo",
       "confirmed": false
     },
     "EQIX": {
@@ -3104,22 +3024,102 @@
       "when": "amc",
       "confirmed": false
     },
-    "RRC": {
-      "next": "2026-10-27",
+    "EHC": {
+      "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
     },
-    "CAT": {
+    "OGE": {
+      "next": "2026-10-28",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "USLM": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "NAVI": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "BLKB": {
+      "next": "2026-10-28",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "VIAV": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "UTHR": {
+      "next": "2026-10-28",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "BXMT": {
+      "next": "2026-10-28",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "AEP": {
       "next": "2026-10-29",
       "when": "bmo",
       "confirmed": false
     },
-    "FCF": {
-      "next": "2026-10-27",
+    "VIRT": {
+      "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "GNRC": {
+      "next": "2026-10-28",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "RRX": {
+      "next": "2026-10-28",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "CTSH": {
+      "next": "2026-10-28",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "BMY": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": true
+    },
+    "FIBK": {
+      "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
     },
-    "WEX": {
+    "MSFT": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "CLH": {
+      "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "CHRW": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "FORM": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "VTR": {
       "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
@@ -3127,6 +3127,31 @@
     "GOOGL": {
       "next": "2026-10-28",
       "when": "amc",
+      "confirmed": false
+    },
+    "ABR": {
+      "next": "2026-10-30",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "CVSA": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "EXPO": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "FSS": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "PRLB": {
+      "next": "2026-10-30",
+      "when": "bmo",
       "confirmed": false
     },
     "SIRI": {
@@ -3149,13 +3174,33 @@
       "when": "amc",
       "confirmed": false
     },
-    "CWT": {
+    "LXP": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "OMCL": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "SPSC": {
       "next": "2026-10-29",
       "when": "amc",
       "confirmed": false
     },
-    "CI": {
-      "next": "2026-11-05",
+    "TROW": {
+      "next": "2026-10-30",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "APTV": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "BLDR": {
+      "next": "2026-10-29",
       "when": "bmo",
       "confirmed": false
     },
@@ -3175,6 +3220,176 @@
       "confirmed": false
     },
     "PBF": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "SYK": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "ALGM": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "ARW": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "DXCM": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "NWL": {
+      "next": "2026-10-30",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "AMZN": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "EIG": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "MGY": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "NVST": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "SPXC": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "VICI": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "VNT": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "ALHC": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "IR": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "IRT": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "SPNT": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "AMP": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "DXC": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "FHI": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "BAX": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "FMC": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "SKYW": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "CHD": {
+      "next": "2026-10-30",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "DINO": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "EW": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "HSY": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "KMB": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "ILMN": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "LNG": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "PATK": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "SHAK": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "AR": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "CNX": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "DTE": {
       "next": "2026-10-29",
       "when": "bmo",
       "confirmed": false
@@ -3224,257 +3439,22 @@
       "when": "amc",
       "confirmed": false
     },
-    "TBBK": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "TWLO": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "GLPI": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "IDA": {
+    "BIIB": {
       "next": "2026-10-29",
       "when": "bmo",
       "confirmed": false
     },
-    "SPXC": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "VICI": {
+    "HR": {
       "next": "2026-10-29",
       "when": "amc",
       "confirmed": false
     },
-    "VNT": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "ALHC": {
+    "MSTR": {
       "next": "2026-10-29",
       "when": "amc",
       "confirmed": false
     },
-    "IR": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "IRT": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "WT": {
-      "next": "2026-10-30",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "COIN": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "HII": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "HLI": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "MSGS": {
-      "next": "2026-10-30",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "RIOT": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "BAX": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "FMC": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "EIG": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "MGY": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "NVST": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "RBC": {
-      "next": "2026-10-30",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "RGA": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "EME": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "ILMN": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "LNG": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "PATK": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "SKYW": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CHD": {
-      "next": "2026-10-30",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "DINO": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "EW": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "HSY": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "KMB": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "SHAK": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "AR": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CNX": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "DTE": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "ROKU": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "ABBV": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "BWA": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "CAH": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "JBSS": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "LNC": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "MPT": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "MSEX": {
-      "next": "2026-10-30",
-      "when": "amc",
-      "confirmed": false
-    },
-    "AMRX": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "AX": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "BFAM": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CMS": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "CSW": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "DFH": {
+    "OPCH": {
       "next": "2026-10-29",
       "when": "bmo",
       "confirmed": false
@@ -3504,73 +3484,43 @@
       "when": "amc",
       "confirmed": false
     },
-    "PRLB": {
-      "next": "2026-10-30",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "AAMI": {
+    "VMC": {
       "next": "2026-10-29",
       "when": "bmo",
       "confirmed": false
     },
-    "BIIB": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "HR": {
+    "AAPL": {
       "next": "2026-10-29",
       "when": "amc",
       "confirmed": false
     },
-    "MSTR": {
+    "ENTG": {
+      "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "FSLR": {
       "next": "2026-10-29",
       "when": "amc",
       "confirmed": false
     },
-    "OPCH": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "TILE": {
-      "next": "2026-11-06",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "CACC": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "FND": {
+    "JOE": {
       "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
     },
-    "CVCO": {
+    "MA": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "MPWR": {
       "next": "2026-10-29",
       "when": "amc",
       "confirmed": false
     },
-    "FOX": {
+    "AJG": {
       "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "KBR": {
-      "next": "2026-10-22",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "LCII": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "UDR": {
-      "next": "2026-10-28",
       "when": "amc",
       "confirmed": false
     },
@@ -3582,46 +3532,6 @@
     "KWR": {
       "next": "2026-10-29",
       "when": "amc",
-      "confirmed": false
-    },
-    "SO": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "WTW": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "GDDY": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "LEA": {
-      "next": "2026-10-22",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "NVT": {
-      "next": "2026-10-30",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "PIPR": {
-      "next": "2026-10-30",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "FHI": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "RES": {
-      "next": "2026-11-05",
-      "when": "bmo",
       "confirmed": false
     },
     "APPF": {
@@ -3644,9 +3554,109 @@
       "when": "bmo",
       "confirmed": false
     },
+    "SO": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "WTW": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "GDDY": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "LEA": {
+      "next": "2026-10-22",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "CUZ": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "FBIN": {
+      "next": "2026-11-12",
+      "when": "amc",
+      "confirmed": false
+    },
+    "LECO": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "LUMN": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "RDDT": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "WCC": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "AAP": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "BDC": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "CL": {
+      "next": "2026-10-30",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "HWM": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
     "RYAN": {
       "next": "2026-10-29",
       "when": "amc",
+      "confirmed": false
+    },
+    "SNDR": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "HGV": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "INDV": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "LHX": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "MTZ": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "RITM": {
+      "next": "2026-10-29",
+      "when": "bmo",
       "confirmed": false
     },
     "WDC": {
@@ -3684,21 +3694,6 @@
       "when": "bmo",
       "confirmed": false
     },
-    "CUBE": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CWST": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "PWR": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
     "ROCK": {
       "next": "2026-10-29",
       "when": "bmo",
@@ -3709,38 +3704,8 @@
       "when": "bmo",
       "confirmed": false
     },
-    "OMCL": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "SPSC": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "TROW": {
+    "D": {
       "next": "2026-10-30",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "APTV": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "SNDR": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "IDCC": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "SPGI": {
-      "next": "2026-10-29",
       "when": "bmo",
       "confirmed": false
     },
@@ -3749,57 +3714,7 @@
       "when": "amc",
       "confirmed": false
     },
-    "XHR": {
-      "next": "2026-10-30",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "BJRI": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "NEU": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "RITM": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "CFR": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "WCC": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "AGCO": {
-      "next": "2026-10-30",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "ABR": {
-      "next": "2026-10-30",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "DXCM": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "AAP": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "CUZ": {
+    "TWLO": {
       "next": "2026-10-29",
       "when": "amc",
       "confirmed": false
@@ -3809,69 +3724,39 @@
       "when": "bmo",
       "confirmed": false
     },
-    "FBIN": {
-      "next": "2026-11-12",
-      "when": "amc",
-      "confirmed": false
-    },
-    "SYK": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "OSIS": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CG": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "HWM": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "JOE": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "MA": {
+    "AMRX": {
       "next": "2026-10-29",
       "when": "bmo",
       "confirmed": false
     },
-    "SPNT": {
+    "CWT": {
       "next": "2026-10-29",
       "when": "amc",
       "confirmed": false
     },
-    "TXNM": {
+    "TRN": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "BFAM": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "ERIE": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "CACC": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "RBC": {
       "next": "2026-10-30",
       "when": "bmo",
-      "confirmed": false
-    },
-    "AMP": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "EXPO": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "XEL": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "MPWR": {
-      "next": "2026-10-29",
-      "when": "amc",
       "confirmed": false
     },
     "COLM": {
@@ -3879,8 +3764,33 @@
       "when": "amc",
       "confirmed": false
     },
-    "ENTG": {
-      "next": "2026-11-04",
+    "ROKU": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "WT": {
+      "next": "2026-10-30",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "COIN": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "CAH": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "PK": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "IDA": {
+      "next": "2026-10-29",
       "when": "bmo",
       "confirmed": false
     },
@@ -3889,87 +3799,22 @@
       "when": "amc",
       "confirmed": false
     },
-    "AJG": {
+    "CUBE": {
       "next": "2026-10-29",
       "when": "amc",
       "confirmed": false
     },
-    "TT": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "LAUR": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "D": {
-      "next": "2026-10-30",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "FSS": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "LHX": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "RDDT": {
+    "HLI": {
       "next": "2026-10-29",
       "when": "amc",
       "confirmed": false
     },
-    "MTZ": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "DXC": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "NWL": {
-      "next": "2026-10-30",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "LECO": {
+    "AAMI": {
       "next": "2026-10-29",
       "when": "bmo",
       "confirmed": false
     },
-    "FSLR": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "SXT": {
-      "next": "2026-10-30",
-      "when": "bmo",
-      "confirmed": true
-    },
-    "UFPI": {
-      "next": "2026-10-26",
-      "when": "amc",
-      "confirmed": false
-    },
-    "LIN": {
-      "next": "2026-10-30",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "RMD": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "VMC": {
+    "LNC": {
       "next": "2026-10-29",
       "when": "bmo",
       "confirmed": false
@@ -3979,82 +3824,42 @@
       "when": "bmo",
       "confirmed": false
     },
-    "BLDR": {
+    "MPT": {
       "next": "2026-10-29",
       "when": "bmo",
       "confirmed": false
     },
-    "APG": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "ERIE": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "MSI": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CWK": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "TRN": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "INDV": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "AAPL": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "PK": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "HGV": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "CVSA": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CL": {
+    "TXNM": {
       "next": "2026-10-30",
       "when": "bmo",
       "confirmed": false
     },
-    "LUMN": {
+    "GLPI": {
       "next": "2026-10-29",
       "when": "amc",
       "confirmed": false
     },
-    "ICE": {
+    "RIOT": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "AME": {
       "next": "2026-10-29",
       "when": "bmo",
       "confirmed": false
     },
-    "ARW": {
-      "next": "2026-10-29",
-      "when": "bmo",
+    "CWST": {
+      "next": "2026-11-05",
+      "when": "amc",
       "confirmed": false
     },
-    "ALGM": {
+    "RGA": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "ABBV": {
       "next": "2026-10-29",
       "when": "bmo",
       "confirmed": false
@@ -4064,24 +3869,219 @@
       "when": "bmo",
       "confirmed": false
     },
-    "AME": {
+    "ICE": {
       "next": "2026-10-29",
       "when": "bmo",
       "confirmed": false
     },
-    "LXP": {
-      "next": "2026-10-29",
+    "RES": {
+      "next": "2026-11-05",
       "when": "bmo",
       "confirmed": false
     },
-    "BDC": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "AMZN": {
+    "TBBK": {
       "next": "2026-10-29",
       "when": "amc",
+      "confirmed": false
+    },
+    "CI": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "TT": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "FND": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "CFR": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "UFPI": {
+      "next": "2026-10-26",
+      "when": "amc",
+      "confirmed": false
+    },
+    "LAUR": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "PWR": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "SPGI": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "OSIS": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "MSI": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "TILE": {
+      "next": "2026-11-06",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "AX": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "SXT": {
+      "next": "2026-10-30",
+      "when": "bmo",
+      "confirmed": true
+    },
+    "BJRI": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "MSEX": {
+      "next": "2026-10-30",
+      "when": "amc",
+      "confirmed": false
+    },
+    "XEL": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "JBSS": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "NEU": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "CWK": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "XHR": {
+      "next": "2026-10-30",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "PIPR": {
+      "next": "2026-10-30",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "MSGS": {
+      "next": "2026-10-30",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "APG": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "CG": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "LCII": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "BWA": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "CMS": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "AGCO": {
+      "next": "2026-10-30",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "DFH": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "IDCC": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "CVCO": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "HII": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "EME": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "UDR": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "LIN": {
+      "next": "2026-10-30",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "KBR": {
+      "next": "2026-10-22",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "CSW": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "FOX": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "RMD": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "NVT": {
+      "next": "2026-10-30",
+      "when": "bmo",
       "confirmed": false
     },
     "FOXA": {
@@ -4099,43 +4099,38 @@
       "when": "bmo",
       "confirmed": true
     },
+    "UPWK": {
+      "next": "2026-11-02",
+      "when": "amc",
+      "confirmed": false
+    },
+    "ADUS": {
+      "next": "2026-11-02",
+      "when": "amc",
+      "confirmed": false
+    },
+    "ENSG": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": false
+    },
     "ICHR": {
       "next": "2026-11-02",
       "when": "amc",
       "confirmed": false
     },
-    "CRK": {
+    "PEG": {
       "next": "2026-11-02",
-      "when": "amc",
-      "confirmed": false
-    },
-    "HSTM": {
-      "next": "2026-11-02",
-      "when": "amc",
-      "confirmed": false
-    },
-    "PPLI": {
-      "next": "2026-11-02",
-      "when": "amc",
-      "confirmed": false
-    },
-    "SEI": {
-      "next": "2026-11-02",
-      "when": "amc",
-      "confirmed": false
-    },
-    "UNM": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": true
-    },
-    "ZBRA": {
-      "next": "2026-11-03",
       "when": "bmo",
-      "confirmed": true
+      "confirmed": false
     },
-    "QRVO": {
-      "next": "2026-11-09",
+    "PGR": {
+      "next": "2026-10-14",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "CRBG": {
+      "next": "2026-11-02",
       "when": "amc",
       "confirmed": false
     },
@@ -4144,12 +4139,12 @@
       "when": "amc",
       "confirmed": false
     },
-    "HLIT": {
-      "next": "2026-10-26",
-      "when": "amc",
+    "AMG": {
+      "next": "2026-11-02",
+      "when": "bmo",
       "confirmed": false
     },
-    "STRL": {
+    "JBTM": {
       "next": "2026-11-02",
       "when": "amc",
       "confirmed": false
@@ -4159,22 +4154,12 @@
       "when": "amc",
       "confirmed": false
     },
-    "L": {
-      "next": "2026-11-02",
-      "when": "bmo",
-      "confirmed": false
-    },
     "ARES": {
       "next": "2026-11-02",
       "when": "bmo",
       "confirmed": false
     },
-    "LSCC": {
-      "next": "2026-11-02",
-      "when": "amc",
-      "confirmed": false
-    },
-    "MD": {
+    "L": {
       "next": "2026-11-02",
       "when": "bmo",
       "confirmed": false
@@ -4194,9 +4179,34 @@
       "when": "amc",
       "confirmed": false
     },
-    "KRYS": {
+    "CRK": {
       "next": "2026-11-02",
-      "when": "bmo",
+      "when": "amc",
+      "confirmed": false
+    },
+    "HSTM": {
+      "next": "2026-11-02",
+      "when": "amc",
+      "confirmed": false
+    },
+    "PPLI": {
+      "next": "2026-11-02",
+      "when": "amc",
+      "confirmed": false
+    },
+    "SAFT": {
+      "next": "2026-11-02",
+      "when": "amc",
+      "confirmed": false
+    },
+    "FANG": {
+      "next": "2026-11-02",
+      "when": "amc",
+      "confirmed": false
+    },
+    "HIMS": {
+      "next": "2026-11-09",
+      "when": "amc",
       "confirmed": false
     },
     "VVX": {
@@ -4219,47 +4229,42 @@
       "when": "amc",
       "confirmed": false
     },
-    "SM": {
+    "RNG": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "SPG": {
       "next": "2026-11-02",
       "when": "amc",
       "confirmed": false
     },
-    "FANG": {
+    "WMB": {
       "next": "2026-11-02",
       "when": "amc",
       "confirmed": false
     },
-    "HIMS": {
-      "next": "2026-11-09",
-      "when": "amc",
-      "confirmed": false
-    },
-    "SAFT": {
-      "next": "2026-11-02",
-      "when": "amc",
-      "confirmed": false
-    },
-    "GTM": {
-      "next": "2026-11-02",
-      "when": "amc",
-      "confirmed": false
-    },
-    "IDXX": {
+    "FRPT": {
       "next": "2026-11-02",
       "when": "bmo",
       "confirmed": false
     },
-    "NSSC": {
+    "TGTX": {
       "next": "2026-11-02",
       "when": "bmo",
       "confirmed": false
     },
-    "VNOM": {
-      "next": "2026-11-02",
+    "SRPT": {
+      "next": "2026-11-04",
       "when": "amc",
       "confirmed": false
     },
     "EMN": {
+      "next": "2026-11-02",
+      "when": "amc",
+      "confirmed": false
+    },
+    "CRGY": {
       "next": "2026-11-02",
       "when": "amc",
       "confirmed": false
@@ -4279,32 +4284,7 @@
       "when": "amc",
       "confirmed": false
     },
-    "MPC": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": true
-    },
-    "ON": {
-      "next": "2026-11-02",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "PRIM": {
-      "next": "2026-11-02",
-      "when": "amc",
-      "confirmed": false
-    },
-    "RHP": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": true
-    },
-    "JBTM": {
-      "next": "2026-11-02",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CRGY": {
+    "CSR": {
       "next": "2026-11-02",
       "when": "amc",
       "confirmed": false
@@ -4334,87 +4314,32 @@
       "when": "amc",
       "confirmed": false
     },
-    "TNC": {
+    "SEI": {
       "next": "2026-11-02",
       "when": "amc",
       "confirmed": false
     },
-    "PEG": {
+    "UNM": {
+      "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": true
+    },
+    "MD": {
       "next": "2026-11-02",
       "when": "bmo",
       "confirmed": false
     },
-    "TGTX": {
-      "next": "2026-11-02",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "CRBG": {
-      "next": "2026-11-02",
-      "when": "amc",
-      "confirmed": false
-    },
-    "ADUS": {
-      "next": "2026-11-02",
-      "when": "amc",
-      "confirmed": false
-    },
-    "RNG": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "ENSG": {
+    "MPC": {
       "next": "2026-11-03",
       "when": "bmo",
-      "confirmed": false
+      "confirmed": true
     },
-    "KTB": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "CSR": {
+    "APLE": {
       "next": "2026-11-02",
       "when": "amc",
-      "confirmed": false
-    },
-    "SRPT": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "AMG": {
-      "next": "2026-11-02",
-      "when": "bmo",
       "confirmed": false
     },
     "UFPT": {
-      "next": "2026-11-02",
-      "when": "amc",
-      "confirmed": false
-    },
-    "PGR": {
-      "next": "2026-10-14",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "DRH": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": true
-    },
-    "ORA": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "EXPD": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": true
-    },
-    "UPWK": {
       "next": "2026-11-02",
       "when": "amc",
       "confirmed": false
@@ -4424,17 +4349,92 @@
       "when": "amc",
       "confirmed": false
     },
+    "QRVO": {
+      "next": "2026-11-09",
+      "when": "amc",
+      "confirmed": false
+    },
+    "KTB": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "KRYS": {
+      "next": "2026-11-02",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "LSCC": {
+      "next": "2026-11-02",
+      "when": "amc",
+      "confirmed": false
+    },
+    "GTM": {
+      "next": "2026-11-02",
+      "when": "amc",
+      "confirmed": false
+    },
+    "TNC": {
+      "next": "2026-11-02",
+      "when": "amc",
+      "confirmed": false
+    },
+    "HLIT": {
+      "next": "2026-10-26",
+      "when": "amc",
+      "confirmed": false
+    },
+    "NSSC": {
+      "next": "2026-11-02",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "DRH": {
+      "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": true
+    },
     "CNO": {
       "next": "2026-11-02",
       "when": "amc",
       "confirmed": false
     },
-    "WMB": {
+    "ORA": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "IDXX": {
+      "next": "2026-11-02",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "SM": {
       "next": "2026-11-02",
       "when": "amc",
       "confirmed": false
     },
-    "APLE": {
+    "PRIM": {
+      "next": "2026-11-02",
+      "when": "amc",
+      "confirmed": false
+    },
+    "ON": {
+      "next": "2026-11-02",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "EXPD": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": true
+    },
+    "RHP": {
+      "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": true
+    },
+    "VNOM": {
       "next": "2026-11-02",
       "when": "amc",
       "confirmed": false
@@ -4444,18 +4444,48 @@
       "when": "bmo",
       "confirmed": false
     },
-    "FRPT": {
-      "next": "2026-11-02",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "SPG": {
+    "STRL": {
       "next": "2026-11-02",
       "when": "amc",
       "confirmed": false
     },
     "SANM": {
       "next": "2026-11-02",
+      "when": "amc",
+      "confirmed": false
+    },
+    "ZBRA": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": true
+    },
+    "EQH": {
+      "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": false
+    },
+    "GT": {
+      "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": false
+    },
+    "HLNE": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "KTOS": {
+      "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": false
+    },
+    "LITE": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "MCY": {
+      "next": "2026-11-03",
       "when": "amc",
       "confirmed": false
     },
@@ -4484,28 +4514,53 @@
       "when": "amc",
       "confirmed": false
     },
+    "IPGP": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "MARA": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "SMG": {
+      "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": false
+    },
     "KGS": {
       "next": "2026-11-03",
       "when": "amc",
       "confirmed": false
     },
-    "CORT": {
-      "next": "2026-11-04",
+    "AEIS": {
+      "next": "2026-11-03",
       "when": "amc",
       "confirmed": false
     },
-    "NCLH": {
-      "next": "2026-11-04",
+    "CDW": {
+      "next": "2026-11-03",
       "when": "bmo",
       "confirmed": false
     },
-    "ECG": {
+    "GO": {
       "next": "2026-11-03",
       "when": "amc",
       "confirmed": false
     },
-    "MCY": {
+    "GWW": {
+      "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": true
+    },
+    "GXO": {
       "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": false
+    },
+    "OTTR": {
+      "next": "2026-11-02",
       "when": "amc",
       "confirmed": false
     },
@@ -4534,7 +4589,17 @@
       "when": "bmo",
       "confirmed": false
     },
-    "UBER": {
+    "JXN": {
+      "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": false
+    },
+    "DG": {
+      "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": true
+    },
+    "HSIC": {
       "next": "2026-11-03",
       "when": "bmo",
       "confirmed": false
@@ -4552,41 +4617,6 @@
     "ETN": {
       "next": "2026-11-03",
       "when": "bmo",
-      "confirmed": false
-    },
-    "GWW": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": true
-    },
-    "GXO": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": false
-    },
-    "OTTR": {
-      "next": "2026-11-02",
-      "when": "amc",
-      "confirmed": false
-    },
-    "HRMY": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "JKHY": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": false
-    },
-    "LTH": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "MOS": {
-      "next": "2026-11-03",
-      "when": "amc",
       "confirmed": false
     },
     "SWKS": {
@@ -4609,12 +4639,17 @@
       "when": "bmo",
       "confirmed": false
     },
-    "MBIN": {
-      "next": "2026-10-27",
+    "JKHY": {
+      "next": "2026-11-03",
       "when": "amc",
       "confirmed": false
     },
-    "PARR": {
+    "LTH": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "MOS": {
       "next": "2026-11-03",
       "when": "amc",
       "confirmed": false
@@ -4639,32 +4674,27 @@
       "when": "amc",
       "confirmed": false
     },
-    "RDN": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": false
-    },
-    "SHLS": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "CHRD": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": false
-    },
-    "WTRG": {
+    "CORT": {
       "next": "2026-11-04",
       "when": "amc",
       "confirmed": false
     },
-    "AMGN": {
-      "next": "2026-11-03",
-      "when": "amc",
+    "NCLH": {
+      "next": "2026-11-04",
+      "when": "bmo",
       "confirmed": false
     },
-    "ATEN": {
+    "BR": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "NOVT": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "SLAB": {
       "next": "2026-11-03",
       "when": "amc",
       "confirmed": false
@@ -4679,34 +4709,24 @@
       "when": "amc",
       "confirmed": false
     },
-    "VCYT": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": false
-    },
-    "BR": {
+    "SWK": {
       "next": "2026-11-03",
       "when": "bmo",
       "confirmed": false
     },
-    "NOVT": {
+    "AHCO": {
       "next": "2026-11-03",
       "when": "bmo",
       "confirmed": false
     },
-    "ANET": {
+    "MLM": {
       "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": false
-    },
-    "ADT": {
-      "next": "2026-11-05",
       "when": "bmo",
       "confirmed": false
     },
-    "PRDO": {
-      "next": "2026-11-09",
-      "when": "amc",
+    "ULS": {
+      "next": "2026-11-03",
+      "when": "bmo",
       "confirmed": false
     },
     "CWEN": {
@@ -4722,31 +4742,6 @@
     "MTCH": {
       "next": "2026-11-03",
       "when": "amc",
-      "confirmed": false
-    },
-    "HST": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": true
-    },
-    "LGIH": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "LYV": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": false
-    },
-    "HSIC": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "WING": {
-      "next": "2026-11-03",
-      "when": "bmo",
       "confirmed": false
     },
     "APO": {
@@ -4774,6 +4769,51 @@
       "when": "bmo",
       "confirmed": false
     },
+    "HST": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": true
+    },
+    "NMIH": {
+      "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": false
+    },
+    "SHC": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "SKY": {
+      "next": "2026-10-27",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "UTL": {
+      "next": "2026-11-02",
+      "when": "amc",
+      "confirmed": false
+    },
+    "BALL": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "CPRI": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "DEI": {
+      "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": false
+    },
+    "HMN": {
+      "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": false
+    },
     "AFL": {
       "next": "2026-11-04",
       "when": "amc",
@@ -4794,19 +4834,14 @@
       "when": "amc",
       "confirmed": false
     },
+    "PCTY": {
+      "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": false
+    },
     "QLYS": {
       "next": "2026-11-03",
       "when": "amc",
-      "confirmed": false
-    },
-    "UFCS": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CRVL": {
-      "next": "2026-11-03",
-      "when": "bmo",
       "confirmed": false
     },
     "DAVE": {
@@ -4814,32 +4849,37 @@
       "when": "amc",
       "confirmed": false
     },
-    "PINS": {
-      "next": "2026-11-09",
-      "when": "amc",
-      "confirmed": false
-    },
-    "PJT": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "JXN": {
+    "IOSP": {
       "next": "2026-11-03",
       "when": "amc",
       "confirmed": false
     },
-    "UNIT": {
+    "HOG": {
       "next": "2026-11-04",
       "when": "bmo",
       "confirmed": false
     },
-    "SPHR": {
-      "next": "2026-11-05",
+    "ECG": {
+      "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": false
+    },
+    "MBIN": {
+      "next": "2026-10-27",
+      "when": "amc",
+      "confirmed": false
+    },
+    "SUPN": {
+      "next": "2026-11-03",
       "when": "bmo",
       "confirmed": false
     },
-    "PCTY": {
+    "AMGN": {
+      "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": false
+    },
+    "ANET": {
       "next": "2026-11-03",
       "when": "amc",
       "confirmed": false
@@ -4849,77 +4889,32 @@
       "when": "bmo",
       "confirmed": false
     },
+    "SMCI": {
+      "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": false
+    },
+    "MBC": {
+      "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": false
+    },
+    "AFG": {
+      "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": false
+    },
+    "ADT": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
     "OI": {
       "next": "2026-10-27",
       "when": "amc",
       "confirmed": false
     },
-    "DEI": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": false
-    },
-    "GT": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": false
-    },
-    "AEIS": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": false
-    },
-    "HLNE": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "BALL": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "TREX": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "NPO": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "AHCO": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "NMIH": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": false
-    },
-    "SUPN": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "SLAB": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": false
-    },
-    "MLM": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "TOST": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": false
-    },
-    "TAP": {
+    "SHLS": {
       "next": "2026-11-03",
       "when": "bmo",
       "confirmed": false
@@ -4929,142 +4924,7 @@
       "when": "amc",
       "confirmed": false
     },
-    "IOSP": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": false
-    },
-    "MAR": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "DG": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": true
-    },
-    "SKY": {
-      "next": "2026-10-27",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "LTC": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": false
-    },
-    "EQH": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": false
-    },
-    "OVV": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "SWK": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "GPN": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "SMCI": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": false
-    },
-    "AMD": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": false
-    },
-    "BHE": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CDW": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "MBC": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": false
-    },
-    "GO": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": false
-    },
-    "KTOS": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": false
-    },
-    "SHC": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "CF": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": true
-    },
-    "LDOS": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "MARA": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "LITE": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "NNN": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "UTL": {
-      "next": "2026-11-02",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CPRI": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "ULS": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "IPGP": {
-      "next": "2026-11-03",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "HMN": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": false
-    },
-    "AXON": {
+    "CHRD": {
       "next": "2026-11-03",
       "when": "amc",
       "confirmed": false
@@ -5074,19 +4934,184 @@
       "when": "bmo",
       "confirmed": false
     },
-    "HOG": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "AFG": {
+    "TOST": {
       "next": "2026-11-03",
       "when": "amc",
       "confirmed": false
     },
-    "SMG": {
+    "HRMY": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "OVV": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "CRVL": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "PARR": {
+      "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": false
+    },
+    "MAR": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "UNIT": {
       "next": "2026-11-04",
       "when": "bmo",
+      "confirmed": false
+    },
+    "PRDO": {
+      "next": "2026-11-09",
+      "when": "amc",
+      "confirmed": false
+    },
+    "WTRG": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "TAP": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "PJT": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "GPN": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "NNN": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "PINS": {
+      "next": "2026-11-09",
+      "when": "amc",
+      "confirmed": false
+    },
+    "AMD": {
+      "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": false
+    },
+    "LGIH": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "RDN": {
+      "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": false
+    },
+    "VCYT": {
+      "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": false
+    },
+    "BHE": {
+      "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": false
+    },
+    "SPHR": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "LYV": {
+      "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": false
+    },
+    "CF": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": true
+    },
+    "WING": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "LDOS": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "NPO": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "TREX": {
+      "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "AXON": {
+      "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": false
+    },
+    "UFCS": {
+      "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": false
+    },
+    "UBER": {
+      "next": "2026-11-03",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "ATEN": {
+      "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": false
+    },
+    "LTC": {
+      "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": false
+    },
+    "SWX": {
+      "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "TKO": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "CNMD": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "NGVT": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "RGLD": {
+      "next": "2026-11-04",
+      "when": "amc",
       "confirmed": false
     },
     "SAFE": {
@@ -5114,7 +5139,7 @@
       "when": "amc",
       "confirmed": false
     },
-    "DVN": {
+    "PAYC": {
       "next": "2026-11-04",
       "when": "amc",
       "confirmed": false
@@ -5129,47 +5154,47 @@
       "when": "amc",
       "confirmed": false
     },
-    "BSY": {
+    "TRMB": {
       "next": "2026-11-04",
       "when": "bmo",
       "confirmed": false
     },
-    "DASH": {
+    "EFC": {
       "next": "2026-11-04",
       "when": "amc",
       "confirmed": false
     },
-    "GEF": {
-      "next": "2026-10-28",
-      "when": "amc",
-      "confirmed": false
-    },
-    "SEZL": {
+    "HCC": {
       "next": "2026-11-04",
       "when": "amc",
       "confirmed": false
     },
-    "SONO": {
+    "NWN": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "PEN": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "LOPE": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "MGEE": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "PTC": {
       "next": "2026-11-11",
       "when": "amc",
       "confirmed": false
     },
-    "TPC": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "ENS": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "GOLF": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "NGVT": {
+    "QTWO": {
       "next": "2026-11-04",
       "when": "amc",
       "confirmed": false
@@ -5189,24 +5214,44 @@
       "when": "bmo",
       "confirmed": false
     },
-    "WTS": {
-      "next": "2026-10-28",
-      "when": "amc",
+    "JCI": {
+      "next": "2026-11-04",
+      "when": "bmo",
       "confirmed": false
     },
-    "ACAD": {
+    "KMPR": {
       "next": "2026-11-04",
       "when": "amc",
       "confirmed": false
     },
-    "JAZZ": {
+    "KMT": {
       "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "STAA": {
+      "next": "2026-11-11",
       "when": "amc",
       "confirmed": false
     },
-    "MCK": {
+    "XPEL": {
       "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "AOSL": {
+      "next": "2026-11-09",
       "when": "amc",
+      "confirmed": false
+    },
+    "ASTE": {
+      "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "ELAN": {
+      "next": "2026-11-05",
+      "when": "bmo",
       "confirmed": false
     },
     "BROS": {
@@ -5219,42 +5264,12 @@
       "when": "bmo",
       "confirmed": false
     },
-    "LOPE": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "MGEE": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "RELY": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "EYE": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "GNW": {
-      "next": "2026-11-09",
-      "when": "amc",
-      "confirmed": false
-    },
-    "LIVN": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": false
-    },
     "CRL": {
       "next": "2026-11-04",
       "when": "bmo",
       "confirmed": false
     },
-    "NYT": {
+    "LIVN": {
       "next": "2026-11-04",
       "when": "bmo",
       "confirmed": false
@@ -5289,42 +5304,47 @@
       "when": "bmo",
       "confirmed": false
     },
-    "COTY": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "GNL": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "IBP": {
+    "BSY": {
       "next": "2026-11-04",
       "when": "bmo",
       "confirmed": false
     },
-    "PAHC": {
+    "DASH": {
       "next": "2026-11-04",
       "when": "amc",
       "confirmed": false
     },
-    "VTOL": {
+    "GEF": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "GPOR": {
       "next": "2026-11-03",
       "when": "amc",
       "confirmed": false
     },
-    "WWW": {
-      "next": "2026-11-12",
-      "when": "bmo",
+    "HL": {
+      "next": "2026-11-05",
+      "when": "amc",
       "confirmed": false
     },
-    "ACMR": {
+    "LYFT": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "OC": {
       "next": "2026-11-04",
       "when": "bmo",
       "confirmed": false
     },
-    "CW": {
+    "PRI": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "TLN": {
       "next": "2026-11-04",
       "when": "amc",
       "confirmed": false
@@ -5359,142 +5379,52 @@
       "when": "bmo",
       "confirmed": false
     },
-    "RGLD": {
+    "VECO": {
       "next": "2026-11-04",
       "when": "amc",
       "confirmed": false
     },
-    "SHOO": {
+    "ADMA": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "ALB": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "CHH": {
       "next": "2026-11-04",
       "when": "bmo",
       "confirmed": false
     },
-    "TPL": {
+    "LZ": {
       "next": "2026-11-04",
       "when": "amc",
       "confirmed": false
     },
-    "VIR": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "GPOR": {
-      "next": "2026-11-03",
-      "when": "amc",
-      "confirmed": false
-    },
-    "HL": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "LYFT": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "OC": {
+    "PAYO": {
       "next": "2026-11-04",
       "when": "bmo",
       "confirmed": false
     },
-    "PRI": {
+    "RYN": {
       "next": "2026-11-04",
       "when": "amc",
       "confirmed": false
     },
-    "ACHC": {
+    "TALO": {
       "next": "2026-11-04",
       "when": "amc",
       "confirmed": false
     },
-    "AIN": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "APP": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "BKH": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "KNTK": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "MCD": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "MET": {
+    "TECH": {
       "next": "2026-11-09",
-      "when": "amc",
-      "confirmed": false
-    },
-    "OPLN": {
-      "next": "2026-11-04",
       "when": "bmo",
       "confirmed": false
     },
     "FICO": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "VSH": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "AIG": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CRH": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "DUOL": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "QDEL": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "QCOM": {
-      "next": "2026-10-29",
-      "when": "amc",
-      "confirmed": false
-    },
-    "RAMP": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "PTC": {
-      "next": "2026-11-11",
-      "when": "amc",
-      "confirmed": false
-    },
-    "QTWO": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "APA": {
       "next": "2026-11-04",
       "when": "amc",
       "confirmed": false
@@ -5522,6 +5452,81 @@
     "FTRE": {
       "next": "2026-11-05",
       "when": "bmo",
+      "confirmed": false
+    },
+    "VSH": {
+      "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "AIG": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "CRH": {
+      "next": "2026-10-29",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "DUOL": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "CTRE": {
+      "next": "2026-11-09",
+      "when": "amc",
+      "confirmed": false
+    },
+    "IPAR": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "LEU": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "MKSI": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "NFG": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "SITM": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "ARM": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "DT": {
+      "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "FTNT": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "INVA": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "MUR": {
+      "next": "2026-11-04",
+      "when": "amc",
       "confirmed": false
     },
     "SDGR": {
@@ -5559,9 +5564,9 @@
       "when": "bmo",
       "confirmed": false
     },
-    "HOOD": {
+    "JLL": {
       "next": "2026-11-04",
-      "when": "amc",
+      "when": "bmo",
       "confirmed": false
     },
     "DBD": {
@@ -5569,53 +5574,18 @@
       "when": "bmo",
       "confirmed": false
     },
-    "TRMB": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "SITM": {
+    "TPC": {
       "next": "2026-11-04",
       "when": "amc",
       "confirmed": false
     },
-    "SWX": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "TKO": {
+    "SEZL": {
       "next": "2026-11-04",
       "when": "amc",
       "confirmed": false
     },
-    "CTRE": {
-      "next": "2026-11-09",
-      "when": "amc",
-      "confirmed": false
-    },
-    "DNOW": {
+    "ENS": {
       "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "EFC": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "PRGO": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "DT": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "REZI": {
-      "next": "2026-11-05",
       "when": "amc",
       "confirmed": false
     },
@@ -5624,187 +5594,17 @@
       "when": "bmo",
       "confirmed": false
     },
-    "JCI": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "IPAR": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "ADMA": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "NFG": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "LZ": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "STAA": {
-      "next": "2026-11-11",
-      "when": "amc",
-      "confirmed": false
-    },
-    "ARM": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "TALO": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "JLL": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "TLN": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "ADNT": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "AOSL": {
-      "next": "2026-11-09",
-      "when": "amc",
-      "confirmed": false
-    },
-    "PRSU": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "SRE": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "ASTE": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "LEU": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "INVA": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
     "AMCR": {
       "next": "2026-11-05",
       "when": "bmo",
       "confirmed": false
     },
-    "TECH": {
-      "next": "2026-11-09",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "KMT": {
+    "ACMR": {
       "next": "2026-11-04",
       "when": "bmo",
       "confirmed": false
     },
-    "FIS": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "PEN": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "VECO": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "MKSI": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "FTDR": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "PAYO": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "RYN": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CNK": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "CXW": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "BG": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "CNMD": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "XPEL": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "PR": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "KMPR": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "NWN": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "CCJ": {
-      "next": "2026-10-30",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "VAC": {
+    "NYT": {
       "next": "2026-11-04",
       "when": "bmo",
       "confirmed": false
@@ -5814,14 +5614,9 @@
       "when": "bmo",
       "confirmed": false
     },
-    "MUR": {
+    "DVN": {
       "next": "2026-11-04",
       "when": "amc",
-      "confirmed": false
-    },
-    "CHH": {
-      "next": "2026-11-04",
-      "when": "bmo",
       "confirmed": false
     },
     "LPX": {
@@ -5829,12 +5624,157 @@
       "when": "bmo",
       "confirmed": false
     },
-    "ELAN": {
+    "VTOL": {
+      "next": "2026-11-03",
+      "when": "amc",
+      "confirmed": false
+    },
+    "COTY": {
       "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "RELY": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "QDEL": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "VAC": {
+      "next": "2026-11-04",
       "when": "bmo",
       "confirmed": false
     },
-    "PAYC": {
+    "JAZZ": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "SRE": {
+      "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "PR": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "OPLN": {
+      "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "QCOM": {
+      "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "GOLF": {
+      "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "WTS": {
+      "next": "2026-10-28",
+      "when": "amc",
+      "confirmed": false
+    },
+    "PAHC": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "SHOO": {
+      "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "APA": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "APP": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "PRSU": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "RAMP": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "GNL": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "FIS": {
+      "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "FTDR": {
+      "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "DNOW": {
+      "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "IBP": {
+      "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "ADNT": {
+      "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "CCJ": {
+      "next": "2026-10-30",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "CNK": {
+      "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "PRGO": {
+      "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "ACHC": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "KNTK": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "ACAD": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "MCK": {
       "next": "2026-11-04",
       "when": "amc",
       "confirmed": false
@@ -5844,23 +5784,123 @@
       "when": "amc",
       "confirmed": false
     },
+    "MET": {
+      "next": "2026-11-09",
+      "when": "amc",
+      "confirmed": false
+    },
+    "MCD": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
     "ZBH": {
       "next": "2026-11-05",
       "when": "bmo",
       "confirmed": false
     },
-    "HCC": {
+    "TPL": {
       "next": "2026-11-04",
       "when": "amc",
       "confirmed": false
     },
-    "FTNT": {
+    "REZI": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "WWW": {
+      "next": "2026-11-12",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "GNW": {
+      "next": "2026-11-09",
+      "when": "amc",
+      "confirmed": false
+    },
+    "AIN": {
+      "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "HOOD": {
       "next": "2026-11-04",
       "when": "amc",
       "confirmed": false
     },
-    "ALB": {
+    "CW": {
       "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "SONO": {
+      "next": "2026-11-11",
+      "when": "amc",
+      "confirmed": false
+    },
+    "BKH": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "BG": {
+      "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "EYE": {
+      "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "CXW": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "VIR": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "SMR": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "SNDK": {
+      "next": "2026-11-06",
+      "when": "amc",
+      "confirmed": false
+    },
+    "WBD": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "AMPH": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "APD": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "CELH": {
+      "next": "2026-11-09",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "ESNT": {
+      "next": "2026-11-06",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "ICUI": {
+      "next": "2026-11-05",
       "when": "amc",
       "confirmed": false
     },
@@ -5879,7 +5919,22 @@
       "when": "amc",
       "confirmed": false
     },
-    "CPT": {
+    "MDU": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "NXST": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "BEN": {
+      "next": "2026-11-06",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "CALY": {
       "next": "2026-11-05",
       "when": "amc",
       "confirmed": false
@@ -5899,57 +5954,47 @@
       "when": "amc",
       "confirmed": false
     },
-    "WSC": {
-      "next": "2026-11-09",
-      "when": "amc",
-      "confirmed": false
-    },
-    "FLO": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "LMAT": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "PRVA": {
+    "RL": {
       "next": "2026-11-05",
       "when": "bmo",
       "confirmed": false
     },
-    "ROK": {
+    "ECHO": {
       "next": "2026-11-05",
       "when": "bmo",
       "confirmed": false
     },
-    "YETI": {
+    "FG": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "NHC": {
+      "next": "2026-11-06",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "DIOD": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "FOUR": {
       "next": "2026-11-05",
       "when": "bmo",
       "confirmed": false
     },
-    "AMN": {
+    "MTUS": {
       "next": "2026-11-05",
       "when": "amc",
       "confirmed": false
     },
-    "BILL": {
+    "NTCT": {
       "next": "2026-11-05",
-      "when": "amc",
+      "when": "bmo",
       "confirmed": false
     },
-    "EOG": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "G": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "HRB": {
+    "PTGX": {
       "next": "2026-11-05",
       "when": "amc",
       "confirmed": false
@@ -5979,38 +6024,48 @@
       "when": "bmo",
       "confirmed": false
     },
-    "ATMU": {
-      "next": "2026-11-06",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "DD": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "LPG": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "RUN": {
+    "OUT": {
       "next": "2026-11-05",
       "when": "amc",
       "confirmed": false
     },
-    "TFX": {
-      "next": "2026-10-29",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "TPR": {
+    "VCEL": {
       "next": "2026-11-05",
       "when": "bmo",
       "confirmed": false
     },
-    "VST": {
+    "CE": {
       "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "CON": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "DCH": {
+      "next": "2026-11-09",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "FA": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "GVA": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "HUM": {
+      "next": "2026-11-06",
+      "when": "bmo",
+      "confirmed": true
+    },
+    "KOP": {
+      "next": "2026-11-06",
       "when": "bmo",
       "confirmed": false
     },
@@ -6054,36 +6109,6 @@
       "when": "bmo",
       "confirmed": false
     },
-    "DIOD": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "FOUR": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "MTUS": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "NTCT": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "MP": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "NATL": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": false
-    },
     "WEN": {
       "next": "2026-11-06",
       "when": "bmo",
@@ -6119,9 +6144,14 @@
       "when": "amc",
       "confirmed": false
     },
-    "PLMR": {
+    "MP": {
       "next": "2026-11-05",
       "when": "amc",
+      "confirmed": false
+    },
+    "NATL": {
+      "next": "2026-11-04",
+      "when": "bmo",
       "confirmed": false
     },
     "SOLV": {
@@ -6149,87 +6179,27 @@
       "when": "amc",
       "confirmed": false
     },
-    "PZZA": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "WRBY": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "AEE": {
-      "next": "2026-11-04",
-      "when": "amc",
-      "confirmed": false
-    },
-    "AMR": {
-      "next": "2026-11-06",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "FIVN": {
+    "WSC": {
       "next": "2026-11-09",
       "when": "amc",
       "confirmed": false
     },
-    "GMED": {
+    "AFRM": {
       "next": "2026-11-05",
       "when": "amc",
       "confirmed": false
     },
-    "MTD": {
+    "FLO": {
       "next": "2026-11-05",
       "when": "amc",
       "confirmed": false
     },
-    "PCRX": {
+    "LMAT": {
       "next": "2026-11-05",
       "when": "amc",
       "confirmed": false
     },
-    "SN": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "VTRS": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "VYX": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "CC": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "TTD": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "BGC": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "COP": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "PENN": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "PH": {
+    "PRVA": {
       "next": "2026-11-05",
       "when": "bmo",
       "confirmed": false
@@ -6264,57 +6234,52 @@
       "when": "bmo",
       "confirmed": false
     },
-    "SYNA": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "TTWO": {
-      "next": "2026-11-09",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "WD": {
+    "STRA": {
       "next": "2026-11-05",
       "when": "bmo",
       "confirmed": false
     },
-    "WYNN": {
+    "TTD": {
       "next": "2026-11-05",
       "when": "amc",
       "confirmed": false
     },
-    "ACIW": {
+    "BGC": {
       "next": "2026-11-05",
       "when": "bmo",
       "confirmed": false
     },
-    "ARLO": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "BDX": {
+    "COP": {
       "next": "2026-11-05",
       "when": "bmo",
       "confirmed": false
     },
-    "EXPE": {
+    "PENN": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "PH": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "ALRM": {
       "next": "2026-11-05",
       "when": "amc",
       "confirmed": false
     },
-    "IREN": {
+    "RXO": {
       "next": "2026-11-05",
-      "when": "amc",
+      "when": "bmo",
       "confirmed": false
     },
-    "MNST": {
+    "UA": {
       "next": "2026-11-05",
-      "when": "amc",
+      "when": "bmo",
       "confirmed": false
     },
-    "TNDM": {
+    "AHR": {
       "next": "2026-11-05",
       "when": "amc",
       "confirmed": false
@@ -6344,88 +6309,8 @@
       "when": "amc",
       "confirmed": false
     },
-    "XYZ": {
-      "next": "2026-11-09",
-      "when": "amc",
-      "confirmed": false
-    },
-    "HASI": {
+    "SN": {
       "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "LNTH": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "MTSI": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "NRG": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "RL": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "GVA": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "HUM": {
-      "next": "2026-11-06",
-      "when": "bmo",
-      "confirmed": true
-    },
-    "KOP": {
-      "next": "2026-11-06",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "PDFS": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "PGNY": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "PODD": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "TRIP": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "YOU": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "ZD": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "AAON": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "ANIP": {
-      "next": "2026-11-06",
       "when": "bmo",
       "confirmed": false
     },
@@ -6459,15 +6344,65 @@
       "when": "bmo",
       "confirmed": false
     },
+    "XYZ": {
+      "next": "2026-11-09",
+      "when": "amc",
+      "confirmed": false
+    },
+    "HASI": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "DDOG": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "YELP": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "ALG": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "CPK": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "EVRG": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "MIDD": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "MKTX": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "PLMR": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
     "SGI": {
       "next": "2026-11-05",
       "when": "bmo",
       "confirmed": false
     },
     "SHO": {
-      "next": "2026-11-05",
+      "next": "2026-11-06",
       "when": "bmo",
-      "confirmed": false
+      "confirmed": true
     },
     "ASTH": {
       "next": "2026-11-05",
@@ -6509,12 +6444,7 @@
       "when": "bmo",
       "confirmed": false
     },
-    "TRUP": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "ABNB": {
+    "DV": {
       "next": "2026-11-05",
       "when": "amc",
       "confirmed": false
@@ -6524,33 +6454,48 @@
       "when": "amc",
       "confirmed": false
     },
-    "FNF": {
+    "BILL": {
       "next": "2026-11-05",
       "when": "amc",
       "confirmed": false
     },
-    "NOG": {
-      "next": "2026-11-09",
+    "G": {
+      "next": "2026-11-05",
       "when": "amc",
       "confirmed": false
     },
-    "MDU": {
+    "HRB": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "EOG": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "ROK": {
       "next": "2026-11-05",
       "when": "bmo",
       "confirmed": false
     },
-    "DOCS": {
+    "PDFS": {
       "next": "2026-11-05",
       "when": "amc",
       "confirmed": false
     },
-    "AFRM": {
+    "PGNY": {
       "next": "2026-11-05",
       "when": "amc",
       "confirmed": false
     },
-    "NABL": {
+    "WYNN": {
       "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "TFX": {
+      "next": "2026-10-29",
       "when": "bmo",
       "confirmed": false
     },
@@ -6559,147 +6504,12 @@
       "when": "amc",
       "confirmed": false
     },
-    "OUT": {
+    "DOCS": {
       "next": "2026-11-05",
       "when": "amc",
       "confirmed": false
     },
-    "UA": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "ALG": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CELH": {
-      "next": "2026-11-09",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "PTON": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "PTGX": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "DV": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CCOI": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "QNST": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "LGND": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "APD": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "ICUI": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "PLUS": {
-      "next": "2026-11-09",
-      "when": "amc",
-      "confirmed": false
-    },
-    "PRKS": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "NWS": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CALY": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "STRA": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "EVRG": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "OLED": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "SMR": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CE": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "ENOV": {
-      "next": "2026-11-04",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "MIDD": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "AMPH": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "VCEL": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "MKTX": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "SNDK": {
-      "next": "2026-11-06",
-      "when": "amc",
-      "confirmed": false
-    },
-    "WBD": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "ECHO": {
+    "VTRS": {
       "next": "2026-11-05",
       "when": "bmo",
       "confirmed": false
@@ -6709,22 +6519,12 @@
       "when": "bmo",
       "confirmed": false
     },
-    "MCHP": {
+    "ACIW": {
       "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "KRMN": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "ESNT": {
-      "next": "2026-11-06",
       "when": "bmo",
       "confirmed": false
     },
-    "DDOG": {
+    "VST": {
       "next": "2026-11-05",
       "when": "bmo",
       "confirmed": false
@@ -6734,7 +6534,202 @@
       "when": "amc",
       "confirmed": false
     },
-    "DCH": {
+    "WD": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "VYX": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "PRKS": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "PODD": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "LGND": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "OLED": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "KRMN": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "FIVN": {
+      "next": "2026-11-09",
+      "when": "amc",
+      "confirmed": false
+    },
+    "YOU": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "LPG": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "ZD": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "PTON": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "TNDM": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "IREN": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "DKNG": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "ANIP": {
+      "next": "2026-11-06",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "MCHP": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "RUN": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "CCOI": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "FNF": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "AAON": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "AMN": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "ENOV": {
+      "next": "2026-11-04",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "MTSI": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "TRUP": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "QNST": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "PZZA": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "DD": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "PLUS": {
+      "next": "2026-11-09",
+      "when": "amc",
+      "confirmed": false
+    },
+    "VSAT": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "USFD": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "ARLO": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "CPT": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "PCRX": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "BDX": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "MNST": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "TPR": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "AEE": {
+      "next": "2026-11-04",
+      "when": "amc",
+      "confirmed": false
+    },
+    "WRBY": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "TTWO": {
       "next": "2026-11-09",
       "when": "bmo",
       "confirmed": false
@@ -6744,17 +6739,67 @@
       "when": "amc",
       "confirmed": false
     },
-    "FA": {
+    "MTD": {
       "next": "2026-11-05",
-      "when": "bmo",
+      "when": "amc",
       "confirmed": false
     },
-    "NHC": {
+    "CC": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "NWS": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "ATMU": {
       "next": "2026-11-06",
       "when": "bmo",
       "confirmed": false
     },
-    "USFD": {
+    "ABNB": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "GMED": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "AMR": {
+      "next": "2026-11-06",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "YETI": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "SYNA": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "EXPE": {
+      "next": "2026-11-05",
+      "when": "amc",
+      "confirmed": false
+    },
+    "NRG": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "NOG": {
+      "next": "2026-11-09",
+      "when": "amc",
+      "confirmed": false
+    },
+    "NABL": {
       "next": "2026-11-05",
       "when": "bmo",
       "confirmed": false
@@ -6764,59 +6809,14 @@
       "when": "bmo",
       "confirmed": false
     },
-    "VSAT": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "ALRM": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CON": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "NXST": {
+    "LNTH": {
       "next": "2026-11-05",
       "when": "bmo",
       "confirmed": false
     },
-    "BEN": {
-      "next": "2026-11-06",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "RXO": {
+    "TRIP": {
       "next": "2026-11-05",
       "when": "bmo",
-      "confirmed": false
-    },
-    "AHR": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "FG": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CPK": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "YELP": {
-      "next": "2026-11-05",
-      "when": "amc",
-      "confirmed": false
-    },
-    "DKNG": {
-      "next": "2026-11-05",
-      "when": "amc",
       "confirmed": false
     },
     "UAA": {
@@ -6829,11 +6829,6 @@
       "when": "amc",
       "confirmed": false
     },
-    "TSN": {
-      "next": "2026-11-09",
-      "when": "bmo",
-      "confirmed": false
-    },
     "OGN": {
       "next": "2026-11-09",
       "when": "bmo",
@@ -6844,17 +6839,7 @@
       "when": "amc",
       "confirmed": false
     },
-    "OXY": {
-      "next": "2026-11-09",
-      "when": "amc",
-      "confirmed": false
-    },
     "PSKY": {
-      "next": "2026-11-09",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CART": {
       "next": "2026-11-09",
       "when": "amc",
       "confirmed": false
@@ -6864,7 +6849,17 @@
       "when": "amc",
       "confirmed": false
     },
+    "CART": {
+      "next": "2026-11-09",
+      "when": "amc",
+      "confirmed": false
+    },
     "STWD": {
+      "next": "2026-11-09",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "TSN": {
       "next": "2026-11-09",
       "when": "bmo",
       "confirmed": false
@@ -6874,7 +6869,7 @@
       "when": "bmo",
       "confirmed": false
     },
-    "TDW": {
+    "OXY": {
       "next": "2026-11-09",
       "when": "amc",
       "confirmed": false
@@ -6884,18 +6879,8 @@
       "when": "bmo",
       "confirmed": false
     },
-    "PAAS": {
-      "next": "2026-11-16",
-      "when": "amc",
-      "confirmed": false
-    },
-    "TDG": {
-      "next": "2026-11-05",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "DGII": {
-      "next": "2026-11-11",
+    "TDW": {
+      "next": "2026-11-09",
       "when": "amc",
       "confirmed": false
     },
@@ -6904,14 +6889,34 @@
       "when": "amc",
       "confirmed": false
     },
+    "AMAT": {
+      "next": "2026-11-12",
+      "when": "amc",
+      "confirmed": false
+    },
+    "PAAS": {
+      "next": "2026-11-16",
+      "when": "amc",
+      "confirmed": false
+    },
     "TTEK": {
       "next": "2026-11-11",
       "when": "amc",
       "confirmed": false
     },
-    "AMAT": {
-      "next": "2026-11-12",
+    "DGII": {
+      "next": "2026-11-11",
       "when": "amc",
+      "confirmed": false
+    },
+    "TDG": {
+      "next": "2026-11-05",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "HZO": {
+      "next": "2026-11-12",
+      "when": "bmo",
       "confirmed": false
     },
     "SR": {
@@ -6924,12 +6929,12 @@
       "when": "bmo",
       "confirmed": false
     },
-    "DIS": {
+    "SBH": {
       "next": "2026-11-12",
       "when": "bmo",
       "confirmed": false
     },
-    "HZO": {
+    "DIS": {
       "next": "2026-11-12",
       "when": "bmo",
       "confirmed": false
@@ -6937,11 +6942,6 @@
     "EZPW": {
       "next": "2026-11-18",
       "when": "amc",
-      "confirmed": false
-    },
-    "SBH": {
-      "next": "2026-11-12",
-      "when": "bmo",
       "confirmed": false
     },
     "ARMK": {
@@ -6959,14 +6959,19 @@
       "when": "bmo",
       "confirmed": false
     },
+    "LOW": {
+      "next": "2026-11-18",
+      "when": "bmo",
+      "confirmed": true
+    },
     "HD": {
       "next": "2026-11-17",
       "when": "bmo",
       "confirmed": false
     },
-    "DLB": {
+    "ENR": {
       "next": "2026-11-17",
-      "when": "amc",
+      "when": "bmo",
       "confirmed": false
     },
     "LZB": {
@@ -6974,24 +6979,24 @@
       "when": "amc",
       "confirmed": false
     },
-    "TJX": {
-      "next": "2026-11-18",
-      "when": "bmo",
-      "confirmed": true
-    },
     "ACM": {
       "next": "2026-11-17",
       "when": "amc",
       "confirmed": false
     },
-    "LOW": {
+    "MDT": {
+      "next": "2026-11-18",
+      "when": null,
+      "confirmed": false
+    },
+    "TJX": {
       "next": "2026-11-18",
       "when": "bmo",
       "confirmed": true
     },
-    "MDT": {
-      "next": "2026-11-18",
-      "when": null,
+    "DLB": {
+      "next": "2026-11-17",
+      "when": "amc",
       "confirmed": false
     },
     "HP": {
@@ -7004,17 +7009,12 @@
       "when": "amc",
       "confirmed": false
     },
-    "ENR": {
-      "next": "2026-11-17",
+    "DY": {
+      "next": "2026-08-26",
       "when": "bmo",
       "confirmed": false
     },
     "NVDA": {
-      "next": "2026-11-18",
-      "when": "amc",
-      "confirmed": false
-    },
-    "UTI": {
       "next": "2026-11-18",
       "when": "amc",
       "confirmed": false
@@ -7024,24 +7024,9 @@
       "when": null,
       "confirmed": false
     },
-    "WSM": {
+    "UTI": {
       "next": "2026-11-18",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "WMT": {
-      "next": "2026-11-19",
-      "when": "bmo",
-      "confirmed": true
-    },
-    "NJR": {
-      "next": "2026-11-16",
       "when": "amc",
-      "confirmed": false
-    },
-    "GFF": {
-      "next": "2026-11-18",
-      "when": "bmo",
       "confirmed": false
     },
     "VVV": {
@@ -7049,8 +7034,28 @@
       "when": "bmo",
       "confirmed": false
     },
-    "DY": {
-      "next": "2026-08-26",
+    "NJR": {
+      "next": "2026-11-16",
+      "when": "amc",
+      "confirmed": false
+    },
+    "WMT": {
+      "next": "2026-11-19",
+      "when": "bmo",
+      "confirmed": true
+    },
+    "GFF": {
+      "next": "2026-11-18",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "WSM": {
+      "next": "2026-11-18",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "LQDT": {
+      "next": "2026-11-19",
       "when": "bmo",
       "confirmed": false
     },
@@ -7059,9 +7064,29 @@
       "when": "amc",
       "confirmed": false
     },
+    "POST": {
+      "next": "2026-11-19",
+      "when": "amc",
+      "confirmed": false
+    },
+    "WMG": {
+      "next": "2026-11-19",
+      "when": "amc",
+      "confirmed": false
+    },
+    "ROST": {
+      "next": "2026-11-19",
+      "when": "amc",
+      "confirmed": false
+    },
     "BKE": {
       "next": "2026-11-20",
       "when": "bmo",
+      "confirmed": false
+    },
+    "J": {
+      "next": "2026-11-19",
+      "when": "amc",
       "confirmed": false
     },
     "CPRT": {
@@ -7074,57 +7099,7 @@
       "when": "amc",
       "confirmed": false
     },
-    "BJ": {
-      "next": "2026-11-20",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "VEEV": {
-      "next": "2026-11-25",
-      "when": "amc",
-      "confirmed": false
-    },
-    "BBWI": {
-      "next": "2026-11-19",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "MATW": {
-      "next": "2026-11-19",
-      "when": "amc",
-      "confirmed": false
-    },
-    "ROST": {
-      "next": "2026-11-19",
-      "when": "amc",
-      "confirmed": false
-    },
-    "GAP": {
-      "next": "2026-11-19",
-      "when": "amc",
-      "confirmed": false
-    },
-    "WMG": {
-      "next": "2026-11-19",
-      "when": "amc",
-      "confirmed": false
-    },
-    "KLIC": {
-      "next": "2026-11-18",
-      "when": "amc",
-      "confirmed": false
-    },
-    "POST": {
-      "next": "2026-11-19",
-      "when": "amc",
-      "confirmed": false
-    },
     "ROAD": {
-      "next": "2026-11-19",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "LQDT": {
       "next": "2026-11-19",
       "when": "bmo",
       "confirmed": false
@@ -7134,9 +7109,29 @@
       "when": "amc",
       "confirmed": false
     },
+    "MATW": {
+      "next": "2026-11-19",
+      "when": "amc",
+      "confirmed": false
+    },
     "MMS": {
       "next": "2026-11-19",
       "when": "bmo",
+      "confirmed": false
+    },
+    "GAP": {
+      "next": "2026-11-19",
+      "when": "amc",
+      "confirmed": false
+    },
+    "BBWI": {
+      "next": "2026-11-19",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "KLIC": {
+      "next": "2026-11-18",
+      "when": "amc",
       "confirmed": false
     },
     "IESC": {
@@ -7144,18 +7139,23 @@
       "when": "bmo",
       "confirmed": false
     },
-    "J": {
-      "next": "2026-11-19",
-      "when": "amc",
-      "confirmed": false
-    },
     "AZTA": {
       "next": "2026-11-20",
       "when": "amc",
       "confirmed": false
     },
-    "WWD": {
-      "next": "2026-11-23",
+    "VEEV": {
+      "next": "2026-11-25",
+      "when": "amc",
+      "confirmed": false
+    },
+    "BJ": {
+      "next": "2026-11-20",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "KEYS": {
+      "next": "2026-11-24",
       "when": "amc",
       "confirmed": false
     },
@@ -7164,8 +7164,18 @@
       "when": "amc",
       "confirmed": false
     },
-    "KEYS": {
-      "next": "2026-11-24",
+    "A": {
+      "next": "2026-11-25",
+      "when": "amc",
+      "confirmed": false
+    },
+    "WWD": {
+      "next": "2026-11-23",
+      "when": "amc",
+      "confirmed": false
+    },
+    "CENT": {
+      "next": "2026-11-25",
       "when": "amc",
       "confirmed": false
     },
@@ -7179,25 +7189,10 @@
       "when": "amc",
       "confirmed": false
     },
-    "A": {
-      "next": "2026-11-25",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CENT": {
-      "next": "2026-11-25",
-      "when": "amc",
-      "confirmed": false
-    },
     "DE": {
       "next": "2026-11-25",
       "when": "bmo",
       "confirmed": true
-    },
-    "AMTM": {
-      "next": "2026-12-14",
-      "when": "amc",
-      "confirmed": false
     },
     "BURL": {
       "next": "2026-11-27",
@@ -7207,6 +7202,16 @@
     "DELL": {
       "next": "2026-11-25",
       "when": null,
+      "confirmed": false
+    },
+    "ADI": {
+      "next": "2026-11-24",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "AMTM": {
+      "next": "2026-12-14",
+      "when": "amc",
       "confirmed": false
     },
     "BBY": {
@@ -7224,9 +7229,9 @@
       "when": "amc",
       "confirmed": false
     },
-    "ANF": {
-      "next": "2026-11-25",
-      "when": "bmo",
+    "CLSK": {
+      "next": "2026-11-24",
+      "when": "amc",
       "confirmed": false
     },
     "WDAY": {
@@ -7239,14 +7244,19 @@
       "when": "amc",
       "confirmed": false
     },
-    "CLSK": {
+    "HPQ": {
       "next": "2026-11-24",
       "when": "amc",
       "confirmed": false
     },
-    "HPQ": {
+    "DKS": {
       "next": "2026-11-24",
-      "when": "amc",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "SJM": {
+      "next": "2026-11-24",
+      "when": "bmo",
       "confirmed": false
     },
     "URBN": {
@@ -7254,8 +7264,8 @@
       "when": "amc",
       "confirmed": false
     },
-    "SJM": {
-      "next": "2026-11-24",
+    "ANF": {
+      "next": "2026-11-25",
       "when": "bmo",
       "confirmed": false
     },
@@ -7264,18 +7274,13 @@
       "when": "amc",
       "confirmed": false
     },
-    "ADI": {
-      "next": "2026-11-24",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "DKS": {
-      "next": "2026-11-24",
-      "when": "bmo",
-      "confirmed": false
-    },
     "RBLX": {
       "next": "2026-10-29",
+      "when": "amc",
+      "confirmed": false
+    },
+    "SPCX": {
+      "next": "2026-11-03",
       "when": "amc",
       "confirmed": false
     },
@@ -7289,19 +7294,14 @@
       "when": "bmo",
       "confirmed": false
     },
-    "Q": {
-      "next": "2026-11-16",
-      "when": "bmo",
-      "confirmed": false
-    },
     "SOLS": {
       "next": "2026-10-29",
       "when": "bmo",
       "confirmed": false
     },
-    "SPCX": {
-      "next": "2026-11-03",
-      "when": "amc",
+    "Q": {
+      "next": "2026-11-16",
+      "when": "bmo",
       "confirmed": false
     },
     "NTAP": {
@@ -7324,17 +7324,7 @@
       "when": "bmo",
       "confirmed": false
     },
-    "BOX": {
-      "next": "2026-12-01",
-      "when": "amc",
-      "confirmed": false
-    },
-    "AEO": {
-      "next": "2026-12-01",
-      "when": "amc",
-      "confirmed": false
-    },
-    "CRWD": {
+    "MRVL": {
       "next": "2026-12-01",
       "when": "amc",
       "confirmed": false
@@ -7349,7 +7339,17 @@
       "when": "bmo",
       "confirmed": false
     },
-    "MRVL": {
+    "CRWD": {
+      "next": "2026-12-01",
+      "when": "amc",
+      "confirmed": false
+    },
+    "AEO": {
+      "next": "2026-12-01",
+      "when": "amc",
+      "confirmed": false
+    },
+    "BOX": {
       "next": "2026-12-01",
       "when": "amc",
       "confirmed": false
@@ -7364,9 +7364,14 @@
       "when": "bmo",
       "confirmed": false
     },
-    "DLTR": {
+    "SNOW": {
       "next": "2026-12-02",
-      "when": "bmo",
+      "when": "amc",
+      "confirmed": false
+    },
+    "CRM": {
+      "next": "2026-12-02",
+      "when": "amc",
       "confirmed": false
     },
     "ULTA": {
@@ -7374,22 +7379,7 @@
       "when": "amc",
       "confirmed": true
     },
-    "CRM": {
-      "next": "2026-12-02",
-      "when": "amc",
-      "confirmed": false
-    },
     "CXM": {
-      "next": "2026-12-02",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "SNOW": {
-      "next": "2026-12-02",
-      "when": "amc",
-      "confirmed": false
-    },
-    "M": {
       "next": "2026-12-02",
       "when": "bmo",
       "confirmed": false
@@ -7399,9 +7389,19 @@
       "when": "amc",
       "confirmed": false
     },
+    "DLTR": {
+      "next": "2026-12-02",
+      "when": "bmo",
+      "confirmed": false
+    },
     "FIVE": {
       "next": "2026-12-03",
       "when": null,
+      "confirmed": false
+    },
+    "M": {
+      "next": "2026-12-02",
+      "when": "bmo",
       "confirmed": false
     },
     "SAIC": {
@@ -7409,9 +7409,9 @@
       "when": "bmo",
       "confirmed": false
     },
-    "REX": {
-      "next": "2026-12-04",
-      "when": null,
+    "WLY": {
+      "next": "2026-12-03",
+      "when": "bmo",
       "confirmed": false
     },
     "DOCU": {
@@ -7424,9 +7424,9 @@
       "when": "amc",
       "confirmed": false
     },
-    "AGX": {
+    "DCI": {
       "next": "2026-12-03",
-      "when": "amc",
+      "when": "bmo",
       "confirmed": false
     },
     "HPE": {
@@ -7439,6 +7439,11 @@
       "when": "bmo",
       "confirmed": false
     },
+    "REX": {
+      "next": "2026-12-04",
+      "when": null,
+      "confirmed": false
+    },
     "PVH": {
       "next": "2026-12-02",
       "when": "amc",
@@ -7449,19 +7454,14 @@
       "when": "bmo",
       "confirmed": false
     },
-    "DCI": {
-      "next": "2026-12-03",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "WLY": {
-      "next": "2026-12-03",
-      "when": "bmo",
-      "confirmed": false
-    },
     "KR": {
       "next": "2026-12-03",
       "when": "bmo",
+      "confirmed": false
+    },
+    "AGX": {
+      "next": "2026-12-03",
+      "when": "amc",
       "confirmed": false
     },
     "TOL": {
@@ -7469,12 +7469,7 @@
       "when": "amc",
       "confirmed": false
     },
-    "GIII": {
-      "next": "2026-12-08",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "ASO": {
+    "KFY": {
       "next": "2026-12-08",
       "when": "bmo",
       "confirmed": false
@@ -7489,24 +7484,9 @@
       "when": "bmo",
       "confirmed": false
     },
-    "OLLI": {
-      "next": "2026-12-09",
-      "when": null,
-      "confirmed": false
-    },
-    "KFY": {
+    "ASO": {
       "next": "2026-12-08",
       "when": "bmo",
-      "confirmed": false
-    },
-    "CNM": {
-      "next": "2026-12-08",
-      "when": "bmo",
-      "confirmed": false
-    },
-    "CASY": {
-      "next": "2026-12-08",
-      "when": "amc",
       "confirmed": false
     },
     "CPB": {
@@ -7514,9 +7494,24 @@
       "when": "bmo",
       "confirmed": false
     },
-    "ORCL": {
-      "next": "2026-12-10",
+    "OLLI": {
+      "next": "2026-12-09",
+      "when": null,
+      "confirmed": false
+    },
+    "CASY": {
+      "next": "2026-12-08",
       "when": "amc",
+      "confirmed": false
+    },
+    "GIII": {
+      "next": "2026-12-08",
+      "when": "bmo",
+      "confirmed": false
+    },
+    "CNM": {
+      "next": "2026-12-08",
+      "when": "bmo",
       "confirmed": false
     },
     "CHWY": {
@@ -7539,19 +7534,24 @@
       "when": "amc",
       "confirmed": false
     },
+    "ORCL": {
+      "next": "2026-12-10",
+      "when": "amc",
+      "confirmed": false
+    },
     "FIZZ": {
       "next": "2026-12-10",
       "when": "amc",
       "confirmed": false
     },
-    "NX": {
+    "LULU": {
       "next": "2026-12-10",
       "when": "amc",
       "confirmed": false
     },
-    "AVGO": {
-      "next": "2026-12-09",
-      "when": "amc",
+    "CIEN": {
+      "next": "2026-12-10",
+      "when": "bmo",
       "confirmed": false
     },
     "SNPS": {
@@ -7564,14 +7564,19 @@
       "when": "amc",
       "confirmed": false
     },
-    "CIEN": {
-      "next": "2026-12-10",
-      "when": "bmo",
+    "AVGO": {
+      "next": "2026-12-09",
+      "when": "amc",
       "confirmed": false
     },
-    "LULU": {
+    "NX": {
       "next": "2026-12-10",
       "when": "amc",
+      "confirmed": false
+    },
+    "ABM": {
+      "next": "2026-12-16",
+      "when": "bmo",
       "confirmed": false
     },
     "LEN": {
@@ -7584,18 +7589,13 @@
       "when": "bmo",
       "confirmed": false
     },
-    "ABM": {
-      "next": "2026-12-16",
-      "when": "bmo",
+    "RS": {
+      "next": "2026-10-21",
+      "when": "amc",
       "confirmed": false
     },
     "OMC": {
       "next": "2026-10-20",
-      "when": "amc",
-      "confirmed": false
-    },
-    "RS": {
-      "next": "2026-10-21",
       "when": "amc",
       "confirmed": false
     },
