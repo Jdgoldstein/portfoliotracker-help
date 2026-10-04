@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-03",
+  "updatedAt": "2026-10-04",
   "source": "tradier-fundamentals",
   "fetched": 1759,
   "payers": 1217,
@@ -3405,13 +3405,13 @@
       "lastExDate": "2026-09-30"
     },
     "ETHE": {
-      "exDate": "2026-10-03",
+      "exDate": "2026-11-02",
       "status": "projected",
       "declaredDate": null,
       "DivDate": null,
       "amount": 0.0259,
       "frequency": "monthly",
-      "payDate": "2026-10-04",
+      "payDate": "2026-11-03",
       "lastExDate": "2026-09-03"
     },
     "ETN": {
