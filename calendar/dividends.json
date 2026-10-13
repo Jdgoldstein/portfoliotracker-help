@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-10-12",
+  "updatedAt": "2026-10-13",
   "source": "tradier-fundamentals",
   "fetched": 1757,
-  "payers": 1221,
+  "payers": 1220,
   "symbols": {
     "A": {
       "exDate": "2027-01-05",
@@ -6275,14 +6275,14 @@
       "lastExDate": "2026-09-01"
     },
     "LNC": {
-      "exDate": "2026-10-12",
-      "status": "declared",
-      "declaredDate": "2026-08-10",
-      "DivDate": "2026-08-10",
+      "exDate": "2027-01-11",
+      "status": "projected",
+      "declaredDate": null,
+      "DivDate": null,
       "amount": 0.45,
       "frequency": "quarterly",
-      "payDate": "2026-11-02",
-      "lastExDate": "2026-10-09"
+      "payDate": "2027-02-01",
+      "lastExDate": "2026-10-12"
     },
     "LNG": {
       "exDate": "2026-11-09",
@@ -10845,14 +10845,14 @@
       "lastExDate": "2026-08-17"
     },
     "UVV": {
-      "exDate": "2026-10-12",
-      "status": "declared",
-      "declaredDate": "2026-08-05",
-      "DivDate": "2026-08-05",
+      "exDate": "2027-01-11",
+      "status": "projected",
+      "declaredDate": null,
+      "DivDate": null,
       "amount": 0.83,
       "frequency": "quarterly",
-      "payDate": "2026-11-02",
-      "lastExDate": "2026-10-09"
+      "payDate": "2027-02-01",
+      "lastExDate": "2026-10-12"
     },
     "V": {
       "exDate": "2026-11-10",
@@ -11603,16 +11603,6 @@
       "frequency": "quarterly",
       "payDate": "2026-12-17",
       "lastExDate": "2026-08-31"
-    },
-    "WHR": {
-      "exDate": "2026-11-27",
-      "status": "projected",
-      "declaredDate": null,
-      "DivDate": null,
-      "amount": 0.9,
-      "frequency": "quarterly",
-      "payDate": "2026-12-22",
-      "lastExDate": "2026-02-27"
     },
     "WINA": {
       "exDate": "2026-11-11",
