@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-25",
+  "updatedAt": "2026-10-26",
   "source": "tradier-fundamentals",
   "fetched": 1756,
   "payers": 1221,
@@ -2735,13 +2735,13 @@
       "lastExDate": "2026-09-15"
     },
     "DGRW": {
-      "exDate": "2026-10-25",
+      "exDate": "2026-11-24",
       "status": "projected",
       "declaredDate": null,
       "DivDate": null,
       "amount": 0.17,
       "frequency": "monthly",
-      "payDate": "2026-10-27",
+      "payDate": "2026-11-26",
       "lastExDate": "2026-09-25"
     },
     "DGX": {
@@ -2775,13 +2775,13 @@
       "lastExDate": "2026-09-30"
     },
     "DHS": {
-      "exDate": "2026-10-25",
+      "exDate": "2026-11-24",
       "status": "projected",
       "declaredDate": null,
       "DivDate": null,
       "amount": 0.315,
       "frequency": "monthly",
-      "payDate": "2026-10-27",
+      "payDate": "2026-11-26",
       "lastExDate": "2026-09-25"
     },
     "DIA": {
@@ -9985,13 +9985,13 @@
       "lastExDate": "2026-09-30"
     },
     "SVOL": {
-      "exDate": "2026-10-25",
+      "exDate": "2026-11-24",
       "status": "projected",
       "declaredDate": null,
       "DivDate": null,
       "amount": 0.28,
       "frequency": "monthly",
-      "payDate": "2026-10-29",
+      "payDate": "2026-11-28",
       "lastExDate": "2026-09-25"
     },
     "SW": {
