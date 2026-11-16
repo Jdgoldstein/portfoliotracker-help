@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-15",
+  "updatedAt": "2026-11-16",
   "source": "tradier-fundamentals",
   "fetched": 1756,
   "payers": 1222,
@@ -2785,13 +2785,13 @@
       "lastExDate": "2026-10-27"
     },
     "DIA": {
-      "exDate": "2026-11-15",
+      "exDate": "2026-12-15",
       "status": "projected",
       "declaredDate": null,
       "DivDate": null,
       "amount": 0.11404,
       "frequency": "monthly",
-      "payDate": "2026-12-10",
+      "payDate": "2027-01-09",
       "lastExDate": "2026-10-16"
     },
     "DINO": {
