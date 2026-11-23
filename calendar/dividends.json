@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2026-11-22",
+  "updatedAt": "2026-11-23",
   "source": "tradier-fundamentals",
-  "fetched": 1756,
+  "fetched": 1757,
   "payers": 1222,
   "symbols": {
     "A": {
@@ -7985,13 +7985,13 @@
       "lastExDate": "2026-11-16"
     },
     "PBP": {
-      "exDate": "2026-12-21",
+      "exDate": "2026-11-23",
       "status": "declared",
       "declaredDate": "2025-12-31",
       "DivDate": "2025-12-31",
-      "amount": 0.91,
+      "amount": 0.17824,
       "frequency": "monthly",
-      "payDate": "2026-12-28",
+      "payDate": "2026-11-27",
       "lastExDate": "2026-10-19"
     },
     "PCAR": {
@@ -8015,13 +8015,13 @@
       "lastExDate": "2026-09-30"
     },
     "PCY": {
-      "exDate": "2026-12-18",
-      "status": "projected",
-      "declaredDate": null,
-      "DivDate": null,
-      "amount": 0.11027,
+      "exDate": "2026-11-23",
+      "status": "declared",
+      "declaredDate": "2025-12-31",
+      "DivDate": "2025-12-31",
+      "amount": 0.1079,
       "frequency": "monthly",
-      "payDate": "2026-12-22",
+      "payDate": "2026-11-27",
       "lastExDate": "2026-10-19"
     },
     "PDBC": {
@@ -8635,13 +8635,13 @@
       "lastExDate": "2026-09-15"
     },
     "QYLD": {
-      "exDate": "2026-12-18",
-      "status": "projected",
-      "declaredDate": null,
-      "DivDate": null,
-      "amount": 0.1826,
+      "exDate": "2026-11-23",
+      "status": "declared",
+      "declaredDate": "2026-11-20",
+      "DivDate": "2026-11-20",
+      "amount": 0.1587,
       "frequency": "monthly",
-      "payDate": "2026-12-21",
+      "payDate": "2026-11-27",
       "lastExDate": "2026-10-19"
     },
     "R": {
