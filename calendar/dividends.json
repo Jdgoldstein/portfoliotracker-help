@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-23",
+  "updatedAt": "2026-11-24",
   "source": "tradier-fundamentals",
   "fetched": 1757,
   "payers": 1222,
@@ -225,14 +225,14 @@
       "lastExDate": "2026-10-30"
     },
     "ADEA": {
-      "exDate": "2026-11-23",
-      "status": "declared",
-      "declaredDate": "2026-11-02",
-      "DivDate": "2026-11-02",
+      "exDate": "2027-02-22",
+      "status": "projected",
+      "declaredDate": null,
+      "DivDate": null,
       "amount": 0.05,
       "frequency": "quarterly",
-      "payDate": "2026-12-14",
-      "lastExDate": "2026-08-24"
+      "payDate": "2027-03-15",
+      "lastExDate": "2026-11-23"
     },
     "ADI": {
       "exDate": "2026-12-01",
@@ -285,14 +285,14 @@
       "lastExDate": "2026-09-08"
     },
     "AEIS": {
-      "exDate": "2026-11-23",
-      "status": "declared",
-      "declaredDate": "2026-11-04",
-      "DivDate": "2026-11-04",
+      "exDate": "2027-02-22",
+      "status": "projected",
+      "declaredDate": null,
+      "DivDate": null,
       "amount": 0.1,
       "frequency": "quarterly",
-      "payDate": "2026-12-04",
-      "lastExDate": "2026-08-24"
+      "payDate": "2027-03-05",
+      "lastExDate": "2026-11-23"
     },
     "AEO": {
       "exDate": "2027-01-08",
@@ -525,14 +525,14 @@
       "lastExDate": "2026-11-02"
     },
     "ALSN": {
-      "exDate": "2026-11-23",
-      "status": "declared",
-      "declaredDate": "2026-11-11",
-      "DivDate": "2026-11-11",
+      "exDate": "2027-02-22",
+      "status": "projected",
+      "declaredDate": null,
+      "DivDate": null,
       "amount": 0.29,
       "frequency": "quarterly",
-      "payDate": "2026-12-04",
-      "lastExDate": "2026-08-21"
+      "payDate": "2027-03-05",
+      "lastExDate": "2026-11-23"
     },
     "ALV": {
       "exDate": "2027-02-19",
@@ -885,14 +885,14 @@
       "lastExDate": "2026-08-27"
     },
     "ATO": {
-      "exDate": "2026-11-23",
-      "status": "declared",
-      "declaredDate": "2026-11-05",
-      "DivDate": "2026-11-05",
+      "exDate": "2027-02-22",
+      "status": "projected",
+      "declaredDate": null,
+      "DivDate": null,
       "amount": 1.09,
       "frequency": "quarterly",
-      "payDate": "2026-12-07",
-      "lastExDate": "2026-08-24"
+      "payDate": "2027-03-08",
+      "lastExDate": "2026-11-23"
     },
     "ATR": {
       "exDate": "2027-02-11",
@@ -1295,14 +1295,14 @@
       "lastExDate": "2026-11-17"
     },
     "BKLN": {
-      "exDate": "2026-12-18",
+      "exDate": "2026-12-23",
       "status": "projected",
       "declaredDate": null,
       "DivDate": null,
-      "amount": 0.11635,
+      "amount": 0.1195,
       "frequency": "monthly",
-      "payDate": "2026-12-22",
-      "lastExDate": "2026-10-19"
+      "payDate": "2026-12-27",
+      "lastExDate": "2026-11-23"
     },
     "BKNG": {
       "exDate": "2026-12-11",
@@ -1456,12 +1456,12 @@
     },
     "BRKR": {
       "exDate": "2026-12-21",
-      "status": "projected",
-      "declaredDate": null,
-      "DivDate": null,
+      "status": "declared",
+      "declaredDate": "2026-11-18",
+      "DivDate": "2026-11-18",
       "amount": 0.05,
       "frequency": "quarterly",
-      "payDate": "2027-01-04",
+      "payDate": "2027-01-07",
       "lastExDate": "2026-09-21"
     },
     "BRO": {
@@ -1485,13 +1485,13 @@
       "lastExDate": "2026-10-02"
     },
     "BSY": {
-      "exDate": "2026-12-22",
-      "status": "projected",
-      "declaredDate": null,
-      "DivDate": null,
-      "amount": 0.07,
+      "exDate": "2026-12-01",
+      "status": "declared",
+      "declaredDate": "2026-11-22",
+      "DivDate": "2026-11-22",
+      "amount": 0.08,
       "frequency": "quarterly",
-      "payDate": "2026-12-30",
+      "payDate": "2026-12-10",
       "lastExDate": "2026-09-22"
     },
     "BTU": {
@@ -2645,13 +2645,13 @@
       "lastExDate": "2025-12-22"
     },
     "DCI": {
-      "exDate": "2027-02-15",
-      "status": "projected",
-      "declaredDate": null,
-      "DivDate": null,
+      "exDate": "2026-12-09",
+      "status": "declared",
+      "declaredDate": "2026-11-22",
+      "DivDate": "2026-11-22",
       "amount": 0.32,
       "frequency": "quarterly",
-      "payDate": "2027-03-02",
+      "payDate": "2026-12-22",
       "lastExDate": "2026-08-17"
     },
     "DCOM": {
@@ -2735,13 +2735,13 @@
       "lastExDate": "2026-09-15"
     },
     "DGRW": {
-      "exDate": "2026-11-26",
-      "status": "projected",
-      "declaredDate": null,
-      "DivDate": null,
-      "amount": 0.07,
+      "exDate": "2026-11-24",
+      "status": "declared",
+      "declaredDate": "2025-12-08",
+      "DivDate": "2025-12-08",
+      "amount": 0.055,
       "frequency": "monthly",
-      "payDate": "2026-11-28",
+      "payDate": "2026-11-27",
       "lastExDate": "2026-10-27"
     },
     "DGX": {
@@ -2775,13 +2775,13 @@
       "lastExDate": "2026-09-30"
     },
     "DHS": {
-      "exDate": "2026-11-26",
-      "status": "projected",
-      "declaredDate": null,
-      "DivDate": null,
-      "amount": 0.31,
+      "exDate": "2026-11-24",
+      "status": "declared",
+      "declaredDate": "2025-12-10",
+      "DivDate": "2025-12-10",
+      "amount": 0.32,
       "frequency": "monthly",
-      "payDate": "2026-11-28",
+      "payDate": "2026-11-27",
       "lastExDate": "2026-10-27"
     },
     "DIA": {
@@ -3305,14 +3305,14 @@
       "lastExDate": "2026-09-30"
     },
     "EQH": {
-      "exDate": "2026-11-23",
-      "status": "declared",
-      "declaredDate": "2026-11-10",
-      "DivDate": "2026-11-10",
+      "exDate": "2027-02-22",
+      "status": "projected",
+      "declaredDate": null,
+      "DivDate": null,
       "amount": 0.3,
       "frequency": "quarterly",
-      "payDate": "2026-11-30",
-      "lastExDate": "2026-08-03"
+      "payDate": "2027-03-01",
+      "lastExDate": "2026-11-23"
     },
     "EQIX": {
       "exDate": "2027-02-17",
@@ -3866,12 +3866,12 @@
     },
     "FFIN": {
       "exDate": "2026-12-14",
-      "status": "projected",
-      "declaredDate": null,
-      "DivDate": null,
+      "status": "declared",
+      "declaredDate": "2026-11-18",
+      "DivDate": "2026-11-18",
       "amount": 0.22,
       "frequency": "quarterly",
-      "payDate": "2027-01-01",
+      "payDate": "2027-01-04",
       "lastExDate": "2026-09-14"
     },
     "FG": {
@@ -4555,14 +4555,14 @@
       "lastExDate": "2026-11-09"
     },
     "H": {
-      "exDate": "2026-11-23",
-      "status": "declared",
-      "declaredDate": "2026-10-29",
-      "DivDate": "2026-10-29",
+      "exDate": "2027-02-22",
+      "status": "projected",
+      "declaredDate": null,
+      "DivDate": null,
       "amount": 0.15,
       "frequency": "quarterly",
-      "payDate": "2026-12-07",
-      "lastExDate": "2026-08-27"
+      "payDate": "2027-03-07",
+      "lastExDate": "2026-11-23"
     },
     "HAFC": {
       "exDate": "2027-02-08",
@@ -4715,14 +4715,14 @@
       "lastExDate": "2026-11-16"
     },
     "HL": {
-      "exDate": "2026-11-23",
-      "status": "declared",
-      "declaredDate": "2026-11-03",
-      "DivDate": "2026-11-03",
+      "exDate": "2027-02-22",
+      "status": "projected",
+      "declaredDate": null,
+      "DivDate": null,
       "amount": 0.00375,
       "frequency": "quarterly",
-      "payDate": "2026-12-08",
-      "lastExDate": "2026-08-26"
+      "payDate": "2027-03-09",
+      "lastExDate": "2026-11-23"
     },
     "HLI": {
       "exDate": "2026-12-01",
@@ -4765,14 +4765,14 @@
       "lastExDate": "2026-09-16"
     },
     "HNI": {
-      "exDate": "2026-11-23",
-      "status": "declared",
-      "declaredDate": "2026-11-11",
-      "DivDate": "2026-11-11",
+      "exDate": "2027-02-22",
+      "status": "projected",
+      "declaredDate": null,
+      "DivDate": null,
       "amount": 0.35,
       "frequency": "quarterly",
-      "payDate": "2026-12-01",
-      "lastExDate": "2026-08-28"
+      "payDate": "2027-03-07",
+      "lastExDate": "2026-11-23"
     },
     "HOG": {
       "exDate": "2026-12-15",
@@ -5295,10 +5295,10 @@
       "lastExDate": "2026-09-10"
     },
     "INTU": {
-      "exDate": "2027-01-07",
-      "status": "projected",
-      "declaredDate": null,
-      "DivDate": null,
+      "exDate": "2027-01-08",
+      "status": "declared",
+      "declaredDate": "2026-11-19",
+      "DivDate": "2026-11-19",
       "amount": 1.38,
       "frequency": "quarterly",
       "payDate": "2027-01-15",
@@ -6605,14 +6605,14 @@
       "lastExDate": "2026-06-15"
     },
     "MCHP": {
-      "exDate": "2026-11-23",
-      "status": "declared",
-      "declaredDate": "2026-11-05",
-      "DivDate": "2026-11-05",
+      "exDate": "2027-02-22",
+      "status": "projected",
+      "declaredDate": null,
+      "DivDate": null,
       "amount": 0.455,
       "frequency": "quarterly",
-      "payDate": "2026-12-08",
-      "lastExDate": "2026-08-24"
+      "payDate": "2027-03-08",
+      "lastExDate": "2026-11-23"
     },
     "MCK": {
       "exDate": "2026-12-01",
@@ -7915,14 +7915,14 @@
       "lastExDate": "2026-09-02"
     },
     "PATK": {
-      "exDate": "2026-11-23",
-      "status": "declared",
-      "declaredDate": "2026-11-13",
-      "DivDate": "2026-11-13",
+      "exDate": "2027-02-22",
+      "status": "projected",
+      "declaredDate": null,
+      "DivDate": null,
       "amount": 0.52,
       "frequency": "quarterly",
-      "payDate": "2026-12-07",
-      "lastExDate": "2026-08-24"
+      "payDate": "2027-03-08",
+      "lastExDate": "2026-11-23"
     },
     "PAVE": {
       "exDate": "2026-12-28",
@@ -7935,14 +7935,14 @@
       "lastExDate": "2026-06-29"
     },
     "PAYC": {
-      "exDate": "2026-11-23",
-      "status": "declared",
-      "declaredDate": "2026-11-02",
-      "DivDate": "2026-11-02",
+      "exDate": "2027-02-22",
+      "status": "projected",
+      "declaredDate": null,
+      "DivDate": null,
       "amount": 0.375,
       "frequency": "quarterly",
-      "payDate": "2026-12-07",
-      "lastExDate": "2026-08-24"
+      "payDate": "2027-03-08",
+      "lastExDate": "2026-11-23"
     },
     "PAYX": {
       "exDate": "2027-01-25",
@@ -7985,14 +7985,14 @@
       "lastExDate": "2026-11-16"
     },
     "PBP": {
-      "exDate": "2026-11-23",
+      "exDate": "2026-12-21",
       "status": "declared",
       "declaredDate": "2025-12-31",
       "DivDate": "2025-12-31",
-      "amount": 0.17824,
+      "amount": 0.91,
       "frequency": "monthly",
-      "payDate": "2026-11-27",
-      "lastExDate": "2026-10-19"
+      "payDate": "2026-12-28",
+      "lastExDate": "2026-11-23"
     },
     "PCAR": {
       "exDate": "2027-02-10",
@@ -8015,14 +8015,14 @@
       "lastExDate": "2026-09-30"
     },
     "PCY": {
-      "exDate": "2026-11-23",
-      "status": "declared",
-      "declaredDate": "2025-12-31",
-      "DivDate": "2025-12-31",
+      "exDate": "2026-12-23",
+      "status": "projected",
+      "declaredDate": null,
+      "DivDate": null,
       "amount": 0.1079,
       "frequency": "monthly",
-      "payDate": "2026-11-27",
-      "lastExDate": "2026-10-19"
+      "payDate": "2026-12-27",
+      "lastExDate": "2026-11-23"
     },
     "PDBC": {
       "exDate": "2026-12-22",
@@ -8165,14 +8165,14 @@
       "lastExDate": "2026-10-01"
     },
     "PGX": {
-      "exDate": "2026-12-18",
+      "exDate": "2026-12-23",
       "status": "projected",
       "declaredDate": null,
       "DivDate": null,
-      "amount": 0.06052,
+      "amount": 0.0591,
       "frequency": "monthly",
-      "payDate": "2026-12-22",
-      "lastExDate": "2026-10-19"
+      "payDate": "2026-12-27",
+      "lastExDate": "2026-11-23"
     },
     "PH": {
       "exDate": "2027-02-12",
@@ -8185,14 +8185,14 @@
       "lastExDate": "2026-11-13"
     },
     "PHIN": {
-      "exDate": "2026-11-23",
-      "status": "declared",
-      "declaredDate": "2026-11-12",
-      "DivDate": "2026-11-12",
+      "exDate": "2027-02-22",
+      "status": "projected",
+      "declaredDate": null,
+      "DivDate": null,
       "amount": 0.3,
       "frequency": "quarterly",
-      "payDate": "2026-12-11",
-      "lastExDate": "2026-09-04"
+      "payDate": "2027-03-08",
+      "lastExDate": "2026-11-23"
     },
     "PHM": {
       "exDate": "2026-12-15",
@@ -8635,24 +8635,24 @@
       "lastExDate": "2026-09-15"
     },
     "QYLD": {
-      "exDate": "2026-11-23",
-      "status": "declared",
-      "declaredDate": "2026-11-20",
-      "DivDate": "2026-11-20",
+      "exDate": "2026-12-23",
+      "status": "projected",
+      "declaredDate": null,
+      "DivDate": null,
       "amount": 0.1587,
       "frequency": "monthly",
-      "payDate": "2026-11-27",
-      "lastExDate": "2026-10-19"
+      "payDate": "2026-12-26",
+      "lastExDate": "2026-11-23"
     },
     "R": {
-      "exDate": "2026-11-23",
-      "status": "declared",
-      "declaredDate": "2026-10-09",
-      "DivDate": "2026-10-09",
+      "exDate": "2027-02-22",
+      "status": "projected",
+      "declaredDate": null,
+      "DivDate": null,
       "amount": 1.01,
       "frequency": "quarterly",
-      "payDate": "2026-12-18",
-      "lastExDate": "2026-08-24"
+      "payDate": "2027-03-25",
+      "lastExDate": "2026-11-23"
     },
     "RAL": {
       "exDate": "2026-12-08",
@@ -8685,14 +8685,14 @@
       "lastExDate": "2026-09-17"
     },
     "RDN": {
-      "exDate": "2026-11-23",
-      "status": "declared",
-      "declaredDate": "2026-11-11",
-      "DivDate": "2026-11-11",
+      "exDate": "2027-02-22",
+      "status": "projected",
+      "declaredDate": null,
+      "DivDate": null,
       "amount": 0.255,
       "frequency": "quarterly",
-      "payDate": "2026-12-08",
-      "lastExDate": "2026-08-24"
+      "payDate": "2027-03-09",
+      "lastExDate": "2026-11-23"
     },
     "RDVY": {
       "exDate": "2026-12-24",
@@ -9065,14 +9065,14 @@
       "lastExDate": "2026-11-10"
     },
     "RYLD": {
-      "exDate": "2026-12-18",
+      "exDate": "2026-12-23",
       "status": "projected",
       "declaredDate": null,
       "DivDate": null,
-      "amount": 0.1478,
+      "amount": 0.1454,
       "frequency": "monthly",
-      "payDate": "2026-12-21",
-      "lastExDate": "2026-10-19"
+      "payDate": "2026-12-26",
+      "lastExDate": "2026-11-23"
     },
     "RYN": {
       "exDate": "2026-12-17",
@@ -9365,14 +9365,14 @@
       "lastExDate": "2026-09-15"
     },
     "SGI": {
-      "exDate": "2026-11-23",
-      "status": "declared",
-      "declaredDate": "2026-11-09",
-      "DivDate": "2026-11-09",
+      "exDate": "2027-02-22",
+      "status": "projected",
+      "declaredDate": null,
+      "DivDate": null,
       "amount": 0.17,
       "frequency": "quarterly",
-      "payDate": "2026-12-07",
-      "lastExDate": "2026-08-20"
+      "payDate": "2027-03-08",
+      "lastExDate": "2026-11-23"
     },
     "SHEN": {
       "exDate": "2027-11-02",
@@ -9745,14 +9745,14 @@
       "lastExDate": "2026-09-21"
     },
     "SPLV": {
-      "exDate": "2026-12-18",
+      "exDate": "2026-12-23",
       "status": "projected",
       "declaredDate": null,
       "DivDate": null,
-      "amount": 0.1464,
+      "amount": 0.1508,
       "frequency": "monthly",
-      "payDate": "2026-12-22",
-      "lastExDate": "2026-10-19"
+      "payDate": "2026-12-27",
+      "lastExDate": "2026-11-23"
     },
     "SPMD": {
       "exDate": "2026-12-21",
@@ -9995,11 +9995,11 @@
       "lastExDate": "2026-09-30"
     },
     "SVOL": {
-      "exDate": "2026-11-26",
-      "status": "projected",
-      "declaredDate": null,
-      "DivDate": null,
-      "amount": 0.28,
+      "exDate": "2026-11-24",
+      "status": "declared",
+      "declaredDate": "2026-01-28",
+      "DivDate": "2026-01-28",
+      "amount": 0.25,
       "frequency": "monthly",
       "payDate": "2026-11-30",
       "lastExDate": "2026-10-27"
@@ -10145,13 +10145,13 @@
       "lastExDate": "2025-09-02"
     },
     "TDS": {
-      "exDate": "2026-12-15",
-      "status": "projected",
-      "declaredDate": null,
-      "DivDate": null,
+      "exDate": "2026-12-16",
+      "status": "declared",
+      "declaredDate": "2026-11-23",
+      "DivDate": "2026-11-23",
       "amount": 0.04,
       "frequency": "quarterly",
-      "payDate": "2026-12-30",
+      "payDate": "2026-12-31",
       "lastExDate": "2026-09-15"
     },
     "TECH": {
@@ -10175,14 +10175,14 @@
       "lastExDate": "2026-11-20"
     },
     "TER": {
-      "exDate": "2026-11-23",
-      "status": "declared",
-      "declaredDate": "2026-11-09",
-      "DivDate": "2026-11-09",
+      "exDate": "2027-02-22",
+      "status": "projected",
+      "declaredDate": null,
+      "DivDate": null,
       "amount": 0.13,
       "frequency": "quarterly",
-      "payDate": "2026-12-16",
-      "lastExDate": "2026-09-04"
+      "payDate": "2027-03-17",
+      "lastExDate": "2026-11-23"
     },
     "TEX": {
       "exDate": "2027-02-08",
@@ -10505,14 +10505,14 @@
       "lastExDate": "2026-09-10"
     },
     "TSCO": {
-      "exDate": "2026-11-23",
-      "status": "declared",
-      "declaredDate": "2026-11-06",
-      "DivDate": "2026-11-06",
+      "exDate": "2027-02-22",
+      "status": "projected",
+      "declaredDate": null,
+      "DivDate": null,
       "amount": 0.24,
       "frequency": "quarterly",
-      "payDate": "2026-12-08",
-      "lastExDate": "2026-08-24"
+      "payDate": "2027-03-08",
+      "lastExDate": "2026-11-23"
     },
     "TSM": {
       "exDate": "2026-12-10",
@@ -10616,12 +10616,12 @@
     },
     "UBSI": {
       "exDate": "2026-12-11",
-      "status": "projected",
-      "declaredDate": null,
-      "DivDate": null,
+      "status": "declared",
+      "declaredDate": "2026-11-22",
+      "DivDate": "2026-11-22",
       "amount": 0.38,
       "frequency": "quarterly",
-      "payDate": "2026-12-30",
+      "payDate": "2027-01-04",
       "lastExDate": "2026-09-11"
     },
     "UCB": {
@@ -10656,9 +10656,9 @@
     },
     "UFCS": {
       "exDate": "2026-12-04",
-      "status": "projected",
-      "declaredDate": null,
-      "DivDate": null,
+      "status": "declared",
+      "declaredDate": "2026-11-20",
+      "DivDate": "2026-11-20",
       "amount": 0.2,
       "frequency": "quarterly",
       "payDate": "2026-12-18",
@@ -11365,14 +11365,14 @@
       "lastExDate": "2026-09-30"
     },
     "VTRS": {
-      "exDate": "2026-11-23",
-      "status": "declared",
-      "declaredDate": "2026-11-04",
-      "DivDate": "2026-11-04",
+      "exDate": "2027-02-22",
+      "status": "projected",
+      "declaredDate": null,
+      "DivDate": null,
       "amount": 0.12,
       "frequency": "quarterly",
-      "payDate": "2026-12-16",
-      "lastExDate": "2026-08-21"
+      "payDate": "2027-03-17",
+      "lastExDate": "2026-11-23"
     },
     "VTV": {
       "exDate": "2026-12-28",
@@ -12155,14 +12155,14 @@
       "lastExDate": "2026-08-27"
     },
     "XYLD": {
-      "exDate": "2026-12-18",
+      "exDate": "2026-12-23",
       "status": "projected",
       "declaredDate": null,
       "DivDate": null,
-      "amount": 0.3143,
+      "amount": 0.3764,
       "frequency": "monthly",
-      "payDate": "2026-12-21",
-      "lastExDate": "2026-10-19"
+      "payDate": "2026-12-26",
+      "lastExDate": "2026-11-23"
     },
     "YOU": {
       "exDate": "2026-12-10",
