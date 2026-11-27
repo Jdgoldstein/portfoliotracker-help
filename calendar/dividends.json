@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-26",
+  "updatedAt": "2026-11-27",
   "source": "tradier-fundamentals",
   "fetched": 1757,
   "payers": 1222,
@@ -805,10 +805,10 @@
       "lastExDate": "2026-11-03"
     },
     "ARR": {
-      "exDate": "2026-12-16",
-      "status": "projected",
-      "declaredDate": null,
-      "DivDate": null,
+      "exDate": "2026-12-15",
+      "status": "declared",
+      "declaredDate": "2026-11-25",
+      "DivDate": "2026-11-25",
       "amount": 0.24,
       "frequency": "monthly",
       "payDate": "2026-12-30",
@@ -1299,7 +1299,7 @@
       "status": "projected",
       "declaredDate": null,
       "DivDate": null,
-      "amount": 0.1195,
+      "amount": 0.11951,
       "frequency": "monthly",
       "payDate": "2026-12-27",
       "lastExDate": "2026-11-23"
@@ -8019,7 +8019,7 @@
       "status": "projected",
       "declaredDate": null,
       "DivDate": null,
-      "amount": 0.1079,
+      "amount": 0.10787,
       "frequency": "monthly",
       "payDate": "2026-12-27",
       "lastExDate": "2026-11-23"
@@ -8169,7 +8169,7 @@
       "status": "projected",
       "declaredDate": null,
       "DivDate": null,
-      "amount": 0.0591,
+      "amount": 0.05914,
       "frequency": "monthly",
       "payDate": "2026-12-27",
       "lastExDate": "2026-11-23"
@@ -9749,7 +9749,7 @@
       "status": "projected",
       "declaredDate": null,
       "DivDate": null,
-      "amount": 0.1508,
+      "amount": 0.15078,
       "frequency": "monthly",
       "payDate": "2026-12-27",
       "lastExDate": "2026-11-23"
